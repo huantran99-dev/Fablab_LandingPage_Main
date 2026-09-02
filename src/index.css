@@ -1,0 +1,277 @@
+/* Fonts — self-hosted qua @fontsource nên trang chạy được hoàn toàn offline.
+   Style reference dùng Charlie Display / Charlie Text (font độc quyền của
+   Atlassian). Đây là hai fallback mà chính spec chỉ định. */
+@import '@fontsource-variable/inter-tight';
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/700.css';
+
+@import 'tailwindcss';
+
+/* ==========================================================================
+   Design tokens — hệ "Loom"
+   Nền trắng, một sắc xanh bão hòa duy nhất cho mọi phần tử tương tác,
+   card bo góc rất lớn trên nền pastel, shadow ba lớp mềm.
+   ========================================================================== */
+@theme {
+  /* --- Brand ------------------------------------------------------------ */
+  --color-signal: #1868db; /* màu nhấn chính: nav pill, link, primary button */
+  --color-plum: #48245d;
+  --color-orchid: #bf63f3;
+  --color-ember: #ff613d;
+  --color-leaf: #82b536;
+
+  /* --- Surface tints ---------------------------------------------------- */
+  --color-paper: #ffffff;
+  --color-wash: #e9f2fe;
+  --color-butter: #fff5d4;
+  --color-mint: #efffd6;
+  --color-navy: #123263;
+
+  /* --- Neutrals --------------------------------------------------------- */
+  --color-ink: #101214;
+  --color-graphite: #292a2e;
+  --color-steel: #7d818a;
+  --color-ash: #cccccc;
+
+  /* --- Typography ------------------------------------------------------- */
+  --font-display: 'Inter Tight Variable', 'Inter Tight', system-ui, sans-serif;
+  --font-text: 'Inter', system-ui, -apple-system, sans-serif;
+
+  --text-caption: 13px;
+  --text-caption--line-height: 1.45;
+  --text-body-sm: 15px;
+  --text-body-sm--line-height: 1.5;
+  --text-body: 16px;
+  --text-body--line-height: 1.6;
+  --text-subheading: clamp(17px, 1.5vw, 19px);
+  --text-subheading--line-height: 1.5;
+  --text-heading-sm: clamp(21px, 2vw, 25px);
+  --text-heading-sm--line-height: 1.27;
+  --text-heading-lg: clamp(27px, 3vw, 33px);
+  --text-heading-lg--line-height: 1.14;
+  --text-display: clamp(32px, 4.5vw, 44px);
+  --text-display--line-height: 1.14;
+  --text-display-lg: clamp(40px, 6vw, 63px);
+  --text-display-lg--line-height: 1.03;
+
+  /* --- Radius ----------------------------------------------------------- */
+  /* Mọi phần tử tương tác dùng pill; card dùng bo góc rất lớn. */
+  --radius-pill: 9999px;
+  --radius-card: 68px;
+  --radius-card-sm: 32px; /* biến thể mobile của radius-card */
+  --radius-image: 42px;
+  --radius-image-sm: 24px;
+
+  /* --- Elevation -------------------------------------------------------- */
+  /* Chồng ba lớp ambient. Chỉ dùng cho card / khung ảnh — không bao giờ
+     đặt lên button hay bề mặt phẳng. */
+  --shadow-ambient:
+    0 2px 6px rgba(0, 0, 0, 0.04), 0 5px 18px rgba(0, 0, 0, 0.06),
+    0 24px 83px rgba(0, 0, 0, 0.1);
+  --shadow-ambient-lift:
+    0 4px 10px rgba(0, 0, 0, 0.05), 0 10px 28px rgba(0, 0, 0, 0.08),
+    0 32px 90px rgba(0, 0, 0, 0.12);
+
+  /* --- Animation -------------------------------------------------------- */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* bù chiều cao navbar sticky khi nhảy tới anchor */
+    scroll-padding-top: 96px;
+  }
+
+  body {
+    /* Hiệu ứng trượt ngang đẩy phần tử ra ngoài mép container, phải cắt đi kẻo
+       sinh thanh cuộn ngang. BẮT BUỘC là `clip` chứ không phải `hidden`:
+       `hidden` biến body thành scroll container và làm chết `position: sticky`
+       của Navbar. */
+    overflow-x: clip;
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-text);
+    font-size: var(--text-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 3px;
+  }
+
+  /* Popup chi tiết khóa học dùng <dialog> gốc của trình duyệt: có sẵn bẫy focus,
+     phím Esc và lớp nền mờ mà không cần thư viện. Ở đây chỉ gỡ style mặc định —
+     nền và bo góc do phần tử con vẽ, nên góc bo lớn không bị viền dialog cắt. */
+  dialog {
+    margin: auto;
+    max-width: min(720px, calc(100vw - 32px));
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+  }
+
+  dialog::backdrop {
+    background: rgb(16 18 20 / 0.55);
+  }
+
+  dialog[open] {
+    animation: modal-in 0.28s var(--ease-out-soft);
+  }
+
+  dialog[open]::backdrop {
+    animation: backdrop-in 0.28s var(--ease-out-soft);
+  }
+
+  @keyframes modal-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.985);
+    }
+  }
+
+  @keyframes backdrop-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ==========================================================================
+   Utilities
+   ========================================================================== */
+@utility container-page {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 20px;
+
+  @media (width >= 768px) {
+    padding-inline: 32px;
+  }
+}
+
+/* Kẻ dòng mô tả về đúng 2 dòng để các card trong grid cao bằng nhau. */
+@utility line-clamp-2-fixed {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility animate-rise {
+  animation: rise-in 0.6s var(--ease-out-soft) both;
+}
+
+/* ==========================================================================
+   Scroll reveal — slide in / slide out hai chiều
+
+   CỐ Ý ĐẶT NGOÀI MỌI @layer. CSS không phân lớp thắng toàn bộ CSS có phân lớp,
+   nên hiệu ứng miễn nhiễm với thứ tự phát sinh utility của Tailwind — trước đây
+   đặt trong `@utility` nên bị chính utility của CourseCard ghi đè.
+
+   Dùng `transition` chứ không dùng `animation`: hiệu ứng hai chiều chỉ cần đổi
+   giá trị là tự chạy ngược, không phải viết keyframe riêng cho lượt ra.
+
+   An toàn với hover vì Tailwind v4 nhấc card bằng thuộc tính `translate:` còn
+   reveal dùng `transform:` — hai thuộc tính độc lập, áp chồng lên nhau được.
+   ========================================================================== */
+
+/* Khai báo transition gộp: shorthand không phân lớp này ghi đè
+   `transition-property` của mọi utility Tailwind trên cùng phần tử, nên hai
+   thuộc tính hover của card (`translate`, `box-shadow`) phải nằm chung ở đây —
+   CourseCard vì thế không khai báo transition riêng nữa. */
+[data-reveal],
+[data-reveal-group] > * {
+  transition:
+    opacity 0.7s var(--ease-out-soft),
+    transform 0.7s var(--ease-out-soft),
+    translate 0.3s var(--ease-out-soft),
+    box-shadow 0.3s var(--ease-out-soft);
+}
+
+[data-reveal='shown'],
+[data-reveal-group='shown'] > * {
+  opacity: 1;
+  transform: none;
+}
+
+[data-reveal='hidden'],
+[data-reveal-group='hidden'] > * {
+  opacity: 0;
+}
+
+/* Hướng trượt — xen kẽ trái/phải giữa tiêu đề và lưới của cùng một section. */
+[data-reveal='hidden'][data-reveal-from='left'],
+[data-reveal-group='hidden'][data-reveal-from='left'] > * {
+  transform: translateX(-56px);
+}
+[data-reveal='hidden'][data-reveal-from='right'],
+[data-reveal-group='hidden'][data-reveal-from='right'] > * {
+  transform: translateX(56px);
+}
+[data-reveal='hidden'][data-reveal-from='up'],
+[data-reveal-group='hidden'][data-reveal-from='up'] > * {
+  transform: translateY(40px);
+}
+
+/* Stagger CHỈ áp cho lượt vào. Lúc ra selector 'shown' không còn khớp nên
+   transition-delay về 0 và cả nhóm rời đi cùng lúc — vào thì lần lượt, ra thì
+   dứt khoát. Chặn ở 450ms để lưới 16 khóa học không kéo thành sóng một giây. */
+[data-reveal-group='shown'] > *:nth-child(2) {
+  transition-delay: 90ms;
+}
+[data-reveal-group='shown'] > *:nth-child(3) {
+  transition-delay: 180ms;
+}
+[data-reveal-group='shown'] > *:nth-child(4) {
+  transition-delay: 270ms;
+}
+[data-reveal-group='shown'] > *:nth-child(5) {
+  transition-delay: 360ms;
+}
+[data-reveal-group='shown'] > *:nth-child(n + 6) {
+  transition-delay: 450ms;
+}
