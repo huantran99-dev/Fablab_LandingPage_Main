@@ -32,6 +32,28 @@ import courseScratch from './course-scratch.jpg'
 import courseStress from './course-stress.jpg'
 import courseWater from './course-water.jpg'
 
+import partnerBbi from './partner-bbi.png'
+import partnerBecamex from './partner-becamex.png'
+import partnerEiu from './partner-eiu.png'
+import partnerHoasen from './partner-hoasen.png'
+import partnerVietanh from './partner-vietanh.png'
+import partnerLittlepeo from './partner-littlepeo.png'
+import partnerTvbd from './partner-tvbd.png'
+import partnerTvtphcm from './partner-tvtphcm.png'
+import partnerPetrusky from './partner-petrusky.png'
+import partnerTalent from './partner-talent.png'
+
+import activityDesign3d from './activity-design-3d.jpg'
+import activityDesignWorkshop from './activity-design-workshop.jpg'
+import activityIndustrialDesign from './activity-industrial-design.jpg'
+import activityLaserCnc from './activity-laser-cnc.jpg'
+import activityMachineLearning from './activity-machine-learning.jpg'
+import activityMcr2023 from './activity-mcr-2023.jpg'
+import activityNano from './activity-nano.jpg'
+import activityPrint3d from './activity-print-3d.jpg'
+import activityRacingCup from './activity-racing-cup.jpg'
+import activityVietAnh from './activity-viet-anh.jpg'
+
 import teamHien from './team-hien.jpg'
 import teamHung from './team-hung.jpg'
 import teamLinh from './team-linh.jpg'
@@ -101,3 +123,50 @@ export const TEAM_IMAGES = {
 }
 
 export const TEAM_IMAGE_SIZE = { width: 200, height: 200 }
+
+/**
+ * Logo đối tác, khớp với `partners.items[].id` trong i18n.
+ *
+ * Chỉ ba tổ chức này có logo thật trên site của trường. Đối tác thứ tư (Hệ thống
+ * trường Việt Anh, có lễ ký kết ngày 19/7/2022) **không có logo** nên trong i18n
+ * nó không có key ở đây — component hiển thị bằng chữ. Đừng đi tìm logo ở nguồn
+ * khác rồi gán vào: logo sai còn tệ hơn không có logo.
+ */
+export const PARTNER_LOGOS = {
+  hoasen: { src: partnerHoasen, width: 194, height: 120 },
+  vietanh: { src: partnerVietanh, width: 194, height: 120 },
+  little: { src: partnerLittlepeo, width: 194, height: 120 },
+  tvbd: { src: partnerTvbd, width: 194, height: 120 },
+  tvtphcm: { src: partnerTvtphcm, width: 194, height: 120 },
+  petrusky: { src: partnerPetrusky, width: 194, height: 120 },
+  talent: { src: partnerTalent, width: 194, height: 120 },
+  eiu: { src: partnerEiu, width: 149, height: 120 },
+  becamex: { src: partnerBecamex, width: 320, height: 68 },
+  bbi: { src: partnerBbi, width: 194, height: 120 },
+}
+
+/**
+ * Ảnh hoạt động, khớp với `activities.items[].id` trong i18n.
+ *
+ * Tỷ lệ rất lệch nhau (poster dọc 0.7 đến ảnh ngang 2.05) vì nguồn vốn trộn poster
+ * và ảnh chụp — vì thế carousel dùng `object-contain` trên nền pastel chứ không
+ * `object-cover`, kẻo cắt mất tiêu đề poster hoặc mặt người.
+ *
+ * Ba hoạt động cuối không có ảnh riêng trên trang gốc nên dùng lại ảnh thật khác
+ * của FabLab, đánh dấu `// ~` như quy ước ở các map trên.
+ */
+export const ACTIVITY_IMAGES = {
+  'mcr-2023': activityMcr2023,
+  'racing-cup': activityRacingCup,
+  'print-3d': activityPrint3d,
+  'viet-anh': activityVietAnh,
+  'laser-cnc': activityLaserCnc,
+  'industrial-design': activityIndustrialDesign,
+  nano: activityNano,
+  'machine-learning': activityMachineLearning,
+  'design-workshop': activityDesignWorkshop,
+  'design-3d': activityDesign3d,
+  stm32: courseElectronics, // ~ ảnh khóa điện tử, trang gốc không có ảnh
+  'print-3d-medical': courseWater, // ~ ảnh một buổi hội thảo khác tại FabLab
+  pcb: labWorkbenches, // ~ ảnh xưởng chung
+}

@@ -85,16 +85,42 @@ miễn phí" — nó không đúng.
 
 Trong cùng section tiêu đề và lưới đi ngược chiều, rồi đảo lại ở section kế tiếp:
 Pillars `left`/`right` → Courses `right`/`left` → Facilities `left`/`right` →
-Process `right`/`left` → Team `left`/`right` → Testimonials `right`/`left`.
-StatsBar · FinalCTA · Footer · nút "Xem thêm" · link tuyển dụng · chấm tròn dùng
-mặc định `up`.
+Partners `right`/`left` → Activities `left`/`right` → Team `right`/`left` →
+Testimonials `left`/`right`. StatsBar · FinalCTA · Footer · nút "Xem thêm" ·
+link tuyển dụng · chấm tròn dùng mặc định `up`.
 
 Courses có **hai lưới** (hai nhóm khóa học): lưới đầu `left`, lưới sau `right`,
 gán theo chỉ số nhóm chứ không viết cứng — thêm nhóm thứ ba là nó tự xen kẽ tiếp.
 Tiêu đề phụ của nhóm để `up`, không trượt ngang, kẻo section thành quá ồn.
 
-**Chèn section mới vào giữa là phải đảo chiều mọi section phía sau** để giữ nhịp
-xen kẽ — thêm Team đã kéo theo việc lật Testimonials.
+**Thêm hay bỏ section ở giữa là phải đảo chiều mọi section phía sau** để giữ nhịp
+xen kẽ. Thêm Team đã kéo theo việc lật Testimonials; thay Process bằng
+Partners + Activities lại kéo theo lật cả Team lẫn Testimonials lần nữa.
+
+## Marquee đối tác
+
+[Partners.jsx](src/components/Partners.jsx) chạy dải logo bằng CSS thuần, không
+JS: track chứa **danh sách lặp đúng hai lần** rồi trượt `-50%`, nên hết bản sao
+thứ nhất là trùng khít điểm đầu và vòng lặp không có mối nối. Bản sao thứ hai
+mang `aria-hidden` để screen reader không đọc hai lần. Tốc độ theo số lượng logo
+qua biến `--marquee-duration`.
+
+**Cái bẫy `!important` + cascade layer:** với khai báo `!important`, thứ tự layer
+bị **đảo ngược** — rule `!important` trong `@layer base` thắng rule `!important`
+không phân lớp (ngược hẳn với khai báo thường). Rule reduced-motion chung ở base
+chỉ ép `animation-duration: 0.01ms`, mà với animation lặp vô hạn thì đó là quay
+cực nhanh chứ không phải dừng. Vì vậy marquee tắt bằng `animation-name: none`
+chứ **không** dùng shorthand `animation: none` — shorthand sẽ bị base ghi đè mất
+phần duration.
+
+## Đối tác: chỉ 3/4 có logo
+
+Site của trường **không có trang danh sách đối tác**. Bốn tổ chức trong
+`partners.items` đều có căn cứ trên site (breadcrumb, thư viện media, hoặc trang
+Sự kiện), nhưng **chỉ EIU, Becamex và BBI có logo**. Hệ thống trường Việt Anh chỉ
+có văn bản lễ ký kết 19/7/2022, không có logo — nên nó không có key trong
+`PARTNER_LOGOS` và hiển thị bằng chữ. **Đừng đi tìm logo ở nguồn khác rồi gán
+vào**: gán sai nhận diện một tổ chức có thật còn tệ hơn là không có logo.
 
 Stagger 90ms chỉ áp cho lượt vào (selector `[data-reveal-group='shown']`), chặn ở
 450ms; lượt ra cả nhóm đi cùng lúc.
@@ -111,6 +137,20 @@ style reference, người dùng đã được báo trước điểm này.
 21 ảnh thật trong [src/assets/images/](src/assets/images/), tải từ thư viện media
 của `fablab.eiu.edu.vn` (`/wp-json/wp/v2/media?per_page=100`) rồi cắt giữa + nén
 sẵn. **Không có bước xử lý ảnh lúc build** — file trong repo đã là file cuối.
+
+**Ảnh hoạt động lệch một bậc trên trang nguồn.** Trên
+`fablab.eiu.edu.vn/vi/su-kien/`, ảnh nằm **trước** tiêu đề của chính nó, nên bóc
+theo vị trí sẽ gán nhầm ảnh sang sự kiện kế bên (poster in 3D bị gán cho cuộc thi
+xe đua, v.v.). Bộ ảnh hiện tại được gán bằng cách **mở từng ảnh ra xem** rồi khớp
+theo nội dung và ngày in trên poster. Bổ sung ảnh mới thì làm y như vậy, đừng tin
+thứ tự trong HTML.
+
+Ba hoạt động không có ảnh riêng trên trang gốc (`stm32`, `print-3d-medical`,
+`pcb`) dùng lại ảnh thật khác của FabLab, đánh dấu `// ~`.
+
+Tỷ lệ ảnh hoạt động rất lệch nhau (poster dọc 0.7 đến ảnh ngang 2.05) nên carousel
+dùng `object-contain` trên nền pastel. **Đừng đổi sang `object-cover`** — nó sẽ
+cắt mất tiêu đề poster hoặc mặt người.
 
 **Đội ngũ: chỉ 6/10 người có ảnh.** Trang "Về chúng tôi" của trường để ảnh mẫu
 `demo_image.jpg` cho bốn người còn lại, nên `TEAM_IMAGES` không có key cho họ và

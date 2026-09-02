@@ -16,7 +16,6 @@ export const en = {
       { id: 'about', label: 'About', href: '#about' },
       { id: 'courses', label: 'Courses', href: '#courses' },
       { id: 'facilities', label: 'Facilities', href: '#facilities' },
-      { id: 'process', label: 'Process', href: '#process' },
     ],
     cta: 'Enroll now',
     openMenu: 'Open menu',
@@ -28,7 +27,7 @@ export const en = {
     eyebrow: 'Eastern International University',
     title: 'Proudly Serving the Community',
     description:
-      'FabLab EIU is an open digital fabrication workshop where any idea can become a real product. We bring technology, equipment and knowledge closer to students and the community.',
+      'EIU FabLab is a typical digital fabrication workshop with many advanced technologies, machinery and equipment, dynamic and creative open spaces and diverse activities to serve the community.community.',
     primaryCta: 'Explore courses',
     secondaryCta: 'Visit the lab',
     imageAlt:
@@ -42,16 +41,16 @@ export const en = {
   stats: {
     // TODO: replace with real FabLab EIU figures
     items: [
-      { id: 'learners', value: 2400, suffix: '+', label: 'Learners trained' },
-      { id: 'courses', value: 16, suffix: '', label: 'STEM courses' },
-      { id: 'machines', value: 40, suffix: '+', label: 'Fabrication machines' },
-      { id: 'projects', value: 180, suffix: '+', label: 'Community projects' },
+      { id: 'visitors', value: 20000, suffix: '+', label: 'Student visits' },
+      { id: 'courses', value: 30, suffix: '', label: 'STEM courses' },
+      { id: 'learners', value: 12000, suffix: '+', label: 'Learners trained' },
+      { id: 'partners', value: 20, suffix: '+', label: 'Community projects' },
     ],
   },
 
   pillars: {
     eyebrow: 'About us',
-    title: 'The three pillars of FabLab EIU',
+    title: 'Mission of EIU FabLab',
     description:
       'An open, dynamic space where technology is shared to create real value for society.',
     items: [
@@ -318,15 +317,160 @@ export const en = {
     ],
   },
 
-  process: {
-    eyebrow: 'How to join',
-    title: 'Four steps to get started',
-    description: 'No prior experience needed. All you have to bring is an idea.',
-    steps: [
-      { id: 'register', title: 'Register', description: 'Pick the course that fits you and submit the online form.' },
-      { id: 'orientation', title: 'Orientation', description: 'Meet the instructors, tour the lab and get your roadmap.' },
-      { id: 'practice', title: 'Practice', description: 'Operate the machines yourself and build your first prototype.' },
-      { id: 'project', title: 'Complete a project', description: 'Present your product and receive your FabLab EIU certificate.' },
+  partners: {
+    eyebrow: 'Partners',
+    title: 'The organisations behind FabLab EIU',
+    description:
+      'The institutions and schools cooperate with EIU FabLab to bring technology closer to the community.',
+    // `{name}` is replaced with the partner name at render time.
+    logoAlt: '{name} logo',
+
+    /**
+     * Only organisations evidenced on the university's own website. A partner
+     * with no logo simply has no key in PARTNER_LOGOS and renders as text —
+     * do NOT source a logo elsewhere and attach it here.
+     */
+    items: [
+      { id: 'eiu', name: 'Trường Đại học Quốc tế Miền Đông' },
+      // { id: 'becamex', name: 'Becamex' },
+      // { id: 'bbi', name: 'Becamex Business Incubator' },
+      { id: 'vietanh', name: 'Hệ thống trường Việt Anh' },
+      { id: 'little', name: 'Trường mầm non Little People' },
+      { id: 'tvbd', name: 'Thư viện tỉnh Bình Dương' },
+      { id: 'tvtphcm', name: 'Thư viện Khoa học tổng hợp thành phố Hồ Chí Minh' },
+      { id: 'hoasen', name: 'Trường THCS-THPT Hoa Sen' },
+      { id: 'petrusky', name: 'Trường THCS-THPT Pétrus Ký' },
+      { id: 'talent', name: 'Talent Academy' },
+    ],
+  },
+
+  activities: {
+    eyebrow: 'Events',
+    title: 'Annual activities & competitions',
+    description:
+      'Competitions, seminars and workshops run by FabLab EIU for students, pupils and the wider community.',
+    previous: 'Previous activity',
+    next: 'Next activity',
+    goTo: 'Go to activity',
+    // `{title}` is replaced with the activity name at render time.
+    imageAlt: 'Photo from {title}',
+    kinds: {
+      competition: 'Competition',
+      seminar: 'Seminar',
+      workshop: 'Workshop',
+      partnership: 'Partnership',
+    },
+
+    /**
+     * All taken from the university's own events page
+     * (fablab.eiu.edu.vn/vi/su-kien/). Competitions first, then the rest newest
+     * first.
+     */
+    items: [
+      {
+        id: 'mcr-2023',
+        kind: 'competition',
+        date: '28 May 2023',
+        title: 'EIU MCR 2023 — Autonomous car programming',
+        description:
+          'EIU Microcontroller Car Rally, first season, drawing more than 40 teams from universities, colleges and high schools across southern Vietnam.',
+      },
+      {
+        id: 'racing-cup',
+        kind: 'competition',
+        date: '',
+        title: 'FabLab Racing Cup',
+        description:
+          'A model car racing competition run by EIU FabLab together with the EIU School of Engineering for engineering students.',
+      },
+      {
+        id: 'stm32',
+        kind: 'seminar',
+        date: 'Every Wednesday afternoon',
+        title: 'STM32 programming basics',
+        description:
+          'Guiding students through microcontroller peripherals such as ADC, PWM and I2C. Held in room 202, block 11.',
+      },
+      {
+        id: 'print-3d',
+        kind: 'workshop',
+        date: '20 July 2022',
+        title: '3D printing technology and applications',
+        description:
+          'Learning about 3D printing, the types of printer available and how to run them. Led by Vo Doan Linh, at the EIU Library.',
+      },
+      {
+        id: 'viet-anh',
+        kind: 'partnership',
+        date: '19 July 2022',
+        title: 'Strategic partnership: EIU – Viet Anh',
+        description:
+          'A strategic partnership with the Viet Anh School System covering STEM experience programmes, research support and entering pupils into science and technology competitions.',
+      },
+      {
+        id: 'laser-cnc',
+        kind: 'workshop',
+        date: '21 June 2022',
+        title: 'Get creative with 3D printers and laser CNC',
+        description:
+          'Cutting wood and acrylic on the laser cutter, engraving circuit boards, designing and 3D printing. Led by Bui Quang Tien.',
+      },
+      {
+        id: 'industrial-design',
+        kind: 'seminar',
+        date: '20 June 2022',
+        title: 'The role of industrial design',
+        description:
+          'On engineering design and prototyping of industrial products. Speaker: Nguyen Tran Bao Hien, Anco Company – Binh Duong.',
+      },
+      {
+        id: 'print-3d-medical',
+        kind: 'seminar',
+        date: '',
+        title: '3D printing in healthcare',
+        description:
+          '3D printing applied to maxillofacial surgery. Speaker: Dr Tran Tuan Anh, DDS, Becamex International Hospital.',
+      },
+      {
+        id: 'nano',
+        kind: 'seminar',
+        date: '15 March',
+        title: 'Nanomaterials in healthcare',
+        description:
+          'Stretchable tension sensors built from nanomaterials for medical use. Speaker: Dr Tran Quang Trung, Sungkyunkwan University, Korea.',
+      },
+      {
+        id: 'machine-learning',
+        kind: 'seminar',
+        date: '23 August',
+        title: 'Machine learning',
+        description:
+          'Neural network basics, TensorFlow, convolutional networks and where deep learning is heading. Speaker: Dr Cuong Pham.',
+      },
+      {
+        id: 'design-workshop',
+        kind: 'workshop',
+        date: '7 August 2019',
+        title: 'Industrial design',
+        description:
+          'How a product travels from idea to sketch to prototype, with hands-on sketching practice.',
+      },
+      {
+        id: 'pcb',
+        kind: 'workshop',
+        date: '',
+        title: 'Designing and prototyping circuits',
+        description:
+          'Using resistors, diodes, transistors, FETs and optocouplers to build real applications, plus basic PCB layout technique.',
+      },
+      {
+        id: 'design-3d',
+        kind: 'workshop',
+        date: '',
+        title: '3D design with SolidWorks',
+        description:
+          'The 3D design process and the factors that shape a product from first drawing through to finished part.',
+      },
     ],
   },
 
@@ -411,7 +555,7 @@ export const en = {
           { id: 'about', label: 'About us', href: '#about' },
           { id: 'courses', label: 'STEM courses', href: '#courses' },
           { id: 'facilities', label: 'Facilities', href: '#facilities' },
-          { id: 'process', label: 'How to join', href: '#process' },
+          { id: 'activities', label: 'Activities & competitions', href: '#activities' },
         ],
       },
       {

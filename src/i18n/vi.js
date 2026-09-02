@@ -17,7 +17,6 @@ export const vi = {
       { id: 'about', label: 'Về chúng tôi', href: '#about' },
       { id: 'courses', label: 'Khóa học', href: '#courses' },
       { id: 'facilities', label: 'Thiết bị', href: '#facilities' },
-      { id: 'process', label: 'Quy trình', href: '#process' },
     ],
     cta: 'Đăng ký ngay',
     openMenu: 'Mở menu',
@@ -29,11 +28,11 @@ export const vi = {
     eyebrow: 'Đại học Quốc tế Miền Đông',
     title: 'Tự Hào Phục Vụ Cộng Đồng',
     description:
-      'FabLab EIU là xưởng chế tạo số mở, nơi mọi ý tưởng đều có thể trở thành sản phẩm thật. Chúng tôi mang công nghệ, thiết bị và tri thức đến gần hơn với học sinh, sinh viên và cộng đồng.',
+      'EIU FabLab là một xưởng chế tác số điển hình với nhiều công nghệ, máy móc thiết bị hiện đại, không gian mở năng động - sáng tạo và các hoạt động đa dạng nhằm phục vụ cộng đồng. ',
     primaryCta: 'Khám phá khóa học',
     secondaryCta: 'Tham quan FabLab',
     imageAlt:
-      'Giảng viên FabLab EIU hướng dẫn ba em nhỏ lắp bộ kit STEM trên bàn thực hành.',
+      'Giảng viên EIU FabLab hướng dẫn ba em nhỏ lắp bộ kit STEM trên bàn thực hành.',
     floatingBadges: [
       { id: 'open', label: 'Mở cửa cho cộng đồng' },
       { id: 'hands-on', label: '100% học qua thực hành' },
@@ -41,18 +40,18 @@ export const vi = {
   },
 
   stats: {
-    // TODO: thay bằng số liệu thật của FabLab EIU
+    // TODO: thay bằng số liệu thật của EIU FabLab
     items: [
-      { id: 'learners', value: 2400, suffix: '+', label: 'Học viên đã tham gia' },
-      { id: 'courses', value: 16, suffix: '', label: 'Khóa học STEM' },
-      { id: 'machines', value: 40, suffix: '+', label: 'Thiết bị chế tạo số' },
-      { id: 'projects', value: 180, suffix: '+', label: 'Dự án cộng đồng' },
+      { id: 'visitors', value: 20000, suffix: '+', label: 'Học sinh đã tham quan' },
+      { id: 'courses', value: 30, suffix: '+', label: 'Chủ đề trải nghiệm' },
+      { id: 'learners', value: 12000, suffix: '+', label: 'Học sinh tham gia lớp học' },
+      { id: 'partners', value: 20, suffix: '+', label: 'Đối tác' },
     ],
   },
 
   pillars: {
     eyebrow: 'Về chúng tôi',
-    title: 'Ba trụ cột của FabLab EIU',
+    title: 'Sứ mệnh của EIU FabLab',
     description:
       'Một không gian mở, năng động, nơi công nghệ được chia sẻ để tạo ra giá trị cho xã hội.',
     items: [
@@ -111,7 +110,7 @@ export const vi = {
     ageLabel: 'Độ tuổi',
     cardCta: 'Tìm hiểu thêm',
     // `{title}` được thay bằng tên khóa học lúc render.
-    imageAlt: 'Ảnh hoạt động tại FabLab EIU minh hoạ cho khóa {title}',
+    imageAlt: 'Ảnh hoạt động tại EIU FabLab minh hoạ cho khóa {title}',
 
     // Nhãn cho popup chi tiết khóa học. Nội dung thật nằm ở `details` bên dưới.
     modal: {
@@ -305,7 +304,7 @@ export const vi = {
     description:
       'Toàn bộ thiết bị đều mở cho học viên và cộng đồng sử dụng, có kỹ thuật viên hướng dẫn trực tiếp.',
     // `{title}` được thay bằng tên thiết bị lúc render.
-    imageAlt: 'Ảnh chụp {title} tại xưởng FabLab EIU',
+    imageAlt: 'Ảnh chụp {title} tại xưởng EIU FabLab',
     items: [
       {
         id: 'printer-3d',
@@ -319,15 +318,159 @@ export const vi = {
     ],
   },
 
-  process: {
-    eyebrow: 'Quy trình tham gia',
-    title: 'Bốn bước để bắt đầu',
-    description: 'Không cần kinh nghiệm trước. Bạn chỉ cần mang theo một ý tưởng.',
-    steps: [
-      { id: 'register', title: 'Đăng ký', description: 'Chọn khóa học phù hợp và gửi thông tin đăng ký trực tuyến.' },
-      { id: 'orientation', title: 'Định hướng', description: 'Gặp gỡ giảng viên, tham quan xưởng và nhận lộ trình học.' },
-      { id: 'practice', title: 'Thực hành', description: 'Trực tiếp vận hành thiết bị và xây dựng nguyên mẫu đầu tiên.' },
-      { id: 'project', title: 'Hoàn thiện dự án', description: 'Trình bày sản phẩm và nhận chứng nhận từ FabLab EIU.' },
+  partners: {
+    eyebrow: 'Đối tác',
+    title: 'Đồng hành cùng EIU FabLab',
+    description:
+      'Những tổ chức và trường học hợp tác cùng EIU FabLab đưa công nghệ đến gần cộng đồng hơn.',
+    // `{name}` được thay bằng tên đối tác lúc render.
+    logoAlt: 'Logo {name}',
+
+    /**
+     * Chỉ gồm tổ chức có căn cứ trên chính website của trường. Đối tác nào không
+     * có logo thì bỏ trống `id` trong PARTNER_LOGOS và hiển thị bằng chữ —
+     * KHÔNG đi tìm logo ở nguồn khác rồi gán vào.
+     */
+    items: [
+      { id: 'eiu', name: 'Trường Đại học Quốc tế Miền Đông' },
+      // { id: 'becamex', name: 'Becamex' },
+      // { id: 'bbi', name: 'Becamex Business Incubator' },
+      { id: 'vietanh', name: 'Hệ thống trường Việt Anh' },
+      { id: 'little', name: 'Trường mầm non Little People' },
+      { id: 'tvbd', name: 'Thư viện tỉnh Bình Dương' },
+      { id: 'tvtphcm', name: 'Thư viện Khoa học tổng hợp thành phố Hồ Chí Minh' },
+      { id: 'hoasen', name: 'Trường THCS-THPT Hoa Sen' },
+      { id: 'petrusky', name: 'Trường THCS-THPT Pétrus Ký' },
+      { id: 'talent', name: 'Talent Academy' },
+    ],
+  },
+
+  activities: {
+    eyebrow: 'Sự kiện',
+    title: 'Hoạt động & cuộc thi thường niên',
+    description:
+      'Sân chơi, hội thảo và workshop do EIU FabLab tổ chức cho sinh viên, học sinh và cộng đồng.',
+    previous: 'Hoạt động trước',
+    next: 'Hoạt động tiếp theo',
+    goTo: 'Xem hoạt động số',
+    // `{title}` được thay bằng tên hoạt động lúc render.
+    imageAlt: 'Ảnh của {title}',
+    kinds: {
+      competition: 'Cuộc thi',
+      seminar: 'Hội thảo',
+      workshop: 'Workshop',
+      partnership: 'Hợp tác',
+    },
+
+    /**
+     * Toàn bộ lấy từ trang "Sự kiện" của trường (fablab.eiu.edu.vn/vi/su-kien/).
+     * Hai cuộc thi xếp trước, phần còn lại theo thứ tự mới nhất trước.
+     */
+    items: [
+      {
+        id: 'mcr-2023',
+        kind: 'competition',
+        date: '28/5/2023',
+        title: 'EIU MCR 2023 — Lập trình xe đua tự động',
+        description:
+          'EIU Microcontroller Car Rally, mùa đầu tiên, thu hút hơn 40 đội thi từ các trường đại học, cao đẳng và THPT khu vực phía Nam.',
+      },
+      {
+        id: 'racing-cup',
+        kind: 'competition',
+        date: '',
+        title: 'FabLab Racing Cup',
+        description:
+          'Cuộc thi đua xe mô hình do EIU FabLab phối hợp với khoa Kỹ thuật EIU tổ chức cho sinh viên khoa Kỹ thuật.',
+      },
+      {
+        id: 'stm32',
+        kind: 'seminar',
+        date: 'Chiều thứ 4 hàng tuần',
+        title: 'Lập trình STM32 căn bản',
+        description:
+          'Hướng dẫn sinh viên sử dụng các chức năng ngoại vi của vi điều khiển như ADC, PWM, I2C. Tại phòng 202, block 11.',
+      },
+      {
+        id: 'print-3d',
+        kind: 'workshop',
+        date: '20/7/2022',
+        title: 'Công nghệ và ứng dụng in 3D',
+        description:
+          'Tìm hiểu công nghệ in 3D, các loại máy in 3D và cách vận hành. Phụ trách: Võ Đoàn Linh. Tại Thư viện EIU.',
+      },
+      {
+        id: 'viet-anh',
+        kind: 'partnership',
+        date: '19/7/2022',
+        title: 'Ký kết hợp tác chiến lược EIU – Việt Anh',
+        description:
+          'Thiết lập quan hệ đối tác chiến lược với Hệ thống trường Việt Anh: tổ chức trải nghiệm STEM, hỗ trợ nghiên cứu và đưa học sinh tham gia các cuộc thi khoa học công nghệ.',
+      },
+      {
+        id: 'laser-cnc',
+        kind: 'workshop',
+        date: '21/6/2022',
+        title: 'Sáng tạo với máy in 3D và máy CNC laser',
+        description:
+          'Cắt gỗ và mica bằng máy laser, khắc mạch in, thiết kế và in 3D. Phụ trách: Bùi Quang Tiến.',
+      },
+      {
+        id: 'industrial-design',
+        kind: 'seminar',
+        date: '20/6/2022',
+        title: 'Vai trò của kiểu dáng công nghiệp',
+        description:
+          'Trao đổi về thiết kế kỹ thuật và tạo mẫu sản phẩm công nghiệp. Diễn giả: Nguyễn Trần Bảo Hiền, Công ty Anco – Bình Dương.',
+      },
+      {
+        id: 'print-3d-medical',
+        kind: 'seminar',
+        date: '',
+        title: 'Ứng dụng công nghệ in 3D trong y tế',
+        description:
+          'Ứng dụng in 3D trong phẫu thuật định hình răng hàm mặt. Diễn giả: TS.BS Trần Tuấn Anh, Bệnh viện quốc tế Becamex.',
+      },
+      {
+        id: 'nano',
+        kind: 'seminar',
+        date: '15/3',
+        title: 'Ứng dụng vật liệu nano vào y tế',
+        description:
+          'Chế tạo cảm biến đo lực căng từ vật liệu nano, ứng dụng trong y khoa. Diễn giả: TS Trần Quang Trung, Đại học Sungkyunkwan (Hàn Quốc).',
+      },
+      {
+        id: 'machine-learning',
+        kind: 'seminar',
+        date: '23/8',
+        title: 'Công nghệ học máy — Machine Learning',
+        description:
+          'Mạng nơ-ron, TensorFlow, mạng tích chập và hướng đi của deep learning. Diễn giả: TS Cường Phạm.',
+      },
+      {
+        id: 'design-workshop',
+        kind: 'workshop',
+        date: '7/8/2019',
+        title: 'Thiết kế công nghiệp',
+        description:
+          'Quy trình tạo ra một sản phẩm từ ý tưởng, phác thảo đến chế tạo mẫu thử, kèm phần thực hành phác thảo.',
+      },
+      {
+        id: 'pcb',
+        kind: 'workshop',
+        date: '',
+        title: 'Thiết kế và gia công thử nghiệm mạch điện',
+        description:
+          'Dùng điện trở, diode, transistor, FET, opto để thiết kế ứng dụng thực tế; các kỹ thuật layout mạch in cơ bản.',
+      },
+      {
+        id: 'design-3d',
+        kind: 'workshop',
+        date: '',
+        title: 'Thiết kế 3D với SolidWorks',
+        description:
+          'Quy trình thiết kế 3D và các yếu tố ảnh hưởng tới sản phẩm từ khâu thiết kế đến khi chế tạo thành phẩm.',
+      },
     ],
   },
 
@@ -362,7 +505,7 @@ export const vi = {
 
   testimonials: {
     eyebrow: 'Cảm nhận',
-    title: 'Người học nói gì về FabLab EIU',
+    title: 'Người học nói gì về EIU FabLab',
     previous: 'Cảm nhận trước',
     next: 'Cảm nhận tiếp theo',
     goTo: 'Xem cảm nhận số',
@@ -395,7 +538,7 @@ export const vi = {
   finalCta: {
     title: 'Ý tưởng của bạn xứng đáng được chế tạo',
     description:
-      'Đăng ký một khóa học, hoặc đơn giản là ghé thăm xưởng để xem chúng tôi đang làm gì. Cửa FabLab EIU luôn mở.',
+      'Đăng ký một khóa học, hoặc đơn giản là ghé thăm xưởng để xem chúng tôi đang làm gì. Cửa EIU FabLab luôn mở.',
     primaryCta: 'Đăng ký khóa học',
     secondaryCta: 'Liên hệ với chúng tôi',
   },
@@ -411,7 +554,7 @@ export const vi = {
           { id: 'about', label: 'Về chúng tôi', href: '#about' },
           { id: 'courses', label: 'Khóa học STEM', href: '#courses' },
           { id: 'facilities', label: 'Thiết bị', href: '#facilities' },
-          { id: 'process', label: 'Quy trình tham gia', href: '#process' },
+          { id: 'activities', label: 'Hoạt động & cuộc thi', href: '#activities' },
         ],
       },
       {
@@ -440,6 +583,6 @@ export const vi = {
         { id: 'website', label: 'Website EIU', href: '#' },
       ],
     },
-    copyright: 'FabLab EIU. Tự hào phục vụ cộng đồng.',
+    copyright: 'EIU FabLab. Tự hào phục vụ cộng đồng.',
   },
 }

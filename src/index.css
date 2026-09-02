@@ -190,6 +190,50 @@
   overflow: hidden;
 }
 
+/* ==========================================================================
+   Marquee — dải logo đối tác chạy ngang liên tục
+
+   Cách chạy: track chứa DANH SÁCH LẶP HAI LẦN rồi trượt đúng -50%. Khi đến cuối
+   bản sao thứ nhất, vị trí trùng khít với điểm bắt đầu nên vòng lặp không có mối
+   nối — không cần JS, không cần đo đạc gì.
+
+   `--marquee-duration` để component tự chỉnh theo số lượng logo.
+   ========================================================================== */
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@utility marquee-track {
+  animation: marquee-scroll var(--marquee-duration, 32s) linear infinite;
+  /* Đứng yên khi rê chuột vào để người xem đọc kịp tên đối tác. */
+  &:hover {
+    animation-play-state: paused;
+  }
+}
+
+/* Tắt hẳn khi người dùng đã tắt chuyển động.
+ *
+ * Không dựa được vào rule chung ở `@layer base`: nó chỉ ép `animation-duration`
+ * về 0.01ms, mà với animation lặp vô hạn thì đó là quay cực nhanh chứ không phải
+ * dừng.
+ *
+ * Ghi thẳng `animation-name` chứ không dùng shorthand `animation: none`: với khai
+ * báo `!important`, thứ tự layer bị ĐẢO NGƯỢC — rule `!important` trong `@layer
+ * base` thắng rule `!important` không phân lớp. Nếu dùng shorthand thì phần
+ * `animation-duration` của nó sẽ thua rule ở base, chỉ còn `animation-name` có
+ * tác dụng. May là vẫn ra đúng kết quả, nhưng đó là ăn may — nhắm thẳng vào
+ * `animation-name` thì ý định rõ ràng và không phụ thuộc vào chuyện đó. */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation-name: none !important;
+  }
+}
+
 @keyframes rise-in {
   from {
     opacity: 0;

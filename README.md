@@ -50,7 +50,7 @@ mọi section đi qua `Section.jsx`.
 ```
 src/
 ├── index.css              # design tokens + base + utility
-├── App.jsx                # ghép 10 section
+├── App.jsx                # ghép 11 section
 ├── i18n/
 │   ├── vi.js · en.js      # TOÀN BỘ nội dung trang nằm ở đây
 │   ├── context.js         # useLanguage() / useT()
@@ -61,7 +61,7 @@ src/
 ├── assets/
 │   ├── icons/             # SVG vẽ tay: 16 icon khóa học, icon giao diện
 │   │                      #   (Logo.jsx dùng ảnh logo thật, không còn vẽ tay)
-│   └── images/            # 21 ảnh thật + index.js ánh xạ id → ảnh
+│   └── images/            # 42 ảnh thật + index.js ánh xạ id → ảnh
 └── hooks/                 # useInView · useActiveSection
 ```
 
@@ -71,10 +71,10 @@ Hai file phải luôn cùng cấu trúc khóa, và `id` / `group` / `level` củ
 
 ## Hình ảnh
 
-21 ảnh trong [src/assets/images/](src/assets/images/) tải từ thư viện media của
-`fablab.eiu.edu.vn`, đã cắt giữa và nén sẵn về đúng kích thước hiển thị
-(JPEG chất lượng 82): **9,9 MB bản gốc → 1,2 MB**. Không xử lý ảnh lúc build,
-không gọi ra mạng lúc chạy.
+42 ảnh trong [src/assets/images/](src/assets/images/) tải từ website của
+`fablab.eiu.edu.vn`, đã cắt và nén sẵn về đúng kích thước hiển thị (JPEG chất
+lượng 82–85), tổng **2,0 MB**. Không xử lý ảnh lúc build, không gọi ra mạng lúc
+chạy.
 
 | Dùng ở đâu | Kích thước | Số lượng |
 |---|---|---|
@@ -83,6 +83,9 @@ không gọi ra mạng lúc chạy.
 | Card thiết bị (ô hẹp) | 760×560 · 679×500 | 2 |
 | Card khóa học | 760×320 | 16 |
 | Chân dung đội ngũ | 200×200 | 6 |
+| Ảnh hoạt động | vừa khung 900×640 | 10 |
+| Logo đối tác | vừa khung 320×120, PNG trong suốt | 3 |
+| Logo FabLab | 94×94 + file gốc | 2 |
 
 [index.js](src/assets/images/index.js) ánh xạ `id` của khóa học / thiết bị sang
 ảnh. Thêm khóa học mới thì **phải thêm ảnh vào map**, nếu không card sẽ hiện ảnh
@@ -126,6 +129,31 @@ Trong [index.js](src/assets/images/index.js) chúng được đánh dấu bằng
 
 Mười lăm ảnh còn lại đúng chủ đề. Bốn khóa nhóm "Khóa học STEM" khớp chính xác vì
 trường có ảnh chụp đúng buổi học đó.
+
+## Đối tác & hoạt động
+
+**Dải đối tác** ([Partners.jsx](src/components/Partners.jsx)) chạy ngang liên tục
+bằng CSS thuần — track lặp danh sách hai lần rồi trượt `-50%` nên vòng lặp không
+có mối nối. Rê chuột vào thì dừng để đọc kịp; tắt hẳn nếu người dùng bật
+`prefers-reduced-motion`.
+
+Bốn tổ chức, đều có căn cứ trên site của trường, nhưng **chỉ 3 có logo** (EIU,
+Becamex, Becamex Business Incubator). Hệ thống trường Việt Anh chỉ có văn bản lễ
+ký kết 19/7/2022 nên hiển thị bằng chữ. Thêm đối tác: bỏ logo vào
+`src/assets/images/`, khai báo trong `PARTNER_LOGOS` và thêm một mục vào
+`partners.items`.
+
+**Carousel hoạt động** ([Activities.jsx](src/components/Activities.jsx)) có 13 mục
+lấy nguyên từ trang "Sự kiện" của trường: 2 cuộc thi trước, rồi hội thảo và
+workshop theo thứ tự mới nhất trước. Mỗi mục có nhãn loại và ngày thật.
+
+> Tên section là "thường niên" theo yêu cầu, nhưng thực tế chỉ hai cuộc thi là có
+> tính lặp lại; phần còn lại là hội thảo và workshop diễn ra một lần trong khoảng
+> 2019–2023. Ngày của từng mục đều hiện trên thẻ nên người đọc thấy được điều đó.
+
+Mười ảnh riêng cho từng hoạt động, ba mục còn lại dùng lại ảnh thật khác của
+FabLab (đánh dấu `// ~`). Carousel dùng `object-contain` trên nền pastel vì nguồn
+trộn poster dọc với ảnh chụp ngang.
 
 ## Đội ngũ
 

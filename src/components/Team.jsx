@@ -52,14 +52,14 @@ export function Team() {
         title={t.team.title}
         description={t.team.description}
         align="center"
-        from="left"
+        from="right"
       />
 
       {/* Hai hàng năm người ở desktop, hai cột ở mobile — mười người chia chẵn ở
           cả hai bề ngang nên không có ô lẻ nào đứng trơ một mình. */}
       <RevealGroup
         as="ul"
-        from="right"
+        from="left"
         className="mt-14 grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-5"
       >
         {t.team.members.map((member, index) => (

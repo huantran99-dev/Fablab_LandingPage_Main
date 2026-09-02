@@ -42,9 +42,13 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
-  // Danh sách id ổn định giữa các lần render để observer không bị dựng lại
-  // mỗi khi navbar re-render (ví dụ khi đổi ngôn ngữ).
-  const sectionIds = useMemo(() => ['about', 'courses', 'facilities', 'process'], [])
+  // Suy ra thẳng từ `nav.links` thay vì chép tay danh sách id: bỏ một section mà
+  // quên sửa ở đây thì observer đi theo dõi một id không còn tồn tại.
+  //
+  // `href` là định danh không dịch nên mảng này giống hệt nhau ở mọi ngôn ngữ —
+  // `useMemo` giữ tham chiếu ổn định để đổi ngôn ngữ không dựng lại observer.
+  const hrefs = t.nav.links.map((link) => link.href).join(',')
+  const sectionIds = useMemo(() => hrefs.split(',').map((href) => href.slice(1)), [hrefs])
   const activeSection = useActiveSection(sectionIds)
 
   useEffect(() => {
