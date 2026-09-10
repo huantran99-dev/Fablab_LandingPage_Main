@@ -8,6 +8,13 @@
 
 @import 'tailwindcss';
 
+/* Tailwind v4 tự dò nội dung bằng cách quét cây nguồn tính từ file CSS này, nên
+   mặc định nó quét cả mã máy chủ. Mã đó không dựng ra giao diện nào, mà mọi chuỗi
+   trong nó lại có thể bị đọc nhầm thành tên utility và sinh CSS chết.
+
+   Đường dẫn tính tương đối với chính file CSS này. */
+@source not "../server";
+
 /* ==========================================================================
    Design tokens — hệ "Loom"
    Nền trắng, một sắc xanh bão hòa duy nhất cho mọi phần tử tương tác,

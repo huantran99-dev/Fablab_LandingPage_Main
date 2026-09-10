@@ -48,6 +48,15 @@ const PILLAR_PATHS = {
   ),
 }
 
+/**
+ * Id thật sự có hình.
+ *
+ * Component phải biết điều này TRƯỚC khi dựng huy hiệu: `PillarIcon` cho id lạ
+ * chỉ trả về `<svg>` rỗng, mà huy hiệu là một vòng tròn nền trắng bọc ngoài — nên
+ * kết quả là một chấm tròn trống trơn chứ không phải không có gì.
+ */
+export const PILLAR_ICON_IDS = new Set(Object.keys(PILLAR_PATHS))
+
 export function PillarIcon({ id, className = '', size = 32 }) {
   return (
     <Svg className={className} size={size}>
@@ -95,6 +104,9 @@ const FACILITY_PATHS = {
     </>
   ),
 }
+
+/** Xem ghi chú ở `PILLAR_ICON_IDS` — cùng lý do. */
+export const FACILITY_ICON_IDS = new Set(Object.keys(FACILITY_PATHS))
 
 export function FacilityIcon({ id, className = '', size = 32 }) {
   return (

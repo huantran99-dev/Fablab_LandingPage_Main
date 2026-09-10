@@ -1,4 +1,4 @@
-import { CourseIcon } from '../assets/icons/CourseIcons'
+import { COURSE_ICON_IDS, CourseIcon } from '../assets/icons/CourseIcons'
 import { ArrowRightIcon } from '../assets/icons/Icons'
 import { COURSE_IMAGE_SIZE, COURSE_IMAGES } from '../assets/images'
 import { useT } from '../i18n/context'
@@ -22,11 +22,17 @@ export function CourseCard({ course, index, onOpen }) {
   const stage = course.stage && t.courses.stages.find((s) => s.id === course.stage)
   const topic = course.topic && t.courses.topics.find((x) => x.id === course.topic)
 
-  // `CourseIcon` trả null khi không có icon cho id đó — huy hiệu sẽ là vòng tròn
-  // trắng rỗng. Chương trình trải nghiệm vì thế trỏ `icon` tới một icon có sẵn;
-  // nếu vẫn thiếu thì bỏ hẳn huy hiệu chứ không để vòng tròn trống.
+  // Chương trình trải nghiệm trỏ `icon` tới một icon có sẵn; khóa STEM tra theo
+  // chính `id`. Thiếu cả hai thì bỏ hẳn huy hiệu.
+  //
+  // Phải hỏi tập id, KHÔNG được hỏi `icon &&`: `<CourseIcon />` là phần tử JSX nên
+  // luôn truthy, dù bên trong nó trả `null`. Bản trước kiểm kiểu đó và vẫn dựng ra
+  // vòng tròn trắng trống trơn.
   const iconId = course.icon ?? course.id
-  const icon = <CourseIcon id={iconId} size={24} />
+  const hasIcon = COURSE_ICON_IDS.has(iconId)
+
+  const image = COURSE_IMAGES[course.id]
+  const badge = stage?.short ?? t.courses.levels[course.level]
 
   // Card cố ý KHÔNG khai báo utility transition nào: khai báo transition gộp
   // trong index.css (không phân lớp) đã lo cả `translate` lẫn `box-shadow` cho
@@ -47,25 +53,33 @@ export function CourseCard({ course, index, onOpen }) {
           Icon vẽ tay không bỏ đi mà thu lại thành huy hiệu tròn ở góc — icon
           luôn đúng chủ đề khóa học, còn ảnh thì có khóa chỉ có ảnh gần đúng. */}
       <div className="relative h-40 overflow-hidden rounded-image-sm bg-ash/30">
-        <img
-          src={COURSE_IMAGES[course.id]}
-          width={COURSE_IMAGE_SIZE.width}
-          height={COURSE_IMAGE_SIZE.height}
-          alt={t.courses.imageAlt.replace('{title}', course.title)}
-          loading="lazy"
-          decoding="async"
-          className="size-full object-cover transition-transform duration-500 ease-[var(--ease-out-soft)] group-hover:scale-105"
-        />
+        {/* Thiếu ảnh thì để nguyên nền xám của khung: `src` là `undefined` sẽ ra
+            biểu tượng ảnh vỡ, xấu hơn hẳn một khối trống. */}
+        {image && (
+          <img
+            src={image}
+            width={COURSE_IMAGE_SIZE.width}
+            height={COURSE_IMAGE_SIZE.height}
+            alt={t.courses.imageAlt.replace('{title}', course.title)}
+            loading="lazy"
+            decoding="async"
+            className="size-full object-cover transition-transform duration-500 ease-[var(--ease-out-soft)] group-hover:scale-105"
+          />
+        )}
 
-        <Pill tone="white" className="absolute top-3 right-3">
-          {stage ? stage.short : t.courses.levels[course.level]}
-        </Pill>
+        {/* Nhóm trải nghiệm hiện cấp học, nhóm STEM hiện cấp độ. Không tra ra
+            được thì bỏ hẳn nhãn, đừng để một nhãn trắng không chữ. */}
+        {badge && (
+          <Pill tone="white" className="absolute top-3 right-3">
+            {badge}
+          </Pill>
+        )}
 
-        {icon && (
+        {hasIcon && (
           <span
             className={`absolute bottom-3 left-3 inline-flex size-11 items-center justify-center rounded-pill bg-white shadow-ambient ${tone}`}
           >
-            {icon}
+            <CourseIcon id={iconId} size={24} />
           </span>
         )}
       </div>

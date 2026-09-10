@@ -17,22 +17,36 @@ const KIND_TONES = {
 }
 
 /**
- * Khối nào chứa hoạt động nào — suy từ `kind`, không phải một trường riêng trong
- * i18n.
+ * Khối nào chứa hoạt động nào — vẫn suy từ `kind`, KHÔNG có trường `group` trên
+ * từng hoạt động.
  *
  * Section Khóa học buộc phải có `courses.items[].group` vì chuyên mục của trường
  * không suy ra được từ trường nào khác. Ở đây thì `kind` ĐÃ LÀ thứ quyết định:
  * "cuộc thi" đúng bằng `kind: 'competition'`. Thêm một trường `group` song song
- * chỉ là chép lại thông tin đã có, và sớm muộn hai chỗ sẽ lệch nhau.
+ * trên từng mục chỉ là chép lại thông tin đã có, và sớm muộn hai chỗ sẽ lệch nhau.
  *
- * Muốn chuyển một hoạt động sang khối kia thì đổi `kind` của nó — cũng là chỗ
- * đúng để đổi.
+ * Chỗ đã đổi: danh sách `kind` của mỗi khối chuyển từ bảng viết cứng ở đây sang
+ * `activities.groups[].kinds` trong i18n. Đó vẫn là **một danh sách cho mỗi khối**
+ * chứ không phải một trường cho mỗi mục, nên lập luận trên còn nguyên — nhưng giờ
+ * thêm một `kind` mới là sửa đúng chỗ dữ liệu, không phải sửa component.
+ *
+ * Trước đây `kind` lạ tra ra `undefined` và hoạt động **biến mất khỏi trang không
+ * một lời cảnh báo** — kiểu lỗi tệ nhất, vì không có gì hỏng để lần theo. Giờ nó
+ * rơi vào khối cuối: đặt sai chỗ thì nhìn thấy được và sửa được.
  */
-const KIND_GROUP = {
-  competition: 'competitions',
-  seminar: 'events',
-  workshop: 'events',
-  partnership: 'events',
+function groupActivities(groups, items) {
+  const buckets = new Map(groups.map((group) => [group.id, []]))
+  const groupOfKind = new Map()
+  for (const group of groups) {
+    for (const kind of group.kinds ?? []) groupOfKind.set(kind, group.id)
+  }
+
+  const fallback = groups.at(-1)?.id
+  for (const item of items) {
+    const target = groupOfKind.get(item.kind) ?? fallback
+    buckets.get(target)?.push(item)
+  }
+  return buckets
 }
 
 /**
@@ -90,7 +104,11 @@ function ActivityCarousel({ group, items, from }) {
 
             <div className="flex flex-col justify-center gap-4 p-6 md:p-10">
               <div className="flex flex-wrap items-center gap-2">
-                <Pill tone={KIND_TONES[active.kind]}>{t.activities.kinds[active.kind]}</Pill>
+                {/* `kind` lạ vẫn hiện được nhãn: rơi về sắc mặc định và lấy chính
+                    `kind` làm chữ, thay vì một nhãn trống không đọc được. */}
+                <Pill tone={KIND_TONES[active.kind] ?? 'outline'}>
+                  {t.activities.kinds[active.kind] ?? active.kind}
+                </Pill>
                 {active.date && <Pill tone="outline">{active.date}</Pill>}
               </div>
 
@@ -144,11 +162,10 @@ export function Activities() {
   const t = useT()
 
   // Gom hoạt động về đúng khối một lần, thay vì lọc lại ở mỗi lần render khối.
-  const byGroup = useMemo(() => {
-    const buckets = new Map(t.activities.groups.map((group) => [group.id, []]))
-    for (const item of t.activities.items) buckets.get(KIND_GROUP[item.kind])?.push(item)
-    return buckets
-  }, [t.activities.groups, t.activities.items])
+  const byGroup = useMemo(
+    () => groupActivities(t.activities.groups, t.activities.items),
+    [t.activities.groups, t.activities.items],
+  )
 
   return (
     <Section id="activities">

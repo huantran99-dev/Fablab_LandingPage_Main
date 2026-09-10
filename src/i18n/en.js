@@ -628,12 +628,14 @@ export const en = {
         title: 'Competitions',
         description:
           'Two annual contests run by FabLab EIU, open to university and high-school students across southern Vietnam.',
+        kinds: ['competition'],
       },
       {
         id: 'events',
         title: 'Events & seminars',
         description:
           'Specialist seminars, hands-on workshops and partnership signings hosted at the lab between 2019 and 2023.',
+        kinds: ['seminar', 'workshop', 'partnership'],
       },
     ],
 

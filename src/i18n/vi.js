@@ -628,12 +628,14 @@ export const vi = {
         title: 'Cuộc thi',
         description:
           'Hai sân chơi thường niên do EIU FabLab tổ chức, mở cho sinh viên và học sinh khu vực phía Nam.',
+        kinds: ['competition'],
       },
       {
         id: 'events',
         title: 'Sự kiện & hội thảo',
         description:
           'Hội thảo chuyên đề, workshop thực hành và lễ hợp tác diễn ra tại FabLab trong khoảng 2019–2023.',
+        kinds: ['seminar', 'workshop', 'partnership'],
       },
     ],
 

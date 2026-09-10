@@ -428,17 +428,21 @@ Section Hoạt động cũng chia hai khối như section Khóa học: **Cuộc 
 **Sự kiện & hội thảo** (11 mục), mỗi khối một carousel riêng gọi `useCarousel` của
 chính nó.
 
-**Khối nào chứa hoạt động nào suy từ `kind`, KHÔNG có trường `group` trong i18n.**
-Đây là chỗ cố ý khác với section Khóa học. Courses buộc phải có
+**Khối nào chứa hoạt động nào suy từ `kind`, KHÔNG có trường `group` trên từng mục
+trong i18n.** Đây là chỗ cố ý khác với section Khóa học. Courses buộc phải có
 `courses.items[].group` vì chuyên mục của trường không suy ra được từ trường nào
 khác; còn ở đây `kind` đã là thứ quyết định — "cuộc thi" đúng bằng
-`kind: 'competition'`. Bảng ánh xạ nằm ở `KIND_GROUP` trong
-[Activities.jsx](src/components/Activities.jsx). Muốn chuyển một hoạt động sang
-khối kia thì **đổi `kind` của nó**, đừng thêm trường mới.
+`kind: 'competition'`. Muốn chuyển một hoạt động sang khối kia thì **đổi `kind` của
+nó**, đừng thêm trường mới.
 
-Thêm một `kind` mới mà quên thêm vào `KIND_GROUP` thì hoạt động đó **biến mất khỏi
-trang** (rơi vào bucket `undefined`, không có cảnh báo lúc build). Script kiểm
-trong scratchpad có chốt chặn cho việc này.
+Danh sách `kind` của mỗi khối nằm ở **`activities.groups[].kinds` trong i18n**, không
+còn ở bảng `KIND_GROUP` viết cứng trong component. Vẫn là **một danh sách cho mỗi
+khối** chứ không phải một trường cho mỗi mục, nên lập luận trên còn nguyên — nhưng
+thêm một `kind` giờ là sửa dữ liệu, không phải sửa mã.
+
+Trước đây `kind` lạ tra ra `undefined` và hoạt động **biến mất khỏi trang không một
+lời cảnh báo**. Giờ `groupActivities()` cho nó rơi vào **khối cuối**: vẫn là đặt sai
+chỗ, nhưng sai một cách nhìn thấy được. `npm run check:content` bắt trường hợp này.
 
 **Bậc heading: h2 (section) → h3 (khối) → h4 (tên hoạt động).** Giống hệt section
 Khóa học, và cùng một cái bẫy: thêm h3 cho khối mà quên hạ tên hoạt động xuống h4
@@ -468,6 +472,44 @@ Bật lại ở `Settings → Accessibility → Visual effects → Animation eff
 đầu (rAF + `easeOutCubic`, 1400ms). `once: false` khiến `active` lật false→true
 nên bốn con số tự đếm lại từ 0 mỗi lượt — **không cần sửa `CountUp`**.
 
+## `npm run check:content` — chạy trước khi tin là xong
+
+Repo không có bộ test. [check-content.js](server/scripts/check-content.js) là thứ
+thay thế: nó khẳng định những ràng buộc **không có cảnh báo lúc build** — đối xứng
+VI↔EN, `kind`/`icon`/`stage`/`topic` tra được, mọi id có ảnh, đúng một `lead`,
+`stats.items[].value` là số, mọi `href` trỏ tới neo có thật.
+
+Hai điều về cách viết nó, đừng sửa ngược lại:
+
+- **So VI với EN, tuyệt đối không so với một hằng số.** Thêm một testimonial là số
+  đường khoá đổi một cách hợp lệ. Chốt cứng con số sẽ biến mọi lần sửa đúng thành
+  lỗi, và bộ kiểm bị tắt đi trong vòng một tuần. Con số chỉ được in ra tham khảo.
+- **Bảng icon và tập neo quét ra từ mã nguồn**, không chép tay vào script — chép
+  tay là tự tạo thêm một chỗ nữa để lệch.
+
+Nạp được `src/i18n/*.js` bằng Node thuần là nhờ
+[import-hook.mjs](server/scripts/import-hook.mjs): các file này dùng specifier
+thiếu đuôi (`from './courseDetails.vi'` — lưu ý `extname()` của chuỗi đó là `.vi`,
+đừng lọc theo đuôi) và import thẳng file ảnh. Vite lo hai chuyện đó, Node thì không.
+
+## Component phải chịu được dữ liệu lạ
+
+Nguyên tắc: **design token ở lại trong mã, mọi tra cứu có đường lui xác định.**
+
+Bốn chỗ từng tra bảng rồi dùng thẳng kết quả, nay đều có đường lui: `Pillars` và
+`Facilities` rơi về vòng lặp theo chỉ số (trước đây tra hụt là **TypeError, trắng
+nguyên trang**), `Activities` rơi về khối cuối, `CourseCard` bỏ hẳn nhãn/huy hiệu
+thay vì dựng ra ô trống. Thứ tự vòng lặp khớp đúng id hiện có nên hình ảnh không đổi.
+
+**Đừng đưa tên class vào dữ liệu để "cho sửa được từ dashboard".** Tailwind v4 sinh
+CSS bằng cách quét văn bản nguồn; một tên class chỉ tồn tại dưới dạng chuỗi trong
+database thì **không sinh ra CSS nào cả** — phần tử hiện không style, không cảnh báo.
+
+**`{icon && …}` KHÔNG chặn được gì** khi `icon` là một phần tử JSX: `<CourseIcon />`
+luôn truthy dù bên trong nó trả `null`, nên huy hiệu tròn nền trắng vẫn được dựng và
+kết quả là một chấm trống trơn. Phải hỏi tập id (`COURSE_ICON_IDS`,
+`PILLAR_ICON_IDS`, `FACILITY_ICON_IDS`) trước khi dựng khung bọc.
+
 ## Bẫy môi trường (Windows)
 
 - oxlint bắt lỗi `react(set-state-in-effect)`. Cách xử lý đã dùng: **derive lúc
@@ -475,6 +517,15 @@ nên bốn con số tự đếm lại từ 0 mỗi lượt — **không cần s�
   ở Testimonials).
 - **Tailwind quét cả comment.** Viết tên class đầy đủ trong comment sẽ sinh ra CSS
   chết cho class không ai dùng. Diễn đạt vòng khi cần nhắc tới một class.
+- **Tailwind quét cả `server/`.** Cơ chế dò nội dung tự động đi từ file có
+  `@import 'tailwindcss'` ra toàn cây nguồn, nên một chuỗi trong mã máy chủ đọc
+  được thành tên utility sẽ lọt vào stylesheet công khai. Đã kiểm bằng thực nghiệm:
+  bỏ `@source not "../server"` ra thì một class đặt trong file `server/` **có** xuất
+  hiện trong CSS đã build; thêm vào thì không. Đường dẫn tính tương đối với chính
+  file CSS. Thêm entry mới (ví dụ `src/admin/`) thì phải loại trừ y như vậy.
+- **`import()` trên Windows không nhận đường dẫn `D:\...`** — bắt buộc `file://`
+  URL qua `pathToFileURL()`. Trên Linux đường dẫn tuyệt đối chạy bình thường, nên
+  lỗi này chỉ lộ ra ở đúng máy đang dùng để phát triển.
 - `npm run build` báo `EBUSY ... rmdir 'dist\assets'` nếu shell đang đứng bên
   trong `dist/`. Đưa cwd ra ngoài rồi chạy lại.
 - **Tên biến PowerShell không phân biệt hoa thường.** Script cắt ảnh đặt hằng số
