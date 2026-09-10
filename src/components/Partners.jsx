@@ -1,4 +1,3 @@
-import { PARTNER_LOGOS } from '../assets/images'
 import { useT } from '../i18n/context'
 import { Reveal } from './ui/Reveal'
 import { Section, SectionHeading } from './ui/Section'
@@ -10,7 +9,7 @@ import { Section, SectionHeading } from './ui/Section'
  * ở nguồn khác rồi gán vào là gán sai nhận diện của một tổ chức có thật.
  */
 function PartnerItem({ partner, logoAlt }) {
-  const logo = PARTNER_LOGOS[partner.id]
+  const logo = partner.image
 
   if (!logo) {
     return (
@@ -23,7 +22,7 @@ function PartnerItem({ partner, logoAlt }) {
   return (
     <span className="flex h-16 shrink-0 items-center px-8">
       <img
-        src={logo.src}
+        src={logo.url}
         width={logo.width}
         height={logo.height}
         alt={logoAlt.replace('{name}', partner.name)}

@@ -1,5 +1,4 @@
 import { FACILITY_ICON_IDS, FacilityIcon } from '../assets/icons/Icons'
-import { FACILITY_IMAGES } from '../assets/images'
 import { useT } from '../i18n/context'
 import { RevealGroup } from './ui/Reveal'
 import { Section, SectionHeading } from './ui/Section'
@@ -41,7 +40,7 @@ export function Facilities() {
       <RevealGroup from="right" className="mt-14 grid gap-6 md:grid-cols-6">
         {t.facilities.items.map((item, index) => {
           const layout = LAYOUT[item.id] ?? LAYOUT_CYCLE[index % LAYOUT_CYCLE.length]
-          const image = FACILITY_IMAGES[item.id]
+          const image = item.image
           return (
             <article
               key={item.id}
@@ -55,7 +54,7 @@ export function Facilities() {
               {image && (
                 <div className="relative overflow-hidden rounded-image-sm bg-ash/30">
                   <img
-                    src={image.src}
+                    src={image.url}
                     width={image.width}
                     height={image.height}
                     alt={t.facilities.imageAlt.replace('{title}', item.title)}

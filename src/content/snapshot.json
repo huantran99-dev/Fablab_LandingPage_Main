@@ -1,0 +1,3773 @@
+{
+  "en": {
+    "activities": {
+      "description": "Competitions, seminars and workshops run by FabLab EIU for students, pupils and the wider community.",
+      "eyebrow": "Events",
+      "goTo": "Go to activity",
+      "groups": [
+        {
+          "description": "Two annual contests run by FabLab EIU, open to university and high-school students across southern Vietnam.",
+          "id": "competitions",
+          "kinds": [
+            "competition"
+          ],
+          "title": "Competitions"
+        },
+        {
+          "description": "Specialist seminars, hands-on workshops and partnership signings hosted at the lab between 2019 and 2023.",
+          "id": "events",
+          "kinds": [
+            "seminar",
+            "workshop",
+            "partnership"
+          ],
+          "title": "Events & seminars"
+        }
+      ],
+      "imageAlt": "Photo from {title}",
+      "items": [
+        {
+          "date": "6 Jun 2026",
+          "description": "A drone soccer tournament hosted by EIU FabLab. Official matches run from 07:00 to 12:00 in room 101, building B3, Eastern International University.",
+          "id": "drone-soccer",
+          "image": {
+            "height": 640,
+            "url": "/media/activity-drone-soccer.6f7220b8.jpg",
+            "width": 453
+          },
+          "kind": "competition",
+          "title": "EIU Drone Soccer Championship 2026"
+        },
+        {
+          "date": "21–29 Mar 2026",
+          "description": "EIU Microcontroller Car Rally, 2026 season: heat 1 on 21 March, heat 2 on 22 March and the grand final on 29 March. Registration runs from 4 January to 28 February 2026.",
+          "id": "mcr-2026",
+          "image": {
+            "height": 640,
+            "url": "/media/activity-mcr-2026.932c18e9.jpg",
+            "width": 452
+          },
+          "kind": "competition",
+          "title": "EIU MCR 2026 — Autonomous car programming"
+        },
+        {
+          "date": "",
+          "description": "A model car racing competition run by EIU FabLab together with the EIU School of Engineering for engineering students.",
+          "id": "racing-cup",
+          "image": {
+            "height": 600,
+            "url": "/media/activity-racing-cup.fd0574bf.jpg",
+            "width": 900
+          },
+          "kind": "competition",
+          "title": "FabLab Racing Cup"
+        },
+        {
+          "date": "Every Wednesday afternoon",
+          "description": "Guiding students through microcontroller peripherals such as ADC, PWM and I2C. Held in room 202, block 11.",
+          "id": "stm32",
+          "image": {
+            "height": 320,
+            "url": "/media/course-electronics.39d13333.jpg",
+            "width": 760
+          },
+          "kind": "seminar",
+          "title": "STM32 programming basics"
+        },
+        {
+          "date": "20 July 2022",
+          "description": "Learning about 3D printing, the types of printer available and how to run them. Led by Vo Doan Linh, at the EIU Library.",
+          "id": "print-3d",
+          "image": {
+            "height": 640,
+            "url": "/media/activity-print-3d.390a6462.jpg",
+            "width": 470
+          },
+          "kind": "workshop",
+          "title": "3D printing technology and applications"
+        },
+        {
+          "date": "19 July 2022",
+          "description": "A strategic partnership with the Viet Anh School System covering STEM experience programmes, research support and entering pupils into science and technology competitions.",
+          "id": "viet-anh",
+          "image": {
+            "height": 502,
+            "url": "/media/activity-viet-anh.0388b383.jpg",
+            "width": 900
+          },
+          "kind": "partnership",
+          "title": "Strategic partnership: EIU – Viet Anh"
+        },
+        {
+          "date": "21 June 2022",
+          "description": "Cutting wood and acrylic on the laser cutter, engraving circuit boards, designing and 3D printing. Led by Bui Quang Tien.",
+          "id": "laser-cnc",
+          "image": {
+            "height": 640,
+            "url": "/media/activity-laser-cnc.764e77dc.jpg",
+            "width": 441
+          },
+          "kind": "workshop",
+          "title": "Get creative with 3D printers and laser CNC"
+        },
+        {
+          "date": "20 June 2022",
+          "description": "On engineering design and prototyping of industrial products. Speaker: Nguyen Tran Bao Hien, Anco Company – Binh Duong.",
+          "id": "industrial-design",
+          "image": {
+            "height": 640,
+            "url": "/media/activity-industrial-design.fc32c71d.jpg",
+            "width": 468
+          },
+          "kind": "seminar",
+          "title": "The role of industrial design"
+        },
+        {
+          "date": "",
+          "description": "3D printing applied to maxillofacial surgery. Speaker: Dr Tran Tuan Anh, DDS, Becamex International Hospital.",
+          "id": "print-3d-medical",
+          "image": {
+            "height": 320,
+            "url": "/media/course-water.9e0a5a8d.jpg",
+            "width": 760
+          },
+          "kind": "seminar",
+          "title": "3D printing in healthcare"
+        },
+        {
+          "date": "15 March",
+          "description": "Stretchable tension sensors built from nanomaterials for medical use. Speaker: Dr Tran Quang Trung, Sungkyunkwan University, Korea.",
+          "id": "nano",
+          "image": {
+            "height": 640,
+            "url": "/media/activity-nano.c7dc7ca6.jpg",
+            "width": 738
+          },
+          "kind": "seminar",
+          "title": "Nanomaterials in healthcare"
+        },
+        {
+          "date": "23 August",
+          "description": "Neural network basics, TensorFlow, convolutional networks and where deep learning is heading. Speaker: Dr Cuong Pham.",
+          "id": "machine-learning",
+          "image": {
+            "height": 636,
+            "url": "/media/activity-machine-learning.c6a02acf.jpg",
+            "width": 900
+          },
+          "kind": "seminar",
+          "title": "Machine learning"
+        },
+        {
+          "date": "7 August 2019",
+          "description": "How a product travels from idea to sketch to prototype, with hands-on sketching practice.",
+          "id": "design-workshop",
+          "image": {
+            "height": 438,
+            "url": "/media/activity-design-workshop.2ce1badc.jpg",
+            "width": 900
+          },
+          "kind": "workshop",
+          "title": "Industrial design"
+        },
+        {
+          "date": "",
+          "description": "Using resistors, diodes, transistors, FETs and optocouplers to build real applications, plus basic PCB layout technique.",
+          "id": "pcb",
+          "image": {
+            "height": 600,
+            "url": "/media/lab-workbenches.c235eaa8.jpg",
+            "width": 1000
+          },
+          "kind": "workshop",
+          "title": "Designing and prototyping circuits"
+        },
+        {
+          "date": "",
+          "description": "The 3D design process and the factors that shape a product from first drawing through to finished part.",
+          "id": "design-3d",
+          "image": {
+            "height": 640,
+            "url": "/media/activity-design-3d.e408b3dc.jpg",
+            "width": 853
+          },
+          "kind": "workshop",
+          "title": "3D design with SolidWorks"
+        }
+      ],
+      "kinds": {
+        "competition": "Competition",
+        "partnership": "Partnership",
+        "seminar": "Seminar",
+        "workshop": "Workshop"
+      },
+      "next": "Next activity",
+      "previous": "Previous activity",
+      "title": "Annual activities & competitions"
+    },
+    "courses": {
+      "ageLabel": "Ages",
+      "cardCta": "Learn more",
+      "description": "From your first lines of code to operating industrial machines — every course begins by getting your hands on the work.",
+      "details": {
+        "am-thanh": {
+          "curriculum": [
+            "Learn about sound sources and the vibrations that create sound.",
+            "Learn how sound travels and which media carry it.",
+            "Explore how the ear picks up sound and sends signals to the brain.",
+            "Practise transmitting sound through an interactive game."
+          ]
+        },
+        "automation": {
+          "audience": "student from 16 – 18 years old",
+          "knowledge": [
+            "• Understand the basic knowledge of robot • Understand the elements and functions of robot arm • Understand about basic electrical circuit, such as amplifier, oscillator • Understand the engineering design process • Know about dynamics • Can simulate a control system"
+          ],
+          "overview": [
+            "This course provides students chance to explore, design the robotic system that applied in the production environment. Students can also be challenged to optimize the system by playing a role of robotic system engineer."
+          ],
+          "skills": [
+            "• Identify types of robot • Identify the working zone of robot • Set up and program the robot • Connect the robot with peripheral devices • Apply the engineering design process"
+          ],
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/automation-and-robotics/"
+        },
+        "blockchain": {
+          "curriculum": [
+            "Learn the history of money, from its earliest forms to the digital era.",
+            "Learn about blockchain technology through cryptocurrency.",
+            "Understand how blockchain stays secure through hash links between blocks.",
+            "Simulate block validation on a blockchain."
+          ]
+        },
+        "canh-tay-robot": {
+          "curriculum": [
+            "Learn about the characteristics and uses of robot arms in manufacturing.",
+            "Explore how a robot arm is built and how it works.",
+            "Practise programming a robot arm.",
+            "Take on the \"Colour sorting station\" game challenge."
+          ]
+        },
+        "cap-quang": {
+          "curriculum": [
+            "Learn about the refraction of light and total internal reflection.",
+            "Explore how light travels through an optical fibre.",
+            "Run experiments transmitting light using refraction and total internal reflection.",
+            "Take on the Morse code message challenge."
+          ]
+        },
+        "cau-truc-may-tinh": {
+          "curriculum": [
+            "Learn the structure of a computer and what its main components do.",
+            "Learn the role of each part: CPU, mainboard, RAM, SSD/HDD and so on.",
+            "Explore how to choose components and hardware that fit a given need.",
+            "Pick a set of components suited to a specific purpose."
+          ]
+        },
+        "cnc": {
+          "curriculum": [
+            "Learn about mechanical machining.",
+            "Explore how a CNC milling machine is built and how it works.",
+            "Draw a simple mechanical drawing.",
+            "Operate the CNC machine to machine a product."
+          ]
+        },
+        "co-dien-tu": {
+          "curriculum": [
+            "Learn about mechatronics and where it is used in practice.",
+            "Learn about production lines and their basic components.",
+            "Explore the programming software and its control blocks.",
+            "Program and control mechatronic modules."
+          ]
+        },
+        "co-hoc-sang-tao": {
+          "curriculum": [
+            "Learn about force and moment of force.",
+            "Explore how a few simple machines work.",
+            "Use simple machines in a model that raises and lowers a load.",
+            "Apply what you know about force and simple machines to explain how a lift model works."
+          ]
+        },
+        "drone": {
+          "curriculum": [
+            "Learn about drones and how they are used in the real world.",
+            "Explore the principles of drone flight.",
+            "Practise programming a drone to fly.",
+            "Try out the Drone Soccer challenge."
+          ]
+        },
+        "electrical": {
+          "audience": "students from 12 – 18 years old",
+          "knowledge": [
+            "Understand the function of series and parallel circuits",
+            "Identify types of common switches and it function",
+            "Understand how series and parallel circuits work",
+            "Gain knowledge about electric motor and device"
+          ],
+          "overview": [
+            "In this course, you will be challenged to design electric circuits that are required to solve typical electrical problems found in both residential homes and commercial industry. As you explore and practice the skills needed to work with electricity, you will gain some basic knowledge that would be required to work as an electrician or electrical contractor, or to become an electrical engineer."
+          ],
+          "skills": [
+            "Wire circuits using electric lights, resistors, and electromechanical components such as switches",
+            "Use a multimeter to measure voltage, current, and resistance",
+            "Apply the engineering design process",
+            "Apply Ohm’s law",
+            "Design series and parallel circuits and calculate the voltage, resistor, electric current"
+          ],
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/exploring-electricity/"
+        },
+        "electronics": {
+          "audience": "students from 16 – 18 years old",
+          "knowledge": [
+            "Understand the knowledge of voltage, current, resistor, power, Ohm law",
+            "Understand the basic knowledge of electrical circuit, amplifier,…",
+            "Being familiar with semiconductor components",
+            "Recognize the electrical devices and tools, such as VOM (Volt – Ohm Meter), power supply source…",
+            "Know how to read the schematic"
+          ],
+          "overview": [
+            "This course put students in the role of a electrical engineer, solve the problems of a electrical system, also know how to design and evaluate a simple circuit."
+          ],
+          "skills": [
+            "Recognize the popular electrical elements, such as resistor, capacitor, diode,…",
+            "Practice wiring skills, electrical circuit testing",
+            "Know how to use tools, such as VOM, power supply source, signal detection.",
+            "Build the electrical circuit such as amplifier, oscillator for the to solve realistic problems."
+          ],
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/exploratory-electronics/"
+        },
+        "energy": {
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/nang-luong-thay-the/",
+          "viOnly": true
+        },
+        "humanoid": {
+          "audience": "student from 6 – 10 years old",
+          "knowledge": [
+            "This course provides students basic knowledge of robot hardware, the robot programming and controlling solution. Student can understand the interaction between robot and humans, the role and applications of robot in real life.",
+            "Alpha Ebot is the training kit of this course. It can communicate with human by simple sentences that programmed.",
+            "Student can program for the robot simple movement. The blockly programming is applied, this is a friendly programming method so that young student can easy to understand and apply.",
+            "This course also train the students some important skills: communication, teamwork, presentation, problem solving, critical thinking and creativity.",
+            "Understand the basic definitions of robot, robot hardware",
+            "Being familiar with kinds of robot and the applications",
+            "Known about motor and power supply source for the robot"
+          ],
+          "overview": [
+            "This course provide students the basic knowledge of robot hardware, the study of control, power supply source. Students can interact directly and play with robot through teamwork activities (story time, dance,…) to see the role and application of robot in real life."
+          ],
+          "skills": [
+            "Interact and control the robot with basic programming",
+            "Program and control the robot do the simple movement",
+            "Idea for a teamwork activity (story telling, dance,…)"
+          ],
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/explore-human-shaped-robot/"
+        },
+        "in-3d": {
+          "curriculum": [
+            "Learn about additive manufacturing — 3D printing.",
+            "Explore how a 3D printer is built and how it works.",
+            "Prepare the file and tune the print settings for each product.",
+            "Operate the 3D printer to print a product."
+          ]
+        },
+        "iot": {
+          "curriculum": [
+            "Learn the principles behind connecting and controlling IoT devices.",
+            "Explore app interface programming and the role of cloud storage platforms.",
+            "Design a control app interface.",
+            "Program and control an IoT model through a smart interface."
+          ]
+        },
+        "kham-pha-dien": {
+          "curriculum": [
+            "Learn what a power source is and what electrical components do.",
+            "Learn the safety rules for working with electricity.",
+            "Explore the function of common electrical devices and basic electronic components.",
+            "Assemble a basic circuit and test that it works."
+          ]
+        },
+        "lam-quen-ai": {
+          "curriculum": [
+            "Learn what artificial intelligence (AI) is.",
+            "Explore where AI shows up in everyday life.",
+            "Simulate how an AI learns from data.",
+            "Take on the \"What did the AI learn?\" game challenge."
+          ]
+        },
+        "mechanics": {
+          "audience": "Students from 12 – 18 years old",
+          "knowledge": [
+            "Understand the science knowledge such as distance, weight, force, velocity, work",
+            "Understand the inclined plane, wedges, screws, levers, wheels and axles, gears and gear trains, belt drives, pulleys",
+            "Understand the measurement units, calculations.",
+            "Apply the design process to a lifting and relocation problem",
+            "Evaluate current designs and select design changes that result in improved processes",
+            "Complete standard engineering forms",
+            "Explore how system properties and forces create mechanical advantage"
+          ],
+          "overview": [
+            "This course will let students chance to discover the mechanisms, includes the experiments to set up the mechanisms and know how to design of transport mechanism idea. Students can catch up with the new creative solution for problems and challenges in real application."
+          ],
+          "skills": [
+            "Can define the suitable and popular mechanisms that applied in real life",
+            "Apply the basic skills to design the objects lifting and arranging system",
+            "Present about force, work and power",
+            "Assemble, optimize and apply hardware to presnet the mechanical application.",
+            "Evaluate the problems from the engineer’s view and conclusion based on calculation"
+          ],
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/exploring-mechanisms/"
+        },
+        "mechatronics": {
+          "audience": "student from 16 – 18 years old",
+          "knowledge": [
+            "Understand the electrical pneumatic system",
+            "Understand the purpose and working rules of object supply station, conveyor and warehouse system",
+            "Understand the function of electrical pneumatic elements",
+            "Understand and apply the PLC",
+            "Analyze the logic circuit",
+            "Use the Fluidsim software",
+            "Create and simulate the system of electrical pneumatic",
+            "Understand and apply the MecLab software",
+            "Apply the engineering design process"
+          ],
+          "overview": [
+            "This course provides students chance to explore the automation technology and mechatronic system that exist on the production process. During this course, student will play the role of a mechatronic engineer to design an automation system. They can explore the link of mechanic, electrical engineering and computing engineering to develop and optimize a specific system."
+          ],
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/exploring-mechatronics/"
+        },
+        "moi-truong-nuoc": {
+          "curriculum": [
+            "Learn what causes water pollution.",
+            "Explore the methods used to treat wastewater.",
+            "Run experiments: measuring pH, disinfecting and decolourising water, testing pool water.",
+            "Apply the experiment kit to treat water."
+          ]
+        },
+        "muc-nuoc-thong-minh": {
+          "curriculum": [
+            "Get an overview of water level control systems and their real-world uses.",
+            "Explore pump motor control and reading sensor data.",
+            "Apply feedback control to hold the water level at a target.",
+            "Use voice recognition to command the water level and query the system."
+          ]
+        },
+        "nam-cham": {
+          "curriculum": [
+            "Learn about magnetic fields and their role in nature and daily life.",
+            "Explore the relationship between magnets and magnetic fields.",
+            "Run experiments on the basic properties of magnets.",
+            "Take on the \"Magnetic force\" game challenge."
+          ]
+        },
+        "nang-luong-cuoc-song": {
+          "curriculum": [
+            "Learn about the different forms of energy and where energy comes from.",
+            "Learn how energy is transferred.",
+            "Explore how energy is converted from one form to another.",
+            "Take on the \"One-touch machine\" game challenge."
+          ]
+        },
+        "nang-luong-tai-tao": {
+          "curriculum": [
+            "Learn about renewable energy sources.",
+            "Learn how wind energy is converted into electricity.",
+            "Explore how a wind turbine works.",
+            "Measure the electricity produced by a renewable energy model."
+          ]
+        },
+        "nganh-nhua": {
+          "curriculum": [
+            "Learn what polymers are and how they are classified.",
+            "Learn about the physical and chemical properties of polymers.",
+            "Explore the difference between synthesising and processing polymers.",
+            "Sort plastics by type and run polymer-making experiments."
+          ]
+        },
+        "noi-dung-so": {
+          "curriculum": [
+            "Learn the difference between generative AI and traditional AI.",
+            "Explore how to write a good prompt to generate images with AI.",
+            "Learn how to assemble a video from images and sound.",
+            "Build a short story using purpose-built tools."
+          ]
+        },
+        "photonics": {
+          "audience": "students from 12 – 18 years old",
+          "knowledge": [
+            "Understand how fiber optics works",
+            "Understand the importance of using codes, such as Morse code, to convey information",
+            "Understand the nature of light",
+            "Determine the difference between reflection and refraction",
+            "Explore the characteristics of laser light",
+            "Gain an understanding of how light interacts with fiber optics and lasers",
+            "Explore the impact of transmission interruptions on voice and data communications",
+            "Explore what a single optical fiber consists of and how this make-up lends itself to the communication process",
+            "Realize the importance of both attenuation and eliminating or minimizing the effects of bending losses in fiber optic links in order to provide reliable communications"
+          ],
+          "overview": [
+            "In the course, you will play the role of a telecommunication engineer to build a circuit that uses laser and fiber optic, which allow you to transfer voice and data telecommunications. After that solving the problem about transmission interruptions, calculate the error rate of data signal, power loss…"
+          ],
+          "skills": [
+            "Calculate the error rate for both methods",
+            "Apply the engineering design process",
+            "Evaluate and compare the reception accuracy by decoding audible and visual receptions",
+            "Experiment with fiber optics to see just how critical the junction of light is between the transmitter’s LED, the optical fiber, and the receiver’s detector",
+            "Practice preparing the end of a plastic optical fiber for proper operation"
+          ],
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/fiber-optics-and-lasers/"
+        },
+        "plastics": {
+          "knowledge": [
+            "Explore the properties of polymers",
+            "Explain polymerization",
+            "Explore natural polymers and synthetic polymers",
+            "Identify the different types of plastics and applications",
+            "Differentiate between thermoplastics and thermosets",
+            "Explain the injection molding technique",
+            "Discuss the vacuum forming process"
+          ],
+          "overview": [
+            "During STEM Plastics course, learners will have the opportunity to achieve basic knowledge about plastics, plastic materials and processing methods used to convert plastics into desirable products. Learners will be experienced by observing and participating in many activities such as making specific plastic products, making synthetic polymers and doing chemistry experiments. In addition to that, learners also raise awareness of the impacts of plastic waste to our environment."
+          ],
+          "skills": [
+            "Operate an injection molding machine",
+            "Operate a vacuum forming machine",
+            "Do awesome chemistry experiments",
+            "Enhance learners’ practice skills, carefulness and patience",
+            "Nurture a love for chemistry"
+          ],
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/plastics/"
+        },
+        "polymer": {
+          "curriculum": [
+            "Learn about polymers and their role in daily life.",
+            "Explore the characteristics and applications of the polymer material families.",
+            "Run hands-on experiments with polymer materials.",
+            "Take on the challenge of making a biopolymer plastic."
+          ]
+        },
+        "process": {
+          "audience": "Students from 12 – 18 years old",
+          "knowledge": [
+            "Flow, volume, and pressure",
+            "Capacitance",
+            "Ultrasonic sound",
+            "Digital and analog",
+            "Designing mechanical drawings, electrical schematics, and process and instrument ﬂow diagrams",
+            "Evaluating current designs and selecting design changes, resulting in improved processes.",
+            "Completing standard engineering forms",
+            "Exploring how system properties, forces, and restraints affect ﬂow behavior.",
+            "Windows-based graphical user interface",
+            "Control software application",
+            "Mechanical instrumentation",
+            "USB controller",
+            "Electronic sensors"
+          ],
+          "overview": [
+            "The purpose of the STEM Introduction to Process Engineering course is to enable students to take on the role of a process control engineer in a real-world scenario. The course explores, educates, and challenges students with the basic skills associated with process control."
+          ],
+          "skills": [
+            "Identify and define process control engineering and how automatic control systems impact their daily",
+            "Use the basic skills required for the reading and drawing of electrical schematics, mechanical drawings, and piping and instrumentation (PI) ﬂow diagrams.",
+            "Demonstrate how ﬂow and pressure are measured both manually and electronically and how valves and pumps work using a closed loop ﬂuid system.",
+            "Connect, configure, and operate hardware and software required for automated control including selecting and applying various sensors.",
+            "Discuss the logic of control (PID) and make conclusions while examining real system data output."
+          ],
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/introduction-to-process-engineering/"
+        },
+        "robot-car": {
+          "knowledge": [
+            "The basic level: student from 8 – 11 years old",
+            "The advanced level: student from 12 – 15 years old",
+            "Understanding the basic science definitions (sound, light,…)",
+            "Being familiar with motors, electrical devices, other related definitions and functions",
+            "Knowing the basic programming",
+            "Can describe the mBot’s parts and its functions.",
+            "Understand the role and application of sensors."
+          ],
+          "overview": [
+            "This course provides the basic knowledge of robot programming and controlling, also the connection between science, technology and engineering via the electrical devices, sensors, motors,… that equipped.",
+            "The Kit mBot from MakeBlock is the training kit for this topic. This is the robot that equipped sensors for line detecting, objects detecting, sound system,… It can be upgraded to the other robot types, such as bug robot, dog robot, frog robot,… The graphical programming language is the fundamental control method of mBot. It is easy to work with a simple user interface for young students can program.",
+            "This course also train the students some important skills: communication, teamwork, presentation, problem solving, critical thinking and creativity."
+          ],
+          "skills": [
+            "Programming in the basic level with MakeBlock software",
+            "Designing, assembling and upgrading the mBot model with the available accessories.",
+            "Simulating the movement of some different animals.",
+            "Composing the simple songs by programming the sound system on mBot",
+            "Controlling and displaying the LED on mBot",
+            "Creating the autonomous function, line detecting and object detecting for mBot"
+          ],
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/explore-robot-vehicles-advanced/"
+        },
+        "robot-sinh-hoc": {
+          "curriculum": [
+            "Learn to recognise different animal and plant species.",
+            "Explore how a biological robot model works.",
+            "Assemble and operate a biological robot model.",
+            "Play a game using the biological robot model."
+          ]
+        },
+        "robotic-arm": {
+          "audience": "Student from 16 – 18 years old",
+          "knowledge": [
+            "Know about robot, robot arm and real applications.",
+            "Understand some types of mechanism power transmission that applied in real life and production.",
+            "Get knowledge about motors, electrical devices, relative definitions and its functions.",
+            "Know about the characteristics, functions and safety rules when work with laser.",
+            "Understand the role of coordinates in programming and automation control."
+          ],
+          "overview": [
+            "This course provides students basic knowledge of robot technology – the robot arm and application in real production. Students can work directly with the robot by programming, controlling a process that use the robot arm.",
+            "Dobot Magician is the training kit of this course. This is a functional kit, easy to connect with peripheral devices for several action, such as: 3D printing, laser engraving, pick and place object, drawing,…",
+            "Dobot Magician applies the blockly programming, which is a friendly programming method that contains a simple user interface so that student can easy to understand and work with.",
+            "This course also train the students some important skills: communication, teamwork, presentation, problem solving, critical thinking and creativity."
+          ],
+          "skills": [
+            "Programming for robot arm movement by Teaching and Playback function on Dobot Magician software.",
+            "Determine and create the coordinate for robot arm operating.",
+            "Linking the movement of robot arm and other devices.",
+            "Do the 3D design via Solidworks.",
+            "Set up and operate functions like laser engraving.",
+            "Set up an automation process that apply robot arm for a specific function.",
+            "Do the presentation to present about working process, function that created during projects."
+          ],
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/robot-hands-in-production/"
+        },
+        "scratch": {
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/lap-trinh-voi-scratch-2/",
+          "viOnly": true
+        },
+        "stress": {
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/phan-tich-ky-thuat-va-ung-suat/",
+          "viOnly": true
+        },
+        "the-gioi-ao": {
+          "curriculum": [
+            "Learn what programming does in robot control.",
+            "Explore the programming software and its basic command blocks.",
+            "Program a robot to move around a simulated field.",
+            "Apply what you have learned in the \"Master farm engineer\" project."
+          ]
+        },
+        "thi-giac-may-tinh": {
+          "curriculum": [
+            "Get a brief introduction to machine learning.",
+            "Explore what machine learning is for and how it is categorised in practice.",
+            "Work through a machine learning pipeline using a convolutional neural network.",
+            "Apply machine learning to object recognition."
+          ]
+        },
+        "thien-nhien": {
+          "curriculum": [
+            "Learn about the seasons of the year.",
+            "Learn about weather phenomena, natural disasters and how they form.",
+            "Explore the impact of natural disasters and how to prevent and respond to them.",
+            "Build a working model that simulates a natural disaster."
+          ]
+        },
+        "thiet-ke-3d": {
+          "curriculum": [
+            "Learn about 3D design.",
+            "Learn about the coordinate system in three-dimensional space.",
+            "Explore the tools used to design for 3D printing.",
+            "Create a 3D design using purpose-built software."
+          ]
+        },
+        "thiet-ke-co-khi": {
+          "curriculum": [
+            "Learn about technical drawings, projections and drawing conventions.",
+            "Explore how to read and analyse a technical drawing.",
+            "Design a sample product.",
+            "Machine and assemble the product from the drawing."
+          ]
+        },
+        "thiet-ke-website": {
+          "curriculum": [
+            "Learn the basic concepts of user interface and user experience.",
+            "Explore the website interface design process.",
+            "Explore the core features of the tools used for website design.",
+            "Design a simple website."
+          ]
+        },
+        "water": {
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/cong-nghe-moi-truong-nuoc/",
+          "viOnly": true
+        },
+        "xac-suat-hoc-may": {
+          "curriculum": [
+            "Learn about the Naïve Bayes theorem.",
+            "Collect and analyse historical customer data.",
+            "Apply the Naïve Bayes algorithm to predict customer behaviour from that data.",
+            "Evaluate performance based on accuracy."
+          ]
+        },
+        "xe-robot": {
+          "curriculum": [
+            "Learn about the parts of a robot car and what each one does.",
+            "Explore how to drive a robot car by voice and by remote control.",
+            "Drive the robot car around a track and over obstacles.",
+            "Take on the \"Robot race track\" challenge."
+          ]
+        }
+      },
+      "emptyState": "No courses in this track yet.",
+      "eyebrow": "STEM courses",
+      "filters": {
+        "all": "All",
+        "empty": "No programme matches this selection.",
+        "stage": "School level",
+        "topic": "Topic"
+      },
+      "groups": [
+        {
+          "description": "Full programmes of 5–10 weeks, carrying one project from first sketch through to a finished build.",
+          "id": "stem",
+          "title": "STEM Courses"
+        },
+        {
+          "description": "Thirty short programmes that dive straight into a single field. Filter by school level and topic to find the right fit fast.",
+          "filterable": true,
+          "id": "experience",
+          "title": "STEM Experience Programs"
+        }
+      ],
+      "imageAlt": "Activity at FabLab EIU illustrating the {title} course",
+      "items": [
+        {
+          "description": "The seasons, weather phenomena and natural disasters, then build a simulation model to understand how to prepare.",
+          "group": "experience",
+          "icon": "energy",
+          "id": "thien-nhien",
+          "image": {
+            "height": 320,
+            "url": "/media/course-energy.3d52d547.jpg",
+            "width": 760
+          },
+          "stage": "th",
+          "title": "The power of nature",
+          "topic": "science"
+        },
+        {
+          "description": "The forms and sources of energy, how it travels and converts, through the \"One-touch machine\" challenge.",
+          "group": "experience",
+          "icon": "energy",
+          "id": "nang-luong-cuoc-song",
+          "image": {
+            "height": 320,
+            "url": "/media/course-energy.3d52d547.jpg",
+            "width": 760
+          },
+          "stage": "thcs",
+          "title": "Energy and life",
+          "topic": "science"
+        },
+        {
+          "description": "From sound sources and vibration to how the ear receives sound, with hands-on transmission through an interactive game.",
+          "group": "experience",
+          "icon": "electronics",
+          "id": "am-thanh",
+          "image": {
+            "height": 600,
+            "url": "/media/lab-workbenches.c235eaa8.jpg",
+            "width": 1000
+          },
+          "stage": "thcs",
+          "title": "The secrets of sound",
+          "topic": "science"
+        },
+        {
+          "description": "Magnetic fields and magnets in nature, experiments on their basic properties and the \"Magnetic force\" challenge.",
+          "group": "experience",
+          "icon": "electrical",
+          "id": "nam-cham",
+          "image": {
+            "height": 320,
+            "url": "/media/course-electrical.e1dd35f9.jpg",
+            "width": 760
+          },
+          "stage": "thcs",
+          "title": "Magnets and magnetic fields",
+          "topic": "science"
+        },
+        {
+          "description": "Refraction and total internal reflection, how light travels through optical fibre, closing with a Morse code challenge.",
+          "group": "experience",
+          "icon": "photonics",
+          "id": "cap-quang",
+          "image": {
+            "height": 500,
+            "url": "/media/lab-laser-cutter.1ae81723.jpg",
+            "width": 679
+          },
+          "stage": "thcs",
+          "title": "Fiber optics and lasers",
+          "topic": "science"
+        },
+        {
+          "description": "The characteristics and uses of polymer material families, hands-on experiments and a biopolymer-making challenge.",
+          "group": "experience",
+          "icon": "plastics",
+          "id": "polymer",
+          "image": {
+            "height": 320,
+            "url": "/media/course-plastics.df191647.jpg",
+            "width": 760
+          },
+          "stage": "thcs",
+          "title": "Decoding polymers",
+          "topic": "science"
+        },
+        {
+          "description": "Renewable energy sources and how a wind turbine works, measuring the electricity a model actually produces.",
+          "group": "experience",
+          "icon": "energy",
+          "id": "nang-luong-tai-tao",
+          "image": {
+            "height": 320,
+            "url": "/media/course-energy.3d52d547.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "Renewable energy",
+          "topic": "science"
+        },
+        {
+          "description": "What causes water pollution and how it is treated; measuring pH, disinfecting, decolourising and testing pool water.",
+          "group": "experience",
+          "icon": "water",
+          "id": "moi-truong-nuoc",
+          "image": {
+            "height": 320,
+            "url": "/media/course-water.9e0a5a8d.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "Water environment technology",
+          "topic": "science"
+        },
+        {
+          "description": "Classifying polymers, their physical and chemical properties, synthesis versus processing, plus making experiments.",
+          "group": "experience",
+          "icon": "plastics",
+          "id": "nganh-nhua",
+          "image": {
+            "height": 320,
+            "url": "/media/course-plastics.df191647.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "Exploring the plastics industry",
+          "topic": "science"
+        },
+        {
+          "description": "How a robot car is built and driven by voice and remote control, closing with the \"Robot race track\" challenge.",
+          "group": "experience",
+          "icon": "robot-car",
+          "id": "xe-robot",
+          "image": {
+            "height": 320,
+            "url": "/media/course-robot-car.7e823afe.jpg",
+            "width": 760
+          },
+          "stage": "th",
+          "title": "Exploring robot cars",
+          "topic": "robotics"
+        },
+        {
+          "description": "How drones fly and where they are used, hands-on flight programming and the Drone Soccer challenge.",
+          "group": "experience",
+          "icon": "automation",
+          "id": "drone",
+          "image": {
+            "height": 320,
+            "url": "/media/course-mechanics.9a142d33.jpg",
+            "width": 760
+          },
+          "stage": "thcs",
+          "title": "Drone programming",
+          "topic": "robotics"
+        },
+        {
+          "description": "How a robot arm is built and works, with hands-on programming through the \"Colour sorting station\" game.",
+          "group": "experience",
+          "icon": "robotic-arm",
+          "id": "canh-tay-robot",
+          "image": {
+            "height": 320,
+            "url": "/media/course-robotic-arm.81c09dc3.jpg",
+            "width": 760
+          },
+          "stage": "thcs",
+          "title": "Robot arms in manufacturing",
+          "topic": "robotics"
+        },
+        {
+          "description": "Recognising animal and plant species, assembling and operating a biological robot model, then playing with it.",
+          "group": "experience",
+          "icon": "humanoid",
+          "id": "robot-sinh-hoc",
+          "image": {
+            "height": 320,
+            "url": "/media/course-humanoid.bf6451ba.jpg",
+            "width": 760
+          },
+          "stage": "thcs",
+          "title": "Biological robots",
+          "topic": "robotics"
+        },
+        {
+          "description": "Power sources, components and electrical safety; assembling a basic circuit and testing that it works.",
+          "group": "experience",
+          "icon": "electronics",
+          "id": "kham-pha-dien",
+          "image": {
+            "height": 320,
+            "url": "/media/course-electronics.39d13333.jpg",
+            "width": 760
+          },
+          "stage": "thcs",
+          "title": "Exploring electricity",
+          "topic": "robotics"
+        },
+        {
+          "description": "Reading and analysing technical drawings, projections and conventions; designing, machining and assembling.",
+          "group": "experience",
+          "icon": "mechanics",
+          "id": "thiet-ke-co-khi",
+          "image": {
+            "height": 560,
+            "url": "/media/lab-machine-shop.48f34a61.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "Exploring mechanical design",
+          "topic": "robotics"
+        },
+        {
+          "description": "Production lines and mechatronic components, the programming software and hands-on module control.",
+          "group": "experience",
+          "icon": "mechatronics",
+          "id": "co-dien-tu",
+          "image": {
+            "height": 320,
+            "url": "/media/course-mechatronics.9dc5e07a.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "Exploring mechatronics",
+          "topic": "robotics"
+        },
+        {
+          "description": "Force and moment of force, how simple machines work, applied to a lifting model and a working lift.",
+          "group": "experience",
+          "icon": "stress",
+          "id": "co-hoc-sang-tao",
+          "image": {
+            "height": 320,
+            "url": "/media/course-stress.18597909.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "Creative mechanics",
+          "topic": "robotics"
+        },
+        {
+          "description": "How a CNC mill is built and works, drawing a simple mechanical part then running the machine to make it.",
+          "group": "experience",
+          "icon": "cnc",
+          "id": "cnc",
+          "image": {
+            "height": 320,
+            "url": "/media/course-cnc.cb68e7b0.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "CNC machining technology",
+          "topic": "robotics"
+        },
+        {
+          "description": "How a 3D printer is built and works, preparing files and print settings, then running the printer.",
+          "group": "experience",
+          "icon": "process",
+          "id": "in-3d",
+          "image": {
+            "height": 600,
+            "url": "/media/lab-3d-printers.6fb93aa4.jpg",
+            "width": 1000
+          },
+          "stage": "thpt",
+          "title": "3D printing technology",
+          "topic": "robotics"
+        },
+        {
+          "description": "Pump motor control and sensor data, using feedback control and voice recognition to manage water level.",
+          "group": "experience",
+          "icon": "water",
+          "id": "muc-nuoc-thong-minh",
+          "image": {
+            "height": 320,
+            "url": "/media/course-water.9e0a5a8d.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "Smart water level monitoring",
+          "topic": "robotics"
+        },
+        {
+          "description": "What AI is and where it appears in daily life; simulating how an AI learns through the \"What did the AI learn?\" game.",
+          "group": "experience",
+          "icon": "scratch",
+          "id": "lam-quen-ai",
+          "image": {
+            "height": 320,
+            "url": "/media/course-scratch.ea6415e6.jpg",
+            "width": 760
+          },
+          "stage": "th",
+          "title": "Getting to know artificial intelligence",
+          "topic": "aiot"
+        },
+        {
+          "description": "What programming does in robot control, moving a robot around a simulated field in the \"Master farm engineer\" project.",
+          "group": "experience",
+          "icon": "scratch",
+          "id": "the-gioi-ao",
+          "image": {
+            "height": 320,
+            "url": "/media/course-scratch.ea6415e6.jpg",
+            "width": 760
+          },
+          "stage": "thcs",
+          "title": "Virtual worlds and robots",
+          "topic": "aiot"
+        },
+        {
+          "description": "Generative versus traditional AI, writing prompts to generate images and assembling video into a short story.",
+          "group": "experience",
+          "icon": "photonics",
+          "id": "noi-dung-so",
+          "image": {
+            "height": 320,
+            "url": "/media/course-photonics.5532dfa5.jpg",
+            "width": 760
+          },
+          "stage": "thcs",
+          "title": "Digital content creator",
+          "topic": "aiot"
+        },
+        {
+          "description": "The role of the CPU, mainboard, RAM and SSD/HDD, and how to pick hardware that fits a given need.",
+          "group": "experience",
+          "icon": "electronics",
+          "id": "cau-truc-may-tinh",
+          "image": {
+            "height": 600,
+            "url": "/media/lab-workbenches.c235eaa8.jpg",
+            "width": 1000
+          },
+          "stage": "thpt",
+          "title": "Computer architecture",
+          "topic": "aiot"
+        },
+        {
+          "description": "The coordinate system in three-dimensional space and the tools for designing 3D prints, with hands-on practice.",
+          "group": "experience",
+          "icon": "process",
+          "id": "thiet-ke-3d",
+          "image": {
+            "height": 600,
+            "url": "/media/lab-3d-printers.6fb93aa4.jpg",
+            "width": 1000
+          },
+          "stage": "thpt",
+          "title": "3D design",
+          "topic": "aiot"
+        },
+        {
+          "description": "From the history of money to blockchain, how hash links keep blocks secure, and simulating block validation.",
+          "group": "experience",
+          "icon": "process",
+          "id": "blockchain",
+          "image": {
+            "height": 320,
+            "url": "/media/course-photonics.5532dfa5.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "Blockchain and digital data secrets",
+          "topic": "aiot"
+        },
+        {
+          "description": "Connecting and controlling IoT devices, designing an app interface and driving a model through the cloud.",
+          "group": "experience",
+          "icon": "automation",
+          "id": "iot",
+          "image": {
+            "height": 320,
+            "url": "/media/course-automation.8c53cbef.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "Smart data connectivity",
+          "topic": "aiot"
+        },
+        {
+          "description": "What machine learning is for and how it is categorised, working a pipeline with a convolutional neural network.",
+          "group": "experience",
+          "icon": "photonics",
+          "id": "thi-giac-may-tinh",
+          "image": {
+            "height": 320,
+            "url": "/media/course-process.2cc0a003.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "Getting to know computer vision",
+          "topic": "aiot"
+        },
+        {
+          "description": "Applying Naïve Bayes to historical customer data to predict behaviour, then evaluating the accuracy.",
+          "group": "experience",
+          "icon": "process",
+          "id": "xac-suat-hoc-may",
+          "image": {
+            "height": 320,
+            "url": "/media/course-process.2cc0a003.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "Probability in machine learning",
+          "topic": "aiot"
+        },
+        {
+          "description": "The basics of user interface and user experience, the design process and building a simple website.",
+          "group": "experience",
+          "icon": "scratch",
+          "id": "thiet-ke-website",
+          "image": {
+            "height": 600,
+            "url": "/media/lab-workbenches.c235eaa8.jpg",
+            "width": 1000
+          },
+          "stage": "thpt",
+          "title": "Website design",
+          "topic": "aiot"
+        },
+        {
+          "age": "15–18",
+          "description": "Assemble and program a robotic arm to carry out a full pick-and-place routine.",
+          "duration": "10 weeks · 30 hours",
+          "group": "stem",
+          "id": "robotic-arm",
+          "image": {
+            "height": 320,
+            "url": "/media/course-robotic-arm.81c09dc3.jpg",
+            "width": 760
+          },
+          "level": "intermediate",
+          "title": "Robotic Arms"
+        },
+        {
+          "age": "6–12",
+          "description": "Discover how robots keep their balance, walk, and interact with the people around them.",
+          "duration": "5 weeks · 15 hours",
+          "group": "stem",
+          "id": "humanoid",
+          "image": {
+            "height": 320,
+            "url": "/media/course-humanoid.bf6451ba.jpg",
+            "width": 760
+          },
+          "level": "intermediate",
+          "title": "Humanoid Robots"
+        },
+        {
+          "age": "8+",
+          "description": "A first step into coding with visual blocks — telling stories, building games and animations.",
+          "duration": "7 weeks · 24 hours",
+          "group": "stem",
+          "id": "scratch",
+          "image": {
+            "height": 320,
+            "url": "/media/course-scratch.ea6415e6.jpg",
+            "width": 760
+          },
+          "level": "basic",
+          "title": "Scratch Programming"
+        },
+        {
+          "age": "12–15",
+          "description": "Build a self-driving car that follows lines, avoids obstacles and responds to your phone.",
+          "duration": "8 weeks · 24 hours",
+          "group": "stem",
+          "id": "robot-car",
+          "image": {
+            "height": 320,
+            "url": "/media/course-robot-car.7e823afe.jpg",
+            "width": 760
+          },
+          "level": "basic",
+          "title": "Robot Vehicles"
+        }
+      ],
+      "levels": {
+        "advanced": "Advanced",
+        "basic": "Beginner",
+        "intermediate": "Intermediate"
+      },
+      "modal": {
+        "audience": "Who it is for",
+        "close": "Close",
+        "curriculum": "Course curriculum",
+        "empty": "Detailed content for this course has not been published yet.",
+        "knowledge": "What you will know",
+        "overview": "About this course",
+        "register": "Enroll in this course",
+        "skills": "What you will be able to do",
+        "source": "View the original course page",
+        "viOnly": "Detailed content for this course is currently only available in Vietnamese."
+      },
+      "showLess": "Show less",
+      "showMore": "Show more courses",
+      "stages": [
+        {
+          "id": "th",
+          "label": "Primary school",
+          "short": "Primary"
+        },
+        {
+          "id": "thcs",
+          "label": "Lower secondary school",
+          "short": "Secondary"
+        },
+        {
+          "id": "thpt",
+          "label": "Upper secondary school",
+          "short": "High school"
+        }
+      ],
+      "title": "Find the path that fits you",
+      "topics": [
+        {
+          "id": "science",
+          "label": "Natural science & life"
+        },
+        {
+          "id": "robotics",
+          "label": "Engineering & robotics"
+        },
+        {
+          "id": "aiot",
+          "label": "AIoT & digital technology"
+        }
+      ]
+    },
+    "facilities": {
+      "description": "Every machine is open to learners and the community, with technicians on hand to guide you.",
+      "eyebrow": "Facilities",
+      "imageAlt": "{title} in the FabLab EIU workshop",
+      "items": [
+        {
+          "description": "Turn a digital design into a physical model within hours, across a range of materials.",
+          "id": "printer-3d",
+          "image": {
+            "height": 600,
+            "url": "/media/lab-3d-printers.6fb93aa4.jpg",
+            "width": 1000
+          },
+          "title": "3D printers"
+        },
+        {
+          "description": "Precision milling and turning in wood, plastic and metal.",
+          "id": "cnc",
+          "image": {
+            "height": 560,
+            "url": "/media/lab-machine-shop.48f34a61.jpg",
+            "width": 760
+          },
+          "title": "CNC machines"
+        },
+        {
+          "description": "Fine cutting and engraving across many sheet materials.",
+          "id": "laser",
+          "image": {
+            "height": 500,
+            "url": "/media/lab-laser-cutter.1ae81723.jpg",
+            "width": 679
+          },
+          "title": "Laser cutters"
+        },
+        {
+          "description": "Soldering stations, test gear and PCB design.",
+          "id": "electronics-lab",
+          "image": {
+            "height": 600,
+            "url": "/media/lab-workbenches.c235eaa8.jpg",
+            "width": 1000
+          },
+          "title": "Electronics bay"
+        }
+      ],
+      "title": "An open workshop for digital fabrication"
+    },
+    "finalCta": {
+      "description": "Enroll in a course, or simply drop by to see what we are making. The door at FabLab EIU is always open.",
+      "primaryCta": "Enroll in a course",
+      "secondaryCta": "Get in touch",
+      "title": "Your idea deserves to be built"
+    },
+    "footer": {
+      "columns": [
+        {
+          "id": "explore",
+          "links": [
+            {
+              "href": "#about",
+              "id": "about",
+              "label": "About us"
+            },
+            {
+              "href": "#courses",
+              "id": "courses",
+              "label": "Courses"
+            },
+            {
+              "href": "#facilities",
+              "id": "facilities",
+              "label": "Facilities"
+            },
+            {
+              "href": "#activities",
+              "id": "activities",
+              "label": "Activities & competitions"
+            }
+          ],
+          "title": "Explore"
+        },
+        {
+          "id": "programs",
+          "links": [
+            {
+              "href": "#courses-stem",
+              "id": "stem",
+              "label": "STEM Courses"
+            },
+            {
+              "href": "#courses-experience",
+              "id": "experience",
+              "label": "STEM Experience Programs"
+            },
+            {
+              "href": "#about",
+              "id": "community",
+              "label": "Community projects"
+            },
+            {
+              "href": "#about",
+              "id": "research",
+              "label": "Research & Startups"
+            }
+          ],
+          "title": "Programs"
+        }
+      ],
+      "contact": {
+        "address": "Eastern International University, Binh Duong New City, Vietnam",
+        "email": "fablab@eiu.edu.vn",
+        "phone": "(0274) 222 0176",
+        "title": "Contact"
+      },
+      "copyright": "FabLab EIU. Proudly serving the community.",
+      "description": "The digital fabrication workshop of Eastern International University — open for education, research and entrepreneurship.",
+      "social": {
+        "items": [
+          {
+            "href": "#",
+            "id": "facebook",
+            "label": "Facebook"
+          },
+          {
+            "href": "#",
+            "id": "youtube",
+            "label": "YouTube"
+          },
+          {
+            "href": "#",
+            "id": "website",
+            "label": "EIU website"
+          }
+        ],
+        "title": "Connect"
+      }
+    },
+    "hero": {
+      "description": "EIU FabLab is a typical digital fabrication workshop with many advanced technologies, machinery and equipment, dynamic and creative open spaces and diverse activities to serve the community.community.",
+      "eyebrow": "Eastern International University",
+      "floatingBadges": [
+        {
+          "id": "open",
+          "label": "Open to the community"
+        },
+        {
+          "id": "hands-on",
+          "label": "100% hands-on learning"
+        }
+      ],
+      "image": {
+        "height": 900,
+        "url": "/media/hero-stem-workshop.62c85a50.jpg",
+        "width": 1200
+      },
+      "imageAlt": "A FabLab EIU instructor helping three children assemble a STEM kit at a workbench.",
+      "primaryCta": "Explore courses",
+      "secondaryCta": "Visit the lab",
+      "title": "Proudly Serving the Community"
+    },
+    "nav": {
+      "brandTagline": "Digital fabrication lab",
+      "closeMenu": "Close menu",
+      "cta": "Enroll now",
+      "links": [
+        {
+          "href": "#about",
+          "id": "about",
+          "label": "About"
+        },
+        {
+          "children": [
+            {
+              "href": "#facilities",
+              "id": "facilities",
+              "label": "Facilities"
+            },
+            {
+              "href": "#competitions",
+              "id": "competitions",
+              "label": "Competitions"
+            }
+          ],
+          "id": "fablab",
+          "label": "FabLab"
+        },
+        {
+          "children": [
+            {
+              "href": "#courses-stem",
+              "id": "courses-stem",
+              "label": "STEM Courses"
+            },
+            {
+              "href": "#courses-experience",
+              "id": "courses-experience",
+              "label": "STEM Experience Programs"
+            }
+          ],
+          "id": "stemlab",
+          "label": "StemLab"
+        },
+        {
+          "href": "#events",
+          "id": "events",
+          "label": "Events"
+        }
+      ],
+      "openMenu": "Open menu",
+      "switchLanguage": "Switch language"
+    },
+    "partners": {
+      "description": "The institutions and schools cooperate with EIU FabLab to bring technology closer to the community.",
+      "eyebrow": "Partners",
+      "items": [
+        {
+          "id": "eiu",
+          "image": {
+            "height": 120,
+            "url": "/media/partner-eiu.a2c06ea4.png",
+            "width": 149
+          },
+          "name": "Trường Đại học Quốc tế Miền Đông"
+        },
+        {
+          "id": "vietanh",
+          "image": {
+            "height": 296,
+            "url": "/media/partner-vietanh.b6b9ac1c.png",
+            "width": 206
+          },
+          "name": "Hệ thống trường Việt Anh"
+        },
+        {
+          "id": "little",
+          "image": {
+            "height": 628,
+            "url": "/media/partner-littlepeo.58e16de1.png",
+            "width": 1754
+          },
+          "name": "Trường mầm non Little People"
+        },
+        {
+          "id": "tvbd",
+          "image": {
+            "height": 788,
+            "url": "/media/partner-tvbd.170bd85c.png",
+            "width": 940
+          },
+          "name": "Thư viện tỉnh Bình Dương"
+        },
+        {
+          "id": "tvtphcm",
+          "image": {
+            "height": 788,
+            "url": "/media/partner-tvtphcm.61517606.png",
+            "width": 940
+          },
+          "name": "Thư viện Khoa học tổng hợp thành phố Hồ Chí Minh"
+        },
+        {
+          "id": "hoasen",
+          "image": {
+            "height": 663,
+            "url": "/media/partner-hoasen.a9ccd9ae.png",
+            "width": 2560
+          },
+          "name": "Trường THCS-THPT Hoa Sen"
+        },
+        {
+          "id": "petrusky",
+          "image": {
+            "height": 1500,
+            "url": "/media/partner-petrusky.72c4ca43.png",
+            "width": 1500
+          },
+          "name": "Trường THCS-THPT Pétrus Ký"
+        },
+        {
+          "id": "talent",
+          "image": {
+            "height": 788,
+            "url": "/media/partner-talent.c69c3276.png",
+            "width": 940
+          },
+          "name": "Talent Academy"
+        }
+      ],
+      "logoAlt": "{name} logo",
+      "title": "The organisations behind FabLab EIU"
+    },
+    "pillars": {
+      "description": "An open, dynamic space where technology is shared to create real value for society.",
+      "eyebrow": "About us",
+      "items": [
+        {
+          "description": "Hands-on learning with modern equipment. Learners design, machine and finish their own products from start to end.",
+          "id": "education",
+          "title": "Education"
+        },
+        {
+          "description": "Turning creative ideas into products, and prototypes into complete engineering solutions.",
+          "id": "research",
+          "title": "Research"
+        },
+        {
+          "description": "Support in commercialising successful prototypes and taking products from the workshop to the market.",
+          "id": "entrepreneurship",
+          "title": "Entrepreneurship"
+        }
+      ],
+      "title": "Mission of EIU FabLab"
+    },
+    "stats": {
+      "items": [
+        {
+          "id": "visitors",
+          "label": "Student visits",
+          "suffix": "+",
+          "value": 20000
+        },
+        {
+          "id": "courses",
+          "label": "STEM courses",
+          "suffix": "+",
+          "value": 30
+        },
+        {
+          "id": "learners",
+          "label": "Learners trained",
+          "suffix": "+",
+          "value": 12000
+        },
+        {
+          "id": "partners",
+          "label": "Community projects",
+          "suffix": "+",
+          "value": 20
+        }
+      ]
+    },
+    "team": {
+      "description": "Engineers, STEM specialists and instructors who teach the classes, run the machines and stay with you through every project.",
+      "eyebrow": "Our team",
+      "members": [
+        {
+          "education": "PhD in Energy Engineering",
+          "id": "hung",
+          "image": {
+            "height": 240,
+            "url": "/media/team-hung.06d2c51f.jpg",
+            "width": 240
+          },
+          "lead": true,
+          "name": "Nguyễn Xuân Hùng",
+          "role": "FabLab Director"
+        },
+        {
+          "education": "MSc in Information Technology",
+          "id": "tuan",
+          "image": {
+            "height": 240,
+            "url": "/media/team-tuan.086e9dc4.jpg",
+            "width": 240
+          },
+          "name": "Đỗ Nguyễn Anh Tuấn",
+          "role": "STEM Specialist"
+        },
+        {
+          "education": "MA in Education Management",
+          "id": "ngan",
+          "image": {
+            "height": 240,
+            "url": "/media/team-ngan.1a7cd836.jpg",
+            "width": 240
+          },
+          "name": "Trần Ngọc Kim Ngân",
+          "role": "STEM Specialist"
+        },
+        {
+          "education": "MSc in Materials Science",
+          "id": "phuoc",
+          "image": {
+            "height": 240,
+            "url": "/media/team-phuoc.cab69290.jpg",
+            "width": 240
+          },
+          "name": "Nguyễn Hữu Phước",
+          "role": "STEM Specialist"
+        },
+        {
+          "education": "MSc in Inorganic Chemistry",
+          "id": "hien",
+          "image": {
+            "height": 240,
+            "url": "/media/team-hien.b0c6ac72.jpg",
+            "width": 240
+          },
+          "name": "Lư Thị Thu Hiền",
+          "role": "STEM Specialist"
+        },
+        {
+          "education": "BEng in Software Engineering",
+          "id": "minh",
+          "image": {
+            "height": 240,
+            "url": "/media/team-minh.0dad694a.jpg",
+            "width": 240
+          },
+          "name": "Trần Hán Minh",
+          "role": "STEM Specialist"
+        },
+        {
+          "education": "BSc in Electrical & Electronics",
+          "id": "manh",
+          "image": {
+            "height": 240,
+            "url": "/media/team-manh.c01da5a8.jpg",
+            "width": 240
+          },
+          "name": "Đinh Thế Mạnh",
+          "role": "STEM Specialist"
+        },
+        {
+          "education": "BSc in Physics",
+          "id": "thy",
+          "image": {
+            "height": 240,
+            "url": "/media/team-thy.83f1dd15.jpg",
+            "width": 240
+          },
+          "name": "Nguyễn Nam Thy",
+          "role": "STEM Specialist"
+        },
+        {
+          "education": "BSc in Theoretical Physics",
+          "id": "tran",
+          "image": {
+            "height": 240,
+            "url": "/media/team-tran.538d726f.jpg",
+            "width": 240
+          },
+          "name": "Thạch Thị Huyền Trân",
+          "role": "STEM Specialist"
+        },
+        {
+          "education": "BEng in Software Engineering",
+          "id": "huan",
+          "image": {
+            "height": 240,
+            "url": "/media/team-huan.a8914598.jpg",
+            "width": 240
+          },
+          "name": "Trần Khắc Huân",
+          "role": "STEM Specialist"
+        },
+        {
+          "education": "MSc in Mechatronics",
+          "id": "phuong",
+          "name": "Hoàng Ngọc Phương",
+          "role": "STEM Specialist"
+        },
+        {
+          "education": "BEng in Automation Engineering",
+          "id": "linh",
+          "image": {
+            "height": 240,
+            "url": "/media/team-linh.e9e92a0b.jpg",
+            "width": 240
+          },
+          "name": "Võ Đoàn Linh",
+          "role": "Technician"
+        },
+        {
+          "education": "BEng in Automation Engineering",
+          "id": "nhat",
+          "image": {
+            "height": 240,
+            "url": "/media/team-nhat.863ec03b.jpg",
+            "width": 240
+          },
+          "name": "Trần Duy Nhất",
+          "role": "Technician"
+        },
+        {
+          "education": "BEng in Electrical & Electronics",
+          "id": "tinh",
+          "image": {
+            "height": 240,
+            "url": "/media/team-tinh.6d373eb6.jpg",
+            "width": 240
+          },
+          "name": "Đỗ Trung Tính",
+          "role": "Technician"
+        },
+        {
+          "education": "BEng in Automation Engineering",
+          "id": "nhi",
+          "image": {
+            "height": 240,
+            "url": "/media/team-nhi.6af78884.jpg",
+            "width": 240
+          },
+          "name": "Võ Hoàng Yến Nhi",
+          "role": "Technician"
+        }
+      ],
+      "photoAlt": "Portrait of {name}",
+      "title": "Our Team"
+    },
+    "testimonials": {
+      "eyebrow": "Testimonials",
+      "goTo": "Go to testimonial",
+      "items": [
+        {
+          "id": "t1",
+          "name": "Nguyen Minh Anh",
+          "quote": "It was the first time I saw my own drawing become something I could hold in my hand. That feeling is why I want to study engineering.",
+          "role": "CNC Machining course"
+        },
+        {
+          "id": "t2",
+          "name": "Tran Quoc Bao",
+          "quote": "FabLab does not teach theory in the abstract. On day one we were standing at the machine, and we fixed our mistakes right where we made them.",
+          "role": "Third-year Mechatronics student"
+        },
+        {
+          "id": "t3",
+          "name": "Le Thu Ha",
+          "quote": "My child started with Scratch and now builds line-following robot cars. What matters most is that they learned the patience to try again.",
+          "role": "Parent of a learner"
+        }
+      ],
+      "next": "Next testimonial",
+      "previous": "Previous testimonial",
+      "title": "What learners say about FabLab EIU"
+    }
+  },
+  "rev": 24,
+  "updatedAt": "2026-09-10T17:19:01.625Z",
+  "vi": {
+    "activities": {
+      "description": "Sân chơi, hội thảo và workshop do EIU FabLab tổ chức cho sinh viên, học sinh và cộng đồng.",
+      "eyebrow": "Sự kiện",
+      "goTo": "Xem hoạt động số",
+      "groups": [
+        {
+          "description": "Hai sân chơi thường niên do EIU FabLab tổ chức, mở cho sinh viên và học sinh khu vực phía Nam.",
+          "id": "competitions",
+          "kinds": [
+            "competition"
+          ],
+          "title": "Cuộc thi"
+        },
+        {
+          "description": "Hội thảo chuyên đề, workshop thực hành và lễ hợp tác diễn ra tại FabLab trong khoảng 2019–2023.",
+          "id": "events",
+          "kinds": [
+            "seminar",
+            "workshop",
+            "partnership"
+          ],
+          "title": "Sự kiện & hội thảo"
+        }
+      ],
+      "imageAlt": "Ảnh của {title}",
+      "items": [
+        {
+          "date": "6/6/2026",
+          "description": "Giải đấu bóng đá bằng drone do EIU FabLab tổ chức. Thi đấu chính thức từ 07:00 đến 12:00 tại phòng 101, toà B3 — Đại học Quốc tế Miền Đông.",
+          "id": "drone-soccer",
+          "image": {
+            "height": 640,
+            "url": "/media/activity-drone-soccer.6f7220b8.jpg",
+            "width": 453
+          },
+          "kind": "competition",
+          "title": "EIU Drone Soccer Championship 2026"
+        },
+        {
+          "date": "21–29/3/2026",
+          "description": "EIU Microcontroller Car Rally mùa 2026: vòng loại 1 ngày 21/3, vòng loại 2 ngày 22/3 và chung kết tổng ngày 29/3. Nhận đăng ký từ 4/1 đến 28/2/2026.",
+          "id": "mcr-2026",
+          "image": {
+            "height": 640,
+            "url": "/media/activity-mcr-2026.932c18e9.jpg",
+            "width": 452
+          },
+          "kind": "competition",
+          "title": "EIU MCR 2026 — Lập trình xe đua tự động"
+        },
+        {
+          "date": "",
+          "description": "Cuộc thi đua xe mô hình do EIU FabLab phối hợp với khoa Kỹ thuật EIU tổ chức cho sinh viên khoa Kỹ thuật.",
+          "id": "racing-cup",
+          "image": {
+            "height": 600,
+            "url": "/media/activity-racing-cup.fd0574bf.jpg",
+            "width": 900
+          },
+          "kind": "competition",
+          "title": "FabLab Racing Cup"
+        },
+        {
+          "date": "Chiều thứ 4 hàng tuần",
+          "description": "Hướng dẫn sinh viên sử dụng các chức năng ngoại vi của vi điều khiển như ADC, PWM, I2C. Tại phòng 202, block 11.",
+          "id": "stm32",
+          "image": {
+            "height": 320,
+            "url": "/media/course-electronics.39d13333.jpg",
+            "width": 760
+          },
+          "kind": "seminar",
+          "title": "Lập trình STM32 căn bản"
+        },
+        {
+          "date": "20/7/2022",
+          "description": "Tìm hiểu công nghệ in 3D, các loại máy in 3D và cách vận hành. Phụ trách: Võ Đoàn Linh. Tại Thư viện EIU.",
+          "id": "print-3d",
+          "image": {
+            "height": 640,
+            "url": "/media/activity-print-3d.390a6462.jpg",
+            "width": 470
+          },
+          "kind": "workshop",
+          "title": "Công nghệ và ứng dụng in 3D"
+        },
+        {
+          "date": "19/7/2022",
+          "description": "Thiết lập quan hệ đối tác chiến lược với Hệ thống trường Việt Anh: tổ chức trải nghiệm STEM, hỗ trợ nghiên cứu và đưa học sinh tham gia các cuộc thi khoa học công nghệ.",
+          "id": "viet-anh",
+          "image": {
+            "height": 502,
+            "url": "/media/activity-viet-anh.0388b383.jpg",
+            "width": 900
+          },
+          "kind": "partnership",
+          "title": "Ký kết hợp tác chiến lược EIU – Việt Anh"
+        },
+        {
+          "date": "21/6/2022",
+          "description": "Cắt gỗ và mica bằng máy laser, khắc mạch in, thiết kế và in 3D. Phụ trách: Bùi Quang Tiến.",
+          "id": "laser-cnc",
+          "image": {
+            "height": 640,
+            "url": "/media/activity-laser-cnc.764e77dc.jpg",
+            "width": 441
+          },
+          "kind": "workshop",
+          "title": "Sáng tạo với máy in 3D và máy CNC laser"
+        },
+        {
+          "date": "20/6/2022",
+          "description": "Trao đổi về thiết kế kỹ thuật và tạo mẫu sản phẩm công nghiệp. Diễn giả: Nguyễn Trần Bảo Hiền, Công ty Anco – Bình Dương.",
+          "id": "industrial-design",
+          "image": {
+            "height": 640,
+            "url": "/media/activity-industrial-design.fc32c71d.jpg",
+            "width": 468
+          },
+          "kind": "seminar",
+          "title": "Vai trò của kiểu dáng công nghiệp"
+        },
+        {
+          "date": "",
+          "description": "Ứng dụng in 3D trong phẫu thuật định hình răng hàm mặt. Diễn giả: TS.BS Trần Tuấn Anh, Bệnh viện quốc tế Becamex.",
+          "id": "print-3d-medical",
+          "image": {
+            "height": 320,
+            "url": "/media/course-water.9e0a5a8d.jpg",
+            "width": 760
+          },
+          "kind": "seminar",
+          "title": "Ứng dụng công nghệ in 3D trong y tế"
+        },
+        {
+          "date": "15/3",
+          "description": "Chế tạo cảm biến đo lực căng từ vật liệu nano, ứng dụng trong y khoa. Diễn giả: TS Trần Quang Trung, Đại học Sungkyunkwan (Hàn Quốc).",
+          "id": "nano",
+          "image": {
+            "height": 640,
+            "url": "/media/activity-nano.c7dc7ca6.jpg",
+            "width": 738
+          },
+          "kind": "seminar",
+          "title": "Ứng dụng vật liệu nano vào y tế"
+        },
+        {
+          "date": "23/8",
+          "description": "Mạng nơ-ron, TensorFlow, mạng tích chập và hướng đi của deep learning. Diễn giả: TS Cường Phạm.",
+          "id": "machine-learning",
+          "image": {
+            "height": 636,
+            "url": "/media/activity-machine-learning.c6a02acf.jpg",
+            "width": 900
+          },
+          "kind": "seminar",
+          "title": "Công nghệ học máy — Machine Learning"
+        },
+        {
+          "date": "7/8/2019",
+          "description": "Quy trình tạo ra một sản phẩm từ ý tưởng, phác thảo đến chế tạo mẫu thử, kèm phần thực hành phác thảo.",
+          "id": "design-workshop",
+          "image": {
+            "height": 438,
+            "url": "/media/activity-design-workshop.2ce1badc.jpg",
+            "width": 900
+          },
+          "kind": "workshop",
+          "title": "Thiết kế công nghiệp"
+        },
+        {
+          "date": "",
+          "description": "Dùng điện trở, diode, transistor, FET, opto để thiết kế ứng dụng thực tế; các kỹ thuật layout mạch in cơ bản.",
+          "id": "pcb",
+          "image": {
+            "height": 600,
+            "url": "/media/lab-workbenches.c235eaa8.jpg",
+            "width": 1000
+          },
+          "kind": "workshop",
+          "title": "Thiết kế và gia công thử nghiệm mạch điện"
+        },
+        {
+          "date": "",
+          "description": "Quy trình thiết kế 3D và các yếu tố ảnh hưởng tới sản phẩm từ khâu thiết kế đến khi chế tạo thành phẩm.",
+          "id": "design-3d",
+          "image": {
+            "height": 640,
+            "url": "/media/activity-design-3d.e408b3dc.jpg",
+            "width": 853
+          },
+          "kind": "workshop",
+          "title": "Thiết kế 3D với SolidWorks"
+        }
+      ],
+      "kinds": {
+        "competition": "Cuộc thi",
+        "partnership": "Hợp tác",
+        "seminar": "Hội thảo",
+        "workshop": "Workshop"
+      },
+      "next": "Hoạt động tiếp theo",
+      "previous": "Hoạt động trước",
+      "title": "Hoạt động & cuộc thi thường niên"
+    },
+    "courses": {
+      "ageLabel": "Độ tuổi",
+      "cardCta": "Tìm hiểu thêm",
+      "description": "Từ những bước lập trình đầu tiên đến kỹ năng vận hành máy công nghiệp — mỗi khóa học đều bắt đầu bằng việc bắt tay vào làm.",
+      "details": {
+        "am-thanh": {
+          "curriculum": [
+            "Tìm hiểu nguồn âm và sự dao động tạo ra âm thanh.",
+            "Tìm hiểu sự truyền âm và các môi trường truyền âm.",
+            "Khám phá quá trình âm thanh được tai tiếp nhận và truyền tín hiệu đến não bộ.",
+            "Thực hành truyền âm thông qua trò chơi tương tác."
+          ]
+        },
+        "automation": {
+          "audience": "học sinh từ 16 – 18 tuổi",
+          "curriculum": [
+            "Bài 1: Robot",
+            "Bài 2: Teach pendant",
+            "Bài 3: Phần mềm lập trình",
+            "Bài 4: Các ứng dụng công nghiệp",
+            "Bài 5: Thiết bị ngoại vi"
+          ],
+          "knowledge": [
+            "Nắm được kiến thức về robot.",
+            "Hiểu được các bộ phận và chức năng của cánh tay robot.",
+            "Hiểu các kiến thức về các mạch điện tử cơ bản như bộ khuếch đại, bộ dao động…",
+            "Hiểu kiến thức về quy trình thiết kế kỹ thuật.",
+            "Nắm được kiến thức về động lực học.",
+            "Mô tả được hệ thống điều khiển"
+          ],
+          "overview": [
+            "Khóa học cung cấp cho học sinh cơ hội khám phá, thiết kế hệ thống robot trong mô hình của một môi trường sản xuất. Học sinh còn được thử thách đưa ra các giải pháp để tối ưu hóa hệ thống bằng cách đảm nhận vai trò của một kỹ sư hệ thống robot."
+          ],
+          "skills": [
+            "Nhận dạng được các loại robot.",
+            "Xác định được vùng làm việc của các loại robot",
+            "Thiết lập và lập trình robot",
+            "Sử dụng công cụ ngoại vi trong hệ thống robot",
+            "Áp dụng quy trình thiết kế kỹ thuật."
+          ],
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/tu-dong-hoa-va-robot/"
+        },
+        "blockchain": {
+          "curriculum": [
+            "Tìm hiểu về lịch sử của tiền tệ từ sơ khai cho đến kỷ nguyên số.",
+            "Tìm hiểu về công nghệ Blockchain qua tiền điện tử.",
+            "Hiểu rõ cơ chế bảo mật của Blockchain thông qua liên kết mã Hash giữa các khối.",
+            "Thực hành mô phỏng xác thực khối trong Blockchain."
+          ]
+        },
+        "canh-tay-robot": {
+          "curriculum": [
+            "Tìm hiểu về đặc điểm và ứng dụng của cánh tay robot trong sản xuất.",
+            "Khám phá về cấu tạo và nguyên lí làm việc của cánh tay robot.",
+            "Thực hành lập trình điều khiển cánh tay robot.",
+            "Tham gia thử thách trò chơi \"Trạm hàng sắc màu\"."
+          ]
+        },
+        "cap-quang": {
+          "curriculum": [
+            "Tìm hiểu hiện tượng khúc xạ ánh sáng và phản xạ toàn phần.",
+            "Khám phá nguyên lý truyền ánh sáng trong cáp quang.",
+            "Thực hành thí nghiệm truyền ánh sáng thông qua các hiện tượng khúc xạ và phản xạ toàn phần.",
+            "Tham gia thử thách truyền tin qua mã Morse."
+          ]
+        },
+        "cau-truc-may-tinh": {
+          "curriculum": [
+            "Tìm hiểu cấu trúc và chức năng các linh kiện chính của máy tính.",
+            "Tìm hiểu vai trò của linh kiện máy tính: CPU, mainboard, RAM, SSD/HDD…",
+            "Khám phá cách lựa chọn linh kiện và phần cứng phù hợp với nhu cầu.",
+            "Thực hành lựa chọn linh kiện phù hợp với mục đích sử dụng."
+          ]
+        },
+        "cnc": {
+          "curriculum": [
+            "Tìm hiểu về gia công cơ khí.",
+            "Khám phá cấu tạo và nguyên lý hoạt động máy phay CNC.",
+            "Thực hành thiết kế bản vẽ cơ khí đơn giản.",
+            "Vận hành máy CNC để gia công sản phẩm."
+          ]
+        },
+        "co-dien-tu": {
+          "curriculum": [
+            "Tìm hiểu về cơ điện tử và các ứng dụng trong thực tiễn.",
+            "Tìm hiểu dây chuyền sản xuất và các linh kiện cơ bản.",
+            "Khám phá phần mềm lập trình và các khối lệnh điều khiển.",
+            "Thực hành lập trình điều khiển các module cơ điện tử."
+          ]
+        },
+        "co-hoc-sang-tao": {
+          "curriculum": [
+            "Tìm hiểu về lực và momen lực.",
+            "Khám phá nguyên lý hoạt động của một số máy cơ đơn giản.",
+            "Thực hành sử dụng máy cơ đơn giản trong mô hình nâng hạ vật.",
+            "Vận dụng kiến thức về lực và máy cơ để giải thích nguyên lý hoạt động của mô hình thang máy."
+          ]
+        },
+        "drone": {
+          "curriculum": [
+            "Tìm hiểu về drone và ứng dụng của drone trong thực tế.",
+            "Khám phá nguyên lý bay của drone.",
+            "Thực hành lập trình điều khiển drone.",
+            "Tham gia trải nghiệm thử thách Drone Soccer."
+          ]
+        },
+        "electrical": {
+          "audience": "học sinh từ 16 – 18 tuổi",
+          "curriculum": [
+            "Bài 1: Nối dây và vận hành mạch điện",
+            "Bài 2: Hệ thống điều khiển đèn chiếu hậu xe máy",
+            "Bài 3: Hệ thống điều khiển đèn pha xe máy",
+            "Bài 4: Đèn cầu thang",
+            "Bài 5: Hệ thống cảnh báo nhận hàng",
+            "Bài 6: Hệ thống báo động cho phòng tối"
+          ],
+          "knowledge": [
+            "Có được sự hiểu biết về hiệu điện thế, dòng điện, điện trở và công suất trong các mạch nối tiếp và song song",
+            "Nắm được vai trò chính của các thiết bị điện, dụng cụ đo điện, động cơ điện",
+            "Nắm được bản chất của thiết kế mạch nối tiếp, song song",
+            "Biết được một số loại công-tắc và tính năng của nó",
+            "Thực hành nối dây và kiểm tra các mạch điện bằng cách kết nối đèn, điện trở và các bộ phận cơ điện như công tắc, rơle và động cơ",
+            "Sử dụng đồng hồ vạn năng kỹ thuật số",
+            "Thiết kế mạch điện để giải quyết các vấn đề trong thế giới thực",
+            "Tính hiệu điện thế, dòng điện, điện trở và công suất trong các mạch nối tiếp và song song",
+            "Áp dụng quy trình thiết kế kĩ thuật"
+          ],
+          "overview": [
+            "Khóa học cung cấp các kiến thức cơ bản về hệ thống điện trong dân dụng và sản xuất. Làm quen với các khái niệm và thiết bị để thiết lập một hệ thống điện hoàn chỉnh. Người học có thể thiết kế các mạch điện cần thiết để giải quyết các vấn đề về điện thường gặp trong cả nhà ở và ngành công nghiệp. Người học sẽ khám phá và thực hành các kỹ năng cần thiết để làm việc với điện, có được một số kiến thức cơ bản cần thiết để làm việc như một thợ điện, nhà thầu điện, hoặc trở thành một kỹ sư điện được cấp phép."
+          ],
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/kham-pha-dien/"
+        },
+        "electronics": {
+          "audience": "học sinh từ 16 – 18 tuổi",
+          "curriculum": [
+            "Bài 1: Hiển thị dung lượng pin",
+            "Bài 2: Máy dò kim loại",
+            "Bài 3: Đèn LED nhấp nháy",
+            "Bài 4: Nhiệt kế kỹ thuật số",
+            "Bài 5: Bộ biến đổi DC"
+          ],
+          "knowledge": [
+            "Nắm được kiến thức về điện áp, dòng điện, điện trở, công suất, định luật Ohm.",
+            "Hiểu các kiến thức về các mạch điện tử cơ bản như bộ khuếch đại, bộ dao động…",
+            "Hiểu kiến thức về các linh kiện bán dẫn.",
+            "Nhận biết các thiết bị điện tử như đồng hồ VOM, nguồn điện…",
+            "Hiểu được sơ đồ nguyên lý."
+          ],
+          "overview": [
+            "Khóa học cung cấp cho học sinh các kiến thức căn bản để giải quyết các vấn đề mà các kỹ sư điện – điện tử thường gặp trong thực tế. Học sinh được đóng vai là một kỹ sư tham gia thiết kế thi công và đánh giá các mạch điện – điện tử đơn giản."
+          ],
+          "skills": [
+            "Xác định được các loại linh kiện điện tử thông dụng như điện trở, tụ điện, diot…",
+            "Kỹ năng nối dây, kiểm tra các mạch điện tử.",
+            "Sử dụng các thiết bị điện tử như VOM, nguồn điện, bộ tạo tín hiệu.",
+            "Xây dựng các mạch điện tử như bộ khuếch đại, bộ dao động để giải quyết các vấn đề trong thực tế."
+          ],
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/kham-pha-dien-tu/"
+        },
+        "energy": {
+          "audience": "học sinh từ 11 – 18 tuổi",
+          "curriculum": [
+            "Bài 1: Pin năng lượng mặt trời",
+            "Bài 2: Tua bin gió",
+            "Bài 3: Pin nhiên liệu",
+            "Bài 4: Hệ thống năng lượng mặt trời"
+          ],
+          "knowledge": [
+            "Hiểu hai loại năng lượng chính: thế năng và động năng và dạng năng lượng khác nhau",
+            "Hiểu và giải thích cách năng lượng có thể chuyển hóa từ dạng này sang dạng khác",
+            "Vai trò của chuyển đổi năng lượng trong cuộc sống hằng ngày",
+            "Đo mức năng lượng ở bất kỳ giai đoạn nào trong quy trình",
+            "Tính hiệu suất của quá trình truyền năng lượng",
+            "Học sinh xây dựng quy trình thiết kế kỹ thuật",
+            "Thực hành quan sát, thí nghiệm mô hình mô phỏng cách chuyển đổi năng lượng",
+            "Làm việc nhóm",
+            "Tư duy giải quyết vấn đề",
+            "Tư duy sáng tạo",
+            "Thuyết trình"
+          ],
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/nang-luong-thay-the/"
+        },
+        "humanoid": {
+          "audience": "học sinh từ 6 – 12 tuổi",
+          "curriculum": [
+            "Bài 1: Làm Quen Với Robot",
+            "Bài 2: Động Cơ Và Các Nguồn Năng Lượng Cho Robot",
+            "Bài 3: Cách Robot Cảm Nhận Môi Trường",
+            "Bài 4: Nhảy Cùng Robot",
+            "Bài 5: Đại Hội Thể Thao Robot"
+          ],
+          "knowledge": [
+            "Nắm được một số khái niệm đơn giản về robot và cấu tạo của chúng.",
+            "Biết được một số loại robot đã và đang được sử dụng trong đời sống.",
+            "Biết được một số nguồn năng lượng có khả năng cung cấp cho robot."
+          ],
+          "overview": [
+            "Khóa học này trang bị cho học sinh một số kiến thức đơn giản cấu tạo robot, cách lập trình và điều khiển robot. Học sinh sẽ thấy được sự tương tác giữa robot và con người, vai trò cũng như những ứng dụng của robot trong cuộc sống hằng ngày. Alpha Ebot là bộ thiết bị được sử dụng giảng dạy trong khóa học này. Alpha Ebot có khả năng giao tiếp với con người thông qua những câu thoại đơn giản được thiết lập sẵn.",
+            "Ngoài ra nó có thể học theo các động tác do chúng ta chỉ dẫn hoặc lập trình. Nền tảng lập trình khối kéo thả (Blockly) được sử dụng trong việc điều khiển robot. Đây là nền tảng có có giao diện gần gũi với học sinh ở lứa tuổi nhỏ với phương thức lập trình đơn giản, trực quan và dễ sử dụng.",
+            "Thông qua khóa học học sinh còn được phát triển có định hướng một số kĩ năng thế kỉ 21 như: kĩ năng như giao tiếp, làm việc nhóm, kĩ năng thuyết trình, giải quyết vấn đề và tư duy sáng tạo."
+          ],
+          "skills": [
+            "Tương tác với robot thông qua một số câu lệnh thoại đơn giản.",
+            "Lập trình điều khiển robot thực hiện một số chuyển động đơn giản.",
+            "Điều khiển robot bằng tay thông qua ứng dụng.",
+            "Lên ý tưởng cho hoạt động nhóm (kể câu chuyện, nhảy múa…)."
+          ],
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/kham-pha-robot-hinh-nguoi/"
+        },
+        "in-3d": {
+          "curriculum": [
+            "Tìm hiểu về công nghệ gia công bồi đắp - in 3D.",
+            "Khám phá cấu tạo và nguyên lý hoạt động của máy in 3D.",
+            "Thực hành chuẩn bị tệp và điều chỉnh các thông số in phù hợp với từng mẫu sản phẩm.",
+            "Vận hành máy in 3D để in sản phẩm."
+          ]
+        },
+        "iot": {
+          "curriculum": [
+            "Tìm hiểu nguyên lý kết nối và điều khiển thiết bị IoT.",
+            "Khám phá lập trình giao diện ứng dụng và vai trò của nền tảng lưu trữ đám mây.",
+            "Thực hành thiết kế giao diện ứng dụng điều khiển.",
+            "Lập trình và điều khiển mô hình IoT bằng giao diện thông minh."
+          ]
+        },
+        "kham-pha-dien": {
+          "curriculum": [
+            "Tìm hiểu khái niệm nguồn điện và linh kiện điện.",
+            "Tìm hiểu các nguyên tắc an toàn khi sử dụng điện.",
+            "Khám phá chức năng của một số thiết bị điện và linh kiện điện tử cơ bản.",
+            "Thực hành lắp ráp và kiểm tra hoạt động của mạch điện cơ bản."
+          ]
+        },
+        "lam-quen-ai": {
+          "curriculum": [
+            "Tìm hiểu về trí tuệ nhân tạo (AI).",
+            "Khám phá các ứng dụng của AI trong đời sống.",
+            "Thực hành mô phỏng quá trình AI học dữ liệu.",
+            "Tham gia thử thách trò chơi \"AI đã học gì?\"."
+          ]
+        },
+        "mechanics": {
+          "audience": "học sinh từ 16 – 18 tuổi",
+          "curriculum": [
+            "Bài 1: Thiết kế kết cấu đỡ tòa nhà",
+            "Bài 2: Cơ cấu nâng nhà",
+            "Bài 3: Sắp xếp các bệ đỡ",
+            "Bài 4: Dọn đường",
+            "Bài 5: Đặt nhà"
+          ],
+          "knowledge": [
+            "Hiểu được các kiến thức về khoa học như khoảng cách trong không gian, trọng lượng và khối lượng, lực, vận tốc, công và cách tính công.",
+            "Nắm bắt các kiến thức về mặt phẳng nghiêng, cái nêm, ốc vít, đòn bẩy, bánh xe và trục, bánh răng và bộ truyền động bánh răng, dây đai và ròng rọc.",
+            "Nắm bắt các đơn vị đo lường, các phép tính.",
+            "Áp dụng quy trình thiết kế cho vấn đề nâng và di dời.",
+            "Đánh giá thiết kế hiện tại và lựa chọn thay đổi thiết kể để cải thiện quy trình.",
+            "Hoàn thành biểu mẫu kỹ thuật tiêu chuẩn",
+            "Khám phá một số hệ cơ học có chức năng tạo ra tác dụng lợi về lực"
+          ],
+          "overview": [
+            "Trong khóa học này, học sinh sẽ khám phá các cơ cấu cơ học, bao gồm các thí nghiệm thiết lập cơ cấu và thậm chí có thể thiết kế các ý tưởng nâng và vận chuyển mới. Một khi học sinh đã quen thuộc với các loại cơ cấu khác nhau, học sinh sẽ có cơ hội khám phá các giải pháp sáng tạo cho các vấn đề, thách thức và nhu cầu trong thực tiễn."
+          ],
+          "skills": [
+            "Xác định và nhận diện các loại cơ cấu có lợi trong cơ khí ảnh hưởng tới cuộc sống hằng ngày.",
+            "Sử dụng các kỹ năng cơ bản cho việc thiết kế các hệ thống vận chuyển và sắp xếp các hàng hóa lớn.",
+            "Trình bày các khái niệm về lực, ma sát, công, và công suất áp dụng trong đời sống.",
+            "Lắp ráp, hiệu chỉnh, và tận dụng các phần cứng để trình bày các ứng dụng cơ khí.",
+            "Bàn luận các vấn đề dưới góc nhìn của một kỹ sư cơ khí và có những kết luận thông qua các kết quả tính toán"
+          ],
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/kham-pha-co-khi/"
+        },
+        "mechatronics": {
+          "audience": "học sinh từ 16 – 18 tuổi",
+          "curriculum": [
+            "Bài 1: Chương trình kiểm soát thùng chứa/ nắp",
+            "Bài 2: Kết hợp trạm xếp chồng và trạm băng tải",
+            "Bài 3: Phát triển chương trình “pick and place”"
+          ],
+          "knowledge": [
+            "Hiểu hệ thống điện khí nén.",
+            "Hiểu được mục đích và nguyên lý hoạt động của các trạm cấp phôi, băng tải và trạm xếp chồng.",
+            "Hiểu được chức năng của các linh kiện điện khí nén.",
+            "Hiểu và sử dụng được bộ PLC",
+            "Phân tích được mạch logic"
+          ],
+          "overview": [
+            "Khóa học cung cấp cho các học sinh cơ hội để khám phá công nghệ tự động hóa và các hệ thống cơ điện tử thiết yếu cho quá trình sản xuất. Trong suốt khóa học, học sinh sẽ được đóng vai một kỹ sư cơ điện tử tham gia thiết kế một hệ thống tự động. Học sinh sẽ được khám phá sự liên kết giữa khối kiến thức cơ khí, kỹ thuật điện, điện tử, và kỹ thuật máy tính để phát triển và tối ưu hóa hệ thống."
+          ],
+          "skills": [
+            "Sử dụng được phần mềm Fluism.",
+            "Tạo và mô phỏng được hệ thống điện khí nén.",
+            "Hiểu và sử dụng được chương trình MecLab",
+            "Áp dụng quy trình thiết kế kỹ thuật"
+          ],
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/khoa-hoc-co-dien-tu/"
+        },
+        "moi-truong-nuoc": {
+          "curriculum": [
+            "Tìm hiểu nguyên nhân gây ô nhiễm môi trường nước.",
+            "Khám phá các phương pháp xử lý nước thải.",
+            "Thực hành thí nghiệm: đo pH, khử trùng và khử màu nước, kiểm tra nước bể bơi.",
+            "Ứng dụng bộ thí nghiệm để xử lý nước."
+          ]
+        },
+        "muc-nuoc-thong-minh": {
+          "curriculum": [
+            "Tìm hiểu tổng quan về hệ thống điều khiển mức nước và ứng dụng thực tế.",
+            "Khám phá điều khiển động cơ bơm, đọc dữ liệu các cảm biến.",
+            "Ứng dụng điều khiển hồi tiếp để điều khiển mức nước theo mục tiêu.",
+            "Ứng dụng nhận dạng giọng nói nhằm ra lệnh điều khiển mức nước và truy vấn thông tin của hệ thống."
+          ]
+        },
+        "nam-cham": {
+          "curriculum": [
+            "Tìm hiểu về từ trường và vai trò của từ trường trong tự nhiên và đời sống.",
+            "Khám phá mối liên hệ giữa nam châm và từ trường.",
+            "Thực hành thí nghiệm về các tính chất cơ bản của nam châm.",
+            "Tham gia thử thách trò chơi \"Ma lực của nam châm\"."
+          ]
+        },
+        "nang-luong-cuoc-song": {
+          "curriculum": [
+            "Tìm hiểu về các dạng năng lượng và các nguồn năng lượng khác nhau.",
+            "Tìm hiểu sự truyền năng lượng.",
+            "Khám phá quá trình chuyển đổi năng lượng.",
+            "Tham gia thử thách trò chơi \"Cỗ máy một chạm\"."
+          ]
+        },
+        "nang-luong-tai-tao": {
+          "curriculum": [
+            "Tìm hiểu các nguồn năng lượng tái tạo.",
+            "Tìm hiểu về quy trình chuyển đổi từ năng lượng gió đến điện năng.",
+            "Khám phá nguyên lý hoạt động của tuabin gió.",
+            "Thực hành đo lường điện năng tạo ra từ mô hình năng lượng tái tạo."
+          ]
+        },
+        "nganh-nhua": {
+          "curriculum": [
+            "Tìm hiểu khái niệm và phân loại polymer.",
+            "Tìm hiểu các tính chất vật lý và hóa học của polymer.",
+            "Khám phá sự khác nhau giữa phương pháp tổng hợp và gia công polymer.",
+            "Thực hành phân loại nhựa và các thí nghiệm chế tạo polymer."
+          ]
+        },
+        "noi-dung-so": {
+          "curriculum": [
+            "Tìm hiểu AI tạo sinh và AI truyền thống.",
+            "Khám phá cách sử dụng mô tả chuẩn (prompt) để tạo hình ảnh với AI.",
+            "Tìm hiểu cách dựng video với hình ảnh và âm thanh.",
+            "Thực hành xây dựng câu chuyện ngắn với công cụ chuyên dụng."
+          ]
+        },
+        "photonics": {
+          "audience": "Học sinh từ 12 – 18 tuổi",
+          "curriculum": [
+            "Bài 1: Truyền tín hiệu tương tự",
+            "Bài 2: Truyền thông thoại và dữ liệu",
+            "Bài 3: Kết nối laser tầm nhìn thẳng",
+            "Bài 4: Bố trí mạng truyền thông sử dụng cáp quang"
+          ],
+          "knowledge": [
+            "Hiểu được vai trò truyền thông trong đời sống.",
+            "Biết được nguyên nhân của mã hóa thông tin trong truyền thông.",
+            "Nắm được nguyên lý truyền tin bằng cáp quang và laser.",
+            "Biết được loại mã sử dụng phổ biến trong truyền tin: mã Morse.",
+            "Biết được công nghệ truyền, nhận tín hiệu và những đặc trưng của nó.",
+            "Khám phá được các vấn đề phát sinh trong truyền thông.",
+            "Biết được bản chất, các hiện tượng và các đại lượng đặc trưng của ánh sáng và mối quan hệ giữa chúng.",
+            "Khám phá được đặc tính laser và tầm quan trọng của nó trong các ứng dụng đời sống.",
+            "Khám phá được cấu tạo, quy trình sản xuất của sợi quang.",
+            "Biết được các yếu tố dẫn đến sự mất mát thông tin và các khắc phục."
+          ],
+          "overview": [
+            "Khóa học giúp cho người học biết được bản chất và giải thích được những hiện tượng liên quan đến ánh sáng trong đời sống hằng ngày. Khám phá được những nguyên lý hoạt động của công nghệ truyền thông hiện đại như cáp quang và laser cũng như vai trò thiết yếu của chúng trong đời sống. Ngoài ra trong khóa học, người học sẽ đóng vai trò là kỹ sư truyền thông để thực hiện các công việc chuyên môn như: lắp đặt hệ thống truyền thông bằng cáp quang, laser và giải quyết các vấn đề phát sinh trong truyền thông liên quan đến sự thất thoát thông tin, gián đoạn trong các cuộc gọi thoại. Bên cạnh đó, người học còn giải quyết các vấn đề về đường truyền, ước lượng và đánh giá để đưa ra thiết kế cho phép có được đường truyền chất lượng tốt nhất."
+          ],
+          "skills": [
+            "Tiến hành truyền tin sử dụng mã Morse.",
+            "Lắp đặt, thiết kế mạch viễn thông sử dụng cáp quang và laser.",
+            "Vận hành các thiết bị điện tử, nguồn phát laser.",
+            "Khảo sát và giải quyết các vấn đề liên quan đến đường truyền sử dụng laser.",
+            "Tính toán được tỉ lệ sai lệch thông tin trong quá trình truyền tải.",
+            "Ước lượng và so sánh độ chính xác trong các phương thức truyền tin.",
+            "Đưa ra giải pháp hạn chế thất thoát thông tin và tối ưu hóa chất lượng đường truyền."
+          ],
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/soi-quang-va-laser/"
+        },
+        "plastics": {
+          "audience": "Học sinh từ 12 – 18 tuổi",
+          "curriculum": [
+            "Bài 1: Tìm hiểu phản ứng hóa học",
+            "Bài 2: Khám phá vật liệu nhựa",
+            "Bài 3: Kỹ thuật ép chân không",
+            "Bài 4: Phương pháp ép phun",
+            "Bài 5: Polymer – Tái chế rác thải nhựa"
+          ],
+          "knowledge": [
+            "Biết được các khái niệm về chất dẻo và các tính chất của chất dẻo.",
+            "Phân biệt được hai loại phản ứng tổng hợp polymer.",
+            "Xác định được nhựa nhiệt dẻo và nhiệt rắn và sản phẩm tạo ra tương ứng.",
+            "Hiểu được ưu, nhược điểm của kỹ thuật ép chân không và kỹ thuật ép phun.",
+            "Trình bày được ứng dụng của chất dẻo và lợi ích của việc tái chế vật liệu nhựa trong đời sống và sản xuất."
+          ],
+          "overview": [
+            "Khóa học này trang bị cho học sinh một số kiến thức cơ bản về nhựa, vật liệu nhựa và các phương pháp xử lý để chuyển đổi nhựa thành sản phẩm. Học sinh được trải nghiệm thực tế thông qua các hoạt động: thiết kế khuôn, lựa chọn loại nhựa phù hợp, áp dụng quy trình kỹ thuật ép chân không, phương pháp ép phun… để tạo ra sản phẩm nhựa mong muốn."
+          ],
+          "skills": [
+            "Viết được công thức cấu tạo và gọi tên của một số polymer thường gặp: polystyrene (PS), polyethylene (PE).",
+            "Thiết kế khuôn và vận hành máy ép chân không để tạo ra sản phẩm.",
+            "Mô phỏng được chu trình của kỹ thuật ép chân không và ép phun.",
+            "Vận hành máy ép phun để tạo ra mẫu vật nhựa phát quang.",
+            "Rèn luyện kỹ năng thực hành, tính cẩn thận và sự kiên nhẫn cho học sinh."
+          ],
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/kham-pha-nganh-nhua/"
+        },
+        "polymer": {
+          "curriculum": [
+            "Tìm hiểu về polymer và vai trò của polymer trong đời sống.",
+            "Khám phá đặc điểm và ứng dụng của các nhóm vật liệu polymer.",
+            "Thực hành các thí nghiệm với vật liệu polymer.",
+            "Thử thách chế tạo nhựa biopolymer."
+          ]
+        },
+        "process": {
+          "audience": "Học sinh từ 12 – 18 tuổi",
+          "curriculum": [
+            "Bài 1: Sơ đồ hệ thống",
+            "Bài 2: Đo lường và kiểm soát thủ công",
+            "Bài 3: Điều khiển có sự hỗ trợ của máy tính",
+            "Bài 4: Giám sát và kiểm soát mức độ"
+          ],
+          "knowledge": [
+            "Thiết kế bản vẽ cơ khí, sơ đồ điện và sơ đồ quy trình và dụng cụ",
+            "Đánh giá các thiết kế hiện tại và lựa chọn các thay đổi thiết kế, dẫn đến cải tiến quy trình.",
+            "Hoàn thiện các biểu mẫu kỹ thuật tiêu chuẩn",
+            "Khám phá cách các thuộc tính, lực lượng và hạn chế của hệ thống ảnh hưởng đến hành vi của chúng",
+            "Lưu lượng, thể tích và áp suất",
+            "Điện dung",
+            "Âm thanh siêu âm",
+            "Kỹ thuật số và tương tự",
+            "Đơn vị đo lường",
+            "Cộng và trừ",
+            "Tính toán hệ số hiệu chuẩn",
+            "Vẽ đồ thị",
+            "Thiết kế kỹ thuật, sơ đồ nguyên lý mạch điện và sơ đồ biểu thị quy trình vận hành",
+            "Đánh giá thiết kế hiện tại và lên kế hoạch cải tiến",
+            "Hoàn thiện dự án dựa trên các quy chuẩn kỹ thuật",
+            "Tìm hiểu về đặc tính kỹ thuật của hệ thống, các tác động của lực và áp suất"
+          ],
+          "overview": [
+            "Mục đích của khóa học Nhập môn Kỹ thuật Quy trình STEM là cho phép người học đảm nhận vai trò của một kỹ sư điều khiển quy trình trong một tình huống thực tế. Khóa học khám phá, giáo dục và thử thách sinh viên các kỹ năng cơ bản liên quan đến kiểm soát quá trình."
+          ],
+          "skills": [
+            "Xác định và xác định kỹ thuật kiểm soát quá trình và cách hệ thống điều khiển tự động tác động hàng ngày của chúng",
+            "Sử dụng các kỹ năng cơ bản cần thiết để đọc và vẽ sơ đồ điện, bản vẽ cơ khí, sơ đồ đường ống và thiết bị.",
+            "Trình bày cách đo lưu lượng và áp suất được đo bằng cả thủ công và điện tử cũng như cách các van và máy bơm hoạt động bằng cách sử dụng hệ thống tuần hoàn kín.",
+            "Kết nối, cấu hình và vận hành phần cứng và phần mềm cần thiết để điều khiển tự động bao gồm lựa chọn và áp dụng các cảm biến khác nhau.",
+            "Thảo luận về logic của điều khiển (PID) và đưa ra kết luận trong khi kiểm tra đầu ra dữ liệu hệ thống thực."
+          ],
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/gioi-thieu-ve-ky-thuat-quy-trinh/"
+        },
+        "robot-car": {
+          "audience": "Học sinh từ 12-15 tuổi",
+          "curriculum": [
+            "Bài 1: Làm Quen Với Lập Trình Kéo Thả",
+            "Bài 2: Vòng Lặp, Hằng Và Biến Số",
+            "Bài 3: Khám Phá Cấu Tạo Của Xe Robot",
+            "Bài 4: Thế Giới Sắc Màu",
+            "Bài 5: Âm Thanh Của Cuộc Sống",
+            "Bài 6: Robot Chuyển Động",
+            "Bài 7: Robot Và Thế Giới",
+            "Bài 8: Xe Dò Mê Cung"
+          ],
+          "knowledge": [
+            "Hiểu được một số khái niệm khoa học đơn giản (âm thanh, ánh sáng, …).",
+            "Biết được một số động cơ, thiết bị điện tử, khái niệm liên quan và chức năng tương ứng của chúng.",
+            "Biết được một số khái niệm cơ bản về lập trình, chức năng của các câu lệnh.",
+            "Mô tả được các bộ phận của mBot và chức năng từng bộ phận.",
+            "Biết được vai trò và một số ứng dụng liên quan đến cảm biến trong đời sống."
+          ],
+          "overview": [
+            "Khóa học trang bị cho học sinh những kiến thức cơ bản về lập trình và điều khiển robot cũng như làm rõ mối liên hệ giữa khoa học, kỹ thuật và công nghệ thông qua các thiết bị điện tử, cảm biến, động cơ… được trang bị trong khóa học.",
+            "Robot KIT mBot của MakeBlock là bộ thiết bị được sử dụng trong khóa học này. Đây cơ bản là xe robot được trang bị nhiều loại cảm biến giúp nó thông minh hơn như: tự động dò đường, tự động tránh vật thể, phát ra âm thanh… và có thể nâng cấp lên thành các dạng robot khác như bọ 4 chân, robot chó, robot ếch… Nền tảng lập trình khối kéo thả được sử dụng để điều khiển mBot. Đây là nền tảng có có giao diện gần gũi với học sinh ở lứa tuổi nhỏ với phương thức lập trình đơn giản, trực quan và dễ sử dụng.",
+            "Thông qua khóa học học sinh còn được phát triển có định hướng một số kĩ năng thế kỉ 21 như: kỹ năng giao tiếp, làm việc nhóm, kỹ năng thuyết trình, giải quyết vấn đề, tư duy phản biện và sáng tạo."
+          ],
+          "skills": [
+            "Lập trình được một số câu lệnh đơn giản với phần mềm MakeBlock.",
+            "Lắp ráp, thiết kế và nâng cấp mô hình mBot với phụ kiện đi kèm.",
+            "Mô phỏng được chuyển động của một số loài động vật khác nhau.",
+            "Biểu diễn được một số bản nhạc đơn giản với hệ thống âm thanh trên mBot.",
+            "Điều khiển và hiển thị được hệ thống đèn led tích hợp trên mBot.",
+            "Thiết lập chức năng tự động di chuyển, dò đường, tránh vật cản, … cho mBot."
+          ],
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/kham-pha-xe-robot-nang-cao/"
+        },
+        "robot-sinh-hoc": {
+          "curriculum": [
+            "Tìm hiểu và nhận biết về loài động thực vật.",
+            "Khám phá nguyên lý hoạt động của mô hình robot sinh học.",
+            "Thực hành lắp ráp và vận hành mô hình robot sinh học.",
+            "Tham gia trò chơi với mô hình robot sinh học."
+          ]
+        },
+        "robotic-arm": {
+          "audience": "học sinh từ 15 – 18 tuổi",
+          "curriculum": [
+            "Bài 1: Công Tác Kỹ Sư",
+            "Bài 2: Teaching And Playback - Làm Quen Với Hệ Trục Tọa Độ (3 Buổi)",
+            "Bài 3: Robot Phân Loại Sản Phẩm (2 Buổi)",
+            "Bài 4: Robot Cắt - Khắc Laser",
+            "Bài 5: Robot Thực Hiện Quy Trình Sản Xuất (3 Buổi)"
+          ],
+          "knowledge": [
+            "Biết được một số khái niệm về robot, cánh tay robot và ứng dụng thực tiễn.",
+            "Hiểu được một số cơ chế truyền động thường gặp trong đời sống và sản suất.",
+            "Biết được một số động cơ, thiết bị điện tử, khái niệm liên quan và chức năng tương ứng của chúng.",
+            "Biết được đặc tính, những ứng dụng và quy định an toàn khi làm việc với laser.",
+            "Hiểu được vai trò của tọa độ trong lập trình và tự động hóa."
+          ],
+          "overview": [
+            "Khóa học trang bị cho học sinh một số kiến thức về kỹ thuật robot – cánh tay robot và ứng dụng của cánh tay robot trong thực tế sản xuất. Học sinh được trải nghiệm thực tế thông qua việc lập trình và điều khiển một quy trình mô phỏng có sử dụng cánh tay robot.",
+            "Dobot Magician là bộ thiết bị được sử dụng trong khóa này. Bộ thiết bị có nhiều chức năng, dễ kết nối, mở rộng và điều khiển. Các phụ kiện đi kèm cho phép nâng cấp giúp robot có thể thực hiện nhiều tác vụ hơn như: phân loại sản phẩm theo màu, in 3D, khắc laser, gắp thả vật, vẽ…",
+            "Dobot Magician sử dụng nền tảng lập trình kéo khối thả. Đây là nền tảng có có giao diện gần gũi với học sinh với phương thức lập trình đơn giản, trực quan và dễ sử dụng.",
+            "Thông qua khóa học học sinh còn được phát triển có định hướng một số kĩ năng thế kỉ 21 như: làm việc nhóm, kĩ năng thuyết trình, giải quyết vấn đề, tư duy phản biện và sáng tạo."
+          ],
+          "skills": [
+            "Lập trình hoạt động cánh tay robot bằng phần mềm Teaching và Playback.",
+            "Đo đạc, thiết lập được tọa độ thực để vận hành cánh tay robot.",
+            "Phối hợp, liên kết hoạt động cánh tay robot với các thiết bị ngoại vi.",
+            "Thiết kế cấu trúc 3D bằng phầm mềm Solidworks.",
+            "Thiếp lập và vận hành chức năng cắt, khắc laser cho cánh tay robot.",
+            "Thiết kế được một quy trình với cánh tay robot thực hiện một chức năng nào đó.",
+            "Thuyết trình, trình bày hoạt động, chức năng từ thành phần trong quy trình thiết kế đã đưa ra."
+          ],
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/canh-tay-robot-trong-san-xuat/"
+        },
+        "scratch": {
+          "curriculum": [
+            "Bài 1: Làm quen với Scratch",
+            "Bài 2: Vượt chướng ngại vật",
+            "Bài 3: Anh hùng đập bọ",
+            "Bài 4: Vượt mê cung",
+            "Bài 5: Khám phá hệ mặt trời",
+            "Bài 6: Bé học toán",
+            "Bài 7: Cuộc chiến đại dương"
+          ],
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/lap-trinh-voi-scratch-2/"
+        },
+        "stress": {
+          "audience": "Học sinh từ 12 – 18 tuổi",
+          "curriculum": [
+            "Bài 1: Giới thiệu về tĩnh học",
+            "Bài 2: Sức bền vật liệu",
+            "Bài 3: Các cấu trúc thường gặp trong xây dựng",
+            "Bài 4: Các thiết kế cầu"
+          ],
+          "knowledge": [
+            "Hiểu được các nguyên lí và vai trò của các đại lượng tĩnh học trong việc tạo ra hoặc duy trì trạng thái cân bằng.",
+            "Phân loại và phân biệt được các loại ứng suất cũng như các loại tải tác động lên cấu trúc trong quá trình sử dụng.",
+            "Biết được những tính chất và đặc trưng của các loại vật liệu khác nhau thường sử dụng trong xây dựng.",
+            "Hiểu được vai trò của gia cố vật liệu trong việc tăng cường sức bền vật liệu",
+            "Biết được các cấu trúc hình học thường sử dụng trong xây dựng và những đặc trưng của nó thích hợp trong việc tăng độ bền của công trình"
+          ],
+          "overview": [
+            "Người học sẽ có được những kiến thức tổng quát về tĩnh học và các đại lượng liên quan. Biết được tính chất đặc trưng của các vật liệu và cấu trúc thường gặp trong xây dựng cũng như mối tương quan giữa chúng để có được một công trình đảm bảo các tiêu chí về: mỹ quan, độ bền, độ hiệu quả, lợi ích về kinh tế… Ngoài ra trong khóa học người học sẽ đóng vai một kỹ sư xây dựng để thực hiện các công việc chuyên môn như lắp đặt một hệ thống dầm, hệ thống giàn, đo đạc và tính toán các đại lượng liên quan đến độ bền công trình, lên kế hoạch lựa chọn vật liệu, cấu trúc hình học cho một số công trình như trụ cột, tháp, cầu… đảm bảo an toàn cho người sử dụng trước các tác động ngoại cảnh như động đất, gió bão."
+          ],
+          "skills": [
+            "Tính toán, đo đạc được các đại lượng tĩnh học cho cấu trúc cần khảo sát.",
+            "Lựa chọn được loại vật liệu phù hợp và hình dạng cấu trúc tốt nhất căn cứ vào tính chất, cơ chế chịu lực và giá thành vật liệu.",
+            "Chọn được phương thức hỗ trợ cấu trúc tốt nhất cho thiết kế khi đã xét đến độ biến dạng, sự uốn và ứng suất…",
+            "Áp dụng quy trình thiết kế kỹ thuật."
+          ],
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/phan-tich-ky-thuat-va-ung-suat/"
+        },
+        "the-gioi-ao": {
+          "curriculum": [
+            "Tìm hiểu về vai trò của lập trình trong điều khiển robot.",
+            "Khám phá phần mềm lập trình và các khối lệnh cơ bản.",
+            "Thực hành lập trình robot di chuyển trong sa bàn mô phỏng.",
+            "Vận dụng kiến thức lập trình để thực hiện dự án \"Kỹ sư nông trại tài ba\"."
+          ]
+        },
+        "thi-giac-may-tinh": {
+          "curriculum": [
+            "Tìm hiểu sơ lược về học máy.",
+            "Khám phá vai trò và phân loại học máy trong thực tế.",
+            "Thực hành quy trình học máy cùng mạng nơron tích chập.",
+            "Ứng dụng học máy trong nhận diện vật thể."
+          ]
+        },
+        "thien-nhien": {
+          "curriculum": [
+            "Tìm hiểu các mùa trong năm.",
+            "Tìm hiểu các hiện tượng thời tiết, thiên tai và nguyên nhân hình thành.",
+            "Khám phá tác động của thiên tai và các biện pháp phòng tránh, ứng phó.",
+            "Thực hành xây dựng mô hình mô phỏng thiên tai."
+          ]
+        },
+        "thiet-ke-3d": {
+          "curriculum": [
+            "Tìm hiểu về thiết kế 3D.",
+            "Tìm hiểu hệ trục tọa độ trong không gian 3 chiều.",
+            "Khám phá công cụ thiết kế in 3D.",
+            "Thực hành thiết kế 3D với phần mềm chuyên dụng."
+          ]
+        },
+        "thiet-ke-co-khi": {
+          "curriculum": [
+            "Tìm hiểu bản vẽ kỹ thuật, hình chiếu và các quy ước biểu diễn.",
+            "Khám phá cách đọc và phân tích bản vẽ kỹ thuật.",
+            "Thực hành thiết kế sản phẩm mẫu.",
+            "Thực hành gia công, lắp ráp sản phẩm theo bản vẽ."
+          ]
+        },
+        "thiet-ke-website": {
+          "curriculum": [
+            "Tìm hiểu các khái niệm cơ bản về giao diện người dùng và trải nghiệm người dùng.",
+            "Khám phá quy trình thiết kế giao diện website.",
+            "Khám phá các chức năng cơ bản của công cụ chuyên dụng trong thiết kế website.",
+            "Thực hành thiết kế một website đơn giản."
+          ]
+        },
+        "water": {
+          "audience": "Học sinh từ 6 – 18 tuổi",
+          "curriculum": [
+            "Bài 1: Mô tả chu trình nước",
+            "Bài 2: Làm mềm nước cứng",
+            "Bài 3: Xử lý nước ngọt",
+            "Bài 4: Xử lý nước thải",
+            "Bài 5: Khảo sát nguồn nước ô nhiễm"
+          ],
+          "knowledge": [
+            "Xác định nhu cầu sinh học và tình trạng môi trường nước của xã hội hiện nay.",
+            "Hiểu được quá trình làm mềm nước cứng.",
+            "Khám phá cách những sinh vật sống sử dụng nguồn nước trên Trái đất.",
+            "Hiểu quá trình tự nhiên của chu trình nước.",
+            "Tìm mối tương quan giữa các đặc điểm hóa học với các đặc tính vật lý",
+            "Hiểu bản chất của axit, bazơ và muối",
+            "Sử dụng các định nghĩa và phép đo để khám phá tính chất axit/bazơ",
+            "Xác định các chất gây ô nhiễm trong nước thải",
+            "Khám phá các công nghệ và phương pháp xử lý nước thải hiện đại"
+          ],
+          "overview": [
+            "Khóa học này trang bị cho học sinh về nguyên tắc cơ bản của các phương pháp thử nghiệm và xử lý nước. Học sinh sẽ khám phá công nghệ, tiêu chuẩn thử nghiệm nước và tìm hiểu làm thế nào hoạt động của con người đã ảnh hưởng đến một số khía cạnh của môi trường. Qua đó, học sinh hiểu rõ tầm quan trọng của nguồn nước trong cuộc sống và phát triển các giải pháp bảo vệ môi trường, góp phần cải thiện đời sống con người ngày một tốt hơn."
+          ],
+          "skills": [
+            "Rèn luyện kỹ năng thực hành, tính cẩn thận và sự kiên nhẫn cho học sinh.",
+            "Mô phỏng nguồn nước bị ô nhiễm.",
+            "Xây dựng kế hoạch xử lý nguồ nước để biến nguồn nước bị ô nhiễm thành nguồn nước sạch.",
+            "Tính toán được lượng nước tiêu thụ của hộ gia đình.",
+            "Thực hành phương pháp xử lý nước: lắng, sàng lọc, khử trùng, đo pH và đo lượng oxy hòa tan…",
+            "Xác định các vấn đề phải đối mặt với tình trạng cung cấp nguồn nước hiện tại"
+          ],
+          "sourceUrl": "https://fablab.eiu.edu.vn/courses/cong-nghe-moi-truong-nuoc/"
+        },
+        "xac-suat-hoc-may": {
+          "curriculum": [
+            "Tìm hiểu định lý Naïve Bayes.",
+            "Thực hành thu thập và phân tích dữ liệu về lịch sử khách hàng.",
+            "Áp dụng thuật toán Naïve Bayes để dự đoán hành vi của khách hàng dựa trên dữ liệu.",
+            "Đánh giá hiệu suất dựa trên độ chính xác."
+          ]
+        },
+        "xe-robot": {
+          "curriculum": [
+            "Tìm hiểu cấu tạo và chức năng của xe robot.",
+            "Khám phá cách điều khiển xe robot bằng giọng nói và điều khiển từ xa.",
+            "Thực hành điều khiển xe robot trên đường đua và vượt chướng ngại vật.",
+            "Tham gia thử thách \"Đường đua robot\"."
+          ]
+        }
+      },
+      "emptyState": "Chưa có khóa học nào trong nhóm này.",
+      "eyebrow": "Khóa học STEM",
+      "filters": {
+        "all": "Tất cả",
+        "empty": "Không có chương trình nào khớp với lựa chọn này.",
+        "stage": "Cấp học",
+        "topic": "Nhóm chủ đề"
+      },
+      "groups": [
+        {
+          "description": "Chương trình đầy đủ 5–10 tuần, theo một dự án từ bản phác đầu tiên đến sản phẩm hoàn thiện.",
+          "id": "stem",
+          "title": "Khóa học STEM"
+        },
+        {
+          "description": "Ba mươi chương trình ngắn, đi thẳng vào một lĩnh vực để thử sức. Lọc theo cấp học và nhóm chủ đề để tìm nhanh chương trình phù hợp.",
+          "filterable": true,
+          "id": "experience",
+          "title": "Chương trình trải nghiệm STEM"
+        }
+      ],
+      "imageAlt": "Ảnh hoạt động tại EIU FabLab minh hoạ cho khóa {title}",
+      "items": [
+        {
+          "description": "Tìm hiểu các mùa, hiện tượng thời tiết và thiên tai, rồi dựng mô hình mô phỏng để hiểu cách phòng tránh.",
+          "group": "experience",
+          "icon": "energy",
+          "id": "thien-nhien",
+          "image": {
+            "height": 320,
+            "url": "/media/course-energy.3d52d547.jpg",
+            "width": 760
+          },
+          "stage": "th",
+          "title": "Sức mạnh của thiên nhiên",
+          "topic": "science"
+        },
+        {
+          "description": "Các dạng và nguồn năng lượng, cách năng lượng truyền và chuyển đổi, qua thử thách \"Cỗ máy một chạm\".",
+          "group": "experience",
+          "icon": "energy",
+          "id": "nang-luong-cuoc-song",
+          "image": {
+            "height": 320,
+            "url": "/media/course-energy.3d52d547.jpg",
+            "width": 760
+          },
+          "stage": "thcs",
+          "title": "Năng lượng và cuộc sống",
+          "topic": "science"
+        },
+        {
+          "description": "Từ nguồn âm và dao động đến cách tai người tiếp nhận âm thanh, thực hành truyền âm bằng trò chơi tương tác.",
+          "group": "experience",
+          "icon": "electronics",
+          "id": "am-thanh",
+          "image": {
+            "height": 600,
+            "url": "/media/lab-workbenches.c235eaa8.jpg",
+            "width": 1000
+          },
+          "stage": "thcs",
+          "title": "Bí mật âm thanh",
+          "topic": "science"
+        },
+        {
+          "description": "Từ trường và nam châm trong tự nhiên, thí nghiệm về tính chất cơ bản và thử thách \"Ma lực của nam châm\".",
+          "group": "experience",
+          "icon": "electrical",
+          "id": "nam-cham",
+          "image": {
+            "height": 320,
+            "url": "/media/course-electrical.e1dd35f9.jpg",
+            "width": 760
+          },
+          "stage": "thcs",
+          "title": "Nam châm và từ trường",
+          "topic": "science"
+        },
+        {
+          "description": "Khúc xạ ánh sáng và phản xạ toàn phần, nguyên lý truyền ánh sáng trong cáp quang, khép lại bằng thử thách mã Morse.",
+          "group": "experience",
+          "icon": "photonics",
+          "id": "cap-quang",
+          "image": {
+            "height": 500,
+            "url": "/media/lab-laser-cutter.1ae81723.jpg",
+            "width": 679
+          },
+          "stage": "thcs",
+          "title": "Cáp quang và Laser",
+          "topic": "science"
+        },
+        {
+          "description": "Đặc điểm và ứng dụng của các nhóm vật liệu polymer, thí nghiệm thực hành và thử thách chế tạo nhựa biopolymer.",
+          "group": "experience",
+          "icon": "plastics",
+          "id": "polymer",
+          "image": {
+            "height": 320,
+            "url": "/media/course-plastics.df191647.jpg",
+            "width": 760
+          },
+          "stage": "thcs",
+          "title": "Giải mã Polymer",
+          "topic": "science"
+        },
+        {
+          "description": "Các nguồn năng lượng tái tạo và nguyên lý tuabin gió, thực hành đo điện năng tạo ra từ mô hình.",
+          "group": "experience",
+          "icon": "energy",
+          "id": "nang-luong-tai-tao",
+          "image": {
+            "height": 320,
+            "url": "/media/course-energy.3d52d547.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "Năng lượng tái tạo",
+          "topic": "science"
+        },
+        {
+          "description": "Nguyên nhân ô nhiễm nước và các phương pháp xử lý; thực hành đo pH, khử trùng, khử màu và kiểm tra nước bể bơi.",
+          "group": "experience",
+          "icon": "water",
+          "id": "moi-truong-nuoc",
+          "image": {
+            "height": 320,
+            "url": "/media/course-water.9e0a5a8d.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "Công nghệ môi trường nước",
+          "topic": "science"
+        },
+        {
+          "description": "Phân loại polymer, tính chất vật lý và hóa học, phân biệt tổng hợp với gia công, kèm thí nghiệm chế tạo.",
+          "group": "experience",
+          "icon": "plastics",
+          "id": "nganh-nhua",
+          "image": {
+            "height": 320,
+            "url": "/media/course-plastics.df191647.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "Khám phá ngành nhựa",
+          "topic": "science"
+        },
+        {
+          "description": "Cấu tạo và cách điều khiển xe robot bằng giọng nói và điều khiển từ xa, khép lại bằng thử thách \"Đường đua robot\".",
+          "group": "experience",
+          "icon": "robot-car",
+          "id": "xe-robot",
+          "image": {
+            "height": 320,
+            "url": "/media/course-robot-car.7e823afe.jpg",
+            "width": 760
+          },
+          "stage": "th",
+          "title": "Khám phá xe robot",
+          "topic": "robotics"
+        },
+        {
+          "description": "Nguyên lý bay và ứng dụng của drone, thực hành lập trình điều khiển và trải nghiệm thử thách Drone Soccer.",
+          "group": "experience",
+          "icon": "automation",
+          "id": "drone",
+          "image": {
+            "height": 320,
+            "url": "/media/course-mechanics.9a142d33.jpg",
+            "width": 760
+          },
+          "stage": "thcs",
+          "title": "Lập trình Drone",
+          "topic": "robotics"
+        },
+        {
+          "description": "Cấu tạo và nguyên lý làm việc của cánh tay robot, thực hành lập trình qua trò chơi \"Trạm hàng sắc màu\".",
+          "group": "experience",
+          "icon": "robotic-arm",
+          "id": "canh-tay-robot",
+          "image": {
+            "height": 320,
+            "url": "/media/course-robotic-arm.81c09dc3.jpg",
+            "width": 760
+          },
+          "stage": "thcs",
+          "title": "Cánh tay robot trong sản xuất",
+          "topic": "robotics"
+        },
+        {
+          "description": "Nhận biết loài động thực vật, lắp ráp và vận hành mô hình robot sinh học, rồi chơi cùng chính mô hình đó.",
+          "group": "experience",
+          "icon": "humanoid",
+          "id": "robot-sinh-hoc",
+          "image": {
+            "height": 320,
+            "url": "/media/course-humanoid.bf6451ba.jpg",
+            "width": 760
+          },
+          "stage": "thcs",
+          "title": "Robot sinh học",
+          "topic": "robotics"
+        },
+        {
+          "description": "Nguồn điện, linh kiện và nguyên tắc an toàn điện; thực hành lắp ráp và kiểm tra mạch điện cơ bản.",
+          "group": "experience",
+          "icon": "electronics",
+          "id": "kham-pha-dien",
+          "image": {
+            "height": 320,
+            "url": "/media/course-electronics.39d13333.jpg",
+            "width": 760
+          },
+          "stage": "thcs",
+          "title": "Khám phá điện",
+          "topic": "robotics"
+        },
+        {
+          "description": "Đọc và phân tích bản vẽ kỹ thuật, hình chiếu và quy ước biểu diễn; thực hành thiết kế, gia công và lắp ráp.",
+          "group": "experience",
+          "icon": "mechanics",
+          "id": "thiet-ke-co-khi",
+          "image": {
+            "height": 560,
+            "url": "/media/lab-machine-shop.48f34a61.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "Khám phá thiết kế cơ khí",
+          "topic": "robotics"
+        },
+        {
+          "description": "Dây chuyền sản xuất và linh kiện cơ điện tử, phần mềm lập trình và thực hành điều khiển các module.",
+          "group": "experience",
+          "icon": "mechatronics",
+          "id": "co-dien-tu",
+          "image": {
+            "height": 320,
+            "url": "/media/course-mechatronics.9dc5e07a.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "Khám phá cơ điện tử",
+          "topic": "robotics"
+        },
+        {
+          "description": "Lực và momen lực, nguyên lý các máy cơ đơn giản, vận dụng vào mô hình nâng hạ vật và thang máy.",
+          "group": "experience",
+          "icon": "stress",
+          "id": "co-hoc-sang-tao",
+          "image": {
+            "height": 320,
+            "url": "/media/course-stress.18597909.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "Cơ học sáng tạo",
+          "topic": "robotics"
+        },
+        {
+          "description": "Cấu tạo và nguyên lý máy phay CNC, thiết kế bản vẽ cơ khí đơn giản rồi vận hành máy để gia công sản phẩm.",
+          "group": "experience",
+          "icon": "cnc",
+          "id": "cnc",
+          "image": {
+            "height": 320,
+            "url": "/media/course-cnc.cb68e7b0.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "Công nghệ gia công cắt gọt CNC",
+          "topic": "robotics"
+        },
+        {
+          "description": "Cấu tạo và nguyên lý máy in 3D, chuẩn bị tệp và điều chỉnh thông số in, vận hành máy để in sản phẩm.",
+          "group": "experience",
+          "icon": "process",
+          "id": "in-3d",
+          "image": {
+            "height": 600,
+            "url": "/media/lab-3d-printers.6fb93aa4.jpg",
+            "width": 1000
+          },
+          "stage": "thpt",
+          "title": "Công nghệ gia công bồi đắp in 3D",
+          "topic": "robotics"
+        },
+        {
+          "description": "Điều khiển động cơ bơm và đọc dữ liệu cảm biến, dùng điều khiển hồi tiếp và nhận dạng giọng nói để quản lý mức nước.",
+          "group": "experience",
+          "icon": "water",
+          "id": "muc-nuoc-thong-minh",
+          "image": {
+            "height": 320,
+            "url": "/media/course-water.9e0a5a8d.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "Giám sát & điều khiển mức nước thông minh",
+          "topic": "robotics"
+        },
+        {
+          "description": "AI là gì và có mặt ở đâu trong đời sống; mô phỏng quá trình AI học dữ liệu qua trò chơi \"AI đã học gì?\".",
+          "group": "experience",
+          "icon": "scratch",
+          "id": "lam-quen-ai",
+          "image": {
+            "height": 320,
+            "url": "/media/course-scratch.ea6415e6.jpg",
+            "width": 760
+          },
+          "stage": "th",
+          "title": "Làm quen trí tuệ nhân tạo",
+          "topic": "aiot"
+        },
+        {
+          "description": "Vai trò của lập trình trong điều khiển robot, lập trình robot di chuyển trong sa bàn qua dự án \"Kỹ sư nông trại tài ba\".",
+          "group": "experience",
+          "icon": "scratch",
+          "id": "the-gioi-ao",
+          "image": {
+            "height": 320,
+            "url": "/media/course-scratch.ea6415e6.jpg",
+            "width": 760
+          },
+          "stage": "thcs",
+          "title": "Thế giới ảo và robot",
+          "topic": "aiot"
+        },
+        {
+          "description": "Phân biệt AI tạo sinh với AI truyền thống, viết prompt tạo hình ảnh và dựng video thành một câu chuyện ngắn.",
+          "group": "experience",
+          "icon": "photonics",
+          "id": "noi-dung-so",
+          "image": {
+            "height": 320,
+            "url": "/media/course-photonics.5532dfa5.jpg",
+            "width": 760
+          },
+          "stage": "thcs",
+          "title": "Nhà sáng tạo nội dung số",
+          "topic": "aiot"
+        },
+        {
+          "description": "Vai trò của CPU, mainboard, RAM, SSD/HDD và cách chọn linh kiện phần cứng phù hợp với nhu cầu sử dụng.",
+          "group": "experience",
+          "icon": "electronics",
+          "id": "cau-truc-may-tinh",
+          "image": {
+            "height": 600,
+            "url": "/media/lab-workbenches.c235eaa8.jpg",
+            "width": 1000
+          },
+          "stage": "thpt",
+          "title": "Cấu trúc máy tính",
+          "topic": "aiot"
+        },
+        {
+          "description": "Hệ trục tọa độ trong không gian ba chiều và công cụ thiết kế in 3D, thực hành với phần mềm chuyên dụng.",
+          "group": "experience",
+          "icon": "process",
+          "id": "thiet-ke-3d",
+          "image": {
+            "height": 600,
+            "url": "/media/lab-3d-printers.6fb93aa4.jpg",
+            "width": 1000
+          },
+          "stage": "thpt",
+          "title": "Thiết kế 3D",
+          "topic": "aiot"
+        },
+        {
+          "description": "Từ lịch sử tiền tệ đến công nghệ Blockchain, hiểu cơ chế bảo mật qua liên kết mã Hash và mô phỏng xác thực khối.",
+          "group": "experience",
+          "icon": "process",
+          "id": "blockchain",
+          "image": {
+            "height": 320,
+            "url": "/media/course-photonics.5532dfa5.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "Blockchain và bí mật dữ liệu số",
+          "topic": "aiot"
+        },
+        {
+          "description": "Nguyên lý kết nối và điều khiển thiết bị IoT, thiết kế giao diện ứng dụng và điều khiển mô hình qua nền tảng đám mây.",
+          "group": "experience",
+          "icon": "automation",
+          "id": "iot",
+          "image": {
+            "height": 320,
+            "url": "/media/course-automation.8c53cbef.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "Kết nối dữ liệu thông minh",
+          "topic": "aiot"
+        },
+        {
+          "description": "Vai trò và phân loại học máy, thực hành quy trình học máy với mạng nơron tích chập để nhận diện vật thể.",
+          "group": "experience",
+          "icon": "photonics",
+          "id": "thi-giac-may-tinh",
+          "image": {
+            "height": 320,
+            "url": "/media/course-process.2cc0a003.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "Làm quen thị giác máy tính",
+          "topic": "aiot"
+        },
+        {
+          "description": "Định lý Naïve Bayes áp dụng vào dữ liệu lịch sử khách hàng để dự đoán hành vi, rồi đánh giá độ chính xác.",
+          "group": "experience",
+          "icon": "process",
+          "id": "xac-suat-hoc-may",
+          "image": {
+            "height": 320,
+            "url": "/media/course-process.2cc0a003.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "Ứng dụng xác suất trong học máy",
+          "topic": "aiot"
+        },
+        {
+          "description": "Khái niệm giao diện và trải nghiệm người dùng, quy trình thiết kế và thực hành dựng một website đơn giản.",
+          "group": "experience",
+          "icon": "scratch",
+          "id": "thiet-ke-website",
+          "image": {
+            "height": 600,
+            "url": "/media/lab-workbenches.c235eaa8.jpg",
+            "width": 1000
+          },
+          "stage": "thpt",
+          "title": "Thiết kế website",
+          "topic": "aiot"
+        },
+        {
+          "age": "15–18",
+          "description": "Tự tay lắp ráp và lập trình cánh tay robot thực hiện chuỗi thao tác gắp — thả.",
+          "duration": "10 tuần · 30 giờ",
+          "group": "stem",
+          "id": "robotic-arm",
+          "image": {
+            "height": 320,
+            "url": "/media/course-robotic-arm.81c09dc3.jpg",
+            "width": 760
+          },
+          "level": "intermediate",
+          "title": "Cánh tay Robot"
+        },
+        {
+          "age": "6–12",
+          "description": "Khám phá cách robot giữ thăng bằng, di chuyển và tương tác với con người.",
+          "duration": "5 tuần · 15 giờ",
+          "group": "stem",
+          "id": "humanoid",
+          "image": {
+            "height": 320,
+            "url": "/media/course-humanoid.bf6451ba.jpg",
+            "width": 760
+          },
+          "level": "intermediate",
+          "title": "Robot Hình người"
+        },
+        {
+          "age": "8+",
+          "description": "Bước đầu tiên vào lập trình bằng khối lệnh trực quan — kể chuyện, làm game và hoạt hình.",
+          "duration": "7 tuần · 24 giờ",
+          "group": "stem",
+          "id": "scratch",
+          "image": {
+            "height": 320,
+            "url": "/media/course-scratch.ea6415e6.jpg",
+            "width": 760
+          },
+          "level": "basic",
+          "title": "Lập trình Scratch"
+        },
+        {
+          "age": "12–15",
+          "description": "Chế tạo xe tự hành biết dò đường, tránh vật cản và điều khiển từ điện thoại.",
+          "duration": "8 tuần · 24 giờ",
+          "group": "stem",
+          "id": "robot-car",
+          "image": {
+            "height": 320,
+            "url": "/media/course-robot-car.7e823afe.jpg",
+            "width": 760
+          },
+          "level": "basic",
+          "title": "Xe Robot"
+        }
+      ],
+      "levels": {
+        "advanced": "Nâng cao",
+        "basic": "Cơ bản",
+        "intermediate": "Trung cấp"
+      },
+      "modal": {
+        "audience": "Đối tượng",
+        "close": "Đóng",
+        "curriculum": "Nội dung khóa học",
+        "empty": "Khóa học này chưa công bố nội dung chi tiết.",
+        "knowledge": "Kiến thức đạt được",
+        "overview": "Giới thiệu khóa học",
+        "register": "Đăng ký khóa học này",
+        "skills": "Kỹ năng đạt được",
+        "source": "Xem trang khóa học gốc",
+        "viOnly": "Nội dung chi tiết của khóa này hiện chỉ có bản tiếng Việt."
+      },
+      "showLess": "Thu gọn",
+      "showMore": "Xem thêm khóa học",
+      "stages": [
+        {
+          "id": "th",
+          "label": "Tiểu học",
+          "short": "TH"
+        },
+        {
+          "id": "thcs",
+          "label": "Trung học cơ sở",
+          "short": "THCS"
+        },
+        {
+          "id": "thpt",
+          "label": "Trung học phổ thông",
+          "short": "THPT"
+        }
+      ],
+      "title": "Chọn hành trình phù hợp với bạn",
+      "topics": [
+        {
+          "id": "science",
+          "label": "Khoa học tự nhiên và Sự sống"
+        },
+        {
+          "id": "robotics",
+          "label": "Kỹ thuật và công nghệ Robot"
+        },
+        {
+          "id": "aiot",
+          "label": "AIoT & Công nghệ số"
+        }
+      ]
+    },
+    "facilities": {
+      "description": "Toàn bộ thiết bị đều mở cho học viên và cộng đồng sử dụng, có kỹ thuật viên hướng dẫn trực tiếp.",
+      "eyebrow": "Thiết bị & Không gian",
+      "imageAlt": "Ảnh chụp {title} tại xưởng EIU FabLab",
+      "items": [
+        {
+          "description": "Hiện thực hóa mô hình từ bản thiết kế số chỉ trong vài giờ, với nhiều loại vật liệu khác nhau.",
+          "id": "printer-3d",
+          "image": {
+            "height": 600,
+            "url": "/media/lab-3d-printers.6fb93aa4.jpg",
+            "width": 1000
+          },
+          "title": "Máy in 3D"
+        },
+        {
+          "description": "Phay và tiện chính xác trên gỗ, nhựa và kim loại.",
+          "id": "cnc",
+          "image": {
+            "height": 560,
+            "url": "/media/lab-machine-shop.48f34a61.jpg",
+            "width": 760
+          },
+          "title": "Máy CNC"
+        },
+        {
+          "description": "Cắt và khắc tinh xảo trên nhiều chất liệu tấm.",
+          "id": "laser",
+          "image": {
+            "height": 500,
+            "url": "/media/lab-laser-cutter.1ae81723.jpg",
+            "width": 679
+          },
+          "title": "Máy cắt laser"
+        },
+        {
+          "description": "Trạm hàn, đo kiểm và thiết kế mạch in.",
+          "id": "electronics-lab",
+          "image": {
+            "height": 600,
+            "url": "/media/lab-workbenches.c235eaa8.jpg",
+            "width": 1000
+          },
+          "title": "Khu điện tử"
+        }
+      ],
+      "title": "Xưởng mở với công nghệ chế tạo số"
+    },
+    "finalCta": {
+      "description": "Đăng ký một khóa học, hoặc đơn giản là ghé thăm xưởng để xem chúng tôi đang làm gì. Cửa EIU FabLab luôn mở.",
+      "primaryCta": "Đăng ký khóa học",
+      "secondaryCta": "Liên hệ với chúng tôi",
+      "title": "Ý tưởng của bạn xứng đáng được chế tạo"
+    },
+    "footer": {
+      "columns": [
+        {
+          "id": "explore",
+          "links": [
+            {
+              "href": "#about",
+              "id": "about",
+              "label": "Về chúng tôi"
+            },
+            {
+              "href": "#courses",
+              "id": "courses",
+              "label": "Khóa học"
+            },
+            {
+              "href": "#facilities",
+              "id": "facilities",
+              "label": "Thiết bị"
+            },
+            {
+              "href": "#activities",
+              "id": "activities",
+              "label": "Hoạt động & cuộc thi"
+            }
+          ],
+          "title": "Khám phá"
+        },
+        {
+          "id": "programs",
+          "links": [
+            {
+              "href": "#courses-stem",
+              "id": "stem",
+              "label": "Khóa học STEM"
+            },
+            {
+              "href": "#courses-experience",
+              "id": "experience",
+              "label": "Chương trình trải nghiệm STEM"
+            },
+            {
+              "href": "#about",
+              "id": "community",
+              "label": "Dự án cộng đồng"
+            },
+            {
+              "href": "#about",
+              "id": "research",
+              "label": "Nghiên cứu & Khởi nghiệp"
+            }
+          ],
+          "title": "Chương trình"
+        }
+      ],
+      "contact": {
+        "address": "Đại học Quốc tế Miền Đông, Thành phố mới Bình Dương, Việt Nam",
+        "email": "fablab@eiu.edu.vn",
+        "phone": "(0274) 222 0176",
+        "title": "Liên hệ"
+      },
+      "copyright": "EIU FabLab. Tự hào phục vụ cộng đồng.",
+      "description": "Xưởng chế tạo số của Đại học Quốc tế Miền Đông — mở cho giáo dục, nghiên cứu và khởi nghiệp.",
+      "social": {
+        "items": [
+          {
+            "href": "#",
+            "id": "facebook",
+            "label": "Facebook"
+          },
+          {
+            "href": "#",
+            "id": "youtube",
+            "label": "YouTube"
+          },
+          {
+            "href": "#",
+            "id": "website",
+            "label": "Website EIU"
+          }
+        ],
+        "title": "Kết nối"
+      }
+    },
+    "hero": {
+      "description": "EIU FabLab là một xưởng chế tác số điển hình với nhiều công nghệ, máy móc thiết bị hiện đại, không gian mở năng động - sáng tạo và các hoạt động đa dạng nhằm phục vụ cộng đồng. ",
+      "eyebrow": "Đại học Quốc tế Miền Đông",
+      "floatingBadges": [
+        {
+          "id": "open",
+          "label": "Mở cửa cho cộng đồng"
+        },
+        {
+          "id": "hands-on",
+          "label": "100% học qua thực hành"
+        }
+      ],
+      "image": {
+        "height": 900,
+        "url": "/media/hero-stem-workshop.62c85a50.jpg",
+        "width": 1200
+      },
+      "imageAlt": "Giảng viên EIU FabLab hướng dẫn ba em nhỏ lắp bộ kit STEM trên bàn thực hành.",
+      "primaryCta": "Khám phá khóa học",
+      "secondaryCta": "Tham quan FabLab",
+      "title": "Tự Hào Phục Vụ Cộng Đồng"
+    },
+    "nav": {
+      "brandTagline": "Xưởng chế tạo số",
+      "closeMenu": "Đóng menu",
+      "cta": "Đăng ký ngay",
+      "links": [
+        {
+          "href": "#about",
+          "id": "about",
+          "label": "Về chúng tôi"
+        },
+        {
+          "children": [
+            {
+              "href": "#facilities",
+              "id": "facilities",
+              "label": "Thiết bị"
+            },
+            {
+              "href": "#competitions",
+              "id": "competitions",
+              "label": "Cuộc thi"
+            }
+          ],
+          "id": "fablab",
+          "label": "FabLab"
+        },
+        {
+          "children": [
+            {
+              "href": "#courses-stem",
+              "id": "courses-stem",
+              "label": "Khóa học STEM"
+            },
+            {
+              "href": "#courses-experience",
+              "id": "courses-experience",
+              "label": "Khóa học trải nghiệm"
+            }
+          ],
+          "id": "stemlab",
+          "label": "StemLab"
+        },
+        {
+          "href": "#events",
+          "id": "events",
+          "label": "Sự kiện"
+        }
+      ],
+      "openMenu": "Mở menu",
+      "switchLanguage": "Chuyển ngôn ngữ"
+    },
+    "partners": {
+      "description": "Những tổ chức và trường học hợp tác cùng EIU FabLab đưa công nghệ đến gần cộng đồng hơn.",
+      "eyebrow": "Đối tác",
+      "items": [
+        {
+          "id": "eiu",
+          "image": {
+            "height": 120,
+            "url": "/media/partner-eiu.a2c06ea4.png",
+            "width": 149
+          },
+          "name": "Trường Đại học Quốc tế Miền Đông"
+        },
+        {
+          "id": "vietanh",
+          "image": {
+            "height": 296,
+            "url": "/media/partner-vietanh.b6b9ac1c.png",
+            "width": 206
+          },
+          "name": "Hệ thống trường Việt Anh"
+        },
+        {
+          "id": "little",
+          "image": {
+            "height": 628,
+            "url": "/media/partner-littlepeo.58e16de1.png",
+            "width": 1754
+          },
+          "name": "Trường mầm non Little People"
+        },
+        {
+          "id": "tvbd",
+          "image": {
+            "height": 788,
+            "url": "/media/partner-tvbd.170bd85c.png",
+            "width": 940
+          },
+          "name": "Thư viện tỉnh Bình Dương"
+        },
+        {
+          "id": "tvtphcm",
+          "image": {
+            "height": 788,
+            "url": "/media/partner-tvtphcm.61517606.png",
+            "width": 940
+          },
+          "name": "Thư viện Khoa học tổng hợp thành phố Hồ Chí Minh"
+        },
+        {
+          "id": "hoasen",
+          "image": {
+            "height": 663,
+            "url": "/media/partner-hoasen.a9ccd9ae.png",
+            "width": 2560
+          },
+          "name": "Trường THCS-THPT Hoa Sen"
+        },
+        {
+          "id": "petrusky",
+          "image": {
+            "height": 1500,
+            "url": "/media/partner-petrusky.72c4ca43.png",
+            "width": 1500
+          },
+          "name": "Trường THCS-THPT Pétrus Ký"
+        },
+        {
+          "id": "talent",
+          "image": {
+            "height": 788,
+            "url": "/media/partner-talent.c69c3276.png",
+            "width": 940
+          },
+          "name": "Talent Academy"
+        }
+      ],
+      "logoAlt": "Logo {name}",
+      "title": "Đồng hành cùng EIU FabLab"
+    },
+    "pillars": {
+      "description": "Một không gian mở, năng động, nơi công nghệ được chia sẻ để tạo ra giá trị cho xã hội.",
+      "eyebrow": "Về chúng tôi",
+      "items": [
+        {
+          "description": "Học qua thực hành với thiết bị hiện đại. Người học tự tay thiết kế, gia công và hoàn thiện sản phẩm của chính mình.",
+          "id": "education",
+          "title": "Giáo dục"
+        },
+        {
+          "description": "Phát triển sản phẩm từ những ý tưởng sáng tạo, biến nguyên mẫu thành giải pháp kỹ thuật hoàn chỉnh.",
+          "id": "research",
+          "title": "Nghiên cứu"
+        },
+        {
+          "description": "Đồng hành cùng bạn thương mại hóa nguyên mẫu thành công, đưa sản phẩm từ xưởng ra thị trường.",
+          "id": "entrepreneurship",
+          "title": "Khởi nghiệp"
+        }
+      ],
+      "title": "Sứ mệnh của EIU FabLab"
+    },
+    "stats": {
+      "items": [
+        {
+          "id": "visitors",
+          "label": "Học sinh đã tham quan",
+          "suffix": "+",
+          "value": 20000
+        },
+        {
+          "id": "courses",
+          "label": "Chủ đề trải nghiệm",
+          "suffix": "+",
+          "value": 30
+        },
+        {
+          "id": "learners",
+          "label": "Học sinh tham gia lớp học",
+          "suffix": "+",
+          "value": 12000
+        },
+        {
+          "id": "partners",
+          "label": "Đối tác",
+          "suffix": "+",
+          "value": 20
+        }
+      ]
+    },
+    "team": {
+      "description": "Kỹ sư, chuyên viên STEM và giảng viên trực tiếp đứng lớp, vận hành thiết bị và đồng hành cùng bạn trong từng dự án.",
+      "eyebrow": "Đội ngũ",
+      "members": [
+        {
+          "education": "Tiến sĩ Kỹ thuật Năng lượng",
+          "id": "hung",
+          "image": {
+            "height": 240,
+            "url": "/media/team-hung.06d2c51f.jpg",
+            "width": 240
+          },
+          "lead": true,
+          "name": "Nguyễn Xuân Hùng",
+          "role": "Giám đốc FabLab"
+        },
+        {
+          "education": "Thạc sĩ Công nghệ thông tin",
+          "id": "tuan",
+          "image": {
+            "height": 240,
+            "url": "/media/team-tuan.086e9dc4.jpg",
+            "width": 240
+          },
+          "name": "Đỗ Nguyễn Anh Tuấn",
+          "role": "Chuyên viên STEM"
+        },
+        {
+          "education": "Thạc sĩ Quản lý giáo dục",
+          "id": "ngan",
+          "image": {
+            "height": 240,
+            "url": "/media/team-ngan.1a7cd836.jpg",
+            "width": 240
+          },
+          "name": "Trần Ngọc Kim Ngân",
+          "role": "Chuyên viên STEM"
+        },
+        {
+          "education": "Thạc sĩ Khoa học vật chất",
+          "id": "phuoc",
+          "image": {
+            "height": 240,
+            "url": "/media/team-phuoc.cab69290.jpg",
+            "width": 240
+          },
+          "name": "Nguyễn Hữu Phước",
+          "role": "Chuyên viên STEM"
+        },
+        {
+          "education": "Thạc sĩ Hóa vô cơ",
+          "id": "hien",
+          "image": {
+            "height": 240,
+            "url": "/media/team-hien.b0c6ac72.jpg",
+            "width": 240
+          },
+          "name": "Lư Thị Thu Hiền",
+          "role": "Chuyên viên STEM"
+        },
+        {
+          "education": "Kỹ sư Kỹ thuật phần mềm",
+          "id": "minh",
+          "image": {
+            "height": 240,
+            "url": "/media/team-minh.0dad694a.jpg",
+            "width": 240
+          },
+          "name": "Trần Hán Minh",
+          "role": "Chuyên viên STEM"
+        },
+        {
+          "education": "Cử nhân Kỹ thuật điện – điện tử",
+          "id": "manh",
+          "image": {
+            "height": 240,
+            "url": "/media/team-manh.c01da5a8.jpg",
+            "width": 240
+          },
+          "name": "Đinh Thế Mạnh",
+          "role": "Chuyên viên STEM"
+        },
+        {
+          "education": "Cử nhân Khoa học Vật lý",
+          "id": "thy",
+          "image": {
+            "height": 240,
+            "url": "/media/team-thy.83f1dd15.jpg",
+            "width": 240
+          },
+          "name": "Nguyễn Nam Thy",
+          "role": "Chuyên viên STEM"
+        },
+        {
+          "education": "Cử nhân Vật lý lý thuyết",
+          "id": "tran",
+          "image": {
+            "height": 240,
+            "url": "/media/team-tran.538d726f.jpg",
+            "width": 240
+          },
+          "name": "Thạch Thị Huyền Trân",
+          "role": "Chuyên viên STEM"
+        },
+        {
+          "education": "Kỹ sư Kỹ thuật phần mềm",
+          "id": "huan",
+          "image": {
+            "height": 240,
+            "url": "/media/team-huan.a8914598.jpg",
+            "width": 240
+          },
+          "name": "Trần Khắc Huân",
+          "role": "Chuyên viên STEM"
+        },
+        {
+          "education": "Thạc sĩ Cơ điện tử",
+          "id": "phuong",
+          "name": "Hoàng Ngọc Phương",
+          "role": "Chuyên viên STEM"
+        },
+        {
+          "education": "Kỹ sư Kỹ thuật Tự động hóa",
+          "id": "linh",
+          "image": {
+            "height": 240,
+            "url": "/media/team-linh.e9e92a0b.jpg",
+            "width": 240
+          },
+          "name": "Võ Đoàn Linh",
+          "role": "Kỹ thuật viên"
+        },
+        {
+          "education": "Kỹ sư Kỹ thuật Tự động hóa",
+          "id": "nhat",
+          "image": {
+            "height": 240,
+            "url": "/media/team-nhat.863ec03b.jpg",
+            "width": 240
+          },
+          "name": "Trần Duy Nhất",
+          "role": "Kỹ thuật viên"
+        },
+        {
+          "education": "Kỹ sư Điện – Điện tử",
+          "id": "tinh",
+          "image": {
+            "height": 240,
+            "url": "/media/team-tinh.6d373eb6.jpg",
+            "width": 240
+          },
+          "name": "Đỗ Trung Tính",
+          "role": "Kỹ thuật viên"
+        },
+        {
+          "education": "Kỹ sư Kỹ thuật Tự động hóa",
+          "id": "nhi",
+          "image": {
+            "height": 240,
+            "url": "/media/team-nhi.6af78884.jpg",
+            "width": 240
+          },
+          "name": "Võ Hoàng Yến Nhi",
+          "role": "Kỹ thuật viên"
+        }
+      ],
+      "photoAlt": "Ảnh chân dung {name}",
+      "title": "Đội ngũ của chúng tôi"
+    },
+    "testimonials": {
+      "eyebrow": "Cảm nhận",
+      "goTo": "Xem cảm nhận số",
+      "items": [
+        {
+          "id": "t1",
+          "name": "Nguyễn Minh Anh",
+          "quote": "Lần đầu tiên em thấy bản vẽ của mình biến thành một vật thể cầm được trên tay. Cảm giác đó khiến em muốn theo đuổi ngành kỹ thuật.",
+          "role": "Học viên khóa Gia công CNC"
+        },
+        {
+          "id": "t2",
+          "name": "Trần Quốc Bảo",
+          "quote": "FabLab không dạy lý thuyết suông. Ngày đầu tiên chúng tôi đã được đứng máy, và sai ở đâu thì sửa ngay ở đó.",
+          "role": "Sinh viên năm 3, ngành Cơ điện tử"
+        },
+        {
+          "id": "t3",
+          "name": "Lê Thu Hà",
+          "quote": "Con tôi bắt đầu từ Scratch, giờ cháu tự lắp được xe robot dò đường. Điều quý nhất là cháu học được cách kiên nhẫn thử lại.",
+          "role": "Phụ huynh học viên"
+        }
+      ],
+      "next": "Cảm nhận tiếp theo",
+      "previous": "Cảm nhận trước",
+      "title": "Người học nói gì về EIU FabLab"
+    }
+  }
+}

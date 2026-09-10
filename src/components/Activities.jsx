@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
 import { ArrowLeftIcon, ArrowRightIcon } from '../assets/icons/Icons'
-import { ACTIVITY_IMAGES } from '../assets/images'
 import { useCarousel } from '../hooks/useCarousel'
 import { useT } from '../i18n/context'
 import { Pill } from './ui/Pill'
@@ -92,14 +91,14 @@ function ActivityCarousel({ group, items, from }) {
                 trộn poster dọc với ảnh chụp ngang, cover sẽ cắt mất tiêu đề
                 poster hoặc mặt người. */}
             <div className="flex items-center justify-center bg-wash p-6 md:p-8">
-              <img
+              {active.image && <img
                 key={active.id}
-                src={ACTIVITY_IMAGES[active.id]}
+                src={active.image.url}
                 alt={t.activities.imageAlt.replace('{title}', active.title)}
                 loading="lazy"
                 decoding="async"
                 className="max-h-[280px] w-auto rounded-image-sm object-contain md:max-h-[340px]"
-              />
+              />}
             </div>
 
             <div className="flex flex-col justify-center gap-4 p-6 md:p-10">

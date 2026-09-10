@@ -13,14 +13,37 @@ gói sẵn trong repo; chỉ icon còn là SVG vẽ tay — trang vẫn chạy �
 
 Stack: **Vite 8 + React 19 + Tailwind CSS v4** (plugin `@tailwindcss/vite`, cấu
 hình bằng `@theme` / `@utility` trong CSS — **không có `tailwind.config.js`**,
-đừng tạo). Linter là **oxlint** (`npm run lint`), không phải ESLint.
+đừng tạo). Linter là **oxlint** (`npm run lint`), không phải ESLint. Backend
+**ExpressJS + SQLite** trong [server/](server/), phục vụ dashboard quản trị.
+
+## ⚠️ Nội dung KHÔNG còn nằm ở `src/i18n/*.js`
+
+Đây là điều dễ quên nhất và đắt nhất khi phát hiện lại. **Sửa `vi.js` hay `en.js`
+bây giờ không có tác dụng gì** — không component nào import chúng nữa.
+
+| Nguồn | Vai trò |
+|---|---|
+| `data/fablab.db` | **Nguồn sự thật.** Dashboard ghi vào đây. Ngoài git. |
+| [src/content/snapshot.json](src/content/snapshot.json) | Bản dự phòng đóng gói vào bundle. **Sinh ra nhưng CÓ commit.** |
+| `src/i18n/*.js` | **Chỉ còn là hồ sơ nguồn gốc + corpus seed.** Không ai import. |
+
+Trang vẽ ngay bằng snapshot rồi gọi `/api/content` thay nóng
+([contentStore.js](src/lib/contentStore.js)). Nhờ vậy không bao giờ trắng trang, và
+API chết thì vẫn đủ nội dung — chỉ là bản của lần build gần nhất. Snapshot tự tươi
+lại ở bước `prebuild` mỗi lần `npm run build`.
+
+Muốn đổi nội dung: dùng dashboard, hoặc sửa DB. Muốn dựng lại DB từ đầu: xoá
+`data/fablab.db` rồi `npm run seed` — đó là lúc duy nhất `src/i18n/*.js` còn được
+đọc tới.
 
 ## Quy ước bắt buộc
 
-- **Nội dung không hardcode trong component.** Mọi chữ nằm ở
-  [src/i18n/vi.js](src/i18n/vi.js) và [src/i18n/en.js](src/i18n/en.js); hai file
-  phải luôn cùng cấu trúc khóa. `id` / `group` / `level` của khóa học **không
-  được dịch** — dùng làm React key và khóa tra icon.
+- **Nội dung không hardcode trong component.** Mọi chữ đi qua `useT()`; hai ngôn
+  ngữ phải luôn cùng cấu trúc khoá (xem bảng trên về nơi chữ thật sự nằm). `id` /
+  `group` / `level` của khóa học **không được dịch** — dùng làm React key và khóa
+  tra icon.
+- **Chạy `npm run check:content` và `npm run check:snapshot` trước khi tin là
+  xong.** Repo không có bộ test; hai lệnh này là thứ thay thế.
 - **Button không bao giờ có shadow.** Trong hệ "Loom" shadow chỉ thuộc về card và
   khung ảnh.
 - Mọi nút đi qua `ui/Button.jsx`, mọi nhãn qua `ui/Pill.jsx`, mọi section qua
@@ -472,12 +495,52 @@ Bật lại ở `Settings → Accessibility → Visual effects → Animation eff
 đầu (rAF + `easeOutCubic`, 1400ms). `once: false` khiến `active` lật false→true
 nên bốn con số tự đếm lại từ 0 mỗi lượt — **không cần sửa `CountUp`**.
 
+## Backend: ảnh, snapshot, và những chỗ dễ sập
+
+Toàn bộ ở [server/](server/). Truy cập database đi qua **đúng một file**
+[db/index.js](server/db/index.js) — driver là module biên dịch sẵn, đã phải lùi về
+`better-sqlite3@11` vì bản mới **không có nhị phân dựng sẵn cho Node 20 trên
+Windows** và máy này không có Visual Studio. Gói vào một file thì đổi driver về sau
+chỉ sửa một chỗ. `engines` ghim Node 20; nâng Node major là phải `npm rebuild`.
+
+**Ảnh không còn là ES import.** Chúng nằm ở `data/media/` (tên mang 8 ký tự đầu của
+sha256, nên đổi ảnh là đổi URL — chống cache y như Vite đang làm), và nội dung mang
+sẵn `image: { url, width, height }` trên từng mục. Bảng `binding` **cố ý không có
+cột ngôn ngữ**: một mục một ảnh, nên VI và EN không thể hiện hai ảnh khác nhau, và
+bộ kiểm đối xứng không phải đi canh chuyện đó.
+
+**`export-snapshot.js` đồng bộ `data/media/` → `public/media/`** để `vite build`
+chép vào `dist/media/`. Đây là thứ giữ cho trang **vẫn chạy offline**: `dist/` mang
+đi đâu cũng tự đủ, không phụ thuộc tiến trình Node nào. Bỏ bước này là 60 ảnh biến
+thành ảnh vỡ ngay khi máy chủ tắt. Giá phải trả: ảnh admin mới tải lên chưa có mặt
+trong bản offline cho tới lần `npm run build` kế tiếp.
+
+**[Logo.jsx](src/assets/icons/Logo.jsx) import THẲNG file ảnh**, không qua
+`images/index.js`. Module đó import cả 60 ảnh, nên chỉ cần một component chạm vào là
+Rollup phát ra toàn bộ 4,1 MB vào `dist/assets/` — kể cả khi nội dung đã lấy ảnh từ
+máy chủ. Đây là chỗ duy nhất còn dùng ảnh đóng gói, và cố ý giữ vậy.
+
+**Kích thước ảnh lấy theo số đo thật, không theo số khai cũ.** `PARTNER_LOGOS` từng
+khai 194×120 cho những file thật ra tới 2560×663 — số khai là cỡ hiển thị. Vì
+`w-auto` nên sau khi ảnh tải xong trình duyệt vẫn dùng cỡ thật, nên khai đúng là
+sửa một lệch lạc đang có. Bảy logo đối tác thuộc diện này, và chúng cũng là 1,9 MB
+chưa nén cần xử lý.
+
+**`npm run seed` chỉ chạy được một lần** (từ chối nếu database đã có nội dung). Sau
+đó dùng `npm run verify:seed` để chứng minh không mất gì: nó dựng lại `{vi, en}` từ
+database rồi so sâu với module gốc, và phải in **`identical`**.
+
 ## `npm run check:content` — chạy trước khi tin là xong
 
 Repo không có bộ test. [check-content.js](server/scripts/check-content.js) là thứ
 thay thế: nó khẳng định những ràng buộc **không có cảnh báo lúc build** — đối xứng
 VI↔EN, `kind`/`icon`/`stage`/`topic` tra được, mọi id có ảnh, đúng một `lead`,
 `stats.items[].value` là số, mọi `href` trỏ tới neo có thật.
+
+Hai chế độ, cùng một bộ ràng buộc: mặc định kiểm **module i18n** (corpus seed), còn
+`--snapshot` kiểm **bản dự phòng thật sự được đóng gói**. Bản dự phòng mới là thứ
+người xem nhìn thấy lúc API trục trặc, nên đừng tin rằng "seed đúng thì snapshot tất
+đúng" — chạy cả hai.
 
 Hai điều về cách viết nó, đừng sửa ngược lại:
 

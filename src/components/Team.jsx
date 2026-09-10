@@ -1,4 +1,3 @@
-import { TEAM_IMAGES, TEAM_IMAGE_SIZE } from '../assets/images'
 import { useT } from '../i18n/context'
 import { initialsOf } from '../lib/initials'
 import { Pill } from './ui/Pill'
@@ -32,15 +31,15 @@ const EDGE_FADE = 'linear-gradient(to right, transparent, black 6%, black 94%, t
  * stock vào một người có thật thì thành bịa danh tính.
  */
 function Avatar({ member, index, photoAlt, size = 'sm' }) {
-  const photo = TEAM_IMAGES[member.id]
+  const photo = member.image
   const { box, text } = AVATAR_SIZES[size]
 
   if (photo) {
     return (
       <img
-        src={photo}
-        width={TEAM_IMAGE_SIZE.width}
-        height={TEAM_IMAGE_SIZE.height}
+        src={photo.url}
+        width={photo.width}
+        height={photo.height}
         alt={photoAlt.replace('{name}', member.name)}
         loading="lazy"
         decoding="async"

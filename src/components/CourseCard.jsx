@@ -1,6 +1,5 @@
 import { COURSE_ICON_IDS, CourseIcon } from '../assets/icons/CourseIcons'
 import { ArrowRightIcon } from '../assets/icons/Icons'
-import { COURSE_IMAGE_SIZE, COURSE_IMAGES } from '../assets/images'
 import { useT } from '../i18n/context'
 import { Pill } from './ui/Pill'
 
@@ -31,7 +30,7 @@ export function CourseCard({ course, index, onOpen }) {
   const iconId = course.icon ?? course.id
   const hasIcon = COURSE_ICON_IDS.has(iconId)
 
-  const image = COURSE_IMAGES[course.id]
+  const image = course.image
   const badge = stage?.short ?? t.courses.levels[course.level]
 
   // Card cố ý KHÔNG khai báo utility transition nào: khai báo transition gộp
@@ -57,9 +56,9 @@ export function CourseCard({ course, index, onOpen }) {
             biểu tượng ảnh vỡ, xấu hơn hẳn một khối trống. */}
         {image && (
           <img
-            src={image}
-            width={COURSE_IMAGE_SIZE.width}
-            height={COURSE_IMAGE_SIZE.height}
+            src={image.url}
+            width={image.width}
+            height={image.height}
             alt={t.courses.imageAlt.replace('{title}', course.title)}
             loading="lazy"
             decoding="async"

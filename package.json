@@ -5,17 +5,29 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "server": "node server/index.js",
+    "prebuild": "node server/scripts/export-snapshot.js --if-available",
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "check:content": "node server/scripts/check-content.js"
+    "seed": "node server/scripts/seed.js",
+    "verify:seed": "node server/scripts/verify-seed.js",
+    "snapshot": "node server/scripts/export-snapshot.js",
+    "check:content": "node server/scripts/check-content.js",
+    "check:snapshot": "node server/scripts/check-content.js --snapshot"
+  },
+  "engines": {
+    "node": ">=20 <21"
   },
   "dependencies": {
     "@fontsource-variable/inter-tight": "^5.3.0",
     "@fontsource/inter": "^5.3.0",
     "@tailwindcss/vite": "^4.3.3",
+    "better-sqlite3": "^11.10.0",
+    "express": "^5.2.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "sharp": "^0.35.4",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {

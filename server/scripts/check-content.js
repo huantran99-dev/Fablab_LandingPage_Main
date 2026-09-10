@@ -51,9 +51,33 @@ function literalKeys(file, constName) {
 // Nạp dữ liệu
 // ---------------------------------------------------------------------------
 
-const { vi } = await import(srcUrl('i18n', 'vi.js'))
-const { en } = await import(srcUrl('i18n', 'en.js'))
-const images = await import(srcUrl('assets', 'images', 'index.js'))
+/**
+ * Hai nguồn kiểm được, cùng một bộ ràng buộc:
+ *
+ *   mặc định    — module i18n trong mã nguồn (corpus seed, hồ sơ nguồn gốc)
+ *   --snapshot  — `src/content/snapshot.json`, tức bản dự phòng THẬT SỰ được đóng
+ *                 gói và phục vụ cho người xem khi API không trả lời
+ *
+ * Bản dự phòng mới là thứ người dùng nhìn thấy lúc trục trặc, nên nó phải chịu
+ * đúng bộ kiểm đó — không được tin rằng "seed đúng thì snapshot tất đúng".
+ */
+const useSnapshot = process.argv.includes('--snapshot')
+
+let vi
+let en
+let images = null
+
+if (useSnapshot) {
+  const snapshot = JSON.parse(readFileSync(join(ROOT, 'src', 'content', 'snapshot.json'), 'utf8'))
+  vi = snapshot.vi
+  en = snapshot.en
+  note(`nguon: snapshot.json (rev ${snapshot.rev})`)
+} else {
+  ;({ vi } = await import(srcUrl('i18n', 'vi.js')))
+  ;({ en } = await import(srcUrl('i18n', 'en.js')))
+  images = await import(srcUrl('assets', 'images', 'index.js'))
+  note('nguon: module i18n trong ma nguon')
+}
 
 const dicts = { vi, en }
 
@@ -180,27 +204,36 @@ for (const [label, items, known, reason] of TOLERANT) {
 // 5. Ảnh: mọi mục phải có ảnh, và không key ảnh nào mồ côi
 // ---------------------------------------------------------------------------
 
+// `required` = thiếu ảnh thì card hỏng hẳn; ngược lại component đã có đường lui
+// (đối tác hiện tên bằng chữ, thành viên hiện avatar chữ cái đầu).
 const IMAGE_BINDINGS = [
-  ['courses.items', vi.courses.items, images.COURSE_IMAGES, true],
-  ['facilities.items', vi.facilities.items, images.FACILITY_IMAGES, true],
-  ['activities.items', vi.activities.items, images.ACTIVITY_IMAGES, true],
-  ['partners.items', vi.partners.items, images.PARTNER_LOGOS, false],
-  ['team.members', vi.team.members, images.TEAM_IMAGES, false],
+  ['courses.items', vi.courses.items, images?.COURSE_IMAGES, true],
+  ['facilities.items', vi.facilities.items, images?.FACILITY_IMAGES, true],
+  ['activities.items', vi.activities.items, images?.ACTIVITY_IMAGES, true],
+  ['partners.items', vi.partners.items, images?.PARTNER_LOGOS, false],
+  ['team.members', vi.team.members, images?.TEAM_IMAGES, false],
 ]
 
 for (const [label, items, map, required] of IMAGE_BINDINGS) {
-  const ids = new Set(items.map((item) => item.id))
-  for (const item of items) {
-    if (required && !map[item.id]) fail(`${label}[${item.id}]: thieu anh -> card hien ANH VO`)
-  }
-  const orphans = Object.keys(map).filter((key) => !ids.has(key))
-  if (orphans.length > 0) note(`${label}: ${orphans.length} key anh mo coi -> ${orphans.join(', ')}`)
+  // Hai hình dạng dữ liệu: bản snapshot mang sẵn `image` trên từng mục, bản mã
+  // nguồn tra qua map riêng. Cùng một câu hỏi, hai chỗ trả lời.
+  const has = (item) => (useSnapshot ? Boolean(item.image?.url) : Boolean(map?.[item.id]))
 
-  if (!required) {
-    const missing = items.filter((item) => !map[item.id]).map((item) => item.id)
-    if (missing.length > 0) note(`${label}: ${missing.length} muc dung ban du phong (${missing.join(', ')})`)
+  const missing = items.filter((item) => !has(item)).map((item) => item.id)
+  if (required) {
+    for (const id of missing) fail(`${label}[${id}]: thieu anh -> card hien ANH VO`)
+  } else if (missing.length > 0) {
+    note(`${label}: ${missing.length} muc dung ban du phong (${missing.join(', ')})`)
+  }
+
+  if (map) {
+    const ids = new Set(items.map((item) => item.id))
+    const orphans = Object.keys(map).filter((key) => !ids.has(key))
+    if (orphans.length > 0) note(`${label}: ${orphans.length} key anh mo coi -> ${orphans.join(', ')}`)
   }
 }
+
+if (useSnapshot && !vi.hero.image?.url) fail('hero: thieu anh trong snapshot')
 
 // ---------------------------------------------------------------------------
 // 6. Các bất biến lặt vặt nhưng im lặng khi sai
@@ -259,9 +292,6 @@ for (const [lang, dict] of Object.entries(dicts)) {
 // 8. Chi tiết khoá học: mục mồ côi và id trùng giữa hai nguồn
 // ---------------------------------------------------------------------------
 
-const { courseDetailsVi } = await import(srcUrl('i18n', 'courseDetails.vi.js'))
-const { experienceDetailsVi } = await import(srcUrl('i18n', 'experienceDetails.vi.js'))
-
 const courseIds = new Set(vi.courses.items.map((course) => course.id))
 const orphanDetails = Object.keys(vi.courses.details).filter((id) => !courseIds.has(id))
 if (orphanDetails.length > 0) {
@@ -272,8 +302,14 @@ if (missingDetails.length > 0) note(`courses.details: ${missingDetails.length} k
 
 // Trộn nông nên mục viết tay THAY HOÀN TOÀN mục sinh ra cùng tên. Đúng ý định,
 // nhưng phải nhìn thấy được, kẻo thành truyền miệng.
-const collisions = Object.keys(experienceDetailsVi).filter((id) => id in courseDetailsVi)
-if (collisions.length > 0) note(`id trung giua courseDetails va experienceDetails: ${collisions.join(', ')} (ban viet tay thang)`)
+if (!useSnapshot) {
+  const { courseDetailsVi } = await import(srcUrl('i18n', 'courseDetails.vi.js'))
+  const { experienceDetailsVi } = await import(srcUrl('i18n', 'experienceDetails.vi.js'))
+  const collisions = Object.keys(experienceDetailsVi).filter((id) => id in courseDetailsVi)
+  if (collisions.length > 0) {
+    note(`id trung giua courseDetails va experienceDetails: ${collisions.join(', ')} (ban viet tay thang)`)
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Báo cáo
