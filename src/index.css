@@ -216,6 +216,24 @@
   }
 }
 
+/* Khung cắt của dải chạy.
+ *
+ * Lý do phải có: khi người dùng tắt chuyển động, track đứng yên ở vị trí đầu nên
+ * phần lớn thẻ nằm ngoài khung và KHÔNG CÁCH NÀO tới được — nội dung biến mất với
+ * đúng nhóm người dùng cần được phục vụ tử tế nhất. Cho cuộn ngang bằng tay để
+ * họ vẫn đọc được hết.
+ *
+ * Đặt `overflow: hidden` (cả hai trục) chứ không chỉ `overflow-x`: nếu một trục
+ * là `hidden` mà trục kia để `visible` thì CSS tự nâng trục kia thành `auto`, và
+ * sinh ra thanh cuộn dọc không ai muốn. */
+@utility marquee-viewport {
+  overflow: hidden;
+
+  @media (prefers-reduced-motion: reduce) {
+    overflow-x: auto;
+  }
+}
+
 /* Tắt hẳn khi người dùng đã tắt chuyển động.
  *
  * Không dựa được vào rule chung ở `@layer base`: nó chỉ ép `animation-duration`

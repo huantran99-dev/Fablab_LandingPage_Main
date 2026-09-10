@@ -121,6 +121,14 @@ export function ArrowLeftIcon({ className = '', size = 18 }) {
   )
 }
 
+export function ChevronDownIcon({ className = '', size = 16 }) {
+  return (
+    <Svg className={className} size={size} strokeWidth={2}>
+      <path d="M6 9.5l6 6 6-6" />
+    </Svg>
+  )
+}
+
 export function MenuIcon({ className = '', size = 22 }) {
   return (
     <Svg className={className} size={size} strokeWidth={1.8}>

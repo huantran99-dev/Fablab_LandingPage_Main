@@ -89,13 +89,95 @@ Partners `right`/`left` → Activities `left`/`right` → Team `right`/`left` �
 Testimonials `left`/`right`. StatsBar · FinalCTA · Footer · nút "Xem thêm" ·
 link tuyển dụng · chấm tròn dùng mặc định `up`.
 
-Courses có **hai lưới** (hai nhóm khóa học): lưới đầu `left`, lưới sau `right`,
-gán theo chỉ số nhóm chứ không viết cứng — thêm nhóm thứ ba là nó tự xen kẽ tiếp.
-Tiêu đề phụ của nhóm để `up`, không trượt ngang, kẻo section thành quá ồn.
+Courses và Activities đều có **hai khối** bên trong. Chiều của khối gán theo chỉ
+số chứ không viết cứng, và luôn bắt đầu ngược chiều tiêu đề section: Courses tiêu
+đề `right` → khối `left`/`right`; Activities tiêu đề `left` → khối `right`/`left`.
+Thêm khối thứ ba là nó tự xen kẽ tiếp. Tiêu đề phụ của khối để `up`, không trượt
+ngang, kẻo section thành quá ồn.
+
+Chia một section làm hai khối **không** ảnh hưởng nhịp giữa các section — tiêu đề
+section giữ nguyên chiều cũ nên không phải lật những section phía sau.
 
 **Thêm hay bỏ section ở giữa là phải đảo chiều mọi section phía sau** để giữ nhịp
 xen kẽ. Thêm Team đã kéo theo việc lật Testimonials; thay Process bằng
 Partners + Activities lại kéo theo lật cả Team lẫn Testimonials lần nữa.
+
+## Menu hai cấp và bảng neo
+
+Navbar có bốn mục cấp một: **Về chúng tôi** và **Sự kiện** (link thường), **FabLab**
+và **StemLab** (hai nhánh mở submenu). Nhánh là `<button>` chứ không phải `<a>` và
+trong i18n **không có `href`** — chúng không ứng với section nào của riêng mình,
+chỉ gom các mục con.
+
+| Mục | Cấp | Neo | Sinh ra ở đâu |
+|---|---|---|---|
+| Về chúng tôi | 1 | `#about` | `<Section id="about">` |
+| Sự kiện | 1 | `#events` | suy từ `activities.groups[].id` |
+| Thiết bị | 2 (FabLab) | `#facilities` | `<Section id="facilities">` |
+| Cuộc thi | 2 (FabLab) | `#competitions` | suy từ `activities.groups[].id` |
+| Khóa học STEM | 2 (StemLab) | `#courses-stem` | suy từ `` `courses-${group.id}` `` |
+| Khóa học trải nghiệm | 2 (StemLab) | `#courses-experience` | như trên |
+
+**"Sự kiện" đứng ở cấp một dù nội dung của nó nằm trong section Hoạt động** cùng với
+"Cuộc thi" — đây là lựa chọn của người dùng, không phải sơ suất. Hai mục cùng trỏ
+vào một section nhưng khác khối, và menu không cần phản chiếu cấu trúc trang.
+
+Bốn neo **được dựng riêng cho menu này** và đều suy từ dữ liệu i18n, không
+viết cứng — thêm nhóm khóa học hay khối hoạt động thì neo tự có. Nhưng `nav.links`
+là dữ liệu, không tự cập nhật: **thêm nhóm mà muốn nó lên menu thì phải tự thêm
+một mục con**.
+
+`Section` của Courses (`#courses`) và Activities (`#activities`) vẫn còn và footer
+vẫn trỏ vào — đừng xoá.
+
+**Đừng chép tay danh sách id vào Navbar.** `sectionIds` làm phẳng qua `children`
+của `nav.links`; đây là lần thứ hai chỗ này gây lỗi (lần trước là hardcode
+`'process'` sau khi xoá section).
+
+Mở/đóng theo mẫu **Disclosure Navigation** của WAI-ARIA: nút bật/tắt panel, Tab đi
+xuyên qua bình thường, không cần roving tabindex. Panel đệm bằng khoảng độn TRÊN
+panel chứ không bằng lề — có lề là có khe chết, chuột đi từ nút xuống panel sẽ làm
+menu đóng giữa chừng. Drawer mobile dùng chung state `openBranch` với thanh
+desktop (hai thứ không bao giờ cùng hiện) nhưng render dạng accordion.
+
+### `useActiveSection` chọn theo thứ tự tài liệu
+
+Hai điểm phải giữ, cả hai đều từng sai trong bản đầu:
+
+1. `entries` mỗi lần callback **chỉ chứa phần tử vừa đổi trạng thái**, không phải
+   toàn bộ phần tử đang lọt — nên phải cộng dồn vào một `Set` sống qua các lần gọi.
+2. Thứ tự trong `entries` **không theo thứ tự tài liệu**. Phải sắp phần tử một lần
+   lúc dựng observer bằng `compareDocumentPosition` rồi lấy mục **cuối cùng** đang
+   lọt.
+
+Với ba section cách xa nhau thì hiếm khi lộ. Với `#courses-stem` và
+`#courses-experience` nằm liền nhau trong cùng một section thì cả hai thường xuyên
+cùng cắt dải quan sát `[88px, 45vh]`, và lấy `entries[0]` sẽ làm link nhấp nháy.
+
+## Marquee: hai chỗ dùng, hai bài học
+
+Dải đối tác ([Partners.jsx](src/components/Partners.jsx)) và đội ngũ
+([Team.jsx](src/components/Team.jsx)) dùng chung `marquee-track`. Team chạy **hai
+hàng ngược chiều nhau** — chiều ngược đặt bằng `animation-direction` inline, không
+cần thêm keyframe (rule tắt chuyển động nhắm `animation-name` nên vẫn hiệu lực với
+cả hai chiều).
+
+**Khoảng cách giữa các mục phải nằm TRÊN TỪNG MỤC, không được dùng `gap` trên
+track.** Track có N mục cộng một `<span>` chứa N bản sao. Với `gap: g`, track có N
+khoảng còn span có N−1 khoảng, nên nửa chiều rộng không bằng chiều rộng một bản
+sao — lệch đúng `g/2` và vòng lặp có mối nối nhìn thấy được. Lề phải trên từng thẻ
+thì hai bản sao rộng bằng nhau tuyệt đối. Partners né chuyện này bằng `px` trên
+từng mục; Team dùng `mr` — cùng một nguyên tắc.
+
+**Tắt chuyển động thì phải cho cuộn ngang.** Rule reduced-motion chỉ dừng
+animation, track đứng nguyên ở vị trí đầu và phần lớn mục nằm ngoài khung — nội
+dung biến mất với đúng nhóm người dùng cần được phục vụ tử tế nhất. Utility
+`marquee-viewport` chuyển `overflow-x` sang `auto` trong `prefers-reduced-motion`.
+Đặt `overflow: hidden` cả hai trục chứ không chỉ `overflow-x`: một trục `hidden` mà
+trục kia `visible` thì CSS tự nâng trục kia thành `auto` và sinh thanh cuộn dọc.
+
+**Partners hiện CHƯA có `marquee-viewport`** — vẫn còn lỗi mất nội dung đó. Sửa thì
+đổi `overflow-hidden` thành `marquee-viewport` là xong.
 
 ## Marquee đối tác
 
@@ -138,6 +220,12 @@ style reference, người dùng đã được báo trước điểm này.
 của `fablab.eiu.edu.vn` (`/wp-json/wp/v2/media?per_page=100`) rồi cắt giữa + nén
 sẵn. **Không có bước xử lý ảnh lúc build** — file trong repo đã là file cuối.
 
+**Poster do người dùng cung cấp: đọc nội dung, đừng tin tên file.** Hai cuộc thi
+2026 đến từ poster chính thức chứ không phải trang Sự kiện. File nhận được tên là
+`activity-mcr-2025.png` nhưng poster ghi rõ **2026** — tên file sai, nội dung đúng.
+Poster cũng phải nén về khung chung trước khi dùng: hai file gốc nặng 514 KB và
+2,4 MB, trong khi cả bộ ảnh hoạt động chỉ 47–99 KB mỗi ảnh.
+
 **Ảnh hoạt động lệch một bậc trên trang nguồn.** Trên
 `fablab.eiu.edu.vn/vi/su-kien/`, ảnh nằm **trước** tiêu đề của chính nó, nên bóc
 theo vị trí sẽ gán nhầm ảnh sang sự kiện kế bên (poster in 3D bị gán cho cuộc thi
@@ -152,11 +240,76 @@ Tỷ lệ ảnh hoạt động rất lệch nhau (poster dọc 0.7 đến ảnh 
 dùng `object-contain` trên nền pastel. **Đừng đổi sang `object-cover`** — nó sẽ
 cắt mất tiêu đề poster hoặc mặt người.
 
-**Đội ngũ: chỉ 6/10 người có ảnh.** Trang "Về chúng tôi" của trường để ảnh mẫu
-`demo_image.jpg` cho bốn người còn lại, nên `TEAM_IMAGES` không có key cho họ và
-[Team.jsx](src/components/Team.jsx) dựng avatar chữ cái đầu. **Đừng lấp bằng ảnh
+**Đội ngũ: 14/15 người có ảnh.** Ảnh do người dùng tự tải về từ trang Google Sites
+`sites.google.com/eiu.edu.vn/fablab` lúc đang đăng nhập — agent tải từ ngoài chỉ
+nhận **403 Forbidden** (URL gắn phiên đăng nhập `.../sitesv/…`; đã thử bỏ tham số
+kích thước và gửi kèm `Referer`, vẫn 403). **Đừng tốn lượt thử tải lại** — nhờ người
+dùng đưa file, y như cách họ đã đưa hai poster cuộc thi.
+
+Còn thiếu ảnh của `phuong`. `TEAM_IMAGES` thiếu key thì
+[Team.jsx](src/components/Team.jsx) tự dựng avatar chữ cái đầu. **Đừng lấp bằng ảnh
 stock hay ảnh người khác** — đây là người có thật, gán sai mặt là bịa danh tính.
-Tên và chức danh cũng lấy nguyên văn từ trang đó, không tự chế.
+
+### Cắt ảnh chân dung: KHÔNG cắt giữa được
+
+Ảnh nguồn là chân dung dọc (tỷ lệ 0,56–0,73), có ảnh chụp toàn thân. Cắt giữa sẽ ra
+giữa thân người, không có mặt. Quy trình đã dùng, lặp lại được:
+
+1. Dựng **bảng ảnh** (contact sheet) xem cả bộ cùng lúc — xác nhận đúng người.
+2. Dựng **bảng đo**: vẽ lưới phần trăm lên ảnh gốc để ĐỌC RA vị trí mặt thay vì
+   đoán. Bước này bắt buộc: lần đầu tôi đoán mặt ở 22–30%, đo ra mới biết hai ảnh
+   có mặt ở **42%** (người đứng xa) và khung cắt trượt hẳn khỏi người. Mỗi bảng
+   tối đa 3 ảnh — gộp 7 ảnh vào một bảng thì đọc sai vài phần trăm, đủ để hỏng.
+3. Cắt bằng **ba số đo được**, không phải bằng tâm/cạnh khung tự đặt: đỉnh tóc,
+   cằm, tâm mặt theo chiều ngang. Script tự tính khung sao cho **đầu chiếm 46%
+   cạnh ô vuông** và **đường mắt ở 40% chiều cao khung**.
+4. **Xem lại bản đã cắt trong khung TRÒN** — thẻ hiển thị bo tròn, nên cằm hoặc
+   trán sát mép vuông sẽ bị khuyết khi bo.
+
+**Vì sao đổi từ `Cx`/`Cy`/`Side` sang ba số đo.** Bản đầu nhập thẳng tâm và cạnh
+khung, mỗi ảnh một con số tự đặt. Kết quả: `manh` lệch trái (tâm mặt thật ở 53,8%
+chứ không phải 48%), `nhi` và `huan` bị **hình tròn cắt mất cằm** (tâm đặt quá cao),
+mỗi ảnh một cỡ mặt. Sai số này gần như vô hình ở khung vuông và chỉ lộ ra khi bo
+tròn. Nhập số đo rồi để máy tính khung thì 14 ảnh ra cùng một bố cục, kiểm bằng số
+được (`dau=0.46` cho mọi ảnh) chứ không phải bằng mắt.
+
+Khung tự kẹp vào trong ảnh khi tràn mép, nên vài ảnh có đường mắt lên 0,32–0,33
+thay vì 0,40 (`hung`, `tinh`, `nhi` — đầu sát mép trên ảnh gốc). Đó là đánh đổi
+đúng: thà mặt hơi cao còn hơn lọt vùng trống ngoài khung.
+
+Script nằm ở scratchpad (`contact-sheet.ps1`, `measure2.ps1`, `crop-team2.ps1`,
+`avatar-preview.ps1`). Ảnh gốc sao lưu ở `team-originals/`, bản cắt cũ ở
+`team-crop-v1/` — **cả hai đều ngoài git**, đừng coi là có sẵn ở lượt sau.
+
+**Ảnh cũ và ảnh mới cùng tên có thể là hai người khác nhau.** `team-hien` và
+`team-phuoc` bản WordPress cũ so với bản Google Sites mới là hai khuôn mặt khác hẳn
+(kính, dáng mặt). Đã lấy bản mới theo chỉ dẫn của người dùng và báo lại. Nếu gặp
+lại tình huống này: **mở cả hai ra so mặt**, đừng ghi đè im lặng.
+
+`team-linh` là ảnh duy nhất **không còn bản gốc** — nguồn duy nhất là bản 200×200
+thời WordPress. Đã cắt vào để khung khớp 13 người kia, nhưng vùng cắt chỉ ~135px
+phóng lên 240 nên mềm nét hơn thấy rõ. Có ảnh chụp mới thì thay.
+
+Trang gốc còn một chỗ khuyết, **cố ý giữ nguyên**: nhóm FabLab có một ô thứ năm chỉ
+có ảnh mà không có tên. Đừng suy đoán rồi điền vào.
+
+"Hoàng Ngọc Phương" (tên đầy đủ, Thạc sĩ Cơ điện tử) do người dùng tự sửa vào
+`vi.js`; trang gốc chỉ ghi "Phương" kèm "Kỹ sư ngành Kỹ thuật phần mềm". **Người
+dùng sửa một từ điển thì phải đồng bộ sang từ điển kia** — lần này `en.js` bị bỏ
+quên và script kiểm bắt được vì tên người không được phép khác nhau giữa hai bản.
+
+**Giám đốc FabLab tách ra một thẻ riêng** đứng trên hai dải chạy, đánh dấu bằng cờ
+`lead: true` trong `team.members`. [Team.jsx](src/components/Team.jsx) lọc theo cờ,
+**không viết cứng `id`** — bàn giao vai trò là chuyển cờ, không phải sửa component.
+Người này bị loại khỏi dải chạy để không hiện hai lần.
+
+`education` cũng lấy từ trang đó, chỉ bỏ chữ nối "ngành" cho vừa thẻ. Trang còn ghi
+**chức vụ kiêm nhiệm ở EIU** cho bốn người (Phó trưởng khoa Kỹ thuật, Trợ giảng,
+Giảng viên khoa Giáo dục đại cương) — hiện chưa đưa lên trang vì người dùng chỉ yêu
+cầu chức danh trong FabLab.
+
+Khi bóc trang này, **bóc hai lần với hai câu hỏi khác nhau rồi đối chiếu**: lần đầu
+mô hình trích xuất gán trùng một URL ảnh cho ba người khác nhau.
 
 **Logo là ảnh thật, không còn là SVG tự vẽ.** `Logo-Fablab.png` là file gốc do
 trường cung cấp (mark tròn + chữ "EIU FABLAB"); `logo-mark.png` là phần mark cắt
@@ -191,25 +344,71 @@ giữ object, để đổi ngôn ngữ lúc popup đang mở thì nội dung d�
 
 ## Hai nhóm khóa học
 
-Section khóa học chia làm hai khối, **không còn nút lọc**. Nhóm nằm ở
-`courses.groups` (mảng, thứ tự trong mảng chính là thứ tự hiển thị); mỗi khóa trỏ
-về nhóm bằng trường `group`.
+Section khóa học chia làm hai khối. Nhóm nằm ở `courses.groups` (mảng, thứ tự trong
+mảng chính là thứ tự hiển thị); mỗi khóa trỏ về nhóm bằng trường `group`.
 
-| `group` | Chuyên mục thật trên site | Số khóa |
+| `group` | Tiêu đề | Số khóa | Bộ lọc |
+|---|---|---|---|
+| `stem` | Khóa học STEM | 4 | không |
+| `experience` | Chương trình trải nghiệm STEM | 30 | có |
+
+**Hai nhóm cố ý mang hai bộ trường khác nhau**, và [CourseCard.jsx](src/components/CourseCard.jsx)
+render theo trường nào CÓ MẶT chứ không nhận prop kiểu:
+
+| | `stem` | `experience` |
 |---|---|---|
-| `stem` | Khóa học STEM | 4 |
-| `experience` | Chương trình trải nghiệm STEM | 12 |
+| Phân loại | `level` | `stage` + `topic` |
+| Chip trên ảnh | cấp độ | cấp học (TH/THCS/THPT) |
+| Dòng chân card | `duration` · `age` | chip nhóm chủ đề |
+| Icon | tra theo `id` | tra theo `icon` |
 
-Đây **không phải cách chia tự nghĩ ra**: đọc từ breadcrumb của cả 16 trang
-`fablab.eiu.edu.vn/courses/<slug>/`. Scratch là khóa duy nhất chưa gắn chuyên mục
-trên site, xếp vào `stem` theo độ dài (7 tuần, dài hơn mọi khóa trải nghiệm).
+Bốn khóa `stem` đọc từ breadcrumb `fablab.eiu.edu.vn/courses/<slug>/`, `duration`
+và `age` là số thật từ trang khóa học. 30 chương trình `experience` lấy từ
+**catalogue chính thức do FabLab cung cấp** — catalogue không có thời lượng, độ
+tuổi hay mô tả ngắn, nên đừng đi tìm rồi điền vào.
 
-`duration` cũng là số thật từ trang khóa học (`N tuần · M giờ`). Số tuần khớp
-chính xác với tổng số buổi cộng từ giáo trình, nên **1 buổi = 1 tuần** — muốn hiện
-"buổi" thay "tuần" thì sửa đúng một chuỗi trong mỗi từ điển.
+### Bộ lọc đã QUAY LẠI — đừng bỏ đi lần nữa
+
+Tài liệu cũ từng ghi "không còn nút lọc": bộ lọc bị bỏ hồi section chỉ có 16 khóa
+chia hai nhóm, lúc đó hai nhóm là đủ. Với **30 chương trình trong một nhóm** thì lý
+do đó không còn đúng, và bộ lọc được thêm lại theo yêu cầu của người dùng.
+
+Bật bằng cờ `filterable: true` trên phần tử của `courses.groups`, **không suy đoán
+theo số lượng**. Hai hàng chip (`stages`, `topics`) độc lập, kết hợp bằng AND.
+
+Hai điều dễ làm hỏng:
+
+- **Đừng reset `expanded` khi đổi bộ lọc bằng effect** — đụng luật lint
+  `react(set-state-in-effect)`. `hasMore` vốn tính từ số card đã lọc nên nút tự
+  ẩn/hiện đúng, không cần reset.
+- **Đừng viết rằng lọc có hiệu ứng trượt.** Card vừa mount đã ở trạng thái cuối
+  ngay lần resolve style đầu tiên nên không có gì để transition (xem bẫy 4 ở trên).
+
+`stage` / `topic` / `icon` của từng chương trình đều là khóa tra cứu: sai một chữ
+là chip trống hoặc huy hiệu rỗng, **không có cảnh báo lúc build**.
 
 **Bậc heading trong section này: h2 (section) → h3 (nhóm) → h4 (tên card).** Thêm
 nhóm hay đổi bố cục thì giữ nguyên thứ bậc, đừng để hai h3 ngang hàng với tên card.
+
+**Bậc heading trong section này: h2 (section) → h3 (nhóm) → h4 (tên card).** Thêm
+nhóm hay đổi bố cục thì giữ nguyên thứ bậc, đừng để hai h3 ngang hàng với tên card.
+
+### Hai file nội dung popup, hai luật ngược nhau
+
+`courses.details` trộn hai nguồn: `{ ...courseDetails*, ...experienceDetails* }`.
+
+| File | Cho | Sửa tay? |
+|---|---|---|
+| `courseDetails.*.js` | 4 khóa STEM | **KHÔNG** — file sinh ra, sửa là mất |
+| `experienceDetails.*.js` | 30 chương trình trải nghiệm | **CÓ** — viết tay có chủ đích |
+
+Nhầm file là mất công hoặc mất dữ liệu. Đầu mỗi file đều ghi rõ nó thuộc loại nào.
+
+`cnc` là id duy nhất trùng giữa hai file; spread nông nên mục viết tay **thay hoàn
+toàn** mục sinh ra cùng tên — đúng ý định, vì đó là hai chương trình khác nhau.
+
+Bỏ 12 khóa cũ để lại 11 mục mồ côi trong `courseDetails.*.js` (~25 KB vẫn bị đóng
+gói). Cố ý không xoá tay; cách sạch là chỉnh bộ scraper rồi chạy lại.
 
 ### courseDetails.*.js là file SINH RA, đừng sửa tay
 
@@ -222,6 +421,28 @@ Shape của `courses.details` **cố ý không đối xứng** giữa hai ngôn 
 trang gốc không có mục đó thì thiếu hẳn key, và popup chỉ render mục có dữ liệu.
 Quy ước "hai từ điển cùng shape" chỉ áp cho chữ giao diện. Năm khóa không có trang
 tiếng Anh được đánh dấu `viOnly: true`.
+
+## Hai khối hoạt động
+
+Section Hoạt động cũng chia hai khối như section Khóa học: **Cuộc thi** (2 mục) và
+**Sự kiện & hội thảo** (11 mục), mỗi khối một carousel riêng gọi `useCarousel` của
+chính nó.
+
+**Khối nào chứa hoạt động nào suy từ `kind`, KHÔNG có trường `group` trong i18n.**
+Đây là chỗ cố ý khác với section Khóa học. Courses buộc phải có
+`courses.items[].group` vì chuyên mục của trường không suy ra được từ trường nào
+khác; còn ở đây `kind` đã là thứ quyết định — "cuộc thi" đúng bằng
+`kind: 'competition'`. Bảng ánh xạ nằm ở `KIND_GROUP` trong
+[Activities.jsx](src/components/Activities.jsx). Muốn chuyển một hoạt động sang
+khối kia thì **đổi `kind` của nó**, đừng thêm trường mới.
+
+Thêm một `kind` mới mà quên thêm vào `KIND_GROUP` thì hoạt động đó **biến mất khỏi
+trang** (rơi vào bucket `undefined`, không có cảnh báo lúc build). Script kiểm
+trong scratchpad có chốt chặn cho việc này.
+
+**Bậc heading: h2 (section) → h3 (khối) → h4 (tên hoạt động).** Giống hệt section
+Khóa học, và cùng một cái bẫy: thêm h3 cho khối mà quên hạ tên hoạt động xuống h4
+thì outline có hai h3 ngang hàng.
 
 ## Bẫy khi sửa i18n bằng regex
 
@@ -256,6 +477,15 @@ nên bốn con số tự đếm lại từ 0 mỗi lượt — **không cần s�
   chết cho class không ai dùng. Diễn đạt vòng khi cần nhắc tới một class.
 - `npm run build` báo `EBUSY ... rmdir 'dist\assets'` nếu shell đang đứng bên
   trong `dist/`. Đưa cwd ra ngoài rồi chạy lại.
+- **Tên biến PowerShell không phân biệt hoa thường.** Script cắt ảnh đặt hằng số
+  cạnh ảnh là `$OUT` rồi dùng `$out` cho đường dẫn file — chúng là **một biến**,
+  nên từ vòng lặp thứ hai cạnh ảnh biến thành đường dẫn và mọi ảnh sau ảnh đầu
+  đều hỏng. Thông báo lỗi chỉ vào `DrawImage` chứ không chỉ vào chỗ sai.
+- `New-Object Type ($a), ($b)` bị PowerShell gom tham số sai. Dùng `[Type]::new()`.
+  `Measure-Object` trả `Double`, ép `[int]` trước khi đưa vào `Bitmap::new`.
+- **Grep CSS đã build phải tính tới biến thể.** Class có `sm:` được sinh ra dưới
+  tên `.sm\:size-20`, tìm `.size-20{` sẽ báo thiếu trong khi code hoàn toàn đúng.
+  Đây là lần thứ ba script kiểm sai chứ không phải code sai — nghi ngờ script trước.
 
 ## Giới hạn của agent trong repo này
 

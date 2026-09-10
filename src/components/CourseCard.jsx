@@ -15,6 +15,19 @@ export function CourseCard({ course, index, onOpen }) {
   const t = useT()
   const tone = TONES[index % TONES.length]
 
+  // Hai nhóm khóa học mang hai bộ trường khác nhau, và card render theo trường nào
+  // CÓ MẶT chứ không nhận thêm prop kiểu:
+  //   nhóm STEM        -> level + duration + age  (số thật từ trang khóa học)
+  //   nhóm trải nghiệm -> stage + topic           (phân loại của catalogue)
+  const stage = course.stage && t.courses.stages.find((s) => s.id === course.stage)
+  const topic = course.topic && t.courses.topics.find((x) => x.id === course.topic)
+
+  // `CourseIcon` trả null khi không có icon cho id đó — huy hiệu sẽ là vòng tròn
+  // trắng rỗng. Chương trình trải nghiệm vì thế trỏ `icon` tới một icon có sẵn;
+  // nếu vẫn thiếu thì bỏ hẳn huy hiệu chứ không để vòng tròn trống.
+  const iconId = course.icon ?? course.id
+  const icon = <CourseIcon id={iconId} size={24} />
+
   // Card cố ý KHÔNG khai báo utility transition nào: khai báo transition gộp
   // trong index.css (không phân lớp) đã lo cả `translate` lẫn `box-shadow` cho
   // hover. Bản cũ liệt kê `transform` là sai — Tailwind v4 nhấc card bằng thuộc
@@ -45,14 +58,16 @@ export function CourseCard({ course, index, onOpen }) {
         />
 
         <Pill tone="white" className="absolute top-3 right-3">
-          {t.courses.levels[course.level]}
+          {stage ? stage.short : t.courses.levels[course.level]}
         </Pill>
 
-        <span
-          className={`absolute bottom-3 left-3 inline-flex size-11 items-center justify-center rounded-pill bg-white shadow-ambient ${tone}`}
-        >
-          <CourseIcon id={course.id} size={24} />
-        </span>
+        {icon && (
+          <span
+            className={`absolute bottom-3 left-3 inline-flex size-11 items-center justify-center rounded-pill bg-white shadow-ambient ${tone}`}
+          >
+            {icon}
+          </span>
+        )}
       </div>
 
       {/* h4 chứ không phải h3: mỗi nhóm khóa học đã chiếm một h3 ở trên. */}
@@ -64,13 +79,17 @@ export function CourseCard({ course, index, onOpen }) {
 
       {/* `mt-auto` đẩy phần chân xuống đáy để mọi card trong hàng cao bằng nhau */}
       <div className="mt-auto pt-6">
-        <div className="flex items-center gap-2 text-caption text-steel">
-          <span>{course.duration}</span>
-          <span aria-hidden="true">·</span>
-          <span>
-            {t.courses.ageLabel} {course.age}
-          </span>
-        </div>
+        {topic ? (
+          <Pill tone="outline">{topic.label}</Pill>
+        ) : (
+          <div className="flex items-center gap-2 text-caption text-steel">
+            <span>{course.duration}</span>
+            <span aria-hidden="true">·</span>
+            <span>
+              {t.courses.ageLabel} {course.age}
+            </span>
+          </div>
+        )}
 
         {/* Mở popup chi tiết. Phần `sr-only` giữ lại vì 16 card có cùng một nhãn
             "Tìm hiểu thêm" — screen reader cần biết nút này thuộc khóa nào. */}

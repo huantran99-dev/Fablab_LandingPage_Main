@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { ArrowLeftIcon, ArrowRightIcon } from '../assets/icons/Icons'
 import { ACTIVITY_IMAGES } from '../assets/images'
 import { useCarousel } from '../hooks/useCarousel'
@@ -15,23 +16,53 @@ const KIND_TONES = {
   partnership: 'ink',
 }
 
-export function Activities() {
+/**
+ * Khối nào chứa hoạt động nào — suy từ `kind`, không phải một trường riêng trong
+ * i18n.
+ *
+ * Section Khóa học buộc phải có `courses.items[].group` vì chuyên mục của trường
+ * không suy ra được từ trường nào khác. Ở đây thì `kind` ĐÃ LÀ thứ quyết định:
+ * "cuộc thi" đúng bằng `kind: 'competition'`. Thêm một trường `group` song song
+ * chỉ là chép lại thông tin đã có, và sớm muộn hai chỗ sẽ lệch nhau.
+ *
+ * Muốn chuyển một hoạt động sang khối kia thì đổi `kind` của nó — cũng là chỗ
+ * đúng để đổi.
+ */
+const KIND_GROUP = {
+  competition: 'competitions',
+  seminar: 'events',
+  workshop: 'events',
+  partnership: 'events',
+}
+
+/**
+ * Một khối hoạt động: tiêu đề phụ + carousel của riêng nó.
+ *
+ * Mỗi khối gọi `useCarousel` riêng nên hai carousel chạy độc lập — lật khối này
+ * không kéo theo khối kia.
+ */
+function ActivityCarousel({ group, items, from }) {
   const t = useT()
-  const items = t.activities.items
   const { current, go, goTo } = useCarousel(items.length)
   const active = items[current]
 
-  return (
-    <Section id="activities">
-      <SectionHeading
-        eyebrow={t.activities.eyebrow}
-        title={t.activities.title}
-        description={t.activities.description}
-        align="center"
-        from="left"
-      />
+  // Khối rỗng thì không dựng carousel, kẻo `active` là undefined.
+  if (!active) return null
 
-      <Reveal from="right" className="mt-14 flex items-center gap-5">
+  return (
+    // Neo suy từ `group.id`: menu ở navbar trỏ thẳng vào `#competitions` và
+    // `#events`.
+    <div id={group.id} className="flex flex-col">
+      {/* h3: nằm dưới h2 của section, và trên h4 là tên từng hoạt động. */}
+      <Reveal className="flex flex-col items-center gap-3 text-center">
+        <span className="flex flex-wrap items-center justify-center gap-3">
+          <h3 className="text-heading-sm md:text-heading-lg text-ink">{group.title}</h3>
+          <Pill tone="outline">{items.length}</Pill>
+        </span>
+        <p className="max-w-[620px] text-body-sm text-graphite">{group.description}</p>
+      </Reveal>
+
+      <Reveal from={from} className="mt-8 flex items-center gap-5">
         <div className="hidden md:block">
           <RoundButton label={t.activities.previous} onClick={() => go(-1)}>
             <ArrowLeftIcon />
@@ -63,7 +94,7 @@ export function Activities() {
                 {active.date && <Pill tone="outline">{active.date}</Pill>}
               </div>
 
-              <h3 className="text-heading-sm md:text-heading-lg text-ink">{active.title}</h3>
+              <h4 className="text-heading-sm md:text-heading-lg text-ink">{active.title}</h4>
               <p className="text-body-sm text-graphite">{active.description}</p>
             </div>
           </div>
@@ -105,6 +136,41 @@ export function Activities() {
           </RoundButton>
         </div>
       </Reveal>
+    </div>
+  )
+}
+
+export function Activities() {
+  const t = useT()
+
+  // Gom hoạt động về đúng khối một lần, thay vì lọc lại ở mỗi lần render khối.
+  const byGroup = useMemo(() => {
+    const buckets = new Map(t.activities.groups.map((group) => [group.id, []]))
+    for (const item of t.activities.items) buckets.get(KIND_GROUP[item.kind])?.push(item)
+    return buckets
+  }, [t.activities.groups, t.activities.items])
+
+  return (
+    <Section id="activities">
+      <SectionHeading
+        eyebrow={t.activities.eyebrow}
+        title={t.activities.title}
+        description={t.activities.description}
+        align="center"
+        from="left"
+      />
+
+      {/* Hai khối trượt vào ngược chiều nhau, và ngược chiều tiêu đề section. */}
+      <div className="mt-14 flex flex-col gap-16 md:gap-20">
+        {t.activities.groups.map((group, index) => (
+          <ActivityCarousel
+            key={group.id}
+            group={group}
+            items={byGroup.get(group.id) ?? []}
+            from={index % 2 === 0 ? 'right' : 'left'}
+          />
+        ))}
+      </div>
     </Section>
   )
 }

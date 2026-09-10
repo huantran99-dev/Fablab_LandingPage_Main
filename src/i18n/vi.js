@@ -9,14 +9,45 @@
  * React key và làm khóa tra icon, nên phải giống hệt nhau ở cả hai ngôn ngữ.
  */
 import { courseDetailsVi } from './courseDetails.vi'
+import { experienceDetailsVi } from './experienceDetails.vi'
 
 export const vi = {
   nav: {
     brandTagline: 'Xưởng chế tạo số',
+    /**
+     * Menu hai cấp. Mục nào có `children` là nhánh mở ra submenu và KHÔNG có
+     * `href` — nó là nút bật/tắt chứ không phải link, vì hai nhánh này không
+     * ứng với section nào của riêng chúng.
+     *
+     * Mọi `href` phải trỏ tới một `id` có thật trong DOM; bốn neo được dựng riêng
+     * cho menu này (hai nhóm khóa học và hai khối hoạt động).
+     */
     links: [
       { id: 'about', label: 'Về chúng tôi', href: '#about' },
-      { id: 'courses', label: 'Khóa học', href: '#courses' },
-      { id: 'facilities', label: 'Thiết bị', href: '#facilities' },
+      {
+        id: 'fablab',
+        label: 'FabLab',
+        children: [
+          { id: 'facilities', label: 'Thiết bị', href: '#facilities' },
+          { id: 'competitions', label: 'Cuộc thi', href: '#competitions' },
+        ],
+      },
+      {
+        id: 'stemlab',
+        label: 'StemLab',
+        children: [
+          { id: 'courses-stem', label: 'Khóa học STEM', href: '#courses-stem' },
+          {
+            id: 'courses-experience',
+            label: 'Khóa học trải nghiệm',
+            href: '#courses-experience',
+          },
+        ],
+      },
+      // Đứng riêng ở cấp một chứ không nằm trong FabLab: đây là mục hay được tìm
+      // nhất nên không nên giấu sau một lần bấm. Vẫn trỏ tới khối "Sự kiện & hội
+      // thảo" trong section Hoạt động.
+      { id: 'events', label: 'Sự kiện', href: '#events' },
     ],
     cta: 'Đăng ký ngay',
     openMenu: 'Mở menu',
@@ -99,9 +130,38 @@ export const vi = {
         id: 'experience',
         title: 'Chương trình trải nghiệm STEM',
         description:
-          'Khóa ngắn 3–6 tuần, đi thẳng vào một lĩnh vực kỹ thuật để thử sức trước khi chọn học sâu.',
+          'Ba mươi chương trình ngắn, đi thẳng vào một lĩnh vực để thử sức. Lọc theo cấp học và nhóm chủ đề để tìm nhanh chương trình phù hợp.',
+        // Chỉ nhóm này hiện bộ lọc — bật bằng cờ chứ không suy đoán theo số lượng.
+        filterable: true,
       },
     ],
+
+    /**
+     * Hai chiều phân loại của nhóm trải nghiệm, theo đúng catalogue chính thức
+     * của FabLab EIU. Thứ tự trong mảng là thứ tự chip trên hàng lọc; `id` không
+     * dịch vì dùng làm khóa đối chiếu với `stage`/`topic` của từng chương trình.
+     *
+     * `short` là chữ hiện trên card (chỗ hẹp), `label` là chữ đầy đủ trên hàng lọc.
+     */
+    stages: [
+      { id: 'th', short: 'TH', label: 'Tiểu học' },
+      { id: 'thcs', short: 'THCS', label: 'Trung học cơ sở' },
+      { id: 'thpt', short: 'THPT', label: 'Trung học phổ thông' },
+    ],
+    topics: [
+      { id: 'science', label: 'Khoa học tự nhiên và Sự sống' },
+      { id: 'robotics', label: 'Kỹ thuật và công nghệ Robot' },
+      { id: 'aiot', label: 'AIoT & Công nghệ số' },
+    ],
+    filters: {
+      all: 'Tất cả',
+      stage: 'Cấp học',
+      topic: 'Nhóm chủ đề',
+      empty: 'Không có chương trình nào khớp với lựa chọn này.',
+    },
+
+    // Chỉ bốn khóa nhóm `stem` dùng `levels` / `duration` / `age`; nhóm trải
+    // nghiệm dùng `stage` / `topic` thay thế. Card render theo trường nào có mặt.
     levels: {
       basic: 'Cơ bản',
       intermediate: 'Trung cấp',
@@ -126,8 +186,13 @@ export const vi = {
       viOnly: 'Nội dung chi tiết của khóa này hiện chỉ có bản tiếng Việt.',
     },
 
-    /** Nội dung chi tiết bóc từ trang khóa học thật — xem courseDetails.vi.js */
-    details: courseDetailsVi,
+    /**
+     * Hai nguồn, trộn lại:
+     * - `courseDetailsVi` — SINH RA từ bộ scraper các trang LearnPress (4 khóa STEM)
+     * - `experienceDetailsVi` — VIẾT TAY từ catalogue chính thức (30 chương trình)
+     * Xem đầu mỗi file để biết cái nào được phép sửa tay.
+     */
+    details: { ...courseDetailsVi, ...experienceDetailsVi },
     showMore: 'Xem thêm khóa học',
     showLess: 'Thu gọn',
     emptyState: 'Chưa có khóa học nào trong nhóm này.',
@@ -135,126 +200,313 @@ export const vi = {
     // `duration` và `age` là số thật, lấy từ trang khóa học của trường.
     // TODO: riêng `age` của khóa Scratch ('8+') trang gốc không ghi — vẫn là giả định.
     items: [
+      // --- Khoa học tự nhiên và Sự sống -----------------------------------
       {
-        id: 'automation',
+        id: 'thien-nhien',
         group: 'experience',
-        level: 'advanced',
-        duration: '5 tuần · 15 giờ',
-        age: '16–18',
-        title: 'Tự động hóa & Robotics',
+        stage: 'th',
+        topic: 'science',
+        icon: 'energy',
+        title: 'Sức mạnh của thiên nhiên',
         description:
-          'Thiết kế và lập trình hệ thống tự động, từ cảm biến, PLC đến cánh tay robot công nghiệp.',
+          'Tìm hiểu các mùa, hiện tượng thời tiết và thiên tai, rồi dựng mô hình mô phỏng để hiểu cách phòng tránh.',
       },
       {
-        id: 'plastics',
+        id: 'nang-luong-cuoc-song',
         group: 'experience',
-        level: 'intermediate',
-        duration: '5 tuần · 15 giờ',
-        age: '12–18',
-        title: 'Công nghiệp Nhựa',
+        stage: 'thcs',
+        topic: 'science',
+        icon: 'energy',
+        title: 'Năng lượng và cuộc sống',
         description:
-          'Tìm hiểu vật liệu polymer, khuôn mẫu và quy trình ép phun trong sản xuất công nghiệp.',
+          'Các dạng và nguồn năng lượng, cách năng lượng truyền và chuyển đổi, qua thử thách "Cỗ máy một chạm".',
       },
       {
-        id: 'process',
+        id: 'am-thanh',
         group: 'experience',
-        level: 'advanced',
-        duration: '4 tuần · 12 giờ',
-        age: '12–18',
-        title: 'Kỹ thuật Quá trình',
+        stage: 'thcs',
+        topic: 'science',
+        icon: 'electronics',
+        title: 'Bí mật âm thanh',
         description:
-          'Vận hành và tối ưu các quá trình công nghệ, đo lường và điều khiển thông số dây chuyền.',
+          'Từ nguồn âm và dao động đến cách tai người tiếp nhận âm thanh, thực hành truyền âm bằng trò chơi tương tác.',
       },
       {
-        id: 'photonics',
+        id: 'nam-cham',
         group: 'experience',
-        level: 'advanced',
-        duration: '4 tuần · 12 giờ',
-        age: '12–18',
-        title: 'Quang sợi & Laser',
+        stage: 'thcs',
+        topic: 'science',
+        icon: 'electrical',
+        title: 'Nam châm và từ trường',
         description:
-          'Nguyên lý truyền dẫn quang, hàn nối sợi quang và ứng dụng laser trong gia công vật liệu.',
+          'Từ trường và nam châm trong tự nhiên, thí nghiệm về tính chất cơ bản và thử thách "Ma lực của nam châm".',
       },
       {
-        id: 'mechatronics',
+        id: 'cap-quang',
         group: 'experience',
-        level: 'advanced',
-        duration: '3 tuần · 9 giờ',
-        age: '16–18',
-        title: 'Cơ điện tử',
+        stage: 'thcs',
+        topic: 'science',
+        icon: 'photonics',
+        title: 'Cáp quang và Laser',
         description:
-          'Kết hợp cơ khí, điện tử và lập trình để xây dựng hệ thống thông minh hoàn chỉnh.',
+          'Khúc xạ ánh sáng và phản xạ toàn phần, nguyên lý truyền ánh sáng trong cáp quang, khép lại bằng thử thách mã Morse.',
       },
       {
-        id: 'mechanics',
+        id: 'polymer',
         group: 'experience',
-        level: 'intermediate',
-        duration: '5 tuần · 20 giờ',
-        age: '16–18',
-        title: 'Cơ khí',
+        stage: 'thcs',
+        topic: 'science',
+        icon: 'plastics',
+        title: 'Giải mã Polymer',
         description:
-          'Đọc bản vẽ kỹ thuật, thiết kế chi tiết máy và nguyên lý truyền động trong máy móc.',
+          'Đặc điểm và ứng dụng của các nhóm vật liệu polymer, thí nghiệm thực hành và thử thách chế tạo nhựa biopolymer.',
       },
       {
-        id: 'electrical',
+        id: 'nang-luong-tai-tao',
         group: 'experience',
-        level: 'intermediate',
-        duration: '6 tuần · 18 giờ',
-        age: '16–18',
-        title: 'Hệ thống Điện',
+        stage: 'thpt',
+        topic: 'science',
+        icon: 'energy',
+        title: 'Năng lượng tái tạo',
         description:
-          'Thiết kế tủ điện, đấu nối an toàn và vận hành hệ thống phân phối điện công nghiệp.',
+          'Các nguồn năng lượng tái tạo và nguyên lý tuabin gió, thực hành đo điện năng tạo ra từ mô hình.',
       },
       {
-        id: 'electronics',
+        id: 'moi-truong-nuoc',
         group: 'experience',
-        level: 'basic',
-        duration: '5 tuần · 15 giờ',
-        age: '16–18',
-        title: 'Điện tử',
+        stage: 'thpt',
+        topic: 'science',
+        icon: 'water',
+        title: 'Công nghệ môi trường nước',
         description:
-          'Từ linh kiện cơ bản đến thiết kế mạch in, hàn mạch và đo kiểm bằng thiết bị chuyên dụng.',
+          'Nguyên nhân ô nhiễm nước và các phương pháp xử lý; thực hành đo pH, khử trùng, khử màu và kiểm tra nước bể bơi.',
       },
       {
-        id: 'water',
+        id: 'nganh-nhua',
         group: 'experience',
-        level: 'intermediate',
-        duration: '5 tuần · 15 giờ',
-        age: '6–18',
-        title: 'Công nghệ Môi trường Nước',
+        stage: 'thpt',
+        topic: 'science',
+        icon: 'plastics',
+        title: 'Khám phá ngành nhựa',
         description:
-          'Xử lý và giám sát chất lượng nước, thiết kế hệ thống lọc phục vụ cộng đồng.',
+          'Phân loại polymer, tính chất vật lý và hóa học, phân biệt tổng hợp với gia công, kèm thí nghiệm chế tạo.',
+      },
+
+      // --- Kỹ thuật và công nghệ Robot ------------------------------------
+      {
+        id: 'xe-robot',
+        group: 'experience',
+        stage: 'th',
+        topic: 'robotics',
+        icon: 'robot-car',
+        title: 'Khám phá xe robot',
+        description:
+          'Cấu tạo và cách điều khiển xe robot bằng giọng nói và điều khiển từ xa, khép lại bằng thử thách "Đường đua robot".',
       },
       {
-        id: 'stress',
+        id: 'drone',
         group: 'experience',
-        level: 'advanced',
-        duration: '4 tuần · 12 giờ',
-        age: '12–18',
-        title: 'Phân tích Ứng suất',
+        stage: 'thcs',
+        topic: 'robotics',
+        icon: 'automation',
+        title: 'Lập trình Drone',
         description:
-          'Mô phỏng và kiểm nghiệm độ bền kết cấu bằng phương pháp phần tử hữu hạn.',
+          'Nguyên lý bay và ứng dụng của drone, thực hành lập trình điều khiển và trải nghiệm thử thách Drone Soccer.',
+      },
+      {
+        id: 'canh-tay-robot',
+        group: 'experience',
+        stage: 'thcs',
+        topic: 'robotics',
+        icon: 'robotic-arm',
+        title: 'Cánh tay robot trong sản xuất',
+        description:
+          'Cấu tạo và nguyên lý làm việc của cánh tay robot, thực hành lập trình qua trò chơi "Trạm hàng sắc màu".',
+      },
+      {
+        id: 'robot-sinh-hoc',
+        group: 'experience',
+        stage: 'thcs',
+        topic: 'robotics',
+        icon: 'humanoid',
+        title: 'Robot sinh học',
+        description:
+          'Nhận biết loài động thực vật, lắp ráp và vận hành mô hình robot sinh học, rồi chơi cùng chính mô hình đó.',
+      },
+      {
+        id: 'kham-pha-dien',
+        group: 'experience',
+        stage: 'thcs',
+        topic: 'robotics',
+        icon: 'electronics',
+        title: 'Khám phá điện',
+        description:
+          'Nguồn điện, linh kiện và nguyên tắc an toàn điện; thực hành lắp ráp và kiểm tra mạch điện cơ bản.',
+      },
+      {
+        id: 'thiet-ke-co-khi',
+        group: 'experience',
+        stage: 'thpt',
+        topic: 'robotics',
+        icon: 'mechanics',
+        title: 'Khám phá thiết kế cơ khí',
+        description:
+          'Đọc và phân tích bản vẽ kỹ thuật, hình chiếu và quy ước biểu diễn; thực hành thiết kế, gia công và lắp ráp.',
+      },
+      {
+        id: 'co-dien-tu',
+        group: 'experience',
+        stage: 'thpt',
+        topic: 'robotics',
+        icon: 'mechatronics',
+        title: 'Khám phá cơ điện tử',
+        description:
+          'Dây chuyền sản xuất và linh kiện cơ điện tử, phần mềm lập trình và thực hành điều khiển các module.',
+      },
+      {
+        id: 'co-hoc-sang-tao',
+        group: 'experience',
+        stage: 'thpt',
+        topic: 'robotics',
+        icon: 'stress',
+        title: 'Cơ học sáng tạo',
+        description:
+          'Lực và momen lực, nguyên lý các máy cơ đơn giản, vận dụng vào mô hình nâng hạ vật và thang máy.',
       },
       {
         id: 'cnc',
         group: 'experience',
-        level: 'advanced',
-        duration: '3 tuần · 9 giờ',
-        age: '16–18',
-        title: 'Gia công CNC',
+        stage: 'thpt',
+        topic: 'robotics',
+        icon: 'cnc',
+        title: 'Công nghệ gia công cắt gọt CNC',
         description:
-          'Lập trình G-code, vận hành máy phay tiện CNC và gia công chi tiết đạt dung sai cao.',
+          'Cấu tạo và nguyên lý máy phay CNC, thiết kế bản vẽ cơ khí đơn giản rồi vận hành máy để gia công sản phẩm.',
       },
       {
-        id: 'energy',
+        id: 'in-3d',
         group: 'experience',
-        level: 'intermediate',
-        duration: '4 tuần · 12 giờ',
-        age: '11–18',
-        title: 'Năng lượng Thay thế',
+        stage: 'thpt',
+        topic: 'robotics',
+        icon: 'process',
+        title: 'Công nghệ gia công bồi đắp in 3D',
         description:
-          'Khai thác năng lượng mặt trời và gió, thiết kế hệ thống lưu trữ và hòa lưới.',
+          'Cấu tạo và nguyên lý máy in 3D, chuẩn bị tệp và điều chỉnh thông số in, vận hành máy để in sản phẩm.',
       },
+      {
+        id: 'muc-nuoc-thong-minh',
+        group: 'experience',
+        stage: 'thpt',
+        topic: 'robotics',
+        icon: 'water',
+        title: 'Giám sát & điều khiển mức nước thông minh',
+        description:
+          'Điều khiển động cơ bơm và đọc dữ liệu cảm biến, dùng điều khiển hồi tiếp và nhận dạng giọng nói để quản lý mức nước.',
+      },
+
+      // --- AIoT & Công nghệ số ---------------------------------------------
+      {
+        id: 'lam-quen-ai',
+        group: 'experience',
+        stage: 'th',
+        topic: 'aiot',
+        icon: 'scratch',
+        title: 'Làm quen trí tuệ nhân tạo',
+        description:
+          'AI là gì và có mặt ở đâu trong đời sống; mô phỏng quá trình AI học dữ liệu qua trò chơi "AI đã học gì?".',
+      },
+      {
+        id: 'the-gioi-ao',
+        group: 'experience',
+        stage: 'thcs',
+        topic: 'aiot',
+        icon: 'scratch',
+        title: 'Thế giới ảo và robot',
+        description:
+          'Vai trò của lập trình trong điều khiển robot, lập trình robot di chuyển trong sa bàn qua dự án "Kỹ sư nông trại tài ba".',
+      },
+      {
+        id: 'noi-dung-so',
+        group: 'experience',
+        stage: 'thcs',
+        topic: 'aiot',
+        icon: 'photonics',
+        title: 'Nhà sáng tạo nội dung số',
+        description:
+          'Phân biệt AI tạo sinh với AI truyền thống, viết prompt tạo hình ảnh và dựng video thành một câu chuyện ngắn.',
+      },
+      {
+        id: 'cau-truc-may-tinh',
+        group: 'experience',
+        stage: 'thpt',
+        topic: 'aiot',
+        icon: 'electronics',
+        title: 'Cấu trúc máy tính',
+        description:
+          'Vai trò của CPU, mainboard, RAM, SSD/HDD và cách chọn linh kiện phần cứng phù hợp với nhu cầu sử dụng.',
+      },
+      {
+        id: 'thiet-ke-3d',
+        group: 'experience',
+        stage: 'thpt',
+        topic: 'aiot',
+        icon: 'process',
+        title: 'Thiết kế 3D',
+        description:
+          'Hệ trục tọa độ trong không gian ba chiều và công cụ thiết kế in 3D, thực hành với phần mềm chuyên dụng.',
+      },
+      {
+        id: 'blockchain',
+        group: 'experience',
+        stage: 'thpt',
+        topic: 'aiot',
+        icon: 'process',
+        title: 'Blockchain và bí mật dữ liệu số',
+        description:
+          'Từ lịch sử tiền tệ đến công nghệ Blockchain, hiểu cơ chế bảo mật qua liên kết mã Hash và mô phỏng xác thực khối.',
+      },
+      {
+        id: 'iot',
+        group: 'experience',
+        stage: 'thpt',
+        topic: 'aiot',
+        icon: 'automation',
+        title: 'Kết nối dữ liệu thông minh',
+        description:
+          'Nguyên lý kết nối và điều khiển thiết bị IoT, thiết kế giao diện ứng dụng và điều khiển mô hình qua nền tảng đám mây.',
+      },
+      {
+        id: 'thi-giac-may-tinh',
+        group: 'experience',
+        stage: 'thpt',
+        topic: 'aiot',
+        icon: 'photonics',
+        title: 'Làm quen thị giác máy tính',
+        description:
+          'Vai trò và phân loại học máy, thực hành quy trình học máy với mạng nơron tích chập để nhận diện vật thể.',
+      },
+      {
+        id: 'xac-suat-hoc-may',
+        group: 'experience',
+        stage: 'thpt',
+        topic: 'aiot',
+        icon: 'process',
+        title: 'Ứng dụng xác suất trong học máy',
+        description:
+          'Định lý Naïve Bayes áp dụng vào dữ liệu lịch sử khách hàng để dự đoán hành vi, rồi đánh giá độ chính xác.',
+      },
+      {
+        id: 'thiet-ke-website',
+        group: 'experience',
+        stage: 'thpt',
+        topic: 'aiot',
+        icon: 'scratch',
+        title: 'Thiết kế website',
+        description:
+          'Khái niệm giao diện và trải nghiệm người dùng, quy trình thiết kế và thực hành dựng một website đơn giản.',
+      },
+
+      // --- Khóa học STEM ---------------------------------------------------
       {
         id: 'robotic-arm',
         group: 'stem',
@@ -363,17 +615,51 @@ export const vi = {
     },
 
     /**
-     * Toàn bộ lấy từ trang "Sự kiện" của trường (fablab.eiu.edu.vn/vi/su-kien/).
-     * Hai cuộc thi xếp trước, phần còn lại theo thứ tự mới nhất trước.
+     * Hai khối hiển thị song song, THỨ TỰ TRONG MẢNG LÀ THỨ TỰ TRÊN TRANG — cùng
+     * quy ước với `courses.groups`.
+     *
+     * Mục nào thuộc khối nào KHÔNG ghi ở đây: nó suy thẳng từ `kind` của từng
+     * hoạt động (xem `KIND_GROUP` trong Activities.jsx). `kind` đã quyết định
+     * điều đó rồi, thêm một trường nữa chỉ mở đường cho hai chỗ lệch nhau.
+     */
+    groups: [
+      {
+        id: 'competitions',
+        title: 'Cuộc thi',
+        description:
+          'Hai sân chơi thường niên do EIU FabLab tổ chức, mở cho sinh viên và học sinh khu vực phía Nam.',
+      },
+      {
+        id: 'events',
+        title: 'Sự kiện & hội thảo',
+        description:
+          'Hội thảo chuyên đề, workshop thực hành và lễ hợp tác diễn ra tại FabLab trong khoảng 2019–2023.',
+      },
+    ],
+
+    /**
+     * Phần lớn lấy từ trang "Sự kiện" của trường (fablab.eiu.edu.vn/vi/su-kien/).
+     * Hai cuộc thi 2026 lấy từ poster chính thức do FabLab cung cấp — mọi ngày
+     * tháng, giờ và địa điểm đều đọc thẳng từ poster, không suy đoán.
+     *
+     * Cuộc thi xếp trước, trong mỗi loại thì mới nhất trước.
      */
     items: [
       {
-        id: 'mcr-2023',
+        id: 'drone-soccer',
         kind: 'competition',
-        date: '28/5/2023',
-        title: 'EIU MCR 2023 — Lập trình xe đua tự động',
+        date: '6/6/2026',
+        title: 'EIU Drone Soccer Championship 2026',
         description:
-          'EIU Microcontroller Car Rally, mùa đầu tiên, thu hút hơn 40 đội thi từ các trường đại học, cao đẳng và THPT khu vực phía Nam.',
+          'Giải đấu bóng đá bằng drone do EIU FabLab tổ chức. Thi đấu chính thức từ 07:00 đến 12:00 tại phòng 101, toà B3 — Đại học Quốc tế Miền Đông.',
+      },
+      {
+        id: 'mcr-2026',
+        kind: 'competition',
+        date: '21–29/3/2026',
+        title: 'EIU MCR 2026 — Lập trình xe đua tự động',
+        description:
+          'EIU Microcontroller Car Rally mùa 2026: vòng loại 1 ngày 21/3, vòng loại 2 ngày 22/3 và chung kết tổng ngày 29/3. Nhận đăng ký từ 4/1 đến 28/2/2026.',
       },
       {
         id: 'racing-cup',
@@ -479,27 +765,50 @@ export const vi = {
     title: 'Đội ngũ của chúng tôi',
     description:
       'Kỹ sư, chuyên viên STEM và giảng viên trực tiếp đứng lớp, vận hành thiết bị và đồng hành cùng bạn trong từng dự án.',
-    joinCta: 'Cơ hội làm việc tại EIU',
-    joinHref: 'https://eiu.edu.vn/career.aspx',
     // `{name}` được thay bằng tên thành viên lúc render.
     photoAlt: 'Ảnh chân dung {name}',
 
     /**
-     * Tên và chức danh lấy nguyên văn từ trang "Về chúng tôi" của trường
-     * (fablab.eiu.edu.vn/vi/ve-chung-toi/). `id` là định danh ổn định, không
-     * dịch — dùng làm React key và khóa tra ảnh.
+     * Tên và chức danh lấy NGUYÊN VĂN từ trang "Về chúng tôi" trên Google Sites
+     * của FabLab: sites.google.com/eiu.edu.vn/fablab (mục "Về chúng tôi").
+     *
+     * Thứ tự và cách chia giữ đúng như trang gốc: Cơ cấu tổ chức → Thành viên
+     * STEM Lab (10) → Thành viên FabLab (4). Không dựng tiêu đề nhóm riêng vì
+     * chức danh đã tự phân biệt.
+     *
+     * `id` là định danh ổn định, không dịch — dùng làm React key và khóa tra ảnh.
+     *
+     * `education` cũng lấy từ chính trang đó. Chỉ **rút gọn cho vừa thẻ**: bỏ chữ
+     * nối "ngành", còn bậc học và tên ngành giữ nguyên văn. Riêng anh Hùng trang
+     * ghi cả ba bằng kèm trường và năm — ở đây chỉ hiện bằng cao nhất.
+     *
+     * ⚠️ Trang gốc còn MỘT chỗ khuyết, cố ý không tự điền: nhóm FabLab có một ô
+     * thứ năm chỉ có ảnh, không có tên lẫn chức danh — nên ở đây chỉ liệt kê 4
+     * người có tên.
+     *
+     * Riêng "Hoàng Ngọc Phương" (tên đầy đủ và bằng Thạc sĩ Cơ điện tử) do người
+     * dùng bổ sung trực tiếp, không có trên trang gốc — trang đó chỉ ghi "Phương"
+     * kèm "Kỹ sư ngành Kỹ thuật phần mềm".
      */
     members: [
-      { id: 'hung', name: 'Nguyễn Xuân Hùng', role: 'Tiến sĩ · Trưởng FabLab / STEM Lab' },
-      { id: 'hien', name: 'Lư Thị Thu Hiền', role: 'Thạc sĩ · Chuyên viên STEM' },
-      { id: 'phuoc', name: 'Nguyễn Hữu Phước', role: 'Thạc sĩ · Chuyên viên STEM' },
-      { id: 'ngan', name: 'Trần Ngọc Kim Ngân', role: 'Cử nhân Giáo dục học' },
-      { id: 'nhat', name: 'Trần Duy Nhất', role: 'Chuyên viên FabLab' },
-      { id: 'linh', name: 'Võ Đoàn Linh', role: 'Chuyên viên FabLab' },
-      { id: 'tuan', name: 'Đỗ Nguyễn Anh Tuấn', role: 'Kỹ sư phần mềm' },
-      { id: 'minh', name: 'Trần Hán Minh', role: 'Kỹ thuật phần mềm' },
-      { id: 'manh', name: 'Đinh Thế Mạnh', role: 'Cử nhân Kỹ thuật Điện – Điện tử' },
-      { id: 'uyen', name: 'Võ Phạm Mai Uyên', role: 'Kỹ sư Kỹ thuật Tự động hóa' },
+      // `lead` tách người này ra một thẻ riêng phía trên hai dải chạy. Đánh dấu
+      // bằng cờ trong dữ liệu chứ không viết cứng `id` trong component — đổi
+      // người phụ trách thì chuyển cờ là xong.
+      { id: 'hung', name: 'Nguyễn Xuân Hùng', role: 'Giám đốc FabLab', education: 'Tiến sĩ Kỹ thuật Năng lượng', lead: true },
+      { id: 'tuan', name: 'Đỗ Nguyễn Anh Tuấn', role: 'Chuyên viên STEM', education: 'Thạc sĩ Công nghệ thông tin' },
+      { id: 'ngan', name: 'Trần Ngọc Kim Ngân', role: 'Chuyên viên STEM', education: 'Thạc sĩ Quản lý giáo dục' },
+      { id: 'phuoc', name: 'Nguyễn Hữu Phước', role: 'Chuyên viên STEM', education: 'Thạc sĩ Khoa học vật chất' },
+      { id: 'hien', name: 'Lư Thị Thu Hiền', role: 'Chuyên viên STEM', education: 'Thạc sĩ Hóa vô cơ' },
+      { id: 'minh', name: 'Trần Hán Minh', role: 'Chuyên viên STEM', education: 'Kỹ sư Kỹ thuật phần mềm' },
+      { id: 'manh', name: 'Đinh Thế Mạnh', role: 'Chuyên viên STEM', education: 'Cử nhân Kỹ thuật điện – điện tử' },
+      { id: 'thy', name: 'Nguyễn Nam Thy', role: 'Chuyên viên STEM', education: 'Cử nhân Khoa học Vật lý' },
+      { id: 'tran', name: 'Thạch Thị Huyền Trân', role: 'Chuyên viên STEM', education: 'Cử nhân Vật lý lý thuyết' },
+      { id: 'huan', name: 'Trần Khắc Huân', role: 'Chuyên viên STEM', education: 'Kỹ sư Kỹ thuật phần mềm' },
+      { id: 'phuong', name: 'Hoàng Ngọc Phương', role: 'Chuyên viên STEM', education: 'Thạc sĩ Cơ điện tử' },
+      { id: 'linh', name: 'Võ Đoàn Linh', role: 'Kỹ thuật viên', education: 'Kỹ sư Kỹ thuật Tự động hóa' },
+      { id: 'nhat', name: 'Trần Duy Nhất', role: 'Kỹ thuật viên', education: 'Kỹ sư Kỹ thuật Tự động hóa' },
+      { id: 'tinh', name: 'Đỗ Trung Tính', role: 'Kỹ thuật viên', education: 'Kỹ sư Điện – Điện tử' },
+      { id: 'nhi', name: 'Võ Hoàng Yến Nhi', role: 'Kỹ thuật viên', education: 'Kỹ sư Kỹ thuật Tự động hóa' },
     ],
   },
 
@@ -552,7 +861,9 @@ export const vi = {
         title: 'Khám phá',
         links: [
           { id: 'about', label: 'Về chúng tôi', href: '#about' },
-          { id: 'courses', label: 'Khóa học STEM', href: '#courses' },
+          // Trỏ cả section; nhãn phải là tên chung, kẻo trùng nhãn với link
+          // "Khóa học STEM" ở cột Chương trình vốn trỏ riêng neo `#courses-stem`.
+          { id: 'courses', label: 'Khóa học', href: '#courses' },
           { id: 'facilities', label: 'Thiết bị', href: '#facilities' },
           { id: 'activities', label: 'Hoạt động & cuộc thi', href: '#activities' },
         ],
@@ -561,8 +872,12 @@ export const vi = {
         id: 'programs',
         title: 'Chương trình',
         links: [
-          { id: 'stem', label: 'Khóa học STEM', href: '#courses' },
-          { id: 'experience', label: 'Chương trình trải nghiệm STEM', href: '#courses' },
+          { id: 'stem', label: 'Khóa học STEM', href: '#courses-stem' },
+          {
+            id: 'experience',
+            label: 'Chương trình trải nghiệm STEM',
+            href: '#courses-experience',
+          },
           { id: 'community', label: 'Dự án cộng đồng', href: '#about' },
           { id: 'research', label: 'Nghiên cứu & Khởi nghiệp', href: '#about' },
         ],
