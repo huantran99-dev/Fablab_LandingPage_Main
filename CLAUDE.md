@@ -495,6 +495,59 @@ Bật lại ở `Settings → Accessibility → Visual effects → Animation eff
 đầu (rAF + `easeOutCubic`, 1400ms). `once: false` khiến `active` lật false→true
 nên bốn con số tự đếm lại từ 0 mỗi lượt — **không cần sửa `CountUp`**.
 
+## Dashboard quản trị
+
+Ở `/admin`. **Entry Vite thứ hai** (`admin.html` + [src/admin/](src/admin/)), không
+phải một route của trang công khai: Rollup dựng hai đồ thị độc lập nên người xem
+trang tải đúng bằng khi chưa có dashboard. Đã kiểm — `index.html` không hề nạp chunk
+nào của admin, và `main-*.css` giữ nguyên hash cũ.
+
+Không dùng react-router trên app hiện tại vì router sẽ vào bundle công khai vô điều
+kiện, và chunk admin chỉ tách được nếu MỌI import đều lazy — một import tĩnh lỡ tay
+là dính lại, không có lỗi build nào báo.
+
+Dashboard **cố ý không dùng hệ "Loom"**: nó có `admin.css` riêng, chỉ mượn sắc xanh
+thương hiệu. Kéo hệ kia sang là mở rộng vùng ảnh hưởng của `index.css` (file có ràng
+buộc thứ tự lớp rất chặt) để đổi lấy thứ công cụ quản trị không cần.
+
+### Ba luật của đường ghi
+
+1. **Mọi thao tác ghi tác động lên CẢ HAI ngôn ngữ trong CÙNG một giao dịch.**
+   Giao diện không có nút nào chỉ thêm một mục vào bản tiếng Việt. Nhờ vậy "hai bản
+   lệch cấu trúc" là trạng thái **không thao tác ra được**, chứ không phải một lỗi
+   trông chờ bộ kiểm bắt lại sau khi đã ghi.
+2. **Không có schema thì không ghi được.** `PUT` vào section chưa khai trong
+   [schema/sections.js](server/schema/sections.js) trả 400 kèm danh sách section
+   đang mở. Section chưa có schema là section chưa được rà. Hiện mới mở
+   `testimonials`; mở thêm là thêm schema Zod, không phải nới lỏng chốt chặn.
+3. **`rev` là chốt chống ghi đè.** `GET` trả `rev`, `PUT` phải gửi lại đúng số đó,
+   lệch thì 409. Hai tab cùng mở thì tab cũ nhận lỗi thay vì lặng lẽ xoá việc của
+   tab kia.
+
+Lịch sử chép bản cũ **trước** khi ghi đè, và khôi phục luôn lấy cả hai ngôn ngữ của
+cùng một thời điểm — khôi phục một nửa là đúng cái lệch cấu trúc vừa nói.
+
+### Đăng nhập
+
+Đúng một tài khoản (`CHECK (id = 1)` ở lược đồ, không phải quy ước ai đó phải nhớ).
+Tạo bằng `npm run admin:create` — **hỏi trực tiếp, không đọc biến môi trường**:
+`.gitignore` của repo này vốn không có mục `.env` nào, nên mật khẩu khởi tạo đặt ở
+đó chỉ cách `git add -A` một bước. Cũng cố ý không có trang cài đặt lần đầu trên
+web — đó là cuộc đua với con bot nào tìm thấy host trước.
+
+Phiên là token mờ 32 byte; database **chỉ lưu sha256 của token**. Không dùng JWT vì
+JWT không thu hồi được, mà "đổi mật khẩu là đăng xuất mọi nơi" chỉ là một câu
+`DELETE` khi đã có bảng.
+
+Chống CSRF ba lớp: `SameSite=Lax`, **kiểm `Origin`** (lớp chịu lực), và double-submit
+token so bằng thời gian hằng định. Giới hạn đăng nhập hai tầng: theo IP và theo tài
+khoản trong database — kẻ đổi IP liên tục đi thẳng qua tầng đầu.
+
+> ⚠️ Sau nginx **bắt buộc** `app.set('trust proxy', 1)` (đã đặt) **và**
+> `proxy_set_header X-Forwarded-For`. Thiếu vế thứ hai thì mọi request trông như
+> `127.0.0.1`: một lần sai mật khẩu khoá cả thế giới, mà bộ giới hạn thì trông vẫn
+> như đang chạy đúng.
+
 ## Backend: ảnh, snapshot, và những chỗ dễ sập
 
 Toàn bộ ở [server/](server/). Truy cập database đi qua **đúng một file**

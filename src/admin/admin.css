@@ -1,0 +1,40 @@
+/**
+ * Stylesheet riêng của dashboard.
+ *
+ * CỐ Ý KHÔNG dùng chung hệ "Loom" của trang công khai. Hai lý do:
+ *
+ * 1. Trang công khai có ràng buộc thứ tự lớp rất chặt (khối scroll-reveal phải
+ *    nằm ngoài mọi `@layer`, xem CLAUDE.md). Kéo hệ đó sang đây là mở rộng vùng
+ *    ảnh hưởng của một file vốn đã mong manh, đổi lấy một thứ dashboard không cần.
+ * 2. Công cụ quản trị nên trông như công cụ: dày đặc thông tin, tương phản cao,
+ *    bo góc nhỏ. Card bo 68px và bóng ba lớp là ngôn ngữ của trang giới thiệu.
+ *
+ * Chỉ mượn đúng sắc xanh thương hiệu để không thành một trang lạc lõng.
+ */
+@import 'tailwindcss';
+
+@theme {
+  --color-signal: #1868db;
+  --color-ink: #101214;
+  --color-graphite: #3d4450;
+  --color-steel: #6b7280;
+  --color-ash: #d8dce3;
+  --color-paper: #f7f8fa;
+  --color-danger: #b91c1c;
+  --color-ok: #15803d;
+
+  --font-text: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+@layer base {
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-text);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 2px;
+  }
+}

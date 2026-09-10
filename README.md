@@ -4,15 +4,39 @@ Trang giới thiệu FabLab EIU, xưởng chế tạo số của Đại học Qu
 Song ngữ Việt – Anh. Ảnh là ảnh thật chụp tại FabLab EIU, đóng gói sẵn trong
 repo; icon là SVG vẽ tay — trang chạy được cả khi không có mạng.
 
+Nội dung sửa được qua **dashboard quản trị** tại `/admin`, chạy trên backend
+ExpressJS + SQLite trong [server/](server/).
+
 ## Chạy dự án
 
+Lần đầu, sau `npm install`:
+
 ```bash
-npm install
-npm run dev      # http://localhost:5173
-npm run build    # xuất bản tĩnh vào dist/
-npm run preview  # xem thử bản build
-npm run lint
+npm run seed          # nap noi dung tu src/i18n vao data/fablab.db (chi mot lan)
+npm run verify:seed   # chung minh khong mat gi — phai in "identical"
+npm run admin:create  # tao tai khoan admin, hoi truc tiep
 ```
+
+Ngày thường cần **hai cửa sổ terminal**:
+
+```bash
+npm run server   # API + anh, http://127.0.0.1:3001
+npm run dev      # trang + dashboard, http://localhost:5173 va /admin.html
+```
+
+Vite chuyển tiếp `/api` và `/media` sang cổng 3001, nên không cần cấu hình CORS.
+
+```bash
+npm run build          # tu chay prebuild: xuat lai snapshot + dong bo anh
+npm run preview        # xem thu ban build
+npm run lint
+npm run check:content  # bo kiem bat bien tren ma nguon
+npm run check:snapshot # bo kiem tren ban du phong duoc dong goi
+```
+
+> **Nội dung không còn nằm ở `src/i18n/*.js`.** Hai file đó giờ là hồ sơ nguồn gốc,
+> chỉ được đọc tới lúc `npm run seed`. Sửa vào chúng không có tác dụng gì — xem
+> [CLAUDE.md](CLAUDE.md).
 
 ## Hệ thiết kế
 

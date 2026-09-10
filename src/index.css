@@ -12,8 +12,16 @@
    mặc định nó quét cả mã máy chủ. Mã đó không dựng ra giao diện nào, mà mọi chuỗi
    trong nó lại có thể bị đọc nhầm thành tên utility và sinh CSS chết.
 
+   Đã kiểm bằng thực nghiệm: bỏ dòng này ra thì một tên class đặt trong file dưới
+   `server/` CÓ xuất hiện trong CSS đã build; thêm vào thì không.
+
+   `./admin` cũng vậy nhưng vì lý do khác: dashboard là entry Vite riêng nên
+   Rollup đã tách JS của nó, nhưng Tailwind quét nguồn độc lập với đồ thị module —
+   không loại trừ thì utility của dashboard vẫn nhồi vào stylesheet công khai.
+
    Đường dẫn tính tương đối với chính file CSS này. */
 @source not "../server";
+@source not "./admin";
 
 /* ==========================================================================
    Design tokens — hệ "Loom"
