@@ -11,6 +11,7 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "seed": "node server/scripts/seed.js",
+    "admin:create": "node server/scripts/create-admin.js",
     "verify:seed": "node server/scripts/verify-seed.js",
     "snapshot": "node server/scripts/export-snapshot.js",
     "check:content": "node server/scripts/check-content.js",

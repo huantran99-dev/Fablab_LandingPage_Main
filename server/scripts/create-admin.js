@@ -29,8 +29,17 @@ import { closeDb, getDb } from '../db/index.js'
 
 const force = process.argv.includes('--force')
 
-/** Đọc trọn stdin rồi tách dòng. Dùng khi không có TTY. */
+/**
+ * Đọc trọn stdin rồi tách dòng. Dùng khi không có TTY.
+ *
+ * Phải báo TRƯỚC khi đọc, không phải sau: hàm này chờ tới khi stdin đóng, nên nếu
+ * người dùng đang ngồi gõ tay mà màn hình trống trơn thì trông y hệt bị treo.
+ */
 async function readPipedLines() {
+  console.log('Khong co TTY — dang doc tu dau vao.')
+  console.log('Neu ban dang go tay: nhap 3 dong (ten, mat khau, nhap lai),')
+  console.log('roi bam Ctrl+Z va Enter (Windows) hoac Ctrl+D (Linux/macOS) de ket thuc.\n')
+
   const chunks = []
   for await (const chunk of stdin) chunks.push(chunk)
   return Buffer.concat(chunks).toString('utf8').split(/\r?\n/)
@@ -86,10 +95,6 @@ if (existing && !force) {
 }
 
 const [rawUsername, password, again] = stdin.isTTY ? await collectInteractive() : await readPipedLines()
-
-if (!stdin.isTTY) {
-  console.log('(khong co TTY — dang doc tu dau vao noi ong)')
-}
 
 const username = (rawUsername ?? '').trim()
 
