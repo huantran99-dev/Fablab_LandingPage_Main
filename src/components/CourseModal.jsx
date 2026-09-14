@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { CourseIcon } from '../assets/icons/CourseIcons'
 import { ArrowRightIcon, CloseIcon } from '../assets/icons/Icons'
-import { COURSE_IMAGE_SIZE, COURSE_IMAGES } from '../assets/images'
 import { useT } from '../i18n/context'
 import { Button } from './ui/Button'
 import { Pill } from './ui/Pill'
@@ -106,13 +105,15 @@ export function CourseModal({ course, onClose }) {
       {course && (
         <div className="flex max-h-[calc(100dvh-48px)] flex-col overflow-hidden rounded-card-sm bg-white shadow-ambient-lift">
           <div className="relative shrink-0">
-            <img
-              src={COURSE_IMAGES[course.id]}
-              width={COURSE_IMAGE_SIZE.width}
-              height={COURSE_IMAGE_SIZE.height}
-              alt={t.courses.imageAlt.replace('{title}', course.title)}
-              className="block h-36 w-full object-cover md:h-44"
-            />
+            {course.image && (
+              <img
+                src={course.image.url}
+                width={course.image.width}
+                height={course.image.height}
+                alt={t.courses.imageAlt.replace('{title}', course.title)}
+                className="block h-36 w-full object-cover md:h-44"
+              />
+            )}
 
             <button
               type="button"

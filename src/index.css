@@ -8,6 +8,21 @@
 
 @import 'tailwindcss';
 
+/* Tailwind v4 tự dò nội dung bằng cách quét cây nguồn tính từ file CSS này, nên
+   mặc định nó quét cả mã máy chủ. Mã đó không dựng ra giao diện nào, mà mọi chuỗi
+   trong nó lại có thể bị đọc nhầm thành tên utility và sinh CSS chết.
+
+   Đã kiểm bằng thực nghiệm: bỏ dòng này ra thì một tên class đặt trong file dưới
+   `server/` CÓ xuất hiện trong CSS đã build; thêm vào thì không.
+
+   `./admin` cũng vậy nhưng vì lý do khác: dashboard là entry Vite riêng nên
+   Rollup đã tách JS của nó, nhưng Tailwind quét nguồn độc lập với đồ thị module —
+   không loại trừ thì utility của dashboard vẫn nhồi vào stylesheet công khai.
+
+   Đường dẫn tính tương đối với chính file CSS này. */
+@source not "../server";
+@source not "./admin";
+
 /* ==========================================================================
    Design tokens — hệ "Loom"
    Nền trắng, một sắc xanh bão hòa duy nhất cho mọi phần tử tương tác,
@@ -188,6 +203,68 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* ==========================================================================
+   Marquee — dải logo đối tác chạy ngang liên tục
+
+   Cách chạy: track chứa DANH SÁCH LẶP HAI LẦN rồi trượt đúng -50%. Khi đến cuối
+   bản sao thứ nhất, vị trí trùng khít với điểm bắt đầu nên vòng lặp không có mối
+   nối — không cần JS, không cần đo đạc gì.
+
+   `--marquee-duration` để component tự chỉnh theo số lượng logo.
+   ========================================================================== */
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@utility marquee-track {
+  animation: marquee-scroll var(--marquee-duration, 32s) linear infinite;
+  /* Đứng yên khi rê chuột vào để người xem đọc kịp tên đối tác. */
+  &:hover {
+    animation-play-state: paused;
+  }
+}
+
+/* Khung cắt của dải chạy.
+ *
+ * Lý do phải có: khi người dùng tắt chuyển động, track đứng yên ở vị trí đầu nên
+ * phần lớn thẻ nằm ngoài khung và KHÔNG CÁCH NÀO tới được — nội dung biến mất với
+ * đúng nhóm người dùng cần được phục vụ tử tế nhất. Cho cuộn ngang bằng tay để
+ * họ vẫn đọc được hết.
+ *
+ * Đặt `overflow: hidden` (cả hai trục) chứ không chỉ `overflow-x`: nếu một trục
+ * là `hidden` mà trục kia để `visible` thì CSS tự nâng trục kia thành `auto`, và
+ * sinh ra thanh cuộn dọc không ai muốn. */
+@utility marquee-viewport {
+  overflow: hidden;
+
+  @media (prefers-reduced-motion: reduce) {
+    overflow-x: auto;
+  }
+}
+
+/* Tắt hẳn khi người dùng đã tắt chuyển động.
+ *
+ * Không dựa được vào rule chung ở `@layer base`: nó chỉ ép `animation-duration`
+ * về 0.01ms, mà với animation lặp vô hạn thì đó là quay cực nhanh chứ không phải
+ * dừng.
+ *
+ * Ghi thẳng `animation-name` chứ không dùng shorthand `animation: none`: với khai
+ * báo `!important`, thứ tự layer bị ĐẢO NGƯỢC — rule `!important` trong `@layer
+ * base` thắng rule `!important` không phân lớp. Nếu dùng shorthand thì phần
+ * `animation-duration` của nó sẽ thua rule ở base, chỉ còn `animation-name` có
+ * tác dụng. May là vẫn ra đúng kết quả, nhưng đó là ăn may — nhắm thẳng vào
+ * `animation-name` thì ý định rõ ràng và không phụ thuộc vào chuyện đó. */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation-name: none !important;
+  }
 }
 
 @keyframes rise-in {

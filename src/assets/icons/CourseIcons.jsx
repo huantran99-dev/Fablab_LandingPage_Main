@@ -140,6 +140,16 @@ const PATHS = {
   ),
 }
 
+/**
+ * Id thật sự có hình.
+ *
+ * Component phải hỏi tập này TRƯỚC khi dựng huy hiệu. `CourseIcon` trả `null` cho
+ * id lạ, nhưng bản thân phần tử JSX `<CourseIcon />` thì LUÔN truthy — nên
+ * `{icon && <span>…}` không chặn được gì, và kết quả là một huy hiệu tròn nền
+ * trắng trống trơn. Đây là bẫy đã sập một lần khi rà lại đoạn này.
+ */
+export const COURSE_ICON_IDS = new Set(Object.keys(PATHS))
+
 export function CourseIcon({ id, className = '', size = 28 }) {
   const paths = PATHS[id]
   if (!paths) return null

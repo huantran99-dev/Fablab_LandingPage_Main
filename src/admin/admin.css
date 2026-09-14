@@ -1,0 +1,145 @@
+/**
+ * Stylesheet riêng của dashboard — phong cách TailAdmin, dựng lại bằng token.
+ *
+ * CỐ Ý KHÔNG dùng chung hệ "Loom" của trang công khai. Hai lý do:
+ *
+ * 1. Trang công khai có ràng buộc thứ tự lớp rất chặt (khối scroll-reveal phải
+ *    nằm ngoài mọi `@layer`, xem CLAUDE.md). Kéo hệ đó sang đây là mở rộng vùng
+ *    ảnh hưởng của một file vốn đã mong manh, đổi lấy một thứ dashboard không cần.
+ * 2. Công cụ quản trị nên trông như công cụ: dày đặc thông tin, tương phản cao.
+ *
+ * **Font là Inter, KHÔNG phải Outfit của TailAdmin.** Outfit chỉ có bộ latin và
+ * latin-ext, mà latin-ext bỏ đúng dải U+1EA0–1EF1 — nơi chứa ạ ả ấ ầ ệ ự. Dùng Outfit
+ * thì chữ tiếng Việt bị ghép từng ký tự với font hệ thống. Inter có bộ vietnamese
+ * và vốn đã có trong repo.
+ */
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/inter/700.css';
+
+@import 'tailwindcss';
+
+/* Tailwind v4 quét cả cây nguồn. Không chặn thì mọi chuỗi trong trang công khai
+   và máy chủ đọc được thành tên utility sẽ lọt vào CSS của dashboard. Đường dẫn
+   tính tương đối với chính file này. */
+@source not "../../server";
+@source not "../components";
+@source not "../i18n";
+@source not "../content";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --text-title-md: 2.25rem;
+  --text-title-md--line-height: 2.75rem;
+  --text-title-sm: 1.875rem;
+  --text-title-sm--line-height: 2.375rem;
+  --text-theme-xl: 1.25rem;
+  --text-theme-xl--line-height: 1.875rem;
+  --text-theme-sm: 0.875rem;
+  --text-theme-sm--line-height: 1.25rem;
+  --text-theme-xs: 0.75rem;
+  --text-theme-xs--line-height: 1.125rem;
+
+  --color-brand-25: #f2f7ff;
+  --color-brand-50: #ecf3ff;
+  --color-brand-100: #dde9ff;
+  --color-brand-200: #c2d6ff;
+  --color-brand-300: #9cb9ff;
+  --color-brand-400: #7592ff;
+  --color-brand-500: #465fff;
+  --color-brand-600: #3641f5;
+  --color-brand-700: #2a31d8;
+  --color-brand-800: #252dae;
+  --color-brand-900: #262e89;
+  --color-brand-950: #161950;
+
+  --color-gray-25: #fcfcfd;
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f2f4f7;
+  --color-gray-200: #e4e7ec;
+  --color-gray-300: #d0d5dd;
+  --color-gray-400: #98a2b3;
+  --color-gray-500: #667085;
+  --color-gray-600: #475467;
+  --color-gray-700: #344054;
+  --color-gray-800: #1d2939;
+  --color-gray-900: #101828;
+  --color-gray-950: #0c111d;
+  --color-gray-dark: #1a2231;
+
+  --color-success-50: #ecfdf3;
+  --color-success-100: #d1fadf;
+  --color-success-500: #12b76a;
+  --color-success-600: #039855;
+  --color-success-700: #027a48;
+
+  --color-error-50: #fef3f2;
+  --color-error-100: #fee4e2;
+  --color-error-300: #fda29b;
+  --color-error-500: #f04438;
+  --color-error-600: #d92d20;
+  --color-error-700: #b42318;
+
+  --color-warning-50: #fffaeb;
+  --color-warning-100: #fef0c7;
+  --color-warning-500: #f79009;
+  --color-warning-600: #dc6803;
+  --color-warning-700: #b54708;
+
+  --color-info-50: #f0f9ff;
+  --color-info-500: #0ba5ec;
+  --color-info-700: #026aa2;
+
+  --shadow-theme-xs: 0 1px 2px 0 rgba(16, 24, 40, 0.05);
+  --shadow-theme-sm: 0 1px 3px 0 rgba(16, 24, 40, 0.1), 0 1px 2px 0 rgba(16, 24, 40, 0.06);
+  --shadow-theme-md: 0 4px 8px -2px rgba(16, 24, 40, 0.1), 0 2px 4px -2px rgba(16, 24, 40, 0.06);
+  --shadow-theme-lg: 0 12px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.03);
+  --shadow-theme-xl: 0 20px 24px -4px rgba(16, 24, 40, 0.08), 0 8px 8px -4px rgba(16, 24, 40, 0.03);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-gray-50 font-sans text-gray-800 antialiased dark:bg-gray-900 dark:text-white/90;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: 2px;
+  }
+
+  /* `showModal()` không tự khoá cuộn trang nền. */
+  html:has(dialog[open]) {
+    overflow: hidden;
+  }
+
+  dialog::backdrop {
+    background: rgb(16 24 40 / 0.5);
+    backdrop-filter: blur(4px);
+  }
+}
+
+@utility scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-gray-300) transparent;
+}
+
+/* Nền ô cờ cho khung xem trước ảnh — logo PNG trong suốt mà đặt trên nền trắng
+   thì không phân biệt được logo trắng với khung trống. */
+@utility bg-checker {
+  background-color: var(--color-gray-100);
+  background-image:
+    linear-gradient(45deg, var(--color-gray-200) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--color-gray-200) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--color-gray-200) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--color-gray-200) 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+}

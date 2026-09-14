@@ -1,6 +1,5 @@
-import { CourseIcon } from '../assets/icons/CourseIcons'
+import { COURSE_ICON_IDS, CourseIcon } from '../assets/icons/CourseIcons'
 import { ArrowRightIcon } from '../assets/icons/Icons'
-import { COURSE_IMAGE_SIZE, COURSE_IMAGES } from '../assets/images'
 import { useT } from '../i18n/context'
 import { Pill } from './ui/Pill'
 
@@ -14,6 +13,25 @@ const TONES = ['text-signal', 'text-ember', 'text-leaf']
 export function CourseCard({ course, index, onOpen }) {
   const t = useT()
   const tone = TONES[index % TONES.length]
+
+  // Hai nhóm khóa học mang hai bộ trường khác nhau, và card render theo trường nào
+  // CÓ MẶT chứ không nhận thêm prop kiểu:
+  //   nhóm STEM        -> level + duration + age  (số thật từ trang khóa học)
+  //   nhóm trải nghiệm -> stage + topic           (phân loại của catalogue)
+  const stage = course.stage && t.courses.stages.find((s) => s.id === course.stage)
+  const topic = course.topic && t.courses.topics.find((x) => x.id === course.topic)
+
+  // Chương trình trải nghiệm trỏ `icon` tới một icon có sẵn; khóa STEM tra theo
+  // chính `id`. Thiếu cả hai thì bỏ hẳn huy hiệu.
+  //
+  // Phải hỏi tập id, KHÔNG được hỏi `icon &&`: `<CourseIcon />` là phần tử JSX nên
+  // luôn truthy, dù bên trong nó trả `null`. Bản trước kiểm kiểu đó và vẫn dựng ra
+  // vòng tròn trắng trống trơn.
+  const iconId = course.icon ?? course.id
+  const hasIcon = COURSE_ICON_IDS.has(iconId)
+
+  const image = course.image
+  const badge = stage?.short ?? t.courses.levels[course.level]
 
   // Card cố ý KHÔNG khai báo utility transition nào: khai báo transition gộp
   // trong index.css (không phân lớp) đã lo cả `translate` lẫn `box-shadow` cho
@@ -34,25 +52,35 @@ export function CourseCard({ course, index, onOpen }) {
           Icon vẽ tay không bỏ đi mà thu lại thành huy hiệu tròn ở góc — icon
           luôn đúng chủ đề khóa học, còn ảnh thì có khóa chỉ có ảnh gần đúng. */}
       <div className="relative h-40 overflow-hidden rounded-image-sm bg-ash/30">
-        <img
-          src={COURSE_IMAGES[course.id]}
-          width={COURSE_IMAGE_SIZE.width}
-          height={COURSE_IMAGE_SIZE.height}
-          alt={t.courses.imageAlt.replace('{title}', course.title)}
-          loading="lazy"
-          decoding="async"
-          className="size-full object-cover transition-transform duration-500 ease-[var(--ease-out-soft)] group-hover:scale-105"
-        />
+        {/* Thiếu ảnh thì để nguyên nền xám của khung: `src` là `undefined` sẽ ra
+            biểu tượng ảnh vỡ, xấu hơn hẳn một khối trống. */}
+        {image && (
+          <img
+            src={image.url}
+            width={image.width}
+            height={image.height}
+            alt={t.courses.imageAlt.replace('{title}', course.title)}
+            loading="lazy"
+            decoding="async"
+            className="size-full object-cover transition-transform duration-500 ease-[var(--ease-out-soft)] group-hover:scale-105"
+          />
+        )}
 
-        <Pill tone="white" className="absolute top-3 right-3">
-          {t.courses.levels[course.level]}
-        </Pill>
+        {/* Nhóm trải nghiệm hiện cấp học, nhóm STEM hiện cấp độ. Không tra ra
+            được thì bỏ hẳn nhãn, đừng để một nhãn trắng không chữ. */}
+        {badge && (
+          <Pill tone="white" className="absolute top-3 right-3">
+            {badge}
+          </Pill>
+        )}
 
-        <span
-          className={`absolute bottom-3 left-3 inline-flex size-11 items-center justify-center rounded-pill bg-white shadow-ambient ${tone}`}
-        >
-          <CourseIcon id={course.id} size={24} />
-        </span>
+        {hasIcon && (
+          <span
+            className={`absolute bottom-3 left-3 inline-flex size-11 items-center justify-center rounded-pill bg-white shadow-ambient ${tone}`}
+          >
+            <CourseIcon id={iconId} size={24} />
+          </span>
+        )}
       </div>
 
       {/* h4 chứ không phải h3: mỗi nhóm khóa học đã chiếm một h3 ở trên. */}
@@ -64,13 +92,17 @@ export function CourseCard({ course, index, onOpen }) {
 
       {/* `mt-auto` đẩy phần chân xuống đáy để mọi card trong hàng cao bằng nhau */}
       <div className="mt-auto pt-6">
-        <div className="flex items-center gap-2 text-caption text-steel">
-          <span>{course.duration}</span>
-          <span aria-hidden="true">·</span>
-          <span>
-            {t.courses.ageLabel} {course.age}
-          </span>
-        </div>
+        {topic ? (
+          <Pill tone="outline">{topic.label}</Pill>
+        ) : (
+          <div className="flex items-center gap-2 text-caption text-steel">
+            <span>{course.duration}</span>
+            <span aria-hidden="true">·</span>
+            <span>
+              {t.courses.ageLabel} {course.age}
+            </span>
+          </div>
+        )}
 
         {/* Mở popup chi tiết. Phần `sr-only` giữ lại vì 16 card có cùng một nhãn
             "Tìm hiểu thêm" — screen reader cần biết nút này thuộc khóa nào. */}

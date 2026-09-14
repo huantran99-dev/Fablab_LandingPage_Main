@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Du lieu ben (database + anh tai len) va cau hinh bi mat
+data/
+.env
+.env.local
+
+# Sinh ra tu data/media luc build, khong commit
+public/media/

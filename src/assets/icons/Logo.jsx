@@ -1,4 +1,4 @@
-import { LOGO_MARK } from '../images'
+import logoMark from '../images/logo-mark.png'
 
 /**
  * Logo FabLab EIU — mark là ảnh thật lấy từ `Logo-Fablab.png` của trường
@@ -6,11 +6,17 @@ import { LOGO_MARK } from '../images'
  *
  * Không lazy-load: logo nằm trên navbar, tức luôn ở màn hình đầu.
  * Wordmark vẫn để dạng text nên luôn ăn theo font của trang.
+ *
+ * **Import THẲNG file, không qua `images/index.js`.** Module đó import cả 60 ảnh,
+ * nên chỉ cần chạm vào nó là Rollup phải phát ra toàn bộ 4,1 MB vào `dist/assets/`
+ * — kể cả khi nội dung đã chuyển sang lấy ảnh từ máy chủ. Đây là chỗ duy nhất còn
+ * dùng ảnh đóng gói, và cố ý giữ vậy: logo nằm trên navbar ở mọi lượt truy cập,
+ * không nên phụ thuộc một vòng gọi mạng.
  */
 export function LogoMark({ className = '', size = 36 }) {
   return (
     <img
-      src={LOGO_MARK.src}
+      src={logoMark}
       width={size}
       height={size}
       alt=""

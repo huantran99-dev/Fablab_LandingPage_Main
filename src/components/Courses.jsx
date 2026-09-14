@@ -11,25 +11,84 @@ import { Section, SectionHeading } from './ui/Section'
  * Số card hiện trước khi bấm "Xem thêm", tính theo nhóm.
  *
  * Nhóm nào ít hơn ngưỡng này thì hiện đủ và không mọc ra nút — nên nhóm "Khóa học
- * STEM" (4 khóa) luôn hiện trọn, còn nhóm trải nghiệm (12 khóa) cắt bớt để trang
- * không dài gấp đôi ngay khi mở.
+ * STEM" (4 khóa) luôn hiện trọn, còn nhóm trải nghiệm (30 chương trình) cắt bớt để
+ * trang không dài gấp năm ngay khi mở.
  */
 const INITIAL_VISIBLE = 6
 
 /**
- * Một nhóm khóa học: tiêu đề phụ + lưới card + nút mở rộng của riêng nó.
+ * Một hàng chip lọc: "Tất cả" rồi tới từng lựa chọn, mỗi chip kèm số chương trình
+ * còn lại NẾU chọn chip đó — số này đã tính cả bộ lọc của hàng kia, nên người dùng
+ * không bao giờ bấm vào một chip rồi nhận lưới rỗng bất ngờ.
  *
- * Mỗi nhóm giữ state `expanded` độc lập, nên mở nhóm này không kéo theo nhóm kia.
+ * Chip nào ra 0 thì vô hiệu hóa luôn thay vì để bấm vào rồi mới báo không có gì.
+ */
+function FilterRow({ label, options, value, onChange, countOf, allLabel }) {
+  const choices = [{ id: null, label: allLabel }, ...options]
+
+  return (
+    <div className="flex flex-wrap items-center gap-2" role="group" aria-label={label}>
+      <span className="w-full text-caption font-medium text-steel sm:w-28">{label}</span>
+      {choices.map((choice) => {
+        const active = value === choice.id
+        const count = countOf(choice.id)
+        return (
+          <Button
+            key={choice.id ?? 'all'}
+            size="sm"
+            variant={active ? 'filled' : 'ghost'}
+            aria-pressed={active}
+            disabled={count === 0 && !active}
+            onClick={() => onChange(active ? null : choice.id)}
+            className={count === 0 && !active ? 'cursor-not-allowed opacity-40' : ''}
+          >
+            {choice.label}
+            <span className={active ? 'text-white/70' : 'text-steel'}>{count}</span>
+          </Button>
+        )
+      })}
+    </div>
+  )
+}
+
+/**
+ * Một nhóm khóa học: tiêu đề phụ + bộ lọc (nếu có) + lưới card + nút mở rộng.
+ *
+ * Mỗi nhóm giữ state `expanded` và state bộ lọc độc lập, nên mở nhóm này không kéo
+ * theo nhóm kia.
  */
 function CourseGroup({ group, courses, from, onOpen }) {
   const t = useT()
   const [expanded, setExpanded] = useState(false)
+  const [stage, setStage] = useState(null)
+  const [topic, setTopic] = useState(null)
 
-  const visible = expanded ? courses : courses.slice(0, INITIAL_VISIBLE)
-  const hasMore = courses.length > INITIAL_VISIBLE
+  const filtered = useMemo(() => {
+    if (!group.filterable) return courses
+    return courses.filter(
+      (course) =>
+        (stage === null || course.stage === stage) && (topic === null || course.topic === topic),
+    )
+  }, [group.filterable, courses, stage, topic])
+
+  const visible = expanded ? filtered : filtered.slice(0, INITIAL_VISIBLE)
+  const hasMore = filtered.length > INITIAL_VISIBLE
+
+  // Cố ý KHÔNG reset `expanded` khi đổi bộ lọc: `hasMore` vốn tính từ số card đã
+  // lọc nên nút tự ẩn/hiện đúng, còn reset bằng effect sẽ đụng luật lint
+  // `react(set-state-in-effect)`.
+
+  const countStage = (id) =>
+    courses.filter((c) => (id === null || c.stage === id) && (topic === null || c.topic === topic))
+      .length
+  const countTopic = (id) =>
+    courses.filter((c) => (stage === null || c.stage === stage) && (id === null || c.topic === id))
+      .length
 
   return (
-    <div className="flex flex-col">
+    // Neo suy từ `group.id` chứ không viết cứng: thêm nhóm thứ ba là nó tự có neo.
+    // Menu ở navbar trỏ thẳng vào đây (`#courses-stem`, `#courses-experience`).
+    <div id={`courses-${group.id}`} className="flex flex-col">
       {/* h3: nằm dưới h2 của section, và trên h4 của từng card. */}
       <Reveal className="flex flex-col gap-3">
         <span className="flex flex-wrap items-center gap-3">
@@ -38,6 +97,27 @@ function CourseGroup({ group, courses, from, onOpen }) {
         </span>
         <p className="max-w-[620px] text-body-sm text-graphite">{group.description}</p>
       </Reveal>
+
+      {group.filterable && (
+        <Reveal className="mt-8 flex flex-col gap-3">
+          <FilterRow
+            label={t.courses.filters.stage}
+            allLabel={t.courses.filters.all}
+            options={t.courses.stages.map((s) => ({ id: s.id, label: s.label }))}
+            value={stage}
+            onChange={setStage}
+            countOf={countStage}
+          />
+          <FilterRow
+            label={t.courses.filters.topic}
+            allLabel={t.courses.filters.all}
+            options={t.courses.topics}
+            value={topic}
+            onChange={setTopic}
+            countOf={countTopic}
+          />
+        </Reveal>
+      )}
 
       {visible.length > 0 ? (
         <RevealGroup from={from} className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -51,7 +131,10 @@ function CourseGroup({ group, courses, from, onOpen }) {
           ))}
         </RevealGroup>
       ) : (
-        <p className="mt-8 text-subheading text-steel">{t.courses.emptyState}</p>
+        <p className="mt-8 text-subheading text-steel">
+          {/* Lọc ra rỗng khác với nhóm vốn không có khóa nào — hai ngữ cảnh, hai câu. */}
+          {courses.length > 0 ? t.courses.filters.empty : t.courses.emptyState}
+        </p>
       )}
 
       {hasMore && (

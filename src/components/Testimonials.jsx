@@ -1,38 +1,18 @@
-import { useState } from 'react'
 import { ArrowLeftIcon, ArrowRightIcon, QuoteIcon } from '../assets/icons/Icons'
+import { useCarousel } from '../hooks/useCarousel'
 import { useT } from '../i18n/context'
 import { initialsOf } from '../lib/initials'
 import { Reveal } from './ui/Reveal'
+import { RoundButton } from './ui/RoundButton'
 import { Section, SectionHeading } from './ui/Section'
 
 const AVATAR_TONES = ['bg-signal', 'bg-ember', 'bg-leaf']
 
-function RoundButton({ label, onClick, children }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={label}
-      className="inline-flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-pill border border-ash bg-white text-ink transition-colors duration-200 ease-[var(--ease-out-soft)] hover:border-ink"
-    >
-      {children}
-    </button>
-  )
-}
-
 export function Testimonials() {
   const t = useT()
-  const [index, setIndex] = useState(0)
-
   const items = t.testimonials.items
-  const total = items.length
-
-  // Kẹp index lúc render thay vì đồng bộ bằng effect: nếu danh sách của ngôn
-  // ngữ mới ngắn hơn, con trỏ tự lùi về đầu mà không tốn thêm một vòng render.
-  const current = index < total ? index : 0
+  const { current, go, goTo } = useCarousel(items.length)
   const active = items[current]
-
-  const go = (step) => setIndex((current + step + total) % total)
 
   return (
     <Section>
@@ -40,10 +20,10 @@ export function Testimonials() {
         eyebrow={t.testimonials.eyebrow}
         title={t.testimonials.title}
         align="center"
-        from="right"
+        from="left"
       />
 
-      <Reveal from="left" className="mt-14 flex items-center gap-5">
+      <Reveal from="right" className="mt-14 flex items-center gap-5">
         <div className="hidden md:block">
           <RoundButton label={t.testimonials.previous} onClick={() => go(-1)}>
             <ArrowLeftIcon />
@@ -93,7 +73,7 @@ export function Testimonials() {
             <button
               key={item.id}
               type="button"
-              onClick={() => setIndex(dotIndex)}
+              onClick={() => goTo(dotIndex)}
               aria-label={`${t.testimonials.goTo} ${dotIndex + 1}`}
               aria-current={dotIndex === current ? 'true' : undefined}
               className={[

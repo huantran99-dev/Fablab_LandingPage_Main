@@ -1,5 +1,4 @@
 import { ArrowRightIcon } from '../assets/icons/Icons'
-import { HERO_IMAGE } from '../assets/images'
 import { useT } from '../i18n/context'
 import { Button } from './ui/Button'
 import { Pill } from './ui/Pill'
@@ -37,15 +36,17 @@ export function Hero() {
             {/* Ảnh nằm trên màn hình đầu tiên nên tải sớm và ưu tiên cao — không
                 lazy-load, kẻo đẩy chậm LCP của cả trang. `width`/`height` thật
                 giữ chỗ trước khi ảnh về, tránh giật layout. */}
-            <img
-              src={HERO_IMAGE.src}
-              width={HERO_IMAGE.width}
-              height={HERO_IMAGE.height}
-              alt={t.hero.imageAlt}
-              fetchPriority="high"
-              decoding="async"
-              className="block aspect-[4/3] w-full object-cover"
-            />
+            {t.hero.image && (
+              <img
+                src={t.hero.image.url}
+                width={t.hero.image.width}
+                height={t.hero.image.height}
+                alt={t.hero.imageAlt}
+                fetchPriority="high"
+                decoding="async"
+                className="block aspect-[4/3] w-full object-cover"
+              />
+            )}
           </div>
 
           {/* Badge nổi trên khung hình */}

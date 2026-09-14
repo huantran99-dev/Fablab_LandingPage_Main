@@ -1,14 +1,18 @@
 import { createContext, useContext } from 'react'
-import { en } from './en'
-import { vi } from './vi'
 
-/** Từ điển theo mã ngôn ngữ. Hai object phải luôn cùng shape. */
-export const dictionaries = { vi, en }
-
+/**
+ * Ngôn ngữ hỗ trợ. `code` là khoá tra vào bản nội dung, KHÔNG được dịch.
+ *
+ * Trước đây file này import thẳng `vi.js` và `en.js`. Từ khi có dashboard thì nội
+ * dung đến từ `lib/contentStore.js` (bản đóng gói + bản sống từ API), nên hai file
+ * kia chỉ còn là hồ sơ nguồn gốc — **sửa vào chúng không còn tác dụng gì**.
+ */
 export const LANGUAGES = [
   { code: 'vi', label: 'VI', name: 'Tiếng Việt' },
   { code: 'en', label: 'EN', name: 'English' },
 ]
+
+export const LANGUAGE_CODES = new Set(LANGUAGES.map((language) => language.code))
 
 export const LanguageContext = createContext(null)
 
