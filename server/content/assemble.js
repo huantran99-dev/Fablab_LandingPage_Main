@@ -26,6 +26,20 @@ const BINDING_TARGETS = {
   team: ['team', 'members'],
 }
 
+/**
+ * Chiều ngược của `BINDING_TARGETS`, cho đường ghi: lưu section nào thì được gắn
+ * ảnh cho những mục nào.
+ *
+ * `hero` là ngoại lệ vì scope `singleton` còn chứa `logo` (ảnh của Logo.jsx, không
+ * thuộc section nào) — đường ghi chỉ được đụng đúng `hero`, nên liệt kê tường minh.
+ */
+export const SECTION_IMAGES = {
+  ...Object.fromEntries(
+    Object.entries(BINDING_TARGETS).map(([scope, [section, arrayKey]]) => [section, { scope, arrayKey }]),
+  ),
+  hero: { scope: 'singleton', arrayKey: null, itemIds: ['hero'] },
+}
+
 export function mediaUrl(filename) {
   return `/media/${filename}`
 }

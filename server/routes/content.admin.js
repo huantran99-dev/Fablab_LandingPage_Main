@@ -51,7 +51,12 @@ adminContentRouter.put('/content/:section', requireCsrf, (req, res) => {
     return
   }
 
-  const { vi, en, rev, note } = req.body ?? {}
+  const { vi, en, rev, note, images } = req.body ?? {}
+
+  if (images !== undefined && (typeof images !== 'object' || images === null || Array.isArray(images))) {
+    res.status(400).json({ error: 'images phai la object { idMuc: idAnh | null }' })
+    return
+  }
 
   const parsed = { vi: schema.safeParse(vi), en: schema.safeParse(en) }
   if (!parsed.vi.success || !parsed.en.success) {
@@ -64,14 +69,15 @@ adminContentRouter.put('/content/:section', requireCsrf, (req, res) => {
   }
 
   handle(res, () => {
-    const newRev = writeSectionPair({
+    const outcome = writeSectionPair({
       section,
       vi: parsed.vi.data,
       en: parsed.en.data,
+      images,
       expectedRev: typeof rev === 'number' ? rev : undefined,
       note: typeof note === 'string' ? note.slice(0, 200) : null,
     })
-    res.json({ ok: true, section, rev: newRev })
+    res.json({ ok: true, section, rev: outcome.rev, warnings: outcome.warnings })
   })
 })
 
@@ -81,7 +87,7 @@ adminContentRouter.get('/history/:section', (req, res) => {
 
 adminContentRouter.post('/history/:id/restore', requireCsrf, (req, res) => {
   handle(res, () => {
-    const rev = restoreHistory(Number.parseInt(req.params.id, 10))
-    res.json({ ok: true, rev })
+    const outcome = restoreHistory(Number.parseInt(req.params.id, 10))
+    res.json({ ok: true, rev: outcome.rev, warnings: outcome.warnings })
   })
 })
