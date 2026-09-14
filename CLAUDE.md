@@ -518,6 +518,21 @@ font hệ thống. Kiểm `unicode-range` trong CSS của gói font trước khi
 `admin.css` cũng tự loại `server/`, `src/components/`, `src/i18n/`, `src/content/` khỏi
 quét Tailwind — chiều ngược của `@source not "./admin"` trong `index.css`.
 
+### "Không tải được ảnh, không lưu được" — kiểm máy chủ TRƯỚC khi debug code
+
+Đã xảy ra một lần: **Vite tự nạp mã dashboard mới, còn `npm run server` thì KHÔNG**.
+Người dùng để máy chủ chạy từ sáng qua các commit backend, nên dashboard mới nói chuyện
+với máy chủ cũ (chỉ mở "Cảm nhận", chưa có route ảnh) — mọi lỗi trông như lỗi dashboard.
+Mã mới chạy đúng hoàn toàn khi thử qua proxy Vite trên bản sao database.
+
+Chốt đã đặt: `/api/health` trả `api` (`API_VERSION` trong
+[content.public.js](server/routes/content.public.js)), dashboard so với `EXPECTED_API`
+trong [App.jsx](src/admin/App.jsx) và hiện băng đỏ nếu thấp hơn. **Thêm route hay đổi
+hợp đồng mà dashboard phụ thuộc thì tăng CẢ HAI số.** Kiểm nhanh: so giờ khởi động tiến
+trình trên cổng 3001 với giờ commit backend gần nhất. Lưu ý mọi `/api/admin/*` đều qua
+`requireSession` trước khi xét route, nên dò bằng curl chưa đăng nhập luôn ra 401 — không
+phân biệt được route có tồn tại hay không.
+
 ### Ba luật của đường ghi
 
 1. **Mọi thao tác ghi tác động lên CẢ HAI ngôn ngữ trong CÙNG một giao dịch.**

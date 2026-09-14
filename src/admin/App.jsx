@@ -11,6 +11,7 @@ import { LoginPage } from './pages/LoginPage'
 import { MediaPage } from './pages/MediaPage'
 import { SectionPage } from './pages/SectionPage'
 import { SECTION_BY_KEY } from './sections/descriptors'
+import { Alert } from './ui/Alert'
 import { LinkButton } from './ui/Button'
 import { Card } from './ui/Card'
 import { useToast } from './ui/toastContext'
@@ -21,6 +22,14 @@ import { useToast } from './ui/toastContext'
  * Cờ chưa lưu nằm trong REF chứ không phải state: nó chỉ được hỏi lúc sắp rời trang
  * (đổi hash, đóng tab), không bao giờ cần vẽ lại cả vỏ chỉ vì người dùng gõ một chữ.
  */
+/**
+ * Phiên bản API dashboard này cần — khớp `API_VERSION` trong
+ * server/routes/content.public.js. Vite tự nạp mã dashboard mới, còn `npm run server`
+ * thì KHÔNG: quên khởi động lại là dashboard mới nói chuyện với máy chủ cũ, và mọi
+ * lỗi (không tải được ảnh, không lưu được) trông như lỗi của dashboard.
+ */
+const EXPECTED_API = 2
+
 export default function App() {
   const toast = useToast()
   const [theme, toggleTheme] = useTheme()
@@ -30,6 +39,7 @@ export default function App() {
 
   const dirtyRef = useRef(false)
   const [route] = useHashRoute(() => dirtyRef.current)
+  const [serverApi, setServerApi] = useState(EXPECTED_API)
 
   useEffect(() => {
     let cancelled = false
@@ -60,6 +70,13 @@ export default function App() {
   useEffect(() => {
     if (session.status !== 'in') return undefined
     let cancelled = false
+    api
+      .health()
+      .then((result) => {
+        // Máy chủ bản đầu không trả `api` -> coi là 1.
+        if (!cancelled) setServerApi(result?.api ?? 1)
+      })
+      .catch(() => {})
     api
       .meta()
       .then((result) => {
@@ -156,6 +173,14 @@ export default function App() {
 
   return (
     <AppLayout route={route} username={session.username} theme={theme} onToggleTheme={toggleTheme} onLogout={logout}>
+      {serverApi < EXPECTED_API && (
+        <div className="mb-6">
+          <Alert tone="error" title="Máy chủ đang chạy bản cũ">
+            Dashboard đã được cập nhật nhưng tiến trình <code>npm run server</code> vẫn là bản trước đó, nên tải ảnh và lưu sẽ không chạy. Vào cửa sổ
+            terminal đang chạy máy chủ, bấm <kbd>Ctrl</kbd>+<kbd>C</kbd>, chạy lại <code>npm run server</code>, rồi tải lại trang này.
+          </Alert>
+        </div>
+      )}
       {page}
     </AppLayout>
   )

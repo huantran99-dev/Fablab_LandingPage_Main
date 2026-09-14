@@ -49,7 +49,17 @@ contentRouter.get('/content/:locale', (req, res) => {
   })
 })
 
+/**
+ * Phiên bản API mà dashboard cần. Tăng số này mỗi khi thêm route hay đổi hợp đồng
+ * mà dashboard phụ thuộc — dashboard so với `EXPECTED_API` trong src/admin/App.jsx.
+ *
+ * Có từ sau khi người dùng gặp "không tải được ảnh, không lưu được": Vite tự nạp mã
+ * dashboard mới, còn `npm run server` thì KHÔNG tự nạp lại, nên dashboard mới nói
+ * chuyện với máy chủ cũ và mọi lỗi đều trông như lỗi của dashboard.
+ */
+export const API_VERSION = 2
+
 contentRouter.get('/health', (_req, res) => {
   const { rev, updatedAt } = getContent()
-  res.json({ ok: true, rev, updatedAt })
+  res.json({ ok: true, rev, updatedAt, api: API_VERSION })
 })

@@ -60,6 +60,7 @@ async function request(path, { method = 'GET', body, raw, headers: extra = {} } 
 }
 
 export const api = {
+  health: () => request('/api/health'),
   session: () => request('/api/auth/session'),
   login: (username, password) => request('/api/auth/login', { method: 'POST', body: { username, password } }),
   logout: () => request('/api/auth/logout', { method: 'POST' }),
@@ -95,6 +96,15 @@ export function describeError(error) {
   if (!(error instanceof ApiError)) return error?.message ?? 'Lỗi không xác định'
   if (error.status === 409) return 'Nội dung đã bị sửa ở nơi khác (tab khác?). Tải lại để lấy bản mới.'
   if (error.status === 413) return 'File quá lớn (tối đa 15 MB).'
+  // Hai câu trả lời đặc trưng của máy chủ bản cũ: route chưa tồn tại, và section chưa
+  // có schema (bản đầu chỉ mở "Cảm nhận"). Vite tự nạp mã dashboard mới nhưng
+  // `npm run server` thì không, nên đây là tình huống có thật chứ không phải phòng xa.
+  if (error.body?.error === 'khong co route nay') {
+    return 'Máy chủ không có chức năng này — có thể đang chạy bản cũ. Tắt `npm run server` rồi chạy lại.'
+  }
+  if (error.body?.error === 'section nay chua mo cho sua') {
+    return 'Máy chủ đang chạy bản cũ (chỉ cho sửa Cảm nhận). Tắt `npm run server` rồi chạy lại.'
+  }
   if (error.status === 0 || error.status >= 500) return 'Máy chủ gặp lỗi. Thử lại sau.'
   return error.message
 }
