@@ -26,7 +26,7 @@ import { renderedAnchors } from './lookups.js'
  * ngôn ngữ thì khóa học nhảy nhóm, số liệu đổi giá trị, hay menu trỏ chỗ khác.
  * Dashboard ghi chúng bằng một ô duy nhất cho cả hai; luật này chặn đường API.
  */
-const SHARED_FIELDS = new Set([
+export const SHARED_FIELDS = new Set([
   'group',
   'level',
   'stage',

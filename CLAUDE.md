@@ -506,9 +506,17 @@ Không dùng react-router trên app hiện tại vì router sẽ vào bundle cô
 kiện, và chunk admin chỉ tách được nếu MỌI import đều lazy — một import tĩnh lỡ tay
 là dính lại, không có lỗi build nào báo.
 
-Dashboard **cố ý không dùng hệ "Loom"**: nó có `admin.css` riêng, chỉ mượn sắc xanh
-thương hiệu. Kéo hệ kia sang là mở rộng vùng ảnh hưởng của `index.css` (file có ràng
-buộc thứ tự lớp rất chặt) để đổi lấy thứ công cụ quản trị không cần.
+Dashboard **cố ý không dùng hệ "Loom"**: nó có `admin.css` riêng theo phong cách
+TailAdmin (dựng lại bằng token, không chép template). Kéo hệ kia sang là mở rộng vùng
+ảnh hưởng của `index.css` (file có ràng buộc thứ tự lớp rất chặt) để đổi lấy thứ công
+cụ quản trị không cần.
+
+**Font là Inter, không phải Outfit của TailAdmin.** Outfit chỉ có bộ latin + latin-ext,
+và latin-ext bỏ đúng dải U+1EA0–1EF1 (ạ ả ấ ầ ệ ự…) — chữ Việt sẽ ghép từng ký tự với
+font hệ thống. Kiểm `unicode-range` trong CSS của gói font trước khi đổi font.
+
+`admin.css` cũng tự loại `server/`, `src/components/`, `src/i18n/`, `src/content/` khỏi
+quét Tailwind — chiều ngược của `@source not "./admin"` trong `index.css`.
 
 ### Ba luật của đường ghi
 
@@ -517,15 +525,92 @@ buộc thứ tự lớp rất chặt) để đổi lấy thứ công cụ quản
    lệch cấu trúc" là trạng thái **không thao tác ra được**, chứ không phải một lỗi
    trông chờ bộ kiểm bắt lại sau khi đã ghi.
 2. **Không có schema thì không ghi được.** `PUT` vào section chưa khai trong
-   [schema/sections.js](server/schema/sections.js) trả 400 kèm danh sách section
-   đang mở. Section chưa có schema là section chưa được rà. Hiện mới mở
-   `testimonials`; mở thêm là thêm schema Zod, không phải nới lỏng chốt chặn.
+   [schema/sections.js](server/schema/sections.js) trả 400. Cả 12 section đã có
+   schema strict. Thêm section mới vào trang là phải thêm schema, không phải nới
+   lỏng chốt chặn. `activities.items[].date` **được để trống** — 4 hoạt động thật
+   không có ngày; đừng "sửa" schema thành bắt buộc.
 3. **`rev` là chốt chống ghi đè.** `GET` trả `rev`, `PUT` phải gửi lại đúng số đó,
    lệch thì 409. Hai tab cùng mở thì tab cũ nhận lỗi thay vì lặng lẽ xoá việc của
    tab kia.
 
 Lịch sử chép bản cũ **trước** khi ghi đè, và khôi phục luôn lấy cả hai ngôn ngữ của
-cùng một thời điểm — khôi phục một nửa là đúng cái lệch cấu trúc vừa nói.
+cùng một thời điểm — khôi phục một nửa là đúng cái lệch cấu trúc vừa nói. Lịch sử lưu
+kèm ảnh (`bindings_json`), nên khôi phục trả lại cả ảnh.
+
+### 12 section, một bộ soạn thảo
+
+Không có editor viết tay cho từng section. [descriptors.js](src/admin/sections/descriptors.js)
+mô tả mỗi section bằng dữ liệu; `SectionPage` + `ItemList` + `ItemModal` dựng mọi thứ.
+Hai điều phải giữ, **`npm run check:admin` kiểm cả hai**:
+
+- **Mọi khoá của mục phải được mô tả.** Form dựng lại mục CHỈ từ trường nó biết —
+  khoá thiếu mô tả bị rơi mất ở lượt lưu kế tiếp, không cảnh báo. Thêm trường vào
+  nội dung là phải thêm vào descriptor.
+- **Trường dịch / dùng chung phải khớp `SHARED_FIELDS`** trong
+  [invariants.js](server/content/invariants.js). Để trường dùng chung thành hai ô
+  VI | EN là dựng ra form chỉ dẫn tới 422.
+
+Form giữ **bản làm việc** `{ id, vi, en, shared }` rồi dựng lại hai mục lúc Áp dụng
+([model.js](src/admin/editor/model.js)); trường dùng chung chỉ tồn tại một lần nên không
+thể lệch. Thêm/xoá/đổi thứ tự đi qua `mapBoth`. Đổi kiểu thẻ khóa học thì trường của
+kiểu kia không lọt vào — `fromWorking` chỉ lấy trường của kiểu đang chọn.
+
+`id` **khoá sau khi tạo**: nó là khoá tra ảnh, icon, bố cục và neo cùng lúc.
+
+### Ảnh đi cùng lượt lưu section
+
+`PUT` nhận `images: { idMục: idẢnh | null }` và áp binding trong **cùng giao dịch** với
+chữ. Nhờ vậy "Bỏ thay đổi" huỷ luôn việc thay ảnh. Scope `singleton` còn chứa `logo`
+(của Logo.jsx, không thuộc section nào) — đường ghi của `hero` chỉ được đụng `hero`,
+nên [SECTION_IMAGES](server/content/assemble.js) liệt kê tường minh.
+
+**Dọn ảnh chỉ cho mục vừa bị xoá TRONG lượt đó**, không phải "binding không khớp mục
+nào". Seed có binding mồ côi **có chủ đích**: logo thật của Becamex và BBI nằm sẵn ở
+scope `partner` dù hai đối tác chưa có trên trang. Bản đầu dọn kiểu "không khớp là
+xoá" và **đã xoá im lặng cả hai ngay lượt lưu Đối tác đầu tiên**, kể cả khi không đổi
+gì. Giữ lại thì thêm lại đối tác đó là logo tự về đúng chỗ.
+
+Ghi chú nguồn `~`/`↺` trên binding được giữ khi ảnh không đổi, xoá khi thay ảnh (ghi
+chú mô tả quan hệ cũ không còn đúng).
+
+### Bất biến chạy trên từ điển đã ráp, so với MỐC
+
+Sau khi ghi (vẫn trong giao dịch), máy chủ ráp lại toàn bộ và chạy
+[invariants.js](server/content/invariants.js) — cùng bộ luật với `check:content`. Luật
+cắt ngang section chỉ thấy được ở đây: xoá khối `competitions` làm chết link menu.
+
+Chỉ **lỗi mới** mới chặn, chỉ **cảnh báo mới** mới báo — so với mốc chạy trước khi ghi.
+Không có mốc thì: cảnh báo của section khác dội vào mọi lượt lưu, và tệ hơn, một lỗi có
+sẵn (ví dụ xoá một icon khỏi mã nguồn) **khoá lưu mọi section vô thời hạn**, kể cả lượt
+đang cố sửa chính lỗi đó.
+
+Mục thiếu ảnh là **cảnh báo**, không phải lỗi: component đã có đường lui, và admin phải
+tạo được mục trước rồi mới gắn ảnh.
+
+### `rev` công khai = SUM(section.rev) + `content_counter`
+
+Popup chi tiết khóa học ghi vào `course_detail`, không đụng `section`. Thiếu bộ đếm
+(migration 002) thì `rev` đứng yên → bộ đệm trả bản cũ, ETag trả 304, `contentStore`
+bỏ qua "cùng rev" — bản sửa **không bao giờ lên trang**, không lỗi nào báo. Thêm bảng
+nội dung nào ngoài `section` là phải tăng bộ đếm này khi ghi.
+
+Route popup **chỉ ghi dòng `overridden`**; `null` là gỡ bản sửa về bản gốc. Không kiểm
+đối xứng (cố ý) và không có lịch sử (bản gốc luôn còn). Xoá khóa học không xoá dòng
+`scraped`/`handwritten` — tạo lại đúng id đó là popup cũ sống lại.
+
+### Thư viện ảnh
+
+Tải lên bằng `express.raw` (không multer), xác thực đứng **trước** bộ đọc thân. sharp:
+`rotate()` rồi thu cạnh dài về 1600, **không chép metadata** — ảnh điện thoại mang toạ độ
+GPS, mà đây là ảnh người thật trên trang công khai. Băm **sau** khi xử lý. Xoá ảnh đang
+dùng → 409 kèm danh sách chỗ dùng. Xoá chỉ xoá file ở `data/media/`, bản ở
+`public/media/` giữ lại cho snapshot đã commit.
+
+**`/media/<không tồn tại>` phải trả 404.** Không có chốt đó thì nó rơi xuống fallback SPA
+và nhận `index.html` mã 200 — ảnh vừa xoá trông như vẫn còn.
+
+Kiểm kịch bản ghi thì chạy trên **bản sao** database: `DATA_DIR=<thư mục khác> npm run
+server`. Đừng thử trên `data/` thật — lịch sử và `rev` không quay lại được.
 
 ### Đăng nhập
 
@@ -587,8 +672,16 @@ database rồi so sâu với module gốc, và phải in **`identical`**.
 
 Repo không có bộ test. [check-content.js](server/scripts/check-content.js) là thứ
 thay thế: nó khẳng định những ràng buộc **không có cảnh báo lúc build** — đối xứng
-VI↔EN, `kind`/`icon`/`stage`/`topic` tra được, mọi id có ảnh, đúng một `lead`,
-`stats.items[].value` là số, mọi `href` trỏ tới neo có thật.
+VI↔EN, `kind`/`icon`/`stage`/`topic` tra được, đúng một `lead`, `stats.items[].value`
+là số, mọi `href` trỏ tới neo có thật, id không trùng, trường không dịch bằng nhau giữa
+hai bản. Mục thiếu ảnh chỉ còn là cảnh báo.
+
+Luật nằm ở [invariants.js](server/content/invariants.js); script chỉ nạp dữ liệu và in.
+**Sửa luật ở đó là sửa cho cả đường ghi của dashboard** — không có bản thứ hai.
+
+Trường dùng chung chỉ so trên **phần tử có `id`**: `courses.filters.stage` là nhãn dịch
+("Cấp học" / "School level") trùng tên với trường tra cứu `courses.items[].stage`. Bản
+đầu so theo tên khoá và báo lỗi nhầm đúng chỗ này.
 
 Hai chế độ, cùng một bộ ràng buộc: mặc định kiểm **module i18n** (corpus seed), còn
 `--snapshot` kiểm **bản dự phòng thật sự được đóng gói**. Bản dự phòng mới là thứ

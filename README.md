@@ -7,6 +7,26 @@ repo; icon là SVG vẽ tay — trang chạy được cả khi không có mạng
 Nội dung sửa được qua **dashboard quản trị** tại `/admin`, chạy trên backend
 ExpressJS + SQLite trong [server/](server/).
 
+## Dashboard quản trị
+
+Giao diện theo phong cách TailAdmin (sidebar thu gọn, giao diện sáng/tối, tìm nhanh
+bằng `Ctrl K`). Sửa được **cả 12 section** của trang, mỗi section một màn hình:
+
+| Màn hình | Làm được gì |
+|---|---|
+| Tổng quan | Số khóa học, hoạt động, thành viên, ảnh; lần lưu gần nhất |
+| 12 section | Sửa chữ VI + EN cạnh nhau; thêm / sửa / xoá / đổi thứ tự mục; gắn ảnh |
+| Khóa học › Popup chi tiết | Sửa nội dung popup theo từng ngôn ngữ; gỡ bản sửa là về bản gốc |
+| Thư viện ảnh | Tải lên, xem ảnh đang dùng ở đâu, ghi chú nguồn, xoá ảnh không dùng |
+| Tài khoản | Đổi mật khẩu (đăng xuất mọi nơi) |
+
+Mọi thay đổi vào **bản nháp** trước; trang thật đổi khi bấm **Lưu** (`Ctrl S`). Máy chủ
+từ chối lượt lưu làm hỏng trang — link menu trỏ tới khối đã xoá, hai giám đốc, id
+trùng… — và báo đúng chỗ sai. Mỗi lần lưu có lịch sử, khôi phục được cả chữ lẫn ảnh.
+
+Ảnh tải lên được tự xoay đúng chiều, thu về cạnh dài 1600px và **xoá thông tin vị trí
+chụp (EXIF)**.
+
 ## Chạy dự án
 
 Lần đầu, sau `npm install`:
@@ -32,6 +52,7 @@ npm run preview        # xem thu ban build
 npm run lint
 npm run check:content  # bo kiem bat bien tren ma nguon
 npm run check:snapshot # bo kiem tren ban du phong duoc dong goi
+npm run check:admin    # form dashboard khong lam mat truong nao cua noi dung
 ```
 
 > **Nội dung không còn nằm ở `src/i18n/*.js`.** Hai file đó giờ là hồ sơ nguồn gốc,

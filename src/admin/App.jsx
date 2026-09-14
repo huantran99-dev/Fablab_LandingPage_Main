@@ -1,276 +1,162 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { Login } from './components/Login'
-import { TestimonialsEditor } from './editors/TestimonialsEditor'
-import { ApiError, api, setCsrfToken } from './lib/api'
+import { useHashRoute } from './hooks/useHashRoute'
+import { useTheme } from './hooks/useTheme'
+import { AppLayout } from './layout/AppLayout'
+import { PageHeader } from './layout/PageHeader'
+import { api, onUnauthorized, setCsrfToken } from './lib/api'
+import { AccountPage } from './pages/AccountPage'
+import { DashboardPage } from './pages/DashboardPage'
+import { LoginPage } from './pages/LoginPage'
+import { MediaPage } from './pages/MediaPage'
+import { SectionPage } from './pages/SectionPage'
+import { SECTION_BY_KEY } from './sections/descriptors'
+import { LinkButton } from './ui/Button'
+import { Card } from './ui/Card'
+import { useToast } from './ui/toastContext'
 
 /**
- * Vỏ dashboard: đăng nhập, chọn section, soạn, lưu, xem lịch sử.
+ * Vỏ dashboard: phiên đăng nhập, định tuyến hash, và chốt "còn thay đổi chưa lưu".
  *
- * Đợt này chỉ mở section "Cảm nhận". Máy chủ **từ chối ghi** vào section chưa có
- * schema (400 kèm danh sách section mở), nên giao diện chỉ liệt kê đúng những gì
- * máy chủ nhận — không có nút nào dẫn tới một lượt lưu chắc chắn thất bại.
+ * Cờ chưa lưu nằm trong REF chứ không phải state: nó chỉ được hỏi lúc sắp rời trang
+ * (đổi hash, đóng tab), không bao giờ cần vẽ lại cả vỏ chỉ vì người dùng gõ một chữ.
  */
+export default function App() {
+  const toast = useToast()
+  const [theme, toggleTheme] = useTheme()
+  const [session, setSession] = useState({ status: 'checking', username: null })
+  const [meta, setMeta] = useState(null)
+  const [metaVersion, setMetaVersion] = useState(0)
 
-const EDITORS = {
-  testimonials: { label: 'Cảm nhận', Component: TestimonialsEditor },
-}
-
-function useSession() {
-  const [state, setState] = useState({ status: 'checking', username: null })
+  const dirtyRef = useRef(false)
+  const [route] = useHashRoute(() => dirtyRef.current)
 
   useEffect(() => {
+    let cancelled = false
     api
       .session()
       .then((result) => {
-        setCsrfToken(result.csrfToken)
-        setState({
-          status: result.authenticated ? 'in' : 'out',
-          username: result.username ?? null,
-        })
-      })
-      .catch(() => setState({ status: 'out', username: null }))
-  }, [])
-
-  return [state, setState]
-}
-
-export default function App() {
-  const [session, setSession] = useSession()
-  const [section, setSection] = useState('testimonials')
-  const [editable, setEditable] = useState([])
-
-  const [draft, setDraft] = useState(null)
-  const [baseRev, setBaseRev] = useState(null)
-  const [dirty, setDirty] = useState(false)
-  const [status, setStatus] = useState(null)
-  const [issues, setIssues] = useState(null)
-  const [history, setHistory] = useState([])
-
-  // Chỉ ĐỌC, không đụng state — nhờ vậy dùng lại được cho cả effect lẫn nút bấm.
-  const fetchSection = useCallback(async (key) => {
-    const [pair, history] = await Promise.all([api.readSection(key), api.history(key)])
-    return { draft: { vi: pair.vi, en: pair.en }, rev: pair.rev, entries: history.entries }
-  }, [])
-
-  const apply = useCallback((loaded) => {
-    setDraft(loaded.draft)
-    setBaseRev(loaded.rev)
-    setHistory(loaded.entries)
-    setDirty(false)
-    setStatus(null)
-    setIssues(null)
-  }, [])
-
-  useEffect(() => {
-    if (session.status !== 'in') return undefined
-
-    // `cancelled` chặn việc ghi state của một lượt nạp đã lỗi thời: đổi section
-    // nhanh hai lần thì lượt trước về sau lượt sau là chuyện có thật.
-    let cancelled = false
-    ;(async () => {
-      try {
-        const [sections, loaded] = await Promise.all([api.editableSections(), fetchSection(section)])
         if (cancelled) return
-        setEditable(sections.editable)
-        apply(loaded)
-      } catch (error) {
-        if (!cancelled) setStatus({ kind: 'error', text: error.message })
-      }
-    })()
-
+        setCsrfToken(result.csrfToken)
+        setSession({ status: result.authenticated ? 'in' : 'out', username: result.username ?? null })
+      })
+      .catch(() => {
+        if (!cancelled) setSession({ status: 'out', username: null })
+      })
     return () => {
       cancelled = true
     }
-  }, [session.status, section, fetchSection, apply])
+  }, [])
 
-  const reload = useCallback(async () => {
-    apply(await fetchSection(section))
-  }, [apply, fetchSection, section])
-
-  // Chặn đóng tab khi còn thay đổi chưa lưu. Không có tự lưu: một lượt lưu là một
-  // lượt ghi vào trang thật, phải do người bấm.
   useEffect(() => {
-    if (!dirty) return undefined
+    onUnauthorized(() => {
+      dirtyRef.current = false
+      setSession({ status: 'out', username: null })
+      toast({ tone: 'warning', title: 'Phiên đăng nhập đã hết', message: 'Đăng nhập lại để tiếp tục. Thay đổi chưa lưu không được giữ.' })
+    })
+    return () => onUnauthorized(null)
+  }, [toast])
+
+  useEffect(() => {
+    if (session.status !== 'in') return undefined
+    let cancelled = false
+    api
+      .meta()
+      .then((result) => {
+        if (!cancelled) setMeta(result)
+      })
+      .catch(() => {
+        // Tổng quan tự hiện "đang tải"; lỗi phiên đã có onUnauthorized lo.
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [session.status, metaVersion])
+
+  useEffect(() => {
     const warn = (event) => {
+      if (!dirtyRef.current) return
       event.preventDefault()
       event.returnValue = ''
     }
     window.addEventListener('beforeunload', warn)
     return () => window.removeEventListener('beforeunload', warn)
-  }, [dirty])
+  }, [])
+
+  const setDirty = useCallback((value) => {
+    dirtyRef.current = value
+  }, [])
+  const refreshMeta = useCallback(() => setMetaVersion((version) => version + 1), [])
+
+  const signOut = useCallback(() => {
+    dirtyRef.current = false
+    setMeta(null)
+    setSession({ status: 'out', username: null })
+  }, [])
+
+  const logout = () => {
+    if (dirtyRef.current && !window.confirm('Có thay đổi chưa lưu. Vẫn đăng xuất?')) return
+    api
+      .logout()
+      .catch(() => {})
+      .finally(signOut)
+  }
 
   if (session.status === 'checking') {
-    return <p className="p-8 text-sm text-steel">Đang kiểm tra phiên đăng nhập…</p>
+    return (
+      <div className="flex min-h-dvh items-center justify-center">
+        <p className="text-sm text-gray-500">Đang kiểm tra phiên đăng nhập…</p>
+      </div>
+    )
   }
 
   if (session.status === 'out') {
-    return <Login onSignedIn={(result) => setSession({ status: 'in', username: result.username })} />
+    return (
+      <LoginPage
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        onSignedIn={(result) => {
+          window.location.hash = window.location.hash || '#/'
+          setSession({ status: 'in', username: result.username })
+        }}
+      />
+    )
   }
 
-  async function save() {
-    setStatus({ kind: 'busy', text: 'Đang lưu…' })
-    setIssues(null)
-    try {
-      const result = await api.writeSection(section, { ...draft, rev: baseRev })
-      setBaseRev(result.rev)
-      setDirty(false)
-      setHistory((await api.history(section)).entries)
-      setStatus({ kind: 'ok', text: `Đã lưu. Tải lại trang chính là thấy đổi.` })
-    } catch (error) {
-      if (!(error instanceof ApiError)) throw error
-
-      if (error.status === 422 && (error.body.vi || error.body.en)) {
-        setIssues({ vi: error.body.vi ?? [], en: error.body.en ?? [] })
-        setStatus({ kind: 'error', text: 'Nội dung chưa hợp lệ — xem các ô báo đỏ bên dưới.' })
-        return
-      }
-      if (error.status === 422) {
-        const missing = [...(error.body.missingInEn ?? []), ...(error.body.missingInVi ?? [])]
-        setStatus({
-          kind: 'error',
-          text: `Hai ngôn ngữ không cùng cấu trúc: ${missing.slice(0, 3).join(', ')}${missing.length > 3 ? '…' : ''}`,
-        })
-        return
-      }
-      if (error.status === 409) {
-        setStatus({
-          kind: 'error',
-          text: 'Nội dung đã bị sửa ở nơi khác. Tải lại để lấy bản mới — thay đổi đang soạn sẽ mất.',
-        })
-        return
-      }
-      setStatus({ kind: 'error', text: error.message })
-    }
+  let page
+  if (route.name === 'dashboard') {
+    page = <DashboardPage meta={meta} username={session.username} />
+  } else if (route.name === 'sections' && SECTION_BY_KEY[route.param]) {
+    page = (
+      <SectionPage
+        key={route.param}
+        descriptor={SECTION_BY_KEY[route.param]}
+        meta={meta}
+        onDirtyChange={setDirty}
+        onSaved={refreshMeta}
+      />
+    )
+  } else if (route.name === 'media') {
+    page = <MediaPage onChanged={refreshMeta} />
+  } else if (route.name === 'account') {
+    page = <AccountPage username={session.username} onPasswordChanged={signOut} />
+  } else {
+    page = (
+      <>
+        <PageHeader title="Không tìm thấy trang" />
+        <Card>
+          <p className="text-sm text-gray-500">Đường dẫn này không ứng với màn hình nào của dashboard.</p>
+          <LinkButton href="#/" className="mt-4" icon="grid">
+            Về Tổng quan
+          </LinkButton>
+        </Card>
+      </>
+    )
   }
-
-  async function restore(id) {
-    await api.restore(id)
-    await reload()
-    setStatus({ kind: 'ok', text: 'Đã khôi phục bản trước.' })
-  }
-
-  const Editor = EDITORS[section]?.Component
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-6 px-5 py-8">
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-ash pb-4">
-        <div>
-          <h1 className="text-lg font-bold">Quản trị nội dung</h1>
-          <p className="text-xs text-steel">
-            Đăng nhập: {session.username} · phiên bản nội dung {baseRev ?? '—'}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <a href="/" className="rounded border border-ash px-3 py-1.5 text-sm">
-            Xem trang
-          </a>
-          <button
-            type="button"
-            onClick={() => api.logout().then(() => setSession({ status: 'out', username: null }))}
-            className="rounded border border-ash px-3 py-1.5 text-sm"
-          >
-            Đăng xuất
-          </button>
-        </div>
-      </header>
-
-      <nav className="flex flex-wrap gap-2">
-        {editable.map((key) => (
-          <button
-            key={key}
-            type="button"
-            onClick={() => setSection(key)}
-            className={`rounded px-3 py-1.5 text-sm ${
-              key === section ? 'bg-signal text-white' : 'border border-ash bg-white'
-            }`}
-          >
-            {EDITORS[key]?.label ?? key}
-          </button>
-        ))}
-        <span className="self-center text-xs text-steel">
-          Các section khác sẽ mở dần ở những đợt sau.
-        </span>
-      </nav>
-
-      {status && (
-        <p
-          role="status"
-          className={`rounded border px-3 py-2 text-sm ${
-            status.kind === 'error'
-              ? 'border-danger/30 bg-danger/5 text-danger'
-              : status.kind === 'ok'
-                ? 'border-ok/30 bg-ok/5 text-ok'
-                : 'border-ash bg-white text-steel'
-          }`}
-        >
-          {status.text}
-        </p>
-      )}
-
-      {draft && Editor && (
-        <Editor
-          value={draft}
-          issues={issues}
-          onChange={(next) => {
-            setDraft(next)
-            setDirty(true)
-          }}
-        />
-      )}
-
-      <div className="sticky bottom-0 flex items-center justify-between gap-3 border-t border-ash bg-paper/95 py-3 backdrop-blur">
-        <span className="text-sm text-steel">
-          {dirty ? 'Có thay đổi chưa lưu' : 'Chưa có thay đổi nào'}
-        </span>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => reload()}
-            className="rounded border border-ash bg-white px-4 py-2 text-sm"
-          >
-            Bỏ thay đổi
-          </button>
-          <button
-            type="button"
-            onClick={save}
-            disabled={!dirty || status?.kind === 'busy'}
-            className="rounded bg-signal px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
-          >
-            Lưu
-          </button>
-        </div>
-      </div>
-
-      {history.length > 0 && (
-        <details className="rounded border border-ash bg-white p-4">
-          <summary className="cursor-pointer text-sm font-medium">
-            Lịch sử ({history.length} bản)
-          </summary>
-          <ul className="mt-3 flex flex-col gap-2">
-            {history
-              .filter((entry) => entry.locale === 'vi')
-              .map((entry) => (
-                <li key={entry.id} className="flex items-center justify-between gap-3 text-sm">
-                  <span className="text-steel">
-                    {new Date(entry.saved_at).toLocaleString('vi-VN')}
-                    {entry.note ? ` · ${entry.note}` : ''}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => restore(entry.id)}
-                    className="rounded border border-ash px-2 py-1 text-xs"
-                  >
-                    Khôi phục
-                  </button>
-                </li>
-              ))}
-          </ul>
-          <p className="mt-3 text-xs text-steel">
-            Khôi phục luôn lấy cả hai ngôn ngữ của cùng một thời điểm.
-          </p>
-        </details>
-      )}
-    </div>
+    <AppLayout route={route} username={session.username} theme={theme} onToggleTheme={toggleTheme} onLogout={logout}>
+      {page}
+    </AppLayout>
   )
 }
