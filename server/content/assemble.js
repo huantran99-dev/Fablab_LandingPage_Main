@@ -10,7 +10,7 @@
 import { getDb } from '../db/index.js'
 
 /** Thứ tự trộn chi tiết khoá học. Sau đè lên trước. */
-const DETAIL_PRECEDENCE = ['scraped', 'handwritten', 'overridden']
+export const DETAIL_PRECEDENCE = ['scraped', 'handwritten', 'overridden']
 
 /**
  * Ảnh gắn vào đâu: scope trong bảng `binding` -> đường tới mảng trong từ điển.

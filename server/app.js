@@ -14,6 +14,9 @@ import { config, paths } from './config.js'
 import { adminContentRouter } from './routes/content.admin.js'
 import { authRouter } from './routes/auth.js'
 import { contentRouter } from './routes/content.public.js'
+import { courseDetailsRouter } from './routes/courseDetails.admin.js'
+import { mediaRouter } from './routes/media.admin.js'
+import { metaRouter } from './routes/meta.admin.js'
 
 export function createApp() {
   const app = express()
@@ -56,10 +59,19 @@ export function createApp() {
   app.use('/media', express.static(paths.media, mediaOptions))
   // Rơi về ảnh đã đóng gói trong dist: nhờ đó `dist/` mang đi đâu cũng tự đủ.
   app.use('/media', express.static(join(config.distDir, 'media'), mediaOptions))
+  // Không có dòng này thì ảnh không tồn tại rơi xuống fallback SPA ở cuối file và
+  // nhận về `index.html` với mã 200: trình duyệt hiện ảnh vỡ, còn máy chủ báo thành
+  // công — và một ảnh vừa xoá khỏi thư viện trông như vẫn còn.
+  app.use('/media', (_req, res) => {
+    res.status(404).end()
+  })
 
   app.use('/api', contentRouter)
   app.use('/api/auth', authRouter)
   app.use('/api/admin', adminContentRouter)
+  app.use('/api/admin', metaRouter)
+  app.use('/api/admin', mediaRouter)
+  app.use('/api/admin', courseDetailsRouter)
 
   app.use('/api', (_req, res) => {
     res.status(404).json({ error: 'khong co route nay' })

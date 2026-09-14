@@ -136,6 +136,10 @@ export function writeSectionPair({ section, vi, en, expectedRev, note = null, im
     const now = new Date().toISOString()
     const before = readSectionBindings(db, section)
     const beforeJson = before ? JSON.stringify(before) : null
+    // Id các mục TRƯỚC lượt lưu. Dọn ảnh chỉ được đụng mục có ở đây mà mất ở bản
+    // mới — tức mục người dùng vừa xoá.
+    const viRow = current.find((row) => row.locale === 'vi')
+    const previousIds = target && viRow ? imageItemIds(section, JSON.parse(viRow.json)) : new Set()
 
     for (const row of current) {
       // Chép bản cũ sang lịch sử TRƯỚC khi ghi đè, nên luôn quay lại được — cả ảnh.
@@ -170,7 +174,9 @@ export function writeSectionPair({ section, vi, en, expectedRev, note = null, im
       )
 
       if (bindings) {
-        for (const row of before) remove.run(target.scope, row.item_id)
+        for (const row of before) {
+          if (allowed.has(row.item_id) || previousIds.has(row.item_id)) remove.run(target.scope, row.item_id)
+        }
         for (const row of bindings) {
           if (!allowed.has(row.item_id)) continue
           if (!mediaExists.get(row.media_id)) {
@@ -195,10 +201,16 @@ export function writeSectionPair({ section, vi, en, expectedRev, note = null, im
         upsert.run(target.scope, itemId, mediaId, null)
       }
 
-      // Mục đã xoá khỏi section thì ảnh của nó cũng đi theo — không để binding mồ côi
-      // chờ một mục mới trùng id "thừa kế" nhầm ảnh của người khác.
+      // Mục vừa bị xoá trong lượt này thì ảnh của nó đi theo.
+      //
+      // CHỈ mục vừa bị xoá — không phải mọi binding không khớp mục nào. Seed có
+      // binding "mồ côi" CÓ CHỦ ĐÍCH: logo thật của Becamex và BBI nằm sẵn trong
+      // scope `partner` dù hai đối tác đó chưa có trên trang. Bản đầu dọn theo kiểu
+      // "không khớp là xoá" và đã xoá im lặng cả hai ngay lượt lưu Đối tác đầu tiên,
+      // kể cả khi người dùng không đổi gì. Giữ lại thì thêm lại đối tác đó là logo
+      // tự về đúng chỗ.
       for (const row of readSectionBindings(db, section)) {
-        if (!allowed.has(row.item_id)) remove.run(target.scope, row.item_id)
+        if (previousIds.has(row.item_id) && !allowed.has(row.item_id)) remove.run(target.scope, row.item_id)
       }
     }
 
