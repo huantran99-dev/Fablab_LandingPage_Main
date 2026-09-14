@@ -94,9 +94,27 @@ function attachImages(dict, byScope) {
   if (hero && dict.hero) dict.hero.image = hero
 }
 
-/** Số hiệu bản nội dung: đổi khi có bất kỳ section nào được ghi. */
+/**
+ * Số hiệu bản nội dung: đổi khi có BẤT KỲ thứ gì hiển thị trên trang được ghi.
+ *
+ * `SUM(section.rev)` thôi là không đủ — sửa popup chi tiết khoá học ghi vào
+ * `course_detail`, không đụng `section`. `content_counter` bù phần đó (xem
+ * migration 002). Quên cộng ở đây thì bộ đệm, ETag và `contentStore` đều coi nội
+ * dung là chưa đổi, và bản vừa lưu không bao giờ lên trang.
+ */
 export function currentRev(db = getDb()) {
-  const row = db.prepare('SELECT COALESCE(SUM(rev), 0) AS total, MAX(updated_at) AS at FROM section').get()
+  const row = db
+    .prepare(
+      `SELECT
+         (SELECT COALESCE(SUM(rev), 0) FROM section)
+           + (SELECT COALESCE(MAX(value), 0) FROM content_counter) AS total,
+         (SELECT MAX(at) FROM (
+            SELECT updated_at AS at FROM section
+            UNION ALL
+            SELECT updated_at AS at FROM course_detail WHERE source = 'overridden'
+         )) AS at`,
+    )
+    .get()
   return { rev: row.total, updatedAt: row.at }
 }
 
