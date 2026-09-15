@@ -46,6 +46,9 @@ npm run dev      # trang + dashboard, http://localhost:5173 va /admin.html
 
 Vite chuyển tiếp `/api` và `/media` sang cổng 3001, nên không cần cấu hình CORS.
 
+Đưa lên máy chủ thật (VPS Linux + nginx): [docs/DEPLOY.md](docs/DEPLOY.md). Mô tả
+đầy đủ các route, xác thực và mã lỗi: [docs/API.md](docs/API.md).
+
 ```bash
 npm run build          # tu chay prebuild: xuat lai snapshot + dong bo anh
 npm run preview        # xem thu ban build
