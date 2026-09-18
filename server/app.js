@@ -17,6 +17,9 @@ import { contentRouter } from './routes/content.public.js'
 import { courseDetailsRouter } from './routes/courseDetails.admin.js'
 import { mediaRouter } from './routes/media.admin.js'
 import { metaRouter } from './routes/meta.admin.js'
+import { publicWriteRouter } from './routes/public.write.js'
+import { registrationsRouter } from './routes/registrations.admin.js'
+import { statsRouter } from './routes/stats.admin.js'
 
 export function createApp() {
   const app = express()
@@ -51,6 +54,9 @@ export function createApp() {
   )
 
   app.use(cookieParser())
+  // Form đăng ký và sự kiện thống kê: route ghi công khai, tự đọc thân với giới hạn
+  // nhỏ của riêng chúng — nên phải đứng TRƯỚC bộ đọc JSON 2 MB bên dưới.
+  app.use('/api', publicWriteRouter)
   // 2 MB dư sức: section lớn nhất (`courses`) chưa tới 40 KB.
   app.use(express.json({ limit: '2mb' }))
 
@@ -72,6 +78,8 @@ export function createApp() {
   app.use('/api/admin', metaRouter)
   app.use('/api/admin', mediaRouter)
   app.use('/api/admin', courseDetailsRouter)
+  app.use('/api/admin', registrationsRouter)
+  app.use('/api/admin', statsRouter)
 
   app.use('/api', (_req, res) => {
     res.status(404).json({ error: 'khong co route nay' })
@@ -93,6 +101,13 @@ export function createApp() {
   }
 
   app.use((error, _req, res, _next) => {
+    // Lỗi của bộ đọc thân (thân quá lớn 413, JSON hỏng 400) là lỗi của request,
+    // không phải của máy chủ — trả đúng mã thay vì gộp thành 500.
+    const status = error.status ?? error.statusCode
+    if (Number.isInteger(status) && status >= 400 && status < 500) {
+      res.status(status).json({ error: error.type ?? 'request khong hop le' })
+      return
+    }
     console.error(error)
     res.status(500).json({ error: 'loi may chu' })
   })

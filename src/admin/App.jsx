@@ -9,7 +9,9 @@ import { AccountPage } from './pages/AccountPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { LoginPage } from './pages/LoginPage'
 import { MediaPage } from './pages/MediaPage'
+import { RegistrationsPage } from './pages/RegistrationsPage'
 import { SectionPage } from './pages/SectionPage'
+import { StatsPage } from './pages/StatsPage'
 import { SECTION_BY_KEY } from './sections/descriptors'
 import { Alert } from './ui/Alert'
 import { LinkButton } from './ui/Button'
@@ -28,7 +30,10 @@ import { useToast } from './ui/toastContext'
  * thì KHÔNG: quên khởi động lại là dashboard mới nói chuyện với máy chủ cũ, và mọi
  * lỗi (không tải được ảnh, không lưu được) trông như lỗi của dashboard.
  */
-const EXPECTED_API = 2
+const EXPECTED_API = 3
+
+/** Nạp lại số liệu nền (badge đăng ký mới) theo chu kỳ khi tab đang hiện. */
+const META_POLL_MS = 120_000
 
 export default function App() {
   const toast = useToast()
@@ -89,6 +94,21 @@ export default function App() {
       cancelled = true
     }
   }, [session.status, metaVersion])
+
+  // Badge "đăng ký mới" phải tự lên khi có người gửi form trong lúc admin đang mở
+  // dashboard: nạp lại khi quay lại tab, và định kỳ khi tab đang hiện.
+  useEffect(() => {
+    if (session.status !== 'in') return undefined
+    const bump = () => {
+      if (document.visibilityState === 'visible') setMetaVersion((version) => version + 1)
+    }
+    const timer = setInterval(bump, META_POLL_MS)
+    document.addEventListener('visibilitychange', bump)
+    return () => {
+      clearInterval(timer)
+      document.removeEventListener('visibilitychange', bump)
+    }
+  }, [session.status])
 
   useEffect(() => {
     const warn = (event) => {
@@ -153,6 +173,10 @@ export default function App() {
         onSaved={refreshMeta}
       />
     )
+  } else if (route.name === 'registrations') {
+    page = <RegistrationsPage openId={route.param} onChanged={refreshMeta} />
+  } else if (route.name === 'stats') {
+    page = <StatsPage />
   } else if (route.name === 'media') {
     page = <MediaPage onChanged={refreshMeta} />
   } else if (route.name === 'account') {
@@ -172,7 +196,14 @@ export default function App() {
   }
 
   return (
-    <AppLayout route={route} username={session.username} theme={theme} onToggleTheme={toggleTheme} onLogout={logout}>
+    <AppLayout
+      route={route}
+      username={session.username}
+      theme={theme}
+      onToggleTheme={toggleTheme}
+      onLogout={logout}
+      newRegistrations={meta?.registrations?.new ?? 0}
+    >
       {serverApi < EXPECTED_API && (
         <div className="mb-6">
           <Alert tone="error" title="Máy chủ đang chạy bản cũ">

@@ -271,6 +271,38 @@ const ICONS = {
       <line x1="6.5" y1="17.5" x2="11" y2="17.5" />
     </>
   ),
+  inbox: (
+    <>
+      <path d="M3.5 13.5 6 5h12l2.5 8.5V19a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1v-5.5z" />
+      <path d="M3.5 13.5H8l1.5 2.5h5l1.5-2.5h4.5" />
+    </>
+  ),
+  chart: (
+    <>
+      <line x1="4" y1="20" x2="20" y2="20" />
+      <rect x="5.5" y="12" width="3" height="5.5" rx="0.8" />
+      <rect x="10.5" y="7" width="3" height="10.5" rx="0.8" />
+      <rect x="15.5" y="10" width="3" height="7.5" rx="0.8" />
+    </>
+  ),
+  download: (
+    <>
+      <path d="M12 4v11" />
+      <polyline points="7.5 10.5 12 15 16.5 10.5" />
+      <path d="M4.5 16.5V19a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1v-2.5" />
+    </>
+  ),
+  register: (
+    <>
+      <rect x="5" y="3.5" width="14" height="17" rx="2" />
+      <line x1="8.5" y1="8.5" x2="15.5" y2="8.5" />
+      <line x1="8.5" y1="12" x2="15.5" y2="12" />
+      <polyline points="8.5 16 10.3 17.5 13.5 14.5" />
+    </>
+  ),
+  phone: (
+    <path d="M6.5 3.5h3l1.5 4.5-2 1.5a11 11 0 0 0 5.5 5.5l1.5-2 4.5 1.5v3a2 2 0 0 1-2 2A16 16 0 0 1 4.5 5.5a2 2 0 0 1 2-2z" />
+  ),
 }
 
 export function Icon({ name, size = 20, className = '', strokeWidth = 1.7 }) {

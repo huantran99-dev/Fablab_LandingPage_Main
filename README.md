@@ -10,12 +10,14 @@ ExpressJS + SQLite trong [server/](server/).
 ## Dashboard quản trị
 
 Giao diện theo phong cách TailAdmin (sidebar thu gọn, giao diện sáng/tối, tìm nhanh
-bằng `Ctrl K`). Sửa được **cả 12 section** của trang, mỗi section một màn hình:
+bằng `Ctrl K`). Sửa được **cả 13 section** của trang, mỗi section một màn hình:
 
 | Màn hình | Làm được gì |
 |---|---|
-| Tổng quan | Số khóa học, hoạt động, thành viên, ảnh; lần lưu gần nhất |
-| 12 section | Sửa chữ VI + EN cạnh nhau; thêm / sửa / xoá / đổi thứ tự mục; gắn ảnh |
+| Tổng quan | Đăng ký mới, lượt xem 7 ngày, số khóa học, ảnh; đăng ký và lần lưu gần nhất |
+| Đăng ký khóa học | Danh sách người gửi form (lọc theo trạng thái, khóa, ngày, tìm kiếm); gọi điện, đổi trạng thái, ghi chú nội bộ, xoá theo yêu cầu; số đăng ký theo từng khóa; xuất CSV mở được bằng Excel. Badge đỏ trên sidebar khi có đăng ký mới |
+| Thống kê truy cập | Lượt xem, lượt khách, đăng ký theo ngày (7 / 30 / 90 ngày); nguồn truy cập, thiết bị, ngôn ngữ, nút được bấm; tỉ lệ mở popup → đăng ký của từng khóa |
+| 13 section | Sửa chữ VI + EN cạnh nhau; thêm / sửa / xoá / đổi thứ tự mục; gắn ảnh. Gồm cả chữ của form đăng ký |
 | Khóa học › Popup chi tiết | Sửa nội dung popup theo từng ngôn ngữ; gỡ bản sửa là về bản gốc |
 | Thư viện ảnh | Tải lên, xem ảnh đang dùng ở đâu, ghi chú nguồn, xoá ảnh không dùng |
 | Tài khoản | Đổi mật khẩu (đăng xuất mọi nơi) |
@@ -26,6 +28,22 @@ trùng… — và báo đúng chỗ sai. Mỗi lần lưu có lịch sử, khôi
 
 Ảnh tải lên được tự xoay đúng chiều, thu về cạnh dài 1600px và **xoá thông tin vị trí
 chụp (EXIF)**.
+
+## Form đăng ký và thống kê
+
+Mọi nút "Đăng ký" trên trang (menu, popup khóa học, khối cuối trang) mở cùng một form:
+thông tin học viên, phụ huynh, khóa học quan tâm và ô đồng ý xử lý dữ liệu cá nhân
+(Nghị định 13/2023). Mở từ popup khóa học thì khóa đó được chọn sẵn.
+
+- **Dữ liệu cá nhân:** tự xoá sau 12 tháng (`REGISTRATION_RETENTION_DAYS`); mỗi lượt lưu
+  kèm nguyên văn câu đồng ý người gửi đã thấy.
+- **Chống spam:** giới hạn theo IP, ô bẫy bot, thời gian điền tối thiểu, bỏ bản trùng,
+  trần số lượt mỗi ngày.
+- **Thống kê không cookie:** không lưu IP, không dịch vụ bên ngoài, tôn trọng Do Not
+  Track. Vì vậy "khách" được đếm theo từng ngày, và số liệu thấp hơn thực tế một chút.
+
+Chi tiết: [docs/API.md](docs/API.md#12-đăng-ký-khóa-học) · vận hành, sao lưu:
+[docs/DEPLOY.md](docs/DEPLOY.md).
 
 ## Chạy dự án
 

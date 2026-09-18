@@ -89,6 +89,32 @@ export const api = {
   courseDetail: (id) => request(`/api/admin/course-details/${encodeURIComponent(id)}`),
   saveCourseDetail: (id, body) =>
     request(`/api/admin/course-details/${encodeURIComponent(id)}`, { method: 'PUT', body }),
+
+  registrations: (params) => request(`/api/admin/registrations?${query(params)}`),
+  registration: (id) => request(`/api/admin/registrations/${id}`),
+  updateRegistration: (id, body) => request(`/api/admin/registrations/${id}`, { method: 'PATCH', body }),
+  deleteRegistration: (id) => request(`/api/admin/registrations/${id}`, { method: 'DELETE' }),
+
+  stats: (range) => request(`/api/admin/stats?range=${encodeURIComponent(range)}`),
+}
+
+/** Tham số → query string, bỏ các giá trị rỗng. */
+function query(params = {}) {
+  const search = new URLSearchParams()
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined && value !== null && value !== '') search.set(key, String(value))
+  }
+  return search.toString()
+}
+
+/**
+ * URL tải CSV với đúng bộ lọc đang xem. Là một link thường chứ không qua `request()`:
+ * `request()` phân tích JSON, còn đây là file để trình duyệt tự lưu. Cookie phiên đi
+ * kèm vì cùng gốc; GET nên không cần CSRF.
+ */
+export function registrationsExportUrl(params) {
+  const { page: _page, pageSize: _pageSize, ...filters } = params ?? {}
+  return `/api/admin/registrations/export?${query(filters)}`
 }
 
 /** Gom lỗi của một lượt lưu thành một câu đọc được, cho toast. */

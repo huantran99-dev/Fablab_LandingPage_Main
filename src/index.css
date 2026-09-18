@@ -34,6 +34,9 @@
   --color-plum: #48245d;
   --color-orchid: #bf63f3;
   --color-ember: #ff613d;
+  /* Chữ và viền báo lỗi của form. Ember chỉ đạt ~3:1 trên nền trắng — không đủ cho
+     chữ lỗi cỡ caption; tông này đạt ~5,2:1 (WCAG AA). */
+  --color-alert: #c43d1f;
   --color-leaf: #82b536;
 
   /* --- Surface tints ---------------------------------------------------- */

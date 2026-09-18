@@ -854,6 +854,50 @@ export const vi = {
     secondaryCta: 'Liên hệ với chúng tôi',
   },
 
+  // Form đăng ký khóa học. {email}, {phone}, {count} được thay lúc render.
+  // Đoạn `privacy` là thông báo xử lý dữ liệu cá nhân — FabLab cần duyệt câu chữ.
+  register: {
+    title: 'Đăng ký khóa học',
+    description: 'Để lại thông tin, EIU FabLab sẽ liên hệ lại để tư vấn khóa học phù hợp.',
+    course: 'Khóa học quan tâm',
+    courseNone: 'Chưa chọn — cần tư vấn thêm',
+    studentHeading: 'Thông tin học viên',
+    studentName: 'Họ và tên học viên',
+    studentGrade: 'Năm sinh hoặc lớp',
+    studentGradeHint: 'Ví dụ: 2014 hoặc lớp 6',
+    school: 'Trường đang học',
+    parentHeading: 'Thông tin phụ huynh',
+    parentName: 'Họ và tên phụ huynh',
+    phone: 'Số điện thoại',
+    email: 'Email',
+    note: 'Ghi chú',
+    notePlaceholder: 'Lịch học mong muốn, câu hỏi cho FabLab…',
+    required: 'bắt buộc',
+    optional: 'không bắt buộc',
+    consent: 'Tôi đồng ý để EIU FabLab xử lý các thông tin trên nhằm liên hệ tư vấn khóa học.',
+    privacy:
+      'Thông tin chỉ dùng để tư vấn và xếp lớp, do EIU FabLab (Đại học Quốc tế Miền Đông) quản lý và lưu tối đa 12 tháng. Bạn có thể rút lại đồng ý hoặc yêu cầu xoá dữ liệu qua {email} (Nghị định 13/2023/NĐ-CP).',
+    submit: 'Gửi đăng ký',
+    submitting: 'Đang gửi…',
+    close: 'Đóng',
+    errorSummary: 'Vui lòng kiểm tra lại {count} mục bên dưới.',
+    errors: {
+      required: 'Vui lòng điền mục này.',
+      phone: 'Số điện thoại chưa đúng (ví dụ 0912 345 678).',
+      email: 'Email chưa đúng định dạng.',
+      consent: 'Cần đồng ý để FabLab có thể liên hệ với bạn.',
+      tooLong: 'Nội dung quá dài.',
+      rateLimited: 'Bạn đã gửi nhiều lần liên tiếp. Vui lòng thử lại sau ít phút.',
+      paused: 'Hệ thống tạm ngưng nhận đăng ký trực tuyến. Vui lòng gọi {phone}.',
+      network: 'Chưa gửi được. Vui lòng thử lại hoặc gọi {phone}.',
+    },
+    success: {
+      title: 'Đã nhận đăng ký!',
+      message: 'Cảm ơn bạn. EIU FabLab sẽ liên hệ qua số điện thoại bạn đã cung cấp.',
+      close: 'Đóng',
+    },
+  },
+
   footer: {
     description:
       'Xưởng chế tạo số của Đại học Quốc tế Miền Đông — mở cho giáo dục, nghiên cứu và khởi nghiệp.',

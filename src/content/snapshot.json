@@ -1153,60 +1153,60 @@
           "topic": "aiot"
         },
         {
-          "age": "15–18",
           "description": "Assemble and program a robotic arm to carry out a full pick-and-place routine.",
-          "duration": "10 weeks · 30 hours",
           "group": "stem",
+          "icon": "robotic-arm",
           "id": "robotic-arm",
           "image": {
             "height": 320,
             "url": "/media/course-robotic-arm.81c09dc3.jpg",
             "width": 760
           },
-          "level": "intermediate",
-          "title": "Robotic Arms"
+          "stage": "thcs",
+          "title": "Robotic Arms",
+          "topic": "robotics"
         },
         {
-          "age": "6–12",
           "description": "Discover how robots keep their balance, walk, and interact with the people around them.",
-          "duration": "5 weeks · 15 hours",
           "group": "stem",
+          "icon": "humanoid",
           "id": "humanoid",
           "image": {
             "height": 320,
             "url": "/media/course-humanoid.bf6451ba.jpg",
             "width": 760
           },
-          "level": "intermediate",
-          "title": "Humanoid Robots"
+          "stage": "th",
+          "title": "Humanoid Robots",
+          "topic": "robotics"
         },
         {
-          "age": "8+",
           "description": "A first step into coding with visual blocks — telling stories, building games and animations.",
-          "duration": "7 weeks · 24 hours",
           "group": "stem",
+          "icon": "scratch",
           "id": "scratch",
           "image": {
             "height": 320,
             "url": "/media/course-scratch.ea6415e6.jpg",
             "width": 760
           },
-          "level": "basic",
-          "title": "Scratch Programming"
+          "stage": "th",
+          "title": "Scratch Programming",
+          "topic": "aiot"
         },
         {
-          "age": "12–15",
           "description": "Build a self-driving car that follows lines, avoids obstacles and responds to your phone.",
-          "duration": "8 weeks · 24 hours",
           "group": "stem",
+          "icon": "robot-car",
           "id": "robot-car",
           "image": {
             "height": 320,
             "url": "/media/course-robot-car.7e823afe.jpg",
             "width": 760
           },
-          "level": "basic",
-          "title": "Robot Vehicles"
+          "stage": "th",
+          "title": "Robot Vehicles",
+          "topic": "robotics"
         }
       ],
       "levels": {
@@ -1575,6 +1575,46 @@
       ],
       "title": "Mission of EIU FabLab"
     },
+    "register": {
+      "close": "Close",
+      "consent": "I agree that EIU FabLab may process the information above to contact me about courses.",
+      "course": "Course of interest",
+      "courseNone": "Not sure yet — please advise",
+      "description": "Leave your details and EIU FabLab will get back to you with advice on a suitable course.",
+      "email": "Email",
+      "errorSummary": "Please check {count} fields below.",
+      "errors": {
+        "consent": "We need your consent to contact you.",
+        "email": "Email address looks wrong.",
+        "network": "Could not send. Please try again or call {phone}.",
+        "paused": "Online registration is paused. Please call {phone}.",
+        "phone": "Phone number looks wrong (e.g. 0912 345 678).",
+        "rateLimited": "Too many attempts in a row. Please try again in a few minutes.",
+        "required": "Please fill in this field.",
+        "tooLong": "This is too long."
+      },
+      "note": "Note",
+      "notePlaceholder": "Preferred schedule, questions for FabLab…",
+      "optional": "optional",
+      "parentHeading": "Parent or guardian",
+      "parentName": "Parent full name",
+      "phone": "Phone number",
+      "privacy": "Your information is used only for course advice and class placement, is managed by EIU FabLab (Eastern International University) and kept for at most 12 months. You can withdraw consent or ask for deletion at {email} (Decree 13/2023/ND-CP).",
+      "required": "required",
+      "school": "Current school",
+      "studentGrade": "Year of birth or grade",
+      "studentGradeHint": "E.g. 2014 or grade 6",
+      "studentHeading": "Student",
+      "studentName": "Student full name",
+      "submit": "Send registration",
+      "submitting": "Sending…",
+      "success": {
+        "close": "Close",
+        "message": "Thank you. EIU FabLab will contact you on the phone number you provided.",
+        "title": "Registration received!"
+      },
+      "title": "Course registration"
+    },
     "stats": {
       "items": [
         {
@@ -1721,6 +1761,11 @@
         {
           "education": "MSc in Mechatronics",
           "id": "phuong",
+          "image": {
+            "height": 1279,
+            "url": "/media/team-phuong.d431448e.jpg",
+            "width": 1280
+          },
           "name": "Hoàng Ngọc Phương",
           "role": "STEM Specialist"
         },
@@ -1767,6 +1812,17 @@
           },
           "name": "Võ Hoàng Yến Nhi",
           "role": "Technician"
+        },
+        {
+          "education": "BSc in Physics",
+          "id": "thuy",
+          "image": {
+            "height": 1282,
+            "url": "/media/team-thuy.1499d323.jpg",
+            "width": 1262
+          },
+          "name": "Trần Thị Nhân Kim Thủy",
+          "role": "Executive"
         }
       ],
       "photoAlt": "Portrait of {name}",
@@ -1800,8 +1856,8 @@
       "title": "What learners say about FabLab EIU"
     }
   },
-  "rev": 24,
-  "updatedAt": "2026-09-10T17:19:01.625Z",
+  "rev": 38,
+  "updatedAt": "2026-09-18T04:37:26.503Z",
   "vi": {
     "activities": {
       "description": "Sân chơi, hội thảo và workshop do EIU FabLab tổ chức cho sinh viên, học sinh và cộng đồng.",
@@ -3123,60 +3179,60 @@
           "topic": "aiot"
         },
         {
-          "age": "15–18",
           "description": "Tự tay lắp ráp và lập trình cánh tay robot thực hiện chuỗi thao tác gắp — thả.",
-          "duration": "10 tuần · 30 giờ",
           "group": "stem",
+          "icon": "robotic-arm",
           "id": "robotic-arm",
           "image": {
             "height": 320,
             "url": "/media/course-robotic-arm.81c09dc3.jpg",
             "width": 760
           },
-          "level": "intermediate",
-          "title": "Cánh tay Robot"
+          "stage": "thcs",
+          "title": "Cánh tay Robot",
+          "topic": "robotics"
         },
         {
-          "age": "6–12",
           "description": "Khám phá cách robot giữ thăng bằng, di chuyển và tương tác với con người.",
-          "duration": "5 tuần · 15 giờ",
           "group": "stem",
+          "icon": "humanoid",
           "id": "humanoid",
           "image": {
             "height": 320,
             "url": "/media/course-humanoid.bf6451ba.jpg",
             "width": 760
           },
-          "level": "intermediate",
-          "title": "Robot Hình người"
+          "stage": "th",
+          "title": "Robot Hình người",
+          "topic": "robotics"
         },
         {
-          "age": "8+",
           "description": "Bước đầu tiên vào lập trình bằng khối lệnh trực quan — kể chuyện, làm game và hoạt hình.",
-          "duration": "7 tuần · 24 giờ",
           "group": "stem",
+          "icon": "scratch",
           "id": "scratch",
           "image": {
             "height": 320,
             "url": "/media/course-scratch.ea6415e6.jpg",
             "width": 760
           },
-          "level": "basic",
-          "title": "Lập trình Scratch"
+          "stage": "th",
+          "title": "Lập trình Scratch",
+          "topic": "aiot"
         },
         {
-          "age": "12–15",
           "description": "Chế tạo xe tự hành biết dò đường, tránh vật cản và điều khiển từ điện thoại.",
-          "duration": "8 tuần · 24 giờ",
           "group": "stem",
+          "icon": "robot-car",
           "id": "robot-car",
           "image": {
             "height": 320,
             "url": "/media/course-robot-car.7e823afe.jpg",
             "width": 760
           },
-          "level": "basic",
-          "title": "Xe Robot"
+          "stage": "th",
+          "title": "Xe Robot",
+          "topic": "robotics"
         }
       ],
       "levels": {
@@ -3545,6 +3601,46 @@
       ],
       "title": "Sứ mệnh của EIU FabLab"
     },
+    "register": {
+      "close": "Đóng",
+      "consent": "Tôi đồng ý để EIU FabLab xử lý các thông tin trên nhằm liên hệ tư vấn khóa học.",
+      "course": "Khóa học quan tâm",
+      "courseNone": "Chưa chọn — cần tư vấn thêm",
+      "description": "Để lại thông tin, EIU FabLab sẽ liên hệ lại để tư vấn khóa học phù hợp.",
+      "email": "Email",
+      "errorSummary": "Vui lòng kiểm tra lại {count} mục bên dưới.",
+      "errors": {
+        "consent": "Cần đồng ý để FabLab có thể liên hệ với bạn.",
+        "email": "Email chưa đúng định dạng.",
+        "network": "Chưa gửi được. Vui lòng thử lại hoặc gọi {phone}.",
+        "paused": "Hệ thống tạm ngưng nhận đăng ký trực tuyến. Vui lòng gọi {phone}.",
+        "phone": "Số điện thoại chưa đúng (ví dụ 0912 345 678).",
+        "rateLimited": "Bạn đã gửi nhiều lần liên tiếp. Vui lòng thử lại sau ít phút.",
+        "required": "Vui lòng điền mục này.",
+        "tooLong": "Nội dung quá dài."
+      },
+      "note": "Ghi chú",
+      "notePlaceholder": "Lịch học mong muốn, câu hỏi cho FabLab…",
+      "optional": "không bắt buộc",
+      "parentHeading": "Thông tin phụ huynh",
+      "parentName": "Họ và tên phụ huynh",
+      "phone": "Số điện thoại",
+      "privacy": "Thông tin chỉ dùng để tư vấn và xếp lớp, do EIU FabLab (Đại học Quốc tế Miền Đông) quản lý và lưu tối đa 12 tháng. Bạn có thể rút lại đồng ý hoặc yêu cầu xoá dữ liệu qua {email} (Nghị định 13/2023/NĐ-CP).",
+      "required": "bắt buộc",
+      "school": "Trường đang học",
+      "studentGrade": "Năm sinh hoặc lớp",
+      "studentGradeHint": "Ví dụ: 2014 hoặc lớp 6",
+      "studentHeading": "Thông tin học viên",
+      "studentName": "Họ và tên học viên",
+      "submit": "Gửi đăng ký",
+      "submitting": "Đang gửi…",
+      "success": {
+        "close": "Đóng",
+        "message": "Cảm ơn bạn. EIU FabLab sẽ liên hệ qua số điện thoại bạn đã cung cấp.",
+        "title": "Đã nhận đăng ký!"
+      },
+      "title": "Đăng ký khóa học"
+    },
     "stats": {
       "items": [
         {
@@ -3691,6 +3787,11 @@
         {
           "education": "Thạc sĩ Cơ điện tử",
           "id": "phuong",
+          "image": {
+            "height": 1279,
+            "url": "/media/team-phuong.d431448e.jpg",
+            "width": 1280
+          },
           "name": "Hoàng Ngọc Phương",
           "role": "Chuyên viên STEM"
         },
@@ -3737,6 +3838,17 @@
           },
           "name": "Võ Hoàng Yến Nhi",
           "role": "Kỹ thuật viên"
+        },
+        {
+          "education": "Cử nhân Kỹ thuật hạt nhân",
+          "id": "thuy",
+          "image": {
+            "height": 1282,
+            "url": "/media/team-thuy.1499d323.jpg",
+            "width": 1262
+          },
+          "name": "Trần Thị Nhân Kim Thủy",
+          "role": "Chuyên viên STEM"
         }
       ],
       "photoAlt": "Ảnh chân dung {name}",

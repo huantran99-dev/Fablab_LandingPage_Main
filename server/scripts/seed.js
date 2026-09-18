@@ -26,7 +26,7 @@ const srcUrl = (...parts) => pathToFileURL(join(ROOT, 'src', ...parts)).href
 
 const SECTION_KEYS = [
   'nav', 'hero', 'stats', 'pillars', 'courses', 'facilities',
-  'partners', 'activities', 'team', 'testimonials', 'finalCta', 'footer',
+  'partners', 'activities', 'team', 'testimonials', 'finalCta', 'register', 'footer',
 ]
 
 /**

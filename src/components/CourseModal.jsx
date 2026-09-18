@@ -1,7 +1,9 @@
 import { useEffect, useRef } from 'react'
 import { CourseIcon } from '../assets/icons/CourseIcons'
 import { ArrowRightIcon, CloseIcon } from '../assets/icons/Icons'
+import { useScrollLock } from '../hooks/useScrollLock'
 import { useT } from '../i18n/context'
+import { track } from '../lib/track'
 import { Button } from './ui/Button'
 import { Pill } from './ui/Pill'
 
@@ -58,7 +60,7 @@ function Curriculum({ title, items }) {
  * `course` là `null` khi đóng. Component luôn được mount để `<dialog>` giữ được
  * trạng thái và animation đóng/mở của chính nó.
  */
-export function CourseModal({ course, onClose }) {
+export function CourseModal({ course, onClose, onRegister }) {
   const ref = useRef(null)
   const open = Boolean(course)
 
@@ -70,19 +72,9 @@ export function CourseModal({ course, onClose }) {
     else if (!open && dialog.open) dialog.close()
   }, [open])
 
-  // Khóa cuộn nền khi popup mở. Đặt trên <html> chứ KHÔNG đặt trên <body>:
-  // body đang có `overflow-x: clip` để chặn tràn ngang lúc section trượt, ghi đè
-  // lên đó sẽ biến body thành scroll container và làm chết navbar sticky.
-  useEffect(() => {
-    if (!open) return
-
-    const root = document.documentElement
-    const previous = root.style.overflow
-    root.style.overflow = 'hidden'
-    return () => {
-      root.style.overflow = previous
-    }
-  }, [open])
+  // Khóa cuộn nền trên <html> (không phải <body>) — lý do ở useScrollLock. Khoá có
+  // bộ đếm vì nút đăng ký đóng popup này và mở form trong cùng một lượt render.
+  useScrollLock(open)
 
   const t = useT()
   const detail = course ? t.courses.details[course.id] : null
@@ -183,7 +175,15 @@ export function CourseModal({ course, onClose }) {
           </div>
 
           <div className="shrink-0 border-t border-ash/60 px-6 py-4 md:px-8">
-            <Button href="#register" size="lg" className="w-full justify-center" onClick={onClose}>
+            <Button
+              type="button"
+              size="lg"
+              className="w-full justify-center"
+              onClick={() => {
+                track('cta_click', 'course-modal')
+                onRegister(course.id)
+              }}
+            >
               {labels.register}
               <ArrowRightIcon />
             </Button>

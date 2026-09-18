@@ -1,5 +1,5 @@
 /**
- * Hợp lệ hoá nội dung bằng Zod — đủ cả 12 section.
+ * Hợp lệ hoá nội dung bằng Zod — đủ cả 13 section.
  *
  * **Bao nhiêu section có schema là bấy nhiêu section sửa được.** Route từ chối ghi
  * vào section không có mặt ở `SECTION_SCHEMAS`, chứ không im lặng cho qua.
@@ -212,6 +212,48 @@ export const finalCtaSchema = z.strictObject({
   secondaryCta: text(40),
 })
 
+/**
+ * Chữ của form đăng ký. Section riêng chứ không nằm trong `courses.modal` hay
+ * `finalCta`: khôi phục lịch sử ghi lại bản cũ nguyên khối, nên một bản `courses`
+ * trước ngày có form sẽ xoá mất các khoá này và trang sập ở `t.register.*`.
+ */
+export const registerSchema = z.strictObject({
+  title: text(80),
+  description: text(300),
+  course: text(60),
+  courseNone: text(80),
+  studentHeading: text(60),
+  studentName: text(60),
+  studentGrade: text(60),
+  studentGradeHint: text(80),
+  school: text(60),
+  parentHeading: text(60),
+  parentName: text(60),
+  phone: text(60),
+  email: text(60),
+  note: text(60),
+  notePlaceholder: text(120),
+  required: text(30),
+  optional: text(30),
+  consent: text(300),
+  privacy: text(800),
+  submit: text(40),
+  submitting: text(40),
+  close: text(30),
+  errorSummary: text(120),
+  errors: z.strictObject({
+    required: text(120),
+    phone: text(120),
+    email: text(120),
+    consent: text(120),
+    tooLong: text(120),
+    rateLimited: text(200),
+    paused: text(200),
+    network: text(200),
+  }),
+  success: z.strictObject({ title: text(80), message: text(300), close: text(30) }),
+})
+
 /** Mục menu cấp một: hoặc là link (`href`), hoặc là nhánh (`children`) — không bao giờ cả hai. */
 const navLink = z.union([
   z.strictObject({ id: idSchema, label: text(60), href: hrefSchema }),
@@ -248,6 +290,7 @@ export const SECTION_SCHEMAS = {
   team: teamSchema,
   testimonials: testimonialsSchema,
   finalCta: finalCtaSchema,
+  register: registerSchema,
   footer: footerSchema,
 }
 

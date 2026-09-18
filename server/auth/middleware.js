@@ -40,18 +40,22 @@ export function requireSameOrigin(req, res, next) {
     next()
     return
   }
-
-  const origin = req.get('origin')
-  const fetchSite = req.get('sec-fetch-site')
-
-  const allowed = [config.siteOrigin, `http://127.0.0.1:${config.port}`, `http://localhost:${config.port}`]
-  const ok = (origin && allowed.includes(origin)) || fetchSite === 'same-origin'
-
-  if (!ok) {
-    res.status(403).json({ error: 'goc request khong hop le', origin: origin ?? null })
+  if (!isSameOrigin(req)) {
+    res.status(403).json({ error: 'goc request khong hop le', origin: req.get('origin') ?? null })
     return
   }
   next()
+}
+
+/**
+ * Request có đến từ chính trang không. Dùng chung cho route quản trị và route ghi
+ * công khai (form đăng ký, sự kiện thống kê) — `sendBeacon` cũng gửi `Origin`.
+ */
+export function isSameOrigin(req) {
+  const origin = req.get('origin')
+  const fetchSite = req.get('sec-fetch-site')
+  const allowed = [config.siteOrigin, `http://127.0.0.1:${config.port}`, `http://localhost:${config.port}`]
+  return Boolean((origin && allowed.includes(origin)) || fetchSite === 'same-origin')
 }
 
 export function requireCsrf(req, res, next) {

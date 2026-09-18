@@ -855,6 +855,49 @@ export const en = {
     secondaryCta: 'Get in touch',
   },
 
+  // Course registration form. {email}, {phone}, {count} are replaced at render time.
+  register: {
+    title: 'Course registration',
+    description: 'Leave your details and EIU FabLab will get back to you with advice on a suitable course.',
+    course: 'Course of interest',
+    courseNone: 'Not sure yet — please advise',
+    studentHeading: 'Student',
+    studentName: 'Student full name',
+    studentGrade: 'Year of birth or grade',
+    studentGradeHint: 'E.g. 2014 or grade 6',
+    school: 'Current school',
+    parentHeading: 'Parent or guardian',
+    parentName: 'Parent full name',
+    phone: 'Phone number',
+    email: 'Email',
+    note: 'Note',
+    notePlaceholder: 'Preferred schedule, questions for FabLab…',
+    required: 'required',
+    optional: 'optional',
+    consent: 'I agree that EIU FabLab may process the information above to contact me about courses.',
+    privacy:
+      'Your information is used only for course advice and class placement, is managed by EIU FabLab (Eastern International University) and kept for at most 12 months. You can withdraw consent or ask for deletion at {email} (Decree 13/2023/ND-CP).',
+    submit: 'Send registration',
+    submitting: 'Sending…',
+    close: 'Close',
+    errorSummary: 'Please check {count} fields below.',
+    errors: {
+      required: 'Please fill in this field.',
+      phone: 'Phone number looks wrong (e.g. 0912 345 678).',
+      email: 'Email address looks wrong.',
+      consent: 'We need your consent to contact you.',
+      tooLong: 'This is too long.',
+      rateLimited: 'Too many attempts in a row. Please try again in a few minutes.',
+      paused: 'Online registration is paused. Please call {phone}.',
+      network: 'Could not send. Please try again or call {phone}.',
+    },
+    success: {
+      title: 'Registration received!',
+      message: 'Thank you. EIU FabLab will contact you on the phone number you provided.',
+      close: 'Close',
+    },
+  },
+
   footer: {
     description:
       'The digital fabrication workshop of Eastern International University — open for education, research and entrepreneurship.',

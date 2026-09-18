@@ -1,10 +1,15 @@
 import { ArrowRightIcon } from '../assets/icons/Icons'
 import { useT } from '../i18n/context'
+import { track } from '../lib/track'
+import { useRegister } from './register/RegisterContext'
 import { Button } from './ui/Button'
 import { Reveal } from './ui/Reveal'
 
+// `id="register"` giữ nguyên dù form giờ là popup: footer và nội dung trong database
+// có thể đang trỏ #register, và bộ kiểm neo quét id này từ mã nguồn.
 export function FinalCTA() {
   const t = useT()
+  const { openRegister } = useRegister()
 
   return (
     <section id="register" className="pb-16 md:pb-24 lg:pb-30">
@@ -27,11 +32,26 @@ export function FinalCTA() {
             <p className="text-subheading text-white/70">{t.finalCta.description}</p>
 
             <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-              <Button href="#courses" variant="inverted" size="lg">
+              {/* Trước đây nút này trỏ về #courses trong khi mọi nút "Đăng ký" khác
+                  lại trỏ tới đây — đi vòng tròn. Giờ nó mở thẳng form. */}
+              <Button
+                type="button"
+                variant="inverted"
+                size="lg"
+                onClick={() => {
+                  track('cta_click', 'final-primary')
+                  openRegister(null, 'final-cta')
+                }}
+              >
                 {t.finalCta.primaryCta}
                 <ArrowRightIcon />
               </Button>
-              <Button href="#contact" variant="invertedOutline" size="lg">
+              <Button
+                href="#contact"
+                variant="invertedOutline"
+                size="lg"
+                onClick={() => track('cta_click', 'final-secondary')}
+              >
                 {t.finalCta.secondaryCta}
               </Button>
             </div>

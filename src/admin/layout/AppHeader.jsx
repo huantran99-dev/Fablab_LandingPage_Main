@@ -5,6 +5,8 @@ import { Icon } from '../ui/Icon'
 
 const SEARCH_ENTRIES = [
   { label: 'Tổng quan', href: '#/', icon: 'grid' },
+  { label: 'Đăng ký khóa học', hint: 'Danh sách người đăng ký, xuất CSV', href: '#/registrations', icon: 'inbox' },
+  { label: 'Thống kê truy cập', hint: 'Lượt xem, lượt khách, tỉ lệ chuyển đổi', href: '#/stats', icon: 'chart' },
   ...SECTIONS.map((section) => ({ label: section.label, hint: section.description, href: `#/sections/${section.key}`, icon: section.icon })),
   { label: 'Thư viện ảnh', href: '#/media', icon: 'image' },
   { label: 'Tài khoản', hint: 'Đổi mật khẩu', href: '#/account', icon: 'key' },

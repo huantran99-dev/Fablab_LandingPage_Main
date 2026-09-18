@@ -6,7 +6,7 @@ import { AppSidebar } from './AppSidebar'
 
 const COLLAPSED_KEY = 'fablab-admin.sidebar-collapsed'
 
-export function AppLayout({ route, username, theme, onToggleTheme, onLogout, children }) {
+export function AppLayout({ route, username, theme, onToggleTheme, onLogout, newRegistrations = 0, children }) {
   const [collapsed, setCollapsed] = useState(() => readStored(COLLAPSED_KEY, false) === true)
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -22,7 +22,13 @@ export function AppLayout({ route, username, theme, onToggleTheme, onLogout, chi
 
   return (
     <div className="min-h-dvh">
-      <AppSidebar route={route} collapsed={collapsed} mobileOpen={mobileOpen} onNavigate={() => setMobileOpen(false)} />
+      <AppSidebar
+        route={route}
+        collapsed={collapsed}
+        mobileOpen={mobileOpen}
+        newRegistrations={newRegistrations}
+        onNavigate={() => setMobileOpen(false)}
+      />
 
       {mobileOpen && (
         <button type="button" aria-label="Đóng menu" onClick={() => setMobileOpen(false)} className="fixed inset-0 z-[45] bg-gray-900/50 lg:hidden" />

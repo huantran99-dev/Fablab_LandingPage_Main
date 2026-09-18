@@ -30,6 +30,22 @@ export const config = {
    * dev server chứ không phải của chính máy chủ này — trình duyệt đang đứng ở đó.
    */
   siteOrigin: process.env.SITE_ORIGIN ?? 'http://localhost:5173',
+
+  /** Số ngày giữ sự kiện thống kê bản thô; quá hạn thì gộp vào `stat_daily` rồi xoá. */
+  analyticsRetentionDays: int(process.env.ANALYTICS_RETENTION_DAYS, 90),
+
+  /**
+   * Số ngày giữ đăng ký khóa học. Đây là dữ liệu cá nhân (có trẻ em): Nghị định
+   * 13/2023 đòi thời hạn lưu xác định, và đoạn thông báo trên form hứa 12 tháng.
+   * Đổi số này thì sửa luôn câu chữ `register.privacy` trong dashboard.
+   */
+  registrationRetentionDays: int(process.env.REGISTRATION_RETENTION_DAYS, 365),
+
+  /**
+   * Trần số đăng ký nhận trong một ngày, tính trên MỌI IP. Bộ giới hạn theo IP
+   * không chặn được spam rải từ nhiều IP; trần này đặt giới hạn cho thiệt hại.
+   */
+  registrationDailyCap: int(process.env.REG_DAILY_CAP, 300),
 }
 
 export const paths = {

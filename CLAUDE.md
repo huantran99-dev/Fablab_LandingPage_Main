@@ -542,7 +542,7 @@ phân biệt được route có tồn tại hay không.
    lệch cấu trúc" là trạng thái **không thao tác ra được**, chứ không phải một lỗi
    trông chờ bộ kiểm bắt lại sau khi đã ghi.
 2. **Không có schema thì không ghi được.** `PUT` vào section chưa khai trong
-   [schema/sections.js](server/schema/sections.js) trả 400. Cả 12 section đã có
+   [schema/sections.js](server/schema/sections.js) trả 400. Cả 13 section đã có
    schema strict. Thêm section mới vào trang là phải thêm schema, không phải nới
    lỏng chốt chặn. `activities.items[].date` **được để trống** — 4 hoạt động thật
    không có ngày; đừng "sửa" schema thành bắt buộc.
@@ -554,7 +554,7 @@ Lịch sử chép bản cũ **trước** khi ghi đè, và khôi phục luôn l�
 cùng một thời điểm — khôi phục một nửa là đúng cái lệch cấu trúc vừa nói. Lịch sử lưu
 kèm ảnh (`bindings_json`), nên khôi phục trả lại cả ảnh.
 
-### 12 section, một bộ soạn thảo
+### 13 section, một bộ soạn thảo
 
 Không có editor viết tay cho từng section. [descriptors.js](src/admin/sections/descriptors.js)
 mô tả mỗi section bằng dữ liệu; `SectionPage` + `ItemList` + `ItemModal` dựng mọi thứ.
@@ -649,6 +649,85 @@ khoản trong database — kẻ đổi IP liên tục đi thẳng qua tầng đ�
 > `proxy_set_header X-Forwarded-For`. Thiếu vế thứ hai thì mọi request trông như
 > `127.0.0.1`: một lần sai mật khẩu khoá cả thế giới, mà bộ giới hạn thì trông vẫn
 > như đang chạy đúng.
+
+## Form đăng ký và thống kê truy cập
+
+Mọi nút "Đăng ký" (navbar, drawer, popup khóa học, FinalCTA) mở **một**
+`RegisterDialog` dùng chung qua `RegisterContext`. Máy chủ: route ghi công khai ở
+[public.write.js](server/routes/public.write.js), quản trị ở
+[registrations.admin.js](server/routes/registrations.admin.js) và
+[stats.admin.js](server/routes/stats.admin.js). Hợp đồng đầy đủ ở
+[docs/API.md](docs/API.md#12-đăng-ký-khóa-học).
+
+### Thêm section vào database ĐÃ seed: migration có chốt, và chốt theo TỪNG ngôn ngữ
+
+`npm run seed` chỉ chạy trên database trống, nên section `register` vào database đang
+dùng qua [004_register_content.sql](server/db/migrations/004_register_content.sql) (JSON
+đóng băng, sinh bằng máy từ `vi.register`/`en.register`). Hai chốt, cả hai bắt buộc:
+
+- `WHERE EXISTS (SELECT 1 FROM section)` — trên database trống migration chạy TRƯỚC
+  seed (`getDb()` áp migration ngay khi mở); chèn lúc đó thì seed từ chối chạy.
+- `NOT EXISTS (… key = 'register' AND locale = '<ngôn ngữ>')` — **bản đầu chốt theo key
+  thôi**: dòng `vi` vừa chèn làm câu `en` thấy "đã có", `en` không bao giờ vào, trang
+  tiếng Anh sập ở `t.register`. Chỉ lộ ra nhờ thử trên bản sao và thấy `rev` tăng 1
+  thay vì 2. **Kiểm `rev` tăng đúng 2 lần số section mới** là cách bắt lỗi này.
+
+Vì sao section riêng mà không nhét vào `courses.modal`: `restoreHistory()` ghi lại bản
+cũ **không qua schema**, nên khôi phục một bản `courses` trước ngày có form sẽ xoá mất
+khoá mới và trang sập. Section mới không có lịch sử nên không dính.
+
+### Đăng ký và sự kiện KHÔNG BAO GIỜ đổi `rev` nội dung
+
+Không đụng `section`, `content_counter`, không gọi `invalidate()`. Đụng là mỗi lượt đăng
+ký phá bộ đệm nội dung của mọi người đang xem. Bài thử trên bản sao so `rev` trước/sau.
+
+### Router ghi công khai mount TRƯỚC `express.json` chung
+
+Mỗi route tự đọc thân với giới hạn nhỏ (8 KB / 2 KB); mount sau thì bộ đọc 2 MB đã nuốt
+thân. `/api/events` đọc thân dạng **chuỗi** cho cả `text/plain` lẫn JSON: `sendBeacon`
+với thân chuỗi gửi `text/plain`, và JSON hỏng phải là bỏ im lặng chứ không phải 400.
+
+Bộ xử lý lỗi cuối giờ trả đúng 4xx của body-parser (`400 entity.parse.failed`,
+`413 entity.too.large`) thay vì gộp thành 500.
+
+### Thống kê: "khách" chỉ duy nhất trong MỘT ngày
+
+`sha256(muối ngày | IP | UA)`, muối cũ bị xoá ([retention.js](server/analytics/retention.js)).
+Đó là thứ làm lời hứa "không lưu IP" đúng — đừng "sửa" thành muối cố định để đếm khách
+duy nhất trong 30 ngày. Mọi phép đếm khách là `COUNT(DISTINCT day || '|' || visitor)`.
+Nhãn giao diện luôn ghi "lượt khách (theo ngày)". `register_submit` chỉ máy chủ ghi —
+client gửi lên bị bỏ, để tỉ lệ chuyển đổi không bị bơm.
+
+DNT / GPC được tôn trọng ở cả hai phía ([track.js](src/lib/track.js) và máy chủ). Thấy
+thống kê trống khi tự thử: kiểm trình duyệt có bật chống theo dõi không, giống bẫy
+`prefers-reduced-motion` ở trên.
+
+### Hai dialog chuyển giao cho nhau trong CÙNG một lượt render
+
+Nút đăng ký trong popup khóa học đóng popup rồi mở form. `RegisterDialog` phải mount
+**sau `<Footer />`** trong [App.jsx](src/App.jsx): effect chạy theo thứ tự cây, popup
+`close()` trả focus về thẻ khóa học trước, rồi form mới `showModal()` và ghi nhớ đúng thẻ
+đó. Khoá cuộn dùng chung [useScrollLock](src/hooks/useScrollLock.js) có **bộ đếm** — hai
+khoá độc lập mỗi bên tự nhớ "giá trị trước" thì bên sau nhớ nhầm `hidden` của bên trước.
+
+Form **không** đóng khi bấm ra nền (khác popup khóa học), và bản nháp nằm trong provider
+chứ không trong form — lỡ Esc không mất chữ. Nháp không bao giờ ghi xuống localStorage:
+dữ liệu cá nhân của trẻ em.
+
+`Button` không đặt `type` mặc định — trong `<form>` mọi nút không phải nút gửi phải khai
+`type="button"`.
+
+### Chữ lỗi dùng `alert`, không dùng `ember`
+
+`ember` (#ff613d) chỉ ~3:1 trên nền trắng — không đủ cho chữ lỗi cỡ caption. Token
+`--color-alert` (#c43d1f, ~5,2:1) thêm vào `@theme` cho việc này.
+
+### Dữ liệu cá nhân
+
+Đăng ký tự xoá sau `REGISTRATION_RETENTION_DAYS` (365). Câu "lưu tối đa 12 tháng" trong
+`register.privacy` là lời hứa với người gửi — đổi số ngày thì đổi câu. Mỗi dòng lưu
+nguyên văn chữ đồng ý (`consent_text`) làm bằng chứng; máy chủ tự tra, không nhận từ
+client. Thử kịch bản đăng ký thì **chỉ trên bản sao** — đây là bảng có tên trẻ em thật.
 
 ## Backend: ảnh, snapshot, và những chỗ dễ sập
 

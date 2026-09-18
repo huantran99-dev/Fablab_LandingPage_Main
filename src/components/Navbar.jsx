@@ -3,6 +3,8 @@ import { ChevronDownIcon, CloseIcon, MenuIcon } from '../assets/icons/Icons'
 import { Logo } from '../assets/icons/Logo'
 import { useActiveSection } from '../hooks/useActiveSection'
 import { LANGUAGES, useLanguage } from '../i18n/context'
+import { track } from '../lib/track'
+import { useRegister } from './register/RegisterContext'
 import { Button } from './ui/Button'
 
 /**
@@ -185,6 +187,7 @@ function DrawerBranch({ link, open, onToggle, onNavigate }) {
 
 export function Navbar() {
   const { t } = useLanguage()
+  const { openRegister } = useRegister()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -297,7 +300,14 @@ export function Navbar() {
 
         <div className="flex items-center gap-3">
           <LanguageToggle />
-          <Button href="#register" className="hidden sm:inline-flex">
+          <Button
+            type="button"
+            className="hidden sm:inline-flex"
+            onClick={() => {
+              track('cta_click', 'nav')
+              openRegister(null, 'nav')
+            }}
+          >
             {t.nav.cta}
           </Button>
           <button
@@ -348,7 +358,17 @@ export function Navbar() {
                 </a>
               ),
             )}
-            <Button href="#register" size="lg" className="mt-6 w-full" onClick={closeDrawer}>
+            <Button
+              type="button"
+              size="lg"
+              className="mt-6 w-full"
+              onClick={() => {
+                // Đóng drawer trước: nó khoá cuộn trên body và phủ kín màn hình.
+                closeDrawer()
+                track('cta_click', 'nav-drawer')
+                openRegister(null, 'nav-drawer')
+              }}
+            >
               {t.nav.cta}
             </Button>
           </div>

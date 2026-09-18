@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react'
 import { useT } from '../i18n/context'
+import { track } from '../lib/track'
 import { CourseCard } from './CourseCard'
 import { CourseModal } from './CourseModal'
+import { useRegister } from './register/RegisterContext'
 import { Button } from './ui/Button'
 import { Pill } from './ui/Pill'
 import { Reveal, RevealGroup } from './ui/Reveal'
@@ -155,6 +157,20 @@ export function Courses() {
   // mở thì nội dung bên trong tự dịch theo, thay vì đứng nguyên bản cũ.
   const [openId, setOpenId] = useState(null)
   const openCourse = openId ? (t.courses.items.find((item) => item.id === openId) ?? null) : null
+  const { openRegister } = useRegister()
+
+  // Ghi sự kiện ngay trong handler, không qua effect theo `openId`: đổi ngôn ngữ hay
+  // render lại không được đếm thành một lượt mở nữa.
+  const openCourseModal = (id) => {
+    setOpenId(id)
+    track('course_open', id)
+  }
+
+  // Đóng popup rồi mở form trong CÙNG một lượt: xem thứ tự effect ở RegisterDialog.jsx.
+  const registerFor = (id) => {
+    setOpenId(null)
+    openRegister(id, 'course-modal')
+  }
 
   // Gom khóa học về đúng nhóm một lần, thay vì lọc lại ở mỗi lần render nhóm.
   const byGroup = useMemo(() => {
@@ -181,12 +197,12 @@ export function Courses() {
             group={group}
             courses={byGroup.get(group.id) ?? []}
             from={index % 2 === 0 ? 'left' : 'right'}
-            onOpen={setOpenId}
+            onOpen={openCourseModal}
           />
         ))}
       </div>
 
-      <CourseModal course={openCourse} onClose={() => setOpenId(null)} />
+      <CourseModal course={openCourse} onClose={() => setOpenId(null)} onRegister={registerFor} />
     </Section>
   )
 }

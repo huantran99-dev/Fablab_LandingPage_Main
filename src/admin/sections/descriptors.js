@@ -1,5 +1,5 @@
 /**
- * Mô tả 12 section cho bộ soạn thảo chung.
+ * Mô tả 13 section cho bộ soạn thảo chung.
  *
  * Mỗi section là DỮ LIỆU chứ không phải một editor viết tay: trường nào dịch (hai ô
  * VI | EN), trường nào dùng chung (một ô, ghi vào cả hai), danh sách nào thêm/xoá
@@ -465,6 +465,80 @@ export const SECTIONS = [
       {
         title: 'Nội dung',
         fields: [title, description, text('primaryCta', 'Nút chính'), text('secondaryCta', 'Nút phụ')],
+      },
+    ],
+    lists: [],
+  },
+  {
+    key: 'register',
+    label: 'Form đăng ký',
+    icon: 'register',
+    description: 'Chữ của form đăng ký khóa học (popup mở từ nút "Đăng ký").',
+    notes: [
+      '{email} và {phone} được thay bằng email / số điện thoại ở mục Liên hệ của Chân trang; {count} là số mục còn lỗi. Giữ nguyên các dấu ngoặc nhọn.',
+      'Đoạn "Thông báo quyền riêng tư" là thông báo xử lý dữ liệu cá nhân theo Nghị định 13/2023 — nêu mục đích, bên quản lý, thời hạn lưu, quyền yêu cầu xoá. Thời hạn ghi ở đây phải khớp REGISTRATION_RETENTION_DAYS trên máy chủ (mặc định 365 ngày).',
+      'Chữ đồng ý người gửi nhìn thấy được lưu nguyên văn vào từng lượt đăng ký, làm bằng chứng — sửa câu chữ không làm đổi các lượt đã gửi.',
+    ],
+    groups: [
+      { title: 'Tiêu đề', fields: [title, area('description', 'Mô tả ngắn', { rows: 2 })] },
+      {
+        title: 'Khóa học và học viên',
+        fields: [
+          text('course', 'Nhãn ô chọn khóa học'),
+          text('courseNone', 'Lựa chọn "chưa chọn khóa"'),
+          text('studentHeading', 'Tiêu đề nhóm học viên'),
+          text('studentName', 'Nhãn: họ tên học viên'),
+          text('studentGrade', 'Nhãn: năm sinh / lớp'),
+          text('studentGradeHint', 'Gợi ý dưới ô năm sinh / lớp'),
+          text('school', 'Nhãn: trường'),
+        ],
+      },
+      {
+        title: 'Phụ huynh',
+        fields: [
+          text('parentHeading', 'Tiêu đề nhóm phụ huynh'),
+          text('parentName', 'Nhãn: họ tên phụ huynh'),
+          text('phone', 'Nhãn: số điện thoại'),
+          text('email', 'Nhãn: email'),
+          text('note', 'Nhãn: ghi chú'),
+          text('notePlaceholder', 'Chữ mờ trong ô ghi chú'),
+        ],
+      },
+      {
+        title: 'Đồng ý và quyền riêng tư',
+        fields: [
+          area('consent', 'Câu đồng ý (cạnh ô tích)', { rows: 2 }),
+          area('privacy', 'Thông báo quyền riêng tư', { rows: 4, help: altHelp('{email}', 'email liên hệ') }),
+        ],
+      },
+      {
+        title: 'Nút và nhãn chung',
+        fields: [
+          text('submit', 'Nút gửi'),
+          text('submitting', 'Nút gửi — lúc đang gửi'),
+          text('close', 'Nhãn nút đóng (trình đọc màn hình)'),
+          text('required', 'Chữ "bắt buộc"'),
+          text('optional', 'Chữ "không bắt buộc"'),
+        ],
+      },
+      {
+        title: 'Thông báo lỗi',
+        collapsible: true,
+        fields: [
+          text('errorSummary', 'Hộp tóm tắt lỗi', { help: altHelp('{count}', 'số mục còn lỗi') }),
+          text('errors.required', 'Bỏ trống ô bắt buộc'),
+          text('errors.phone', 'Số điện thoại sai'),
+          text('errors.email', 'Email sai'),
+          text('errors.consent', 'Chưa tích đồng ý'),
+          text('errors.tooLong', 'Nội dung quá dài'),
+          text('errors.rateLimited', 'Gửi quá nhiều lần'),
+          text('errors.paused', 'Tạm ngưng nhận đăng ký', { help: altHelp('{phone}', 'số điện thoại liên hệ') }),
+          text('errors.network', 'Lỗi mạng / máy chủ', { help: altHelp('{phone}', 'số điện thoại liên hệ') }),
+        ],
+      },
+      {
+        title: 'Gửi thành công',
+        fields: [text('success.title', 'Tiêu đề'), area('success.message', 'Lời nhắn', { rows: 2 }), text('success.close', 'Nút đóng')],
       },
     ],
     lists: [],

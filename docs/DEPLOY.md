@@ -103,7 +103,12 @@ bằng `npm run admin:create`).
 | `NODE_ENV` | `production` | *(trống)* | Cookie đăng nhập thiếu cờ `Secure` |
 | `PORT` | `3001` | `3001` | Phải khớp `proxy_pass` của nginx |
 | `DATA_DIR` | `/var/lib/fablab` | `<repo>/data` | Máy chủ mở database rỗng và thoát với `Database chua co noi dung` |
-| `SITE_ORIGIN` | `https://fablab.example.vn` | `http://localhost:5173` | Request ghi bị `403 goc request khong hop le` ở trình duyệt không gửi `Sec-Fetch-Site` |
+| `SITE_ORIGIN` | `https://fablab.example.vn` | `http://localhost:5173` | Request ghi bị `403 goc request khong hop le` ở trình duyệt không gửi `Sec-Fetch-Site` — **kể cả form đăng ký và thống kê** |
+| `REGISTRATION_RETENTION_DAYS` | `365` | `365` | Số ngày giữ đăng ký khóa học (dữ liệu cá nhân) trước khi tự xoá. Đổi thì sửa luôn câu "lưu tối đa 12 tháng" ở dashboard → Form đăng ký |
+| `ANALYTICS_RETENTION_DAYS` | `90` | `90` | Số ngày giữ sự kiện thống kê bản thô; quá hạn thì gộp theo ngày rồi xoá |
+| `REG_DAILY_CAP` | `300` | `300` | Trần số đăng ký cả trang nhận trong một ngày; vượt thì form báo "tạm ngưng" kèm số điện thoại |
+
+Ba biến sau cùng không bắt buộc — mặc định đã hợp lý.
 
 Tạo **một file** dùng chung cho cả systemd lẫn các lệnh chạy tay:
 
@@ -304,6 +309,17 @@ server {
         # BAT BUOC — xem canh bao ben duoi.
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
+
+    # Thong ke truy cap: trang hua "khong luu IP", nhung log truy cap mac dinh cua
+    # nginx ghi IP cua MOI request. Tat log rieng cho duong nay de loi hua con dung.
+    location = /api/events {
+        access_log off;
+        proxy_pass http://127.0.0.1:3001;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
 }
 ```
 
@@ -317,6 +333,11 @@ sudo nginx -t && sudo systemctl reload nginx
 > `127.0.0.1`: bộ giới hạn đăng nhập (5 lượt / 15 phút / IP) gom tất cả vào một IP, nên
 > vài lần gõ sai mật khẩu của **bất kỳ ai** là không ai đăng nhập được nữa — trong khi
 > bộ giới hạn trông vẫn như chạy đúng.
+>
+> Header này còn quyết định hai thứ nữa: **form đăng ký** (5 lượt / 10 phút / IP — thiếu
+> header thì người thứ sáu trong 10 phút, ở bất cứ đâu, nhận "gửi quá nhiều lần") và
+> **thống kê** (khách được nhận diện theo IP + trình duyệt — thiếu header thì cả trang
+> chỉ còn vài "khách" mỗi ngày).
 >
 > Ngược lại, **đừng** đặt thêm một proxy/CDN nữa phía trước nginx mà không sửa
 > `trust proxy` — khi đó IP thật nằm sâu hơn một bậc.
@@ -379,7 +400,7 @@ Chạy từ máy bất kỳ:
 D=https://fablab.example.vn
 
 curl -s $D/api/health
-# {"ok":true,"rev":36,"updatedAt":"...","api":2}
+# {"ok":true,"rev":38,"updatedAt":"...","api":3}
 
 curl -sI $D/ | grep -iE '^(HTTP|content-security-policy|strict-transport-security)'
 # HTTP/2 200 + ca hai header bao mat
@@ -406,6 +427,12 @@ Rồi làm bằng trình duyệt:
 - [ ] Cố ý đăng nhập sai một lần **từ máy khác**: log ghi
       `dang nhap that bai tu <IP thật>`, **không** phải `127.0.0.1`
       (kiểm `X-Forwarded-For`).
+- [ ] Bấm "Đăng ký" trên trang công khai, gửi một lượt thử **với ghi chú "THỬ"**:
+      màn hình "Đã nhận đăng ký!" hiện ra, dashboard có badge đỏ ở "Đăng ký khóa học"
+      (trong vòng 2 phút, hoặc ngay khi chuyển lại tab). Xoá lượt thử đó trong
+      dashboard.
+- [ ] Dashboard → Thống kê truy cập có lượt xem của hôm nay.
+- [ ] `sudo tail /var/log/nginx/access.log` **không** có dòng `/api/events`.
 
 ---
 
@@ -443,6 +470,13 @@ Bản sao lưu trên cùng VPS chỉ chống lỗi thao tác, không chống m�
 
 `rsync` cố ý **không** có `--delete`: ảnh đã xoá khỏi thư viện vẫn còn trong bản sao
 lưu, nên khôi phục một database cũ vẫn có đủ ảnh nó trỏ tới.
+
+> ⚠️ **Bản sao lưu chứa dữ liệu cá nhân.** Từ khi có form đăng ký, database mang họ tên
+> học sinh, tên và số điện thoại phụ huynh. Giữ `/var/backups/fablab` chỉ root đọc
+> được (`sudo chmod 700 /var/backups/fablab`), và khi đồng bộ ra nơi khác thì nơi đó
+> cũng phải hạn chế quyền như vậy. Một đăng ký đã xoá trong dashboard **vẫn còn** trong
+> các bản sao lưu cũ cho tới khi chúng bị xoay vòng (`KEEP_DAYS`) — nếu có người yêu
+> cầu xoá dữ liệu, ghi nhận rằng bản sao lưu sẽ tự hết hạn sau từng ấy ngày.
 
 ### Khôi phục
 
@@ -494,7 +528,11 @@ nhập được. Muốn có dashboard thì dùng kiến trúc ở [mục 1](#1-k
 | Lưu trả `403 thieu hoac sai CSRF token` | Mở dashboard ở hai tab, một tab đăng nhập lại | Tải lại tab |
 | Vài lần sai mật khẩu, không ai đăng nhập được (`429`) | nginx thiếu `X-Forwarded-For` | Thêm header, `reload nginx`; chờ 15 phút |
 | Tải ảnh báo "File quá lớn" (`413`) | File vượt `client_max_body_size` của nginx | Đặt `16m`; ảnh nguồn nên nhỏ hơn 15 MB |
-| Tải ảnh 15–16 MB báo "Máy chủ gặp lỗi" (`500`) | Qua được nginx nhưng vượt giới hạn 15 MB của Express; bộ xử lý lỗi hiện trả 500 thay vì 413 | Thu nhỏ ảnh trước khi tải (xem [API.md](API.md#3-mã-lỗi-chung)) |
+| Tải ảnh 15–16 MB báo "File quá lớn" (`413` JSON) | Qua được nginx nhưng vượt giới hạn 15 MB của Express | Thu nhỏ ảnh trước khi tải (xem [API.md](API.md#3-mã-lỗi-chung)) |
+| Form đăng ký báo "gửi nhiều lần liên tiếp" với người mới gửi lần đầu | nginx thiếu `X-Forwarded-For` — mọi người chung một IP | Thêm header, `reload nginx` |
+| Form đăng ký báo "tạm ngưng nhận đăng ký" | Đã nhận đủ `REG_DAILY_CAP` lượt trong ngày — có thể đang bị spam | Xem danh sách đăng ký; nếu là spam, xoá và cân nhắc `limit_req` ở nginx. Log ghi `cham tran ... dang ky/ngay` |
+| Thống kê chỉ có 1–2 "khách" mỗi ngày dù có nhiều người vào | nginx thiếu `X-Forwarded-For` | Như trên |
+| Thống kê trống trơn, form vẫn gửi được | Trình duyệt bật Do Not Track / GPC hoặc trình chặn quảng cáo — hành vi đúng; hoặc `/api/events` bị chặn ở nginx | Thử bằng trình duyệt khác; `curl -X POST` tới `/api/events` phải ra `204` |
 | `/` hoặc `/admin` trả 404 | Tiến trình khởi động trước khi có `dist/` | Build rồi restart |
 | `/admin` hiện trang công khai | `dist/admin.html` không có (build lỗi giữa chừng) | Build lại, xem log |
 | Dịch vụ thoát ngay, log `Database chua co noi dung` | `DATA_DIR` sai, hoặc chưa chép/seed database | Kiểm `/etc/fablab.env`, [mục 5](#5-đưa-dữ-liệu-lên-máy-chủ) |
