@@ -528,7 +528,9 @@ Mã mới chạy đúng hoàn toàn khi thử qua proxy Vite trên bản sao dat
 Chốt đã đặt: `/api/health` trả `api` (`API_VERSION` trong
 [content.public.js](server/routes/content.public.js)), dashboard so với `EXPECTED_API`
 trong [App.jsx](src/admin/App.jsx) và hiện băng đỏ nếu thấp hơn. **Thêm route hay đổi
-hợp đồng mà dashboard phụ thuộc thì tăng CẢ HAI số.** Kiểm nhanh: so giờ khởi động tiến
+hợp đồng mà dashboard phụ thuộc thì tăng CẢ HAI số**, và sửa [docs/API.md](docs/API.md)
+trong cùng commit — phản hồi mẫu trong đó là phản hồi thật đã chạy trên bản sao database.
+Kiểm nhanh: so giờ khởi động tiến
 trình trên cổng 3001 với giờ commit backend gần nhất. Lưu ý mọi `/api/admin/*` đều qua
 `requireSession` trước khi xét route, nên dò bằng curl chưa đăng nhập luôn ra 401 — không
 phân biệt được route có tồn tại hay không.
