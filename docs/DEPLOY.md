@@ -367,6 +367,7 @@ cd /srv/fablab
 sudo -u fablab git checkout -- src/content/snapshot.json   # xem ghi chu 3
 sudo -u fablab git pull
 sudo -u fablab npm ci
+sudo -u fablab bash -c 'set -a; . /etc/fablab.env; set +a; npm run seed:images'   # xem ghi chu 4
 sudo -u fablab bash -c 'set -a; . /etc/fablab.env; set +a; npm run build'
 sudo -u fablab npm run check:content
 sudo -u fablab npm run check:snapshot
@@ -374,7 +375,7 @@ sudo systemctl restart fablab
 curl -s http://127.0.0.1:3001/api/health
 ```
 
-Ba điều **đã từng gây sự cố thật** hoặc sẽ gây nếu bỏ qua:
+Bốn điều **đã từng gây sự cố thật** hoặc sẽ gây nếu bỏ qua:
 
 1. **Luôn `restart` sau khi pull.** Node không tự nạp mã mới. Không restart thì trang
    và dashboard mới (đã build) nói chuyện với API cũ: không lưu được, không tải ảnh
@@ -388,6 +389,12 @@ Ba điều **đã từng gây sự cố thật** hoặc sẽ gây nếu bỏ qua
    Bản trên VPS luôn dựng lại được, nên bỏ nó đi trước khi pull là an toàn (lệnh đầu
    tiên ở trên). Bản commit trong git chỉ là dự phòng lúc build không có database.
 
+4. **`seed:images` đưa ảnh của scope MỚI vào database đang chạy.** Migration SQL thêm
+   được chữ nhưng không thêm được file ảnh — ví dụ section `equipment` (popup thông số
+   máy) vào bằng migration 006, còn 12 ảnh máy vào bằng lệnh này. Lệnh chỉ điền scope
+   **chưa có ảnh nào**, nên chạy mọi lần cập nhật đều an toàn: không gắn lại ảnh admin
+   đã gỡ. Phải có `DATA_DIR` (nạp `/etc/fablab.env`), kẻo nó ghi vào `data/` trong repo.
+
 Nếu `npm ci` báo lỗi biên dịch `better-sqlite3`: Node trên VPS không phải bản 20.
 
 ---
@@ -400,7 +407,7 @@ Chạy từ máy bất kỳ:
 D=https://fablab.example.vn
 
 curl -s $D/api/health
-# {"ok":true,"rev":38,"updatedAt":"...","api":3}
+# {"ok":true,"rev":60,"updatedAt":"...","api":7}
 
 curl -sI $D/ | grep -iE '^(HTTP|content-security-policy|strict-transport-security)'
 # HTTP/2 200 + ca hai header bao mat
@@ -421,8 +428,9 @@ Rồi làm bằng trình duyệt:
 - [ ] `/admin` đăng nhập được và **vẫn còn đăng nhập sau khi tải lại trang**.
 - [ ] Không có băng đỏ "Máy chủ đang chạy bản cũ".
 - [ ] Tải một ảnh lên Thư viện ảnh (kiểm `client_max_body_size`).
-- [ ] Sửa một chữ ở một section, **Lưu**, tải lại trang công khai thấy đổi (trong vòng
-      60 giây — `/api/content` được cache ngắn).
+- [ ] Sửa một chữ ở một section, **Lưu**: thanh dưới cùng của dashboard chuyển từ
+      "Đang kiểm tra trang công khai…" sang **"Đã lên trang công khai"**; tải lại trang
+      công khai (một lần) thấy đổi.
 - [ ] `sudo journalctl -u fablab -n 50` không có lỗi.
 - [ ] Cố ý đăng nhập sai một lần **từ máy khác**: log ghi
       `dang nhap that bai tu <IP thật>`, **không** phải `127.0.0.1`
@@ -540,5 +548,5 @@ nhập được. Muốn có dashboard thì dùng kiến trúc ở [mục 1](#1-k
 | `npm ci` lỗi biên dịch `better-sqlite3` | Node không phải bản 20 | Cài Node 20 ([mục 2](#2-yêu-cầu-máy-chủ)) |
 | Ảnh vỡ trên bản `dist/` mang đi nơi khác | Ảnh tải lên sau lần build cuối chưa được chép vào `dist/media` | Build lại |
 | `meta.warnings` báo `Khong quet duoc ...` | Máy chủ thiếu `src/` | Deploy cả repo ([mục 3](#3-vì-sao-cần-cả-repo-trên-máy-chủ-không-chỉ-dist)) |
-| Sửa xong trang công khai chưa đổi | `/api/content` cache 60 giây | Chờ, hoặc tải lại cứng |
+| Sửa xong trang công khai chưa đổi | Máy chủ chạy bản cũ (còn header `max-age=60`), hoặc có proxy/CDN cache `/api/content` | Chạy `curl -sI $D/api/content`: dòng `cache-control` phải là `no-cache`; khởi động lại máy chủ. Dashboard báo "Trang công khai chưa trả bản mới" là dấu hiệu của đúng lỗi này |
 | Animation không chạy trên một máy | Máy đó bật giảm chuyển động (`prefers-reduced-motion`) | Không phải lỗi — hành vi đúng |

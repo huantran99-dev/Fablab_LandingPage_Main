@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Activities } from './components/Activities'
+import { ContentSyncBar } from './components/ContentSyncBar'
 import { Courses } from './components/Courses'
 import { Facilities } from './components/Facilities'
 import { FinalCTA } from './components/FinalCTA'
@@ -8,6 +9,7 @@ import { Hero } from './components/Hero'
 import { Navbar } from './components/Navbar'
 import { Partners } from './components/Partners'
 import { Pillars } from './components/Pillars'
+import { Projects } from './components/Projects'
 import { RegisterDialog } from './components/register/RegisterDialog'
 import { RegisterProvider } from './components/register/RegisterProvider'
 import { StatsBar } from './components/StatsBar'
@@ -24,16 +26,21 @@ export default function App() {
   return (
     <LanguageProvider>
       <RegisterProvider>
+        <ContentSyncBar />
         <Navbar />
         <main>
           <Hero />
           <StatsBar />
+          {/* Xưởng và thiết bị đứng đầu, rồi tới sản phẩm làm ra từ xưởng. Đổi thứ tự
+              ở đây là phải tính lại hướng trượt cho mọi section phía sau (CLAUDE.md,
+              mục "Hướng trượt hiện tại"). */}
+          <Facilities />
+          <Projects />
           <Pillars />
           <Courses />
-          <Facilities />
-          <Partners />
           <Activities />
           <Team />
+          <Partners />
           <Testimonials />
           <FinalCTA />
         </main>

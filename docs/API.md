@@ -1,7 +1,7 @@
 # API — FabLab EIU
 
 Mô tả toàn bộ HTTP API của máy chủ Express trong [server/](../server/): đọc nội dung
-công khai, đăng nhập, sửa 13 section, thư viện ảnh, popup chi tiết khóa học, form đăng
+công khai, đăng nhập, sửa 15 section, thư viện ảnh, popup chi tiết khóa học, form đăng
 ký khóa học và thống kê truy cập. Viết cho lập trình viên bảo trì dashboard hoặc tích
 hợp thêm công cụ.
 
@@ -22,7 +22,7 @@ gọn chỗ dài bằng `…`). Deploy thì xem [DEPLOY.md](DEPLOY.md).
 4. [Route công khai](#4-route-công-khai)
 5. [Đăng nhập — `/api/auth`](#5-đăng-nhập--apiauth)
 6. [Nội dung section — `/api/admin`](#6-nội-dung-section--apiadmin)
-7. [Hình dạng 13 section](#7-hình-dạng-13-section)
+7. [Hình dạng 15 section](#7-hình-dạng-15-section)
 8. [Thư viện ảnh](#8-thư-viện-ảnh)
 9. [Popup chi tiết khóa học](#9-popup-chi-tiết-khóa-học)
 10. [Meta cho dashboard](#10-meta-cho-dashboard)
@@ -74,7 +74,7 @@ gọn chỗ dài bằng `…`). Deploy thì xem [DEPLOY.md](DEPLOY.md).
 - **Định dạng:** JSON UTF-8, trừ `POST /api/admin/media` nhận byte ảnh thô.
 - **Không có CORS.** API chỉ dùng được từ chính trang (same-origin). Đây là chủ đích:
   cookie đăng nhập và kiểm `Origin` dựa trên điều đó.
-- **Phiên bản:** `GET /api/health` trả `api` (hiện là `2`, hằng `API_VERSION` trong
+- **Phiên bản:** `GET /api/health` trả `api` (hiện là `7`, hằng `API_VERSION` trong
   [content.public.js](../server/routes/content.public.js)). Dashboard so với
   `EXPECTED_API` trong [src/admin/App.jsx](../src/admin/App.jsx) và hiện băng đỏ nếu máy
   chủ thấp hơn — dấu hiệu máy chủ chưa được khởi động lại sau khi cập nhật.
@@ -196,7 +196,7 @@ Không cần đăng nhập. Trang công khai chỉ gọi `GET /api/content`.
 Máy chủ còn sống không, đang ở bản nội dung nào, phiên bản API nào.
 
 ```json
-{"ok":true,"rev":38,"updatedAt":"2026-09-18T04:37:26.503Z","api":3}
+{"ok":true,"rev":60,"updatedAt":"2026-10-20T08:39:00.871Z","api":7}
 ```
 
 | Trường | Ý nghĩa |
@@ -215,7 +215,7 @@ Toàn bộ nội dung cả hai ngôn ngữ, đúng hình dạng mà component Re
   "generatedAt": "2026-09-15T04:33:22.698Z",
   "updatedAt": "2026-09-14T08:57:52.474Z",
   "vi": { "nav": {…}, "hero": {…}, "pillars": {…}, "stats": {…}, "courses": {…},
-          "facilities": {…}, "partners": {…}, "activities": {…}, "team": {…},
+          "facilities": {…}, "equipment": {…}, "projects": {…}, "partners": {…}, "activities": {…}, "team": {…},
           "testimonials": {…}, "finalCta": {…}, "footer": {…} },
   "en": { … cùng khoá … }
 }
@@ -224,12 +224,15 @@ Toàn bộ nội dung cả hai ngôn ngữ, đúng hình dạng mà component Re
 **Header cache:**
 
 ```
-ETag: W/"content-36"
-Cache-Control: public, max-age=60, stale-while-revalidate=600
+ETag: W/"content-70"
+Cache-Control: no-cache
 ```
 
-Gửi `If-None-Match: W/"content-36"` → `304 Not Modified`, không thân. ETag chỉ đổi khi
-`rev` đổi. Admin lưu xong, trình duyệt có thể còn giữ bản cũ tối đa 60 giây.
+Gửi `If-None-Match: W/"content-70"` → `304 Not Modified`, không thân. ETag chỉ đổi khi
+`rev` đổi. `no-cache` buộc trình duyệt **hỏi lại mỗi lần** (nội dung không đổi chỉ tốn
+một 304 rỗng), nên admin lưu xong là lần tải kế tiếp thấy ngay. Bản trước dùng
+`public, max-age=60, stale-while-revalidate=600` và phải tải lại vài lần mới thấy thay
+đổi — đừng đưa lại. `/api/health` và mọi `/api/admin/*`, `/api/auth/*` trả `no-store`.
 
 **So với dữ liệu trong `PUT` section**, bản ráp này có thêm:
 
@@ -347,7 +350,7 @@ Mọi route trong mục này cần phiên; route ghi cần thêm `Origin` + CSRF
 Các section sửa được, **theo thứ tự xuất hiện trên trang**.
 
 ```json
-{"editable":["nav","hero","pillars","stats","courses","facilities","partners","activities","team","testimonials","finalCta","footer"]}
+{"editable":["nav","hero","stats","facilities","equipment","projects","pillars","courses","activities","team","partners","testimonials","finalCta","register","footer"]}
 ```
 
 ### `GET /api/admin/content/:section`
@@ -373,7 +376,7 @@ Cặp hai ngôn ngữ của một section, kèm `rev` để gửi lại khi lưu
 | `rev` | Tổng `rev` của hai dòng VI + EN. **Mỗi lượt lưu tăng 2** |
 | `images` | `null` nếu section không mang ảnh. Ngược lại là map `idMục → ảnh`; `hero` dùng khoá `"hero"`. `note` là ghi chú nguồn (`~` ảnh gần đúng, `↺` ảnh dùng lại) |
 
-Section có ảnh: `hero`, `courses`, `facilities`, `activities`, `partners`, `team`.
+Section có ảnh: `hero`, `courses`, `facilities`, `equipment`, `projects`, `activities`, `partners`, `team`.
 
 Section không tồn tại: `404 {"error":"khong co section nay","section":"khong-co"}`.
 
@@ -495,7 +498,7 @@ Khôi phục là một lượt lưu bình thường: tự tạo dòng lịch s�
 
 ---
 
-## 7. Hình dạng 13 section
+## 7. Hình dạng 15 section
 
 Tóm tắt [server/schema/sections.js](../server/schema/sections.js). Luật chung:
 
@@ -513,7 +516,7 @@ Tóm tắt [server/schema/sections.js](../server/schema/sections.js). Luật chu
 
 Trên mọi phần tử mảng có `id`, các trường sau không được dịch:
 `group`, `level`, `stage`, `topic`, `icon`, `kind`, `kinds`, `value`, `suffix`, `lead`,
-`href`, `filterable` — cộng thêm `team.members[].name`. Lệch → `422` dạng ràng buộc
+`href`, `filterable`, `facility`, `status` — cộng thêm `team.members[].name`. Lệch → `422` dạng ràng buộc
 (`truong khong dich nhung khac nhau`).
 
 ### nav
@@ -540,6 +543,15 @@ Trên mọi phần tử mảng có `id`, các trường sau không được dị
 `eyebrow` chữ(80) · `title` chữ(120) · `description` chữ(400) ·
 `items[]`: `{ id, title: chữ(80), description: chữ(400) }`.
 `id` của mục tra icon; id không có icon thì component dùng icon theo vị trí.
+
+- `vision`: `{ title: chữ(80), body: chữ(400) }` — khối Tầm nhìn. *(từ API 4)*
+- `valuesTitle`: chữ(80) — tiêu đề cột "Giá trị cốt lõi". *(từ API 6)*
+- `values[]` (≥ 1): `{ id, title: chữ(40) }` — danh sách giá trị đánh số 01, 02…, chỉ tên ngắn. *(từ API 4)*
+
+Database seed trước ngày có các khoá này nhận chúng qua migration
+`005_pillars_vision_values.sql` (`vision`, `values`) và `007_pillars_values_title.sql`
+(`valuesTitle`). Component vẫn chịu được khi chúng vắng (bản lịch
+sử cũ khôi phục lại bỏ qua schema): thiếu thì bỏ hẳn khối, không sập trang.
 
 ### stats
 
@@ -582,6 +594,42 @@ Ràng buộc: `group` phải có trong `groups`, `level` trong `levels`, `stage`
 
 `eyebrow` chữ(80) · `title` chữ(120) · `description` chữ(400) · `imageAlt` chữ(200) ·
 `items[]`: `{ id, title: chữ(80), description: chữ(400) }`.
+
+### equipment *(có ảnh — không bắt buộc, thiếu thì popup bỏ khung ảnh)* *(từ API 5)*
+
+Popup thông số từng máy. Mỗi máy hiện thành nút trong ô `facilities.items[]` có id bằng
+`facility` của nó.
+
+| Trường | Kiểu |
+|---|---|
+| `listLabel`, `openLabel`, `specsTitle`, `source` | chữ(80) |
+| `noSpecs` | chữ(300) — hiện khi máy không có dòng thông số nào |
+| `close` | chữ(40) |
+| `imageAlt` | chữ(200), `{name}` thay bằng tên máy |
+| `sourceUrl` | URL `http(s)://` — mỗi ngôn ngữ trỏ trang của ngôn ngữ đó |
+| `items[]` (≥ 1) | `{ id, facility, name: chữ(120), type: chữ(80), specs[] }` |
+| `items[].specs[]` (≤ 30, **được rỗng**) | `{ id, label: chữ(80), detail: chữ(300) }` |
+
+- `facility` là **trường dùng chung** và phải là id có trong `facilities.items` (ràng
+  buộc toàn trang). Hệ quả: xoá một ô ở `facilities` khi còn máy trỏ tới bị `422`.
+- Giá trị thông số tên là `detail` chứ không phải `value`: `value` đã là trường dùng
+  chung (số liệu của `stats`), đặt trùng tên là bị đòi bằng nhau giữa VI và EN.
+- Database seed trước ngày có section này nhận nó qua migration
+  `006_equipment_content.sql`; ảnh máy thì qua `npm run seed:images`.
+
+### projects *(có ảnh)* *(từ API 7)*
+
+`eyebrow` chữ(80) · `title` chữ(120) · `description` chữ(400) · `imageAlt` chữ(200),
+`{title}` thay bằng tên dự án · `statuses`: record `id → chữ(40)` (nhãn trạng thái) ·
+`items[]` (≥ 1): `{ id, title: chữ(120), description: chữ(400), status? }`.
+
+- `status` **tuỳ chọn** và là trường dùng chung. Vắng = card không hiện nhãn; đó là
+  trạng thái mặc định có chủ đích (trang gốc không ghi trạng thái dự án). Có thì phải
+  là một khoá của `statuses` (ràng buộc toàn trang), và **không được là chuỗi rỗng** —
+  gửi `"status": ""` là `422`; muốn gỡ thì bỏ hẳn khoá.
+- Database seed trước ngày có section này nhận nó qua migration
+  `008_projects_section.sql` (kèm mục "Dự án" trong menu FabLab và footer); ảnh qua
+  `npm run seed:images`.
 
 ### partners *(có ảnh — không bắt buộc, thiếu thì hiện tên)*
 
@@ -671,8 +719,10 @@ thấy. Danh sách đầy đủ ở [invariants.js](../server/content/invariants
 | Lỗi | `stats.items[].value` không phải số |
 | Lỗi | `href` `#neo` trỏ tới neo không có trên trang (menu, footer) |
 | Lỗi | Mục menu có cả `href` lẫn `children`, hoặc không có cả hai |
-| Cảnh báo | Khóa học / thiết bị / hoạt động / hero chưa có ảnh (khung ảnh trống) |
-| *(không báo)* | Đối tác / thành viên chưa có ảnh — trang có bản dự phòng (tên bằng chữ, chữ cái đầu) |
+| Lỗi | `equipment.items[].facility` không phải id trong `facilities.items` |
+| Lỗi | `projects.items[].status` có mặt nhưng không phải khoá của `projects.statuses` |
+| Cảnh báo | Khóa học / thiết bị / dự án / hoạt động / hero chưa có ảnh (khung ảnh trống) |
+| *(không báo)* | Đối tác / thành viên / máy chưa có ảnh — trang có bản dự phòng (tên bằng chữ, chữ cái đầu) |
 | Cảnh báo | Khóa học kiểu cấp độ không có icon tra theo `id` |
 
 ---
@@ -881,6 +931,7 @@ Số liệu trang Tổng quan và danh sách cho các ô chọn.
     …
   ],
   "anchors": ["about","activities","competitions","contact", …],
+  "facilities": [{"id":"printer-3d","title":"Máy in 3D"},{"id":"cnc","title":"Máy CNC"}, …],
   "icons": { "course": ["automation","plastics","process", …], "pillar": [ … ], "facility": [ … ] },
   "media": {"total":59,"bytes":4554327,"unused":0},
   "overriddenDetails": 0,

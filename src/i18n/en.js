@@ -29,6 +29,7 @@ export const en = {
         label: 'FabLab',
         children: [
           { id: 'facilities', label: 'Facilities', href: '#facilities' },
+          { id: 'projects', label: 'Projects', href: '#projects' },
           { id: 'competitions', label: 'Competitions', href: '#competitions' },
         ],
       },
@@ -84,25 +85,39 @@ export const en = {
     eyebrow: 'About us',
     title: 'Mission of EIU FabLab',
     description:
-      'An open, dynamic space where technology is shared to create real value for society.',
+      'A fabrication laboratory that gives the community access to the equipment, techniques and technology they need — a shared space to learn, research, design, create and start up together.',
+    vision: {
+      title: 'Vision',
+      body:
+        'To become a model digital fabrication workshop with modern technology, a dynamic and creative open space, the best support for turning ideas into reality, and a driver of entrepreneurship that creates positive value for the community.',
+    },
+    valuesTitle: 'Core values',
+    values: [
+      { id: 'open-space', title: 'Open technology space' },
+      { id: 'experiment', title: 'Experimentation' },
+      { id: 'problem-solving', title: 'Problem solving' },
+      { id: 'creativity', title: 'Creativity' },
+      { id: 'collaboration', title: 'Sharing and collaboration' },
+      { id: 'achievement', title: 'Achievement' },
+    ],
     items: [
       {
         id: 'education',
-        title: 'Education',
+        title: 'Education and training',
         description:
-          'Hands-on learning with modern equipment. Learners design, machine and finish their own products from start to end.',
+          'Access techniques and technology to turn ideas into reality; build knowledge and skills through learning that goes hand in hand with doing.',
       },
       {
         id: 'research',
-        title: 'Research',
+        title: 'Research and development',
         description:
-          'Turning creative ideas into products, and prototypes into complete engineering solutions.',
+          'Search for new ideas and create innovative products that serve the community.',
       },
       {
         id: 'entrepreneurship',
         title: 'Entrepreneurship',
         description:
-          'Support in commercialising successful prototypes and taking products from the workshop to the market.',
+          'Drive the commercialisation of products built from successful pilot projects.',
       },
     ],
   },
@@ -570,6 +585,227 @@ export const en = {
     ],
   },
 
+  // Per-machine specification popup in the Facilities section. Source:
+  // fablab.eiu.edu.vn/en/devices/. DS460 is a scroll saw (the source page says "wire
+  // saw"); the oscilloscope type is corrected from "pulse meter". The three
+  // electronics machines have no published specs — `specs` stays empty on purpose.
+  equipment: {
+    listLabel: 'Machines in this area',
+    openLabel: 'View specifications of',
+    specsTitle: 'Technical specifications',
+    noSpecs: 'FabLab has not published detailed specifications for this machine yet.',
+    close: 'Close',
+    imageAlt: 'Photo of {name}',
+    source: 'See the FabLab equipment page',
+    sourceUrl: 'https://fablab.eiu.edu.vn/en/devices/',
+    items: [
+      {
+        id: 'form-3',
+        facility: 'printer-3d',
+        name: 'Formlabs Form 3',
+        type: 'Resin 3D printer',
+        specs: [
+          { id: 'technology', label: 'Printing technology', detail: 'SLA – Stereolithography Apparatus; LFS – Low Force Stereolithography' },
+          { id: 'print-size', label: 'Maximum print size', detail: '145x145x185 mm (W – D – H)' },
+          { id: 'layer', label: 'Layer thickness', detail: '25 – 300 µm' },
+          { id: 'material', label: 'Material', detail: 'Resin' },
+        ],
+      },
+      {
+        id: 'cubicon-210f',
+        facility: 'printer-3d',
+        name: 'Cubicon 210F',
+        type: '3D printer',
+        specs: [
+          { id: 'technology', label: 'Printing technology', detail: 'FFF – Fused Filament Fabrication' },
+          { id: 'print-size', label: 'Maximum print size', detail: '150x150x150 mm (W – D – H)' },
+          { id: 'layer', label: 'Layer thickness', detail: '150 – 300 µm (minimum 100 µm)' },
+          { id: 'material-diameter', label: 'Material diameter', detail: '1.75 mm' },
+          { id: 'material', label: 'Material', detail: 'ABS, PLA, TPU' },
+          { id: 'nozzle', label: 'Nozzle diameter', detail: '0.4 mm' },
+          { id: 'accuracy-xy', label: 'XY-axis accuracy', detail: '6.25 µm' },
+          { id: 'accuracy-z', label: 'Z-axis accuracy', detail: '1.25 µm' },
+          { id: 'nozzle-temp', label: 'Nozzle temperature (max)', detail: '260 °C' },
+          { id: 'bed-temp', label: 'Bed temperature (max)', detail: '120 °C' },
+        ],
+      },
+      {
+        id: 'cubicon-310f',
+        facility: 'printer-3d',
+        name: 'Cubicon 310F',
+        type: '3D printer',
+        specs: [
+          { id: 'technology', label: 'Printing technology', detail: 'FFF – Fused Filament Fabrication' },
+          { id: 'print-size', label: 'Maximum print size', detail: '240x190x200 mm (W – D – H)' },
+          { id: 'layer', label: 'Layer thickness', detail: '150 – 300 µm (minimum 100 µm)' },
+          { id: 'material-diameter', label: 'Material diameter', detail: '1.75 mm' },
+          { id: 'material', label: 'Material', detail: 'ABS, PLA, TPU' },
+          { id: 'nozzle', label: 'Nozzle diameter', detail: '0.4 mm' },
+          { id: 'accuracy-xy', label: 'XY-axis accuracy', detail: '6.25 µm' },
+          { id: 'accuracy-z', label: 'Z-axis accuracy', detail: '1.25 µm' },
+          { id: 'nozzle-temp', label: 'Nozzle temperature (max)', detail: '260 °C' },
+          { id: 'bed-temp', label: 'Bed temperature (max)', detail: '120 °C' },
+        ],
+      },
+      {
+        id: 'shining-3d',
+        facility: 'printer-3d',
+        name: 'Shining 3D',
+        type: '3D scanner',
+        specs: [
+          { id: 'mode', label: 'Mode', detail: 'Fixed scan – Automatic scan' },
+          { id: 'min-size', label: 'Minimum object size', detail: '30x30x30 mm' },
+          { id: 'max-size', label: 'Maximum object size', detail: '200x200x200 mm' },
+          { id: 'speed', label: 'Scanning speed', detail: '4 s' },
+          { id: 'formats', label: 'Output formats', detail: 'OBJ, STL, ASC, PLY' },
+          { id: 'camera', label: 'Camera resolution', detail: '1.3 megapixels' },
+          { id: 'light', label: 'Light source', detail: 'White light' },
+          { id: 'connection', label: 'Connection', detail: 'USB' },
+        ],
+      },
+      {
+        id: 'epilog-mini-helix-18',
+        facility: 'laser',
+        name: 'Epilog Mini Helix 18',
+        type: 'Laser cutter',
+        specs: [
+          { id: 'table-size', label: 'Table size', detail: '18″ x 12″ (457 x 305 mm)' },
+          { id: 'thickness', label: 'Material thickness (max)', detail: '4″ (102 mm)' },
+          { id: 'power', label: 'Laser power', detail: '40 W' },
+          { id: 'resolution', label: 'Resolution', detail: '75 – 1200 DPI' },
+          { id: 'connection', label: 'Connection', detail: 'Ethernet T-Base cable or USB' },
+        ],
+      },
+      {
+        id: 'roland-srm-20',
+        facility: 'cnc',
+        name: 'Roland SRM-20',
+        type: 'CNC milling machine',
+        specs: [
+          { id: 'table-size', label: 'Table size', detail: '100 x 100 mm' },
+          { id: 'connection', label: 'Connection', detail: 'Ethernet T-Base cable or USB' },
+        ],
+      },
+      {
+        id: 'proxxon-ff500',
+        facility: 'cnc',
+        name: 'Proxxon FF500',
+        type: 'Milling machine',
+        specs: [
+          { id: 'machine-size', label: 'Machine size', detail: '400 x 125 x 780 mm (W – D – H)' },
+          { id: 'workpiece-size', label: 'Workpiece size', detail: '450 x 270 x 60 mm (W – D – H)' },
+          { id: 'power', label: 'Spindle power', detail: 'BLDC 400 W' },
+        ],
+      },
+      {
+        id: 'proxxon-pd400',
+        facility: 'cnc',
+        name: 'Proxxon PD400',
+        type: 'Lathe',
+        specs: [
+          { id: 'machine-size', label: 'Machine size', detail: '900 x 400 x 300 mm (W – D – H)' },
+          { id: 'workpiece-size', label: 'Workpiece size', detail: '450 x 270 mm (L – D)' },
+          { id: 'power', label: 'Spindle power', detail: '550 W' },
+        ],
+      },
+      {
+        id: 'proxxon-ds460',
+        facility: 'cnc',
+        name: 'Proxxon DS460',
+        type: 'Scroll saw',
+        specs: [
+          { id: 'machine-size', label: 'Machine size', detail: '900 x 400 x 300 mm (W – D – H)' },
+          { id: 'workpiece-size', label: 'Workpiece size', detail: '450 x 270 x 60 mm (W – D – H)' },
+          { id: 'power', label: 'Power', detail: '550 W' },
+        ],
+      },
+      {
+        id: 'gwinstek-gfg-8255a',
+        facility: 'electronics-lab',
+        name: 'GW Instek GFG-8255A',
+        type: 'Function generator',
+        specs: [],
+      },
+      {
+        id: 'gwinstek-gds-2204a',
+        facility: 'electronics-lab',
+        name: 'GW Instek GDS-2204A',
+        type: 'Digital oscilloscope',
+        specs: [],
+      },
+      {
+        id: 'gwinstek-gpd-2303s',
+        facility: 'electronics-lab',
+        name: 'GW Instek GPD-2303S',
+        type: '2-channel DC power supply',
+        specs: [],
+      },
+    ],
+  },
+
+  // FabLab projects. Source: fablab.eiu.edu.vn/en/projects/. The source page gives no
+  // status, so `status` is deliberately absent everywhere (absent = no label).
+  projects: {
+    eyebrow: 'Projects',
+    title: 'Made in our workshop',
+    description: 'Models and products designed and built at FabLab EIU — from STEM teaching kits to robots and medical models.',
+    imageAlt: 'Photo of the {title} project',
+    statuses: {
+      ongoing: 'In progress',
+      done: 'Completed',
+    },
+    items: [
+      {
+        id: 'cobot',
+        title: 'Cobot',
+        description:
+          'Cobot is a multifunctional robot that supports people in public areas with tasks such as delivery and security.',
+      },
+      {
+        id: 'plane',
+        title: 'Plane model',
+        description:
+          'The aircraft model is designed to be simple, easy to assemble and easy to use in STEM classes.',
+      },
+      {
+        id: 'microbit-kit',
+        title: 'Micro:bit starter kit',
+        description:
+          'Helps students access technology and programming, and promotes scientific and technical research activities among students.',
+      },
+      {
+        id: 'jaw-model',
+        title: 'Skull model for surgery',
+        description:
+          'A skull model made by 3D printing so that doctors can practise before operating on a real patient.',
+      },
+      {
+        id: 'smart-light',
+        title: 'Micro:bit smart light',
+        description:
+          'The light changes colour and brightness with a push button or from a phone, or turns on automatically when someone is present in low light.',
+      },
+      {
+        id: 'refraction-model',
+        title: 'Physics training kit',
+        description:
+          'A physics teaching kit for the Laser & Fibre Optics STEM class that shows the refraction of light.',
+      },
+      {
+        id: 'mcr-racing-car',
+        title: 'EIU – MCR racing car',
+        description:
+          'Racing car models help students improve their specialised knowledge.',
+      },
+      {
+        id: 'hydroponic-garden',
+        title: 'Hydroponic garden',
+        description:
+          'The hydroponic growing model has automatic functions such as a misting timer, remote control, lights that simulate sunlight, scheduled fertilisation and a pH sensor.',
+      },
+    ],
+  },
+
   partners: {
     eyebrow: 'Partners',
     title: 'The organisations behind FabLab EIU',
@@ -912,6 +1148,7 @@ export const en = {
           // which targets the `#courses-stem` anchor specifically.
           { id: 'courses', label: 'Courses', href: '#courses' },
           { id: 'facilities', label: 'Facilities', href: '#facilities' },
+          { id: 'projects', label: 'Projects', href: '#projects' },
           { id: 'activities', label: 'Activities & competitions', href: '#activities' },
         ],
       },

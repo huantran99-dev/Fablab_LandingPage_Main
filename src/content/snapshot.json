@@ -1261,6 +1261,411 @@
         }
       ]
     },
+    "equipment": {
+      "close": "Close",
+      "imageAlt": "Photo of {name}",
+      "items": [
+        {
+          "facility": "printer-3d",
+          "id": "form-3",
+          "image": {
+            "height": 414,
+            "url": "/media/equipment-form-3.7c49aab5.jpg",
+            "width": 339
+          },
+          "name": "Formlabs Form 3",
+          "specs": [
+            {
+              "detail": "SLA – Stereolithography Apparatus; LFS – Low Force Stereolithography",
+              "id": "technology",
+              "label": "Printing technology"
+            },
+            {
+              "detail": "145x145x185 mm (W – D – H)",
+              "id": "print-size",
+              "label": "Maximum print size"
+            },
+            {
+              "detail": "25 – 300 µm",
+              "id": "layer",
+              "label": "Layer thickness"
+            },
+            {
+              "detail": "Resin",
+              "id": "material",
+              "label": "Material"
+            }
+          ],
+          "type": "Resin 3D printer"
+        },
+        {
+          "facility": "printer-3d",
+          "id": "cubicon-210f",
+          "image": {
+            "height": 300,
+            "url": "/media/equipment-cubicon-210f.a9459026.jpg",
+            "width": 300
+          },
+          "name": "Cubicon 210F",
+          "specs": [
+            {
+              "detail": "FFF – Fused Filament Fabrication",
+              "id": "technology",
+              "label": "Printing technology"
+            },
+            {
+              "detail": "150x150x150 mm (W – D – H)",
+              "id": "print-size",
+              "label": "Maximum print size"
+            },
+            {
+              "detail": "150 – 300 µm (minimum 100 µm)",
+              "id": "layer",
+              "label": "Layer thickness"
+            },
+            {
+              "detail": "1.75 mm",
+              "id": "material-diameter",
+              "label": "Material diameter"
+            },
+            {
+              "detail": "ABS, PLA, TPU",
+              "id": "material",
+              "label": "Material"
+            },
+            {
+              "detail": "0.4 mm",
+              "id": "nozzle",
+              "label": "Nozzle diameter"
+            },
+            {
+              "detail": "6.25 µm",
+              "id": "accuracy-xy",
+              "label": "XY-axis accuracy"
+            },
+            {
+              "detail": "1.25 µm",
+              "id": "accuracy-z",
+              "label": "Z-axis accuracy"
+            },
+            {
+              "detail": "260 °C",
+              "id": "nozzle-temp",
+              "label": "Nozzle temperature (max)"
+            },
+            {
+              "detail": "120 °C",
+              "id": "bed-temp",
+              "label": "Bed temperature (max)"
+            }
+          ],
+          "type": "3D printer"
+        },
+        {
+          "facility": "printer-3d",
+          "id": "cubicon-310f",
+          "image": {
+            "height": 790,
+            "url": "/media/equipment-cubicon-310f.f57da7bf.jpg",
+            "width": 800
+          },
+          "name": "Cubicon 310F",
+          "specs": [
+            {
+              "detail": "FFF – Fused Filament Fabrication",
+              "id": "technology",
+              "label": "Printing technology"
+            },
+            {
+              "detail": "240x190x200 mm (W – D – H)",
+              "id": "print-size",
+              "label": "Maximum print size"
+            },
+            {
+              "detail": "150 – 300 µm (minimum 100 µm)",
+              "id": "layer",
+              "label": "Layer thickness"
+            },
+            {
+              "detail": "1.75 mm",
+              "id": "material-diameter",
+              "label": "Material diameter"
+            },
+            {
+              "detail": "ABS, PLA, TPU",
+              "id": "material",
+              "label": "Material"
+            },
+            {
+              "detail": "0.4 mm",
+              "id": "nozzle",
+              "label": "Nozzle diameter"
+            },
+            {
+              "detail": "6.25 µm",
+              "id": "accuracy-xy",
+              "label": "XY-axis accuracy"
+            },
+            {
+              "detail": "1.25 µm",
+              "id": "accuracy-z",
+              "label": "Z-axis accuracy"
+            },
+            {
+              "detail": "260 °C",
+              "id": "nozzle-temp",
+              "label": "Nozzle temperature (max)"
+            },
+            {
+              "detail": "120 °C",
+              "id": "bed-temp",
+              "label": "Bed temperature (max)"
+            }
+          ],
+          "type": "3D printer"
+        },
+        {
+          "facility": "printer-3d",
+          "id": "shining-3d",
+          "image": {
+            "height": 737,
+            "url": "/media/equipment-shining-3d.d51a7fd0.jpg",
+            "width": 800
+          },
+          "name": "Shining 3D",
+          "specs": [
+            {
+              "detail": "Fixed scan – Automatic scan",
+              "id": "mode",
+              "label": "Mode"
+            },
+            {
+              "detail": "30x30x30 mm",
+              "id": "min-size",
+              "label": "Minimum object size"
+            },
+            {
+              "detail": "200x200x200 mm",
+              "id": "max-size",
+              "label": "Maximum object size"
+            },
+            {
+              "detail": "4 s",
+              "id": "speed",
+              "label": "Scanning speed"
+            },
+            {
+              "detail": "OBJ, STL, ASC, PLY",
+              "id": "formats",
+              "label": "Output formats"
+            },
+            {
+              "detail": "1.3 megapixels",
+              "id": "camera",
+              "label": "Camera resolution"
+            },
+            {
+              "detail": "White light",
+              "id": "light",
+              "label": "Light source"
+            },
+            {
+              "detail": "USB",
+              "id": "connection",
+              "label": "Connection"
+            }
+          ],
+          "type": "3D scanner"
+        },
+        {
+          "facility": "laser",
+          "id": "epilog-mini-helix-18",
+          "image": {
+            "height": 545,
+            "url": "/media/equipment-epilog-mini-helix-18.043b5512.jpg",
+            "width": 800
+          },
+          "name": "Epilog Mini Helix 18",
+          "specs": [
+            {
+              "detail": "18″ x 12″ (457 x 305 mm)",
+              "id": "table-size",
+              "label": "Table size"
+            },
+            {
+              "detail": "4″ (102 mm)",
+              "id": "thickness",
+              "label": "Material thickness (max)"
+            },
+            {
+              "detail": "40 W",
+              "id": "power",
+              "label": "Laser power"
+            },
+            {
+              "detail": "75 – 1200 DPI",
+              "id": "resolution",
+              "label": "Resolution"
+            },
+            {
+              "detail": "Ethernet T-Base cable or USB",
+              "id": "connection",
+              "label": "Connection"
+            }
+          ],
+          "type": "Laser cutter"
+        },
+        {
+          "facility": "cnc",
+          "id": "roland-srm-20",
+          "image": {
+            "height": 360,
+            "url": "/media/equipment-roland-srm-20.343ff868.jpg",
+            "width": 480
+          },
+          "name": "Roland SRM-20",
+          "specs": [
+            {
+              "detail": "100 x 100 mm",
+              "id": "table-size",
+              "label": "Table size"
+            },
+            {
+              "detail": "Ethernet T-Base cable or USB",
+              "id": "connection",
+              "label": "Connection"
+            }
+          ],
+          "type": "CNC milling machine"
+        },
+        {
+          "facility": "cnc",
+          "id": "proxxon-ff500",
+          "image": {
+            "height": 800,
+            "url": "/media/equipment-proxxon-ff500.176befec.jpg",
+            "width": 663
+          },
+          "name": "Proxxon FF500",
+          "specs": [
+            {
+              "detail": "400 x 125 x 780 mm (W – D – H)",
+              "id": "machine-size",
+              "label": "Machine size"
+            },
+            {
+              "detail": "450 x 270 x 60 mm (W – D – H)",
+              "id": "workpiece-size",
+              "label": "Workpiece size"
+            },
+            {
+              "detail": "BLDC 400 W",
+              "id": "power",
+              "label": "Spindle power"
+            }
+          ],
+          "type": "Milling machine"
+        },
+        {
+          "facility": "cnc",
+          "id": "proxxon-pd400",
+          "image": {
+            "height": 436,
+            "url": "/media/equipment-proxxon-pd400.08e14f8b.jpg",
+            "width": 800
+          },
+          "name": "Proxxon PD400",
+          "specs": [
+            {
+              "detail": "900 x 400 x 300 mm (W – D – H)",
+              "id": "machine-size",
+              "label": "Machine size"
+            },
+            {
+              "detail": "450 x 270 mm (L – D)",
+              "id": "workpiece-size",
+              "label": "Workpiece size"
+            },
+            {
+              "detail": "550 W",
+              "id": "power",
+              "label": "Spindle power"
+            }
+          ],
+          "type": "Lathe"
+        },
+        {
+          "facility": "cnc",
+          "id": "proxxon-ds460",
+          "image": {
+            "height": 623,
+            "url": "/media/equipment-proxxon-ds460.6a6860dc.jpg",
+            "width": 800
+          },
+          "name": "Proxxon DS460",
+          "specs": [
+            {
+              "detail": "900 x 400 x 300 mm (W – D – H)",
+              "id": "machine-size",
+              "label": "Machine size"
+            },
+            {
+              "detail": "450 x 270 x 60 mm (W – D – H)",
+              "id": "workpiece-size",
+              "label": "Workpiece size"
+            },
+            {
+              "detail": "550 W",
+              "id": "power",
+              "label": "Power"
+            }
+          ],
+          "type": "Scroll saw"
+        },
+        {
+          "facility": "electronics-lab",
+          "id": "gwinstek-gfg-8255a",
+          "image": {
+            "height": 480,
+            "url": "/media/equipment-gwinstek-gfg-8255a.4dd70ae2.jpg",
+            "width": 800
+          },
+          "name": "GW Instek GFG-8255A",
+          "specs": [],
+          "type": "Function generator"
+        },
+        {
+          "facility": "electronics-lab",
+          "id": "gwinstek-gds-2204a",
+          "image": {
+            "height": 378,
+            "url": "/media/equipment-gwinstek-gds-2204a.79b99a59.jpg",
+            "width": 378
+          },
+          "name": "GW Instek GDS-2204A",
+          "specs": [],
+          "type": "Digital oscilloscope"
+        },
+        {
+          "facility": "electronics-lab",
+          "id": "gwinstek-gpd-2303s",
+          "image": {
+            "height": 378,
+            "url": "/media/equipment-gwinstek-gpd-2303s.27ab25e7.jpg",
+            "width": 378
+          },
+          "name": "GW Instek GPD-2303S",
+          "specs": [],
+          "type": "2-channel DC power supply"
+        }
+      ],
+      "listLabel": "Machines in this area",
+      "noSpecs": "FabLab has not published detailed specifications for this machine yet.",
+      "openLabel": "View specifications of",
+      "source": "See the FabLab equipment page",
+      "sourceUrl": "https://fablab.eiu.edu.vn/en/devices/",
+      "specsTitle": "Technical specifications"
+    },
     "facilities": {
       "description": "Every machine is open to learners and the community, with technicians on hand to guide you.",
       "eyebrow": "Facilities",
@@ -1336,6 +1741,11 @@
               "label": "Facilities"
             },
             {
+              "href": "#projects",
+              "id": "projects",
+              "label": "Projects"
+            },
+            {
               "href": "#activities",
               "id": "activities",
               "label": "Activities & competitions"
@@ -1371,7 +1781,7 @@
         }
       ],
       "contact": {
-        "address": "Eastern International University, Binh Duong New City, Vietnam",
+        "address": "81 Nam Ky Khoi Nghia Street, Binh Duong Ward, Ho Chi Minh City",
         "email": "fablab@eiu.edu.vn",
         "phone": "(0274) 222 0176",
         "title": "Contact"
@@ -1438,6 +1848,11 @@
               "href": "#facilities",
               "id": "facilities",
               "label": "Facilities"
+            },
+            {
+              "href": "#projects",
+              "id": "projects",
+              "label": "Projects"
             },
             {
               "href": "#competitions",
@@ -1554,26 +1969,149 @@
       "title": "The organisations behind FabLab EIU"
     },
     "pillars": {
-      "description": "An open, dynamic space where technology is shared to create real value for society.",
+      "description": "A fabrication laboratory that gives the community access to the equipment, techniques and technology they need — a shared space to learn, research, design, create and start up together.",
       "eyebrow": "About us",
       "items": [
         {
-          "description": "Hands-on learning with modern equipment. Learners design, machine and finish their own products from start to end.",
+          "description": "Access techniques and technology to turn ideas into reality; build knowledge and skills through learning that goes hand in hand with doing.",
           "id": "education",
-          "title": "Education"
+          "title": "Education and training"
         },
         {
-          "description": "Turning creative ideas into products, and prototypes into complete engineering solutions.",
+          "description": "Search for new ideas and create innovative products that serve the community.",
           "id": "research",
-          "title": "Research"
+          "title": "Research and development"
         },
         {
-          "description": "Support in commercialising successful prototypes and taking products from the workshop to the market.",
+          "description": "Drive the commercialisation of products built from successful pilot projects.",
           "id": "entrepreneurship",
           "title": "Entrepreneurship"
         }
       ],
-      "title": "Mission of EIU FabLab"
+      "title": "Mission of EIU FabLab",
+      "values": [
+        {
+          "id": "open-space",
+          "title": "Open technology space"
+        },
+        {
+          "id": "experiment",
+          "title": "Experimentation"
+        },
+        {
+          "id": "problem-solving",
+          "title": "Problem solving"
+        },
+        {
+          "id": "creativity",
+          "title": "Creativity"
+        },
+        {
+          "id": "collaboration",
+          "title": "Sharing and collaboration"
+        },
+        {
+          "id": "achievement",
+          "title": "Achievement"
+        }
+      ],
+      "valuesTitle": "Core values",
+      "vision": {
+        "body": "To become a model digital fabrication workshop with modern technology, a dynamic and creative open space, the best support for turning ideas into reality, and a driver of entrepreneurship that creates positive value for the community.",
+        "title": "Vision"
+      }
+    },
+    "projects": {
+      "description": "Models and products designed and built at FabLab EIU — from STEM teaching kits to robots and medical models.",
+      "eyebrow": "Projects",
+      "imageAlt": "Photo of the {title} project",
+      "items": [
+        {
+          "description": "Cobot is a multifunctional robot that supports people in public areas with tasks such as delivery and security.",
+          "id": "cobot",
+          "image": {
+            "height": 681,
+            "url": "/media/project-cobot.d9bdca30.jpg",
+            "width": 278
+          },
+          "title": "Cobot"
+        },
+        {
+          "description": "The aircraft model is designed to be simple, easy to assemble and easy to use in STEM classes.",
+          "id": "plane",
+          "image": {
+            "height": 433,
+            "url": "/media/project-plane.fa948ab1.jpg",
+            "width": 577
+          },
+          "title": "Plane model"
+        },
+        {
+          "description": "Helps students access technology and programming, and promotes scientific and technical research activities among students.",
+          "id": "microbit-kit",
+          "image": {
+            "height": 404,
+            "url": "/media/project-microbit-kit.22993878.jpg",
+            "width": 617
+          },
+          "title": "Micro:bit starter kit"
+        },
+        {
+          "description": "A skull model made by 3D printing so that doctors can practise before operating on a real patient.",
+          "id": "jaw-model",
+          "image": {
+            "height": 453,
+            "url": "/media/project-jaw-model.54102f84.jpg",
+            "width": 317
+          },
+          "title": "Skull model for surgery"
+        },
+        {
+          "description": "The light changes colour and brightness with a push button or from a phone, or turns on automatically when someone is present in low light.",
+          "id": "smart-light",
+          "image": {
+            "height": 471,
+            "url": "/media/project-smart-light.a98ff1ee.jpg",
+            "width": 530
+          },
+          "title": "Micro:bit smart light"
+        },
+        {
+          "description": "A physics teaching kit for the Laser & Fibre Optics STEM class that shows the refraction of light.",
+          "id": "refraction-model",
+          "image": {
+            "height": 449,
+            "url": "/media/project-refraction-model.4efbe7c2.jpg",
+            "width": 483
+          },
+          "title": "Physics training kit"
+        },
+        {
+          "description": "Racing car models help students improve their specialised knowledge.",
+          "id": "mcr-racing-car",
+          "image": {
+            "height": 229,
+            "url": "/media/project-mcr-racing-car.d872a969.jpg",
+            "width": 517
+          },
+          "title": "EIU – MCR racing car"
+        },
+        {
+          "description": "The hydroponic growing model has automatic functions such as a misting timer, remote control, lights that simulate sunlight, scheduled fertilisation and a pH sensor.",
+          "id": "hydroponic-garden",
+          "image": {
+            "height": 417,
+            "url": "/media/project-hydroponic-garden.7c69f863.jpg",
+            "width": 598
+          },
+          "title": "Hydroponic garden"
+        }
+      ],
+      "statuses": {
+        "done": "Completed",
+        "ongoing": "In progress"
+      },
+      "title": "Made in our workshop"
     },
     "register": {
       "close": "Close",
@@ -1856,8 +2394,8 @@
       "title": "What learners say about FabLab EIU"
     }
   },
-  "rev": 38,
-  "updatedAt": "2026-09-18T04:37:26.503Z",
+  "rev": 60,
+  "updatedAt": "2026-10-20T08:39:00.871Z",
   "vi": {
     "activities": {
       "description": "Sân chơi, hội thảo và workshop do EIU FabLab tổ chức cho sinh viên, học sinh và cộng đồng.",
@@ -3287,6 +3825,411 @@
         }
       ]
     },
+    "equipment": {
+      "close": "Đóng",
+      "imageAlt": "Ảnh {name}",
+      "items": [
+        {
+          "facility": "printer-3d",
+          "id": "form-3",
+          "image": {
+            "height": 414,
+            "url": "/media/equipment-form-3.7c49aab5.jpg",
+            "width": 339
+          },
+          "name": "Formlabs Form 3",
+          "specs": [
+            {
+              "detail": "SLA – Stereolithography Apparatus; LFS – Low Force Stereolithography",
+              "id": "technology",
+              "label": "Công nghệ in"
+            },
+            {
+              "detail": "145x145x185 mm (Ngang – Dọc – Cao)",
+              "id": "print-size",
+              "label": "Kích thước vật in"
+            },
+            {
+              "detail": "25 – 300 µm",
+              "id": "layer",
+              "label": "Độ dày lớp in"
+            },
+            {
+              "detail": "Resin",
+              "id": "material",
+              "label": "Vật liệu"
+            }
+          ],
+          "type": "Máy in 3D resin"
+        },
+        {
+          "facility": "printer-3d",
+          "id": "cubicon-210f",
+          "image": {
+            "height": 300,
+            "url": "/media/equipment-cubicon-210f.a9459026.jpg",
+            "width": 300
+          },
+          "name": "Cubicon 210F",
+          "specs": [
+            {
+              "detail": "FFF – Fused Filament Fabrication",
+              "id": "technology",
+              "label": "Công nghệ in"
+            },
+            {
+              "detail": "150x150x150 mm (Ngang – Dọc – Cao)",
+              "id": "print-size",
+              "label": "Kích thước vật in"
+            },
+            {
+              "detail": "150 – 300 µm (nhỏ nhất 100 µm)",
+              "id": "layer",
+              "label": "Độ dày lớp in"
+            },
+            {
+              "detail": "1.75 mm",
+              "id": "material-diameter",
+              "label": "Đường kính vật liệu"
+            },
+            {
+              "detail": "ABS, PLA, TPU",
+              "id": "material",
+              "label": "Vật liệu"
+            },
+            {
+              "detail": "0.4 mm",
+              "id": "nozzle",
+              "label": "Đường kính đầu in"
+            },
+            {
+              "detail": "6.25 µm",
+              "id": "accuracy-xy",
+              "label": "Độ chính xác trục XY"
+            },
+            {
+              "detail": "1.25 µm",
+              "id": "accuracy-z",
+              "label": "Độ chính xác trục Z"
+            },
+            {
+              "detail": "260 °C",
+              "id": "nozzle-temp",
+              "label": "Nhiệt độ đầu in (tối đa)"
+            },
+            {
+              "detail": "120 °C",
+              "id": "bed-temp",
+              "label": "Nhiệt độ bàn in (tối đa)"
+            }
+          ],
+          "type": "Máy in 3D"
+        },
+        {
+          "facility": "printer-3d",
+          "id": "cubicon-310f",
+          "image": {
+            "height": 790,
+            "url": "/media/equipment-cubicon-310f.f57da7bf.jpg",
+            "width": 800
+          },
+          "name": "Cubicon 310F",
+          "specs": [
+            {
+              "detail": "FFF – Fused Filament Fabrication",
+              "id": "technology",
+              "label": "Công nghệ in"
+            },
+            {
+              "detail": "240x190x200 mm (Ngang – Dọc – Cao)",
+              "id": "print-size",
+              "label": "Kích thước vật in"
+            },
+            {
+              "detail": "150 – 300 µm (nhỏ nhất 100 µm)",
+              "id": "layer",
+              "label": "Độ dày lớp in"
+            },
+            {
+              "detail": "1.75 mm",
+              "id": "material-diameter",
+              "label": "Đường kính vật liệu"
+            },
+            {
+              "detail": "ABS, PLA, TPU",
+              "id": "material",
+              "label": "Vật liệu"
+            },
+            {
+              "detail": "0.4 mm",
+              "id": "nozzle",
+              "label": "Đường kính đầu in"
+            },
+            {
+              "detail": "6.25 µm",
+              "id": "accuracy-xy",
+              "label": "Độ chính xác trục XY"
+            },
+            {
+              "detail": "1.25 µm",
+              "id": "accuracy-z",
+              "label": "Độ chính xác trục Z"
+            },
+            {
+              "detail": "260 °C",
+              "id": "nozzle-temp",
+              "label": "Nhiệt độ đầu in (tối đa)"
+            },
+            {
+              "detail": "120 °C",
+              "id": "bed-temp",
+              "label": "Nhiệt độ bàn in (tối đa)"
+            }
+          ],
+          "type": "Máy in 3D"
+        },
+        {
+          "facility": "printer-3d",
+          "id": "shining-3d",
+          "image": {
+            "height": 737,
+            "url": "/media/equipment-shining-3d.d51a7fd0.jpg",
+            "width": 800
+          },
+          "name": "Shining 3D",
+          "specs": [
+            {
+              "detail": "Scan cố định – Scan tự động",
+              "id": "mode",
+              "label": "Chế độ"
+            },
+            {
+              "detail": "30x30x30 mm",
+              "id": "min-size",
+              "label": "Kích thước vật nhỏ nhất"
+            },
+            {
+              "detail": "200x200x200 mm",
+              "id": "max-size",
+              "label": "Kích thước vật lớn nhất"
+            },
+            {
+              "detail": "4 giây",
+              "id": "speed",
+              "label": "Tốc độ scan"
+            },
+            {
+              "detail": "OBJ, STL, ASC, PLY",
+              "id": "formats",
+              "label": "Định dạng xuất"
+            },
+            {
+              "detail": "1.3 megapixel",
+              "id": "camera",
+              "label": "Độ phân giải camera"
+            },
+            {
+              "detail": "Ánh sáng trắng",
+              "id": "light",
+              "label": "Nguồn sáng"
+            },
+            {
+              "detail": "USB",
+              "id": "connection",
+              "label": "Kết nối"
+            }
+          ],
+          "type": "Máy scan 3D"
+        },
+        {
+          "facility": "laser",
+          "id": "epilog-mini-helix-18",
+          "image": {
+            "height": 545,
+            "url": "/media/equipment-epilog-mini-helix-18.043b5512.jpg",
+            "width": 800
+          },
+          "name": "Epilog Mini Helix 18",
+          "specs": [
+            {
+              "detail": "18″ x 12″ (457 x 305 mm)",
+              "id": "table-size",
+              "label": "Kích thước bàn cắt"
+            },
+            {
+              "detail": "4″ (102 mm)",
+              "id": "thickness",
+              "label": "Độ dày vật liệu (tối đa)"
+            },
+            {
+              "detail": "40 W",
+              "id": "power",
+              "label": "Công suất đầu phóng"
+            },
+            {
+              "detail": "75 – 1200 DPI",
+              "id": "resolution",
+              "label": "Độ phân giải"
+            },
+            {
+              "detail": "Cáp Ethernet T-Base hoặc USB",
+              "id": "connection",
+              "label": "Kết nối"
+            }
+          ],
+          "type": "Máy cắt laser"
+        },
+        {
+          "facility": "cnc",
+          "id": "roland-srm-20",
+          "image": {
+            "height": 360,
+            "url": "/media/equipment-roland-srm-20.343ff868.jpg",
+            "width": 480
+          },
+          "name": "Roland SRM-20",
+          "specs": [
+            {
+              "detail": "100 x 100 mm",
+              "id": "table-size",
+              "label": "Kích thước bàn cắt"
+            },
+            {
+              "detail": "Cáp Ethernet T-Base hoặc USB",
+              "id": "connection",
+              "label": "Kết nối"
+            }
+          ],
+          "type": "Máy phay CNC"
+        },
+        {
+          "facility": "cnc",
+          "id": "proxxon-ff500",
+          "image": {
+            "height": 800,
+            "url": "/media/equipment-proxxon-ff500.176befec.jpg",
+            "width": 663
+          },
+          "name": "Proxxon FF500",
+          "specs": [
+            {
+              "detail": "400 x 125 mm, cao 780 mm",
+              "id": "machine-size",
+              "label": "Kích thước máy"
+            },
+            {
+              "detail": "Dài 450 x Rộng 270 x Cao 60 mm",
+              "id": "workpiece-size",
+              "label": "Kích thước vật gia công"
+            },
+            {
+              "detail": "BLDC 400 W",
+              "id": "power",
+              "label": "Công suất động cơ"
+            }
+          ],
+          "type": "Máy phay"
+        },
+        {
+          "facility": "cnc",
+          "id": "proxxon-pd400",
+          "image": {
+            "height": 436,
+            "url": "/media/equipment-proxxon-pd400.08e14f8b.jpg",
+            "width": 800
+          },
+          "name": "Proxxon PD400",
+          "specs": [
+            {
+              "detail": "Dài 900 x Ngang 400 x Cao 300 mm",
+              "id": "machine-size",
+              "label": "Kích thước máy"
+            },
+            {
+              "detail": "Dài 450 x Ngang 270 x Cao 60 mm",
+              "id": "workpiece-size",
+              "label": "Kích thước vật gia công"
+            },
+            {
+              "detail": "550 W",
+              "id": "power",
+              "label": "Công suất động cơ"
+            }
+          ],
+          "type": "Máy tiện"
+        },
+        {
+          "facility": "cnc",
+          "id": "proxxon-ds460",
+          "image": {
+            "height": 623,
+            "url": "/media/equipment-proxxon-ds460.6a6860dc.jpg",
+            "width": 800
+          },
+          "name": "Proxxon DS460",
+          "specs": [
+            {
+              "detail": "Dài 900 x Ngang 400 x Cao 300 mm",
+              "id": "machine-size",
+              "label": "Kích thước máy"
+            },
+            {
+              "detail": "Dài 450 x Ngang 270 x Cao 60 mm",
+              "id": "workpiece-size",
+              "label": "Kích thước vật gia công"
+            },
+            {
+              "detail": "550 W",
+              "id": "power",
+              "label": "Công suất động cơ"
+            }
+          ],
+          "type": "Máy cưa lọng"
+        },
+        {
+          "facility": "electronics-lab",
+          "id": "gwinstek-gfg-8255a",
+          "image": {
+            "height": 480,
+            "url": "/media/equipment-gwinstek-gfg-8255a.4dd70ae2.jpg",
+            "width": 800
+          },
+          "name": "GW Instek GFG-8255A",
+          "specs": [],
+          "type": "Máy phát xung"
+        },
+        {
+          "facility": "electronics-lab",
+          "id": "gwinstek-gds-2204a",
+          "image": {
+            "height": 378,
+            "url": "/media/equipment-gwinstek-gds-2204a.79b99a59.jpg",
+            "width": 378
+          },
+          "name": "GW Instek GDS-2204A",
+          "specs": [],
+          "type": "Máy hiện sóng số"
+        },
+        {
+          "facility": "electronics-lab",
+          "id": "gwinstek-gpd-2303s",
+          "image": {
+            "height": 378,
+            "url": "/media/equipment-gwinstek-gpd-2303s.27ab25e7.jpg",
+            "width": 378
+          },
+          "name": "GW Instek GPD-2303S",
+          "specs": [],
+          "type": "Bộ nguồn DC 2 kênh"
+        }
+      ],
+      "listLabel": "Các máy trong khu này",
+      "noSpecs": "Trang thiết bị của FabLab chưa công bố thông số chi tiết cho máy này.",
+      "openLabel": "Xem thông số",
+      "source": "Xem trang thiết bị của FabLab",
+      "sourceUrl": "https://fablab.eiu.edu.vn/vi/thiet-bi/",
+      "specsTitle": "Thông số kỹ thuật"
+    },
     "facilities": {
       "description": "Toàn bộ thiết bị đều mở cho học viên và cộng đồng sử dụng, có kỹ thuật viên hướng dẫn trực tiếp.",
       "eyebrow": "Thiết bị & Không gian",
@@ -3362,6 +4305,11 @@
               "label": "Thiết bị"
             },
             {
+              "href": "#projects",
+              "id": "projects",
+              "label": "Dự án"
+            },
+            {
               "href": "#activities",
               "id": "activities",
               "label": "Hoạt động & cuộc thi"
@@ -3397,7 +4345,7 @@
         }
       ],
       "contact": {
-        "address": "Đại học Quốc tế Miền Đông, Thành phố mới Bình Dương, Việt Nam",
+        "address": "81 Nam Kỳ Khởi Nghĩa, phường Bình Dương, TP Hồ Chí Minh",
         "email": "fablab@eiu.edu.vn",
         "phone": "(0274) 222 0176",
         "title": "Liên hệ"
@@ -3464,6 +4412,11 @@
               "href": "#facilities",
               "id": "facilities",
               "label": "Thiết bị"
+            },
+            {
+              "href": "#projects",
+              "id": "projects",
+              "label": "Dự án"
             },
             {
               "href": "#competitions",
@@ -3580,26 +4533,149 @@
       "title": "Đồng hành cùng EIU FabLab"
     },
     "pillars": {
-      "description": "Một không gian mở, năng động, nơi công nghệ được chia sẻ để tạo ra giá trị cho xã hội.",
+      "description": "Phòng thí nghiệm chế tác, mang cơ hội tiếp cận và sử dụng thiết bị, kỹ thuật và công nghệ cho cộng đồng — nơi mọi người cùng học, cùng nghiên cứu, cùng thiết kế, cùng sáng tạo và cùng khởi nghiệp.",
       "eyebrow": "Về chúng tôi",
       "items": [
         {
-          "description": "Học qua thực hành với thiết bị hiện đại. Người học tự tay thiết kế, gia công và hoàn thiện sản phẩm của chính mình.",
+          "description": "Tiếp cận các kỹ thuật, công nghệ để hiện thực hóa ý tưởng; nâng cao kiến thức và kỹ năng qua học đi đôi với hành.",
           "id": "education",
-          "title": "Giáo dục"
+          "title": "Giáo dục – Đào tạo"
         },
         {
-          "description": "Phát triển sản phẩm từ những ý tưởng sáng tạo, biến nguyên mẫu thành giải pháp kỹ thuật hoàn chỉnh.",
+          "description": "Tìm kiếm ý tưởng mới, tạo ra sản phẩm sáng tạo phục vụ cộng đồng.",
           "id": "research",
-          "title": "Nghiên cứu"
+          "title": "Nghiên cứu – Phát triển"
         },
         {
-          "description": "Đồng hành cùng bạn thương mại hóa nguyên mẫu thành công, đưa sản phẩm từ xưởng ra thị trường.",
+          "description": "Thúc đẩy thương mại hóa sản phẩm từ các dự án thử nghiệm thành công.",
           "id": "entrepreneurship",
           "title": "Khởi nghiệp"
         }
       ],
-      "title": "Sứ mệnh của EIU FabLab"
+      "title": "Sứ mệnh của EIU FabLab",
+      "values": [
+        {
+          "id": "open-space",
+          "title": "Không gian công nghệ mở"
+        },
+        {
+          "id": "experiment",
+          "title": "Thử nghiệm"
+        },
+        {
+          "id": "problem-solving",
+          "title": "Giải quyết vấn đề"
+        },
+        {
+          "id": "creativity",
+          "title": "Sáng tạo"
+        },
+        {
+          "id": "collaboration",
+          "title": "Chia sẻ và hợp tác"
+        },
+        {
+          "id": "achievement",
+          "title": "Thành tựu"
+        }
+      ],
+      "valuesTitle": "Giá trị cốt lõi",
+      "vision": {
+        "body": "Trở thành xưởng chế tác số điển hình với công nghệ hiện đại, không gian mở năng động – sáng tạo, hỗ trợ tốt nhất để hiện thực hóa ý tưởng và thúc đẩy khởi nghiệp, tạo giá trị tích cực cho cộng đồng.",
+        "title": "Tầm nhìn"
+      }
+    },
+    "projects": {
+      "description": "Những mô hình và sản phẩm được thiết kế, chế tạo tại FabLab EIU — từ học cụ STEM tới robot và mô hình y tế.",
+      "eyebrow": "Dự án",
+      "imageAlt": "Ảnh dự án {title}",
+      "items": [
+        {
+          "description": "Cobot là mô hình robot đa chức năng nhằm thực hiện các tác vụ hỗ trợ con người (vận chuyển, giám sát an ninh,…) ở nơi công cộng.",
+          "id": "cobot",
+          "image": {
+            "height": 681,
+            "url": "/media/project-cobot.d9bdca30.jpg",
+            "width": 278
+          },
+          "title": "Mô hình Cobot"
+        },
+        {
+          "description": "Mô hình máy bay được thiết kế đơn giản, dễ dàng lắp ráp và áp dụng vào trong lớp học STEM.",
+          "id": "plane",
+          "image": {
+            "height": 433,
+            "url": "/media/project-plane.fa948ab1.jpg",
+            "width": 577
+          },
+          "title": "Mô hình máy bay"
+        },
+        {
+          "description": "Giúp học sinh tiếp cận công nghệ, lập trình, thúc đẩy các hoạt động nghiên cứu khoa học kĩ thuật cho sinh viên.",
+          "id": "microbit-kit",
+          "image": {
+            "height": 404,
+            "url": "/media/project-microbit-kit.22993878.jpg",
+            "width": 617
+          },
+          "title": "Bộ kit micro:bit mở rộng"
+        },
+        {
+          "description": "Mô hình xương sọ thực hiện bằng phương pháp in 3D giúp hỗ trợ cho bác sĩ làm thí nghiệm trong phẫu thuật tạo hình.",
+          "id": "jaw-model",
+          "image": {
+            "height": 453,
+            "url": "/media/project-jaw-model.54102f84.jpg",
+            "width": 317
+          },
+          "title": "Mô hình xương hàm cho phẫu thuật nha"
+        },
+        {
+          "description": "Đèn thay đổi màu sắc, độ sáng bằng nút nhấn, qua điện thoại hoặc để đèn chạy tự động bật nếu có người trong điều kiện ánh sáng yếu.",
+          "id": "smart-light",
+          "image": {
+            "height": 471,
+            "url": "/media/project-smart-light.a98ff1ee.jpg",
+            "width": 530
+          },
+          "title": "Đèn thông minh"
+        },
+        {
+          "description": "Mô hình học cụ vật lý ứng dụng vào chương trình trải nghiệm Quang học trong chuỗi chương trình trải nghiệm STEM của STEM Lab.",
+          "id": "refraction-model",
+          "image": {
+            "height": 449,
+            "url": "/media/project-refraction-model.4efbe7c2.jpg",
+            "width": 483
+          },
+          "title": "Mô hình khúc xạ ánh sáng"
+        },
+        {
+          "description": "Mô hình xe đua MCR giúp sinh viên nâng cao kiến thức chuyên ngành thông qua sản phẩm.",
+          "id": "mcr-racing-car",
+          "image": {
+            "height": 229,
+            "url": "/media/project-mcr-racing-car.d872a969.jpg",
+            "width": 517
+          },
+          "title": "Xe đua MCR – EIU"
+        },
+        {
+          "description": "Mô hình trồng rau thủy canh có các chức năng tự động như hẹn giờ phun sương, điều khiển từ xa, đèn mô phỏng ánh sáng mặt trời, bón phân theo lịch trình hay cảm biến.",
+          "id": "hydroponic-garden",
+          "image": {
+            "height": 417,
+            "url": "/media/project-hydroponic-garden.7c69f863.jpg",
+            "width": 598
+          },
+          "title": "Vườn thủy canh"
+        }
+      ],
+      "statuses": {
+        "done": "Đã hoàn thành",
+        "ongoing": "Đang thực hiện"
+      },
+      "title": "Sản phẩm làm ra từ xưởng"
     },
     "register": {
       "close": "Đóng",

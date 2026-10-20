@@ -5,15 +5,18 @@ import { ItemList } from '../editor/ItemList'
 import { RecordEditor } from '../editor/RecordEditor'
 import { SectionFields } from '../editor/SectionFields'
 import { describePath } from '../editor/model'
+import { usePublishCheck } from '../hooks/usePublishCheck'
 import { PageHeader } from '../layout/PageHeader'
 import { ApiError, api, describeError } from '../lib/api'
 import { formatDateTime, getPath } from '../lib/paths'
+import { sectionMatches } from '../lib/publish'
 import { Alert } from '../ui/Alert'
 import { Button, LinkButton } from '../ui/Button'
 import { Card } from '../ui/Card'
 import { ConfirmDialog } from '../ui/ConfirmDialog'
 import { Icon } from '../ui/Icon'
 import { Modal } from '../ui/Modal'
+import { PublishStatus } from '../ui/PublishStatus'
 import { useToast } from '../ui/toastContext'
 
 /** Id các mục được phép mang ảnh trong bản nháp hiện tại. */
@@ -52,6 +55,24 @@ export function SectionPage({ descriptor, meta, onDirtyChange, onSaved }) {
   const [restoreTarget, setRestoreTarget] = useState(null)
   const [restoring, setRestoring] = useState(false)
   const [discardOpen, setDiscardOpen] = useState(false)
+  const publish = usePublishCheck()
+
+  /**
+   * Sau khi ghi: đọc lại bản trong database và bản trang công khai đang phát, so hai
+   * bản. "Đã lưu" chỉ nói máy chủ nhận; chip này nói người xem đã thấy được.
+   */
+  async function confirmPublished() {
+    const result = await publish.run(async (content) => sectionMatches(content, key, await api.readSection(key)))
+    if (!result.ok) {
+      toast({
+        tone: 'warning',
+        title: 'Đã lưu, nhưng trang công khai chưa trả bản mới',
+        message: result.error
+          ? `Không đọc được /api/content (${result.error}). Kiểm tra máy chủ đang chạy rồi bấm "Kiểm tra lại".`
+          : 'Thử lại sau vài giây. Nếu vẫn vậy: máy chủ có thể đang chạy bản cũ — khởi động lại `npm run server`.',
+      })
+    }
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -133,10 +154,12 @@ export function SectionPage({ descriptor, meta, onDirtyChange, onSaved }) {
           ),
         })
       } else {
-        toast({ tone: 'success', title: `Đã lưu ${descriptor.label}`, message: 'Trang công khai thấy bản mới ở lần tải trang kế tiếp.' })
+        toast({ tone: 'success', title: `Đã lưu ${descriptor.label}`, message: 'Đang kiểm tra trang công khai — xem trạng thái ở thanh dưới cùng.' })
       }
       setReloadToken((token) => token + 1)
       onSaved()
+      // Không chờ: nút Lưu nhả ra ngay, chip tự chuyển trạng thái khi kiểm xong.
+      confirmPublished()
     } catch (caught) {
       if (!(caught instanceof ApiError)) {
         toast({ tone: 'error', title: 'Không lưu được', message: describeError(caught) })
@@ -205,6 +228,7 @@ export function SectionPage({ descriptor, meta, onDirtyChange, onSaved }) {
       setHistoryOpen(false)
       setReloadToken((token) => token + 1)
       onSaved()
+      confirmPublished()
     } catch (caught) {
       toast({
         tone: 'error',
@@ -349,12 +373,16 @@ export function SectionPage({ descriptor, meta, onDirtyChange, onSaved }) {
 
       <div className="sticky bottom-0 z-30 -mx-4 mt-6 border-t border-gray-200 bg-white/90 px-4 py-3 backdrop-blur md:-mx-6 md:px-6 dark:border-gray-800 dark:bg-gray-900/90">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <span className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+          <span className="flex flex-wrap items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
             {dirty ? (
               <>
                 <span className="size-2 rounded-full bg-warning-500" aria-hidden="true" />
                 Có thay đổi chưa lưu
               </>
+            ) : publish.status.state !== 'idle' ? (
+              // Vừa lưu / khôi phục trong phiên này: thay "Đã lưu tất cả" bằng trạng
+              // thái đồng bộ lên trang công khai.
+              <PublishStatus status={publish.status} onRetry={confirmPublished} />
             ) : (
               <>
                 <Icon name="check" size={16} className="text-success-500" />
@@ -369,7 +397,7 @@ export function SectionPage({ descriptor, meta, onDirtyChange, onSaved }) {
             <Button variant="outline" icon="refresh" disabled={!dirty || saving} onClick={() => setDiscardOpen(true)}>
               Bỏ thay đổi
             </Button>
-            <Button icon="save" disabled={!dirty || saving} onClick={save}>
+            <Button icon="save" loading={saving} disabled={!dirty || saving} onClick={save}>
               {saving ? 'Đang lưu…' : 'Lưu'}
             </Button>
           </div>

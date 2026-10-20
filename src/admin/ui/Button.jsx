@@ -1,4 +1,5 @@
 import { Icon } from './Icon'
+import { Spinner } from './Spinner'
 
 /**
  * Nút của dashboard. Không có bóng — giữ đúng quy ước của repo dù dashboard không
@@ -25,10 +26,19 @@ const ICON_SIZES = { xs: 14, sm: 18, md: 18 }
 const BASE =
   'inline-flex shrink-0 items-center justify-center font-medium whitespace-nowrap transition-colors disabled:cursor-not-allowed disabled:opacity-70'
 
-export function Button({ variant = 'primary', size = 'sm', icon, iconRight, children, className = '', type = 'button', ...props }) {
+/**
+ * `loading`: thay icon bằng vòng xoay và đánh dấu `aria-busy`. Nút KHÔNG tự vô hiệu
+ * hoá — nơi gọi vẫn tự đặt `disabled`, vì có nút cần chặn bấm cả lúc không bận.
+ */
+export function Button({ variant = 'primary', size = 'sm', icon, iconRight, loading = false, children, className = '', type = 'button', ...props }) {
   return (
-    <button type={type === 'submit' ? 'submit' : 'button'} className={`${BASE} ${VARIANTS[variant]} ${SIZES[size]} ${className}`} {...props}>
-      {icon && <Icon name={icon} size={ICON_SIZES[size]} />}
+    <button
+      type={type === 'submit' ? 'submit' : 'button'}
+      aria-busy={loading || undefined}
+      className={`${BASE} ${VARIANTS[variant]} ${SIZES[size]} ${className}`}
+      {...props}
+    >
+      {loading ? <Spinner size={ICON_SIZES[size] - 2} /> : icon && <Icon name={icon} size={ICON_SIZES[size]} />}
       {children}
       {iconRight && <Icon name={iconRight} size={ICON_SIZES[size]} />}
     </button>

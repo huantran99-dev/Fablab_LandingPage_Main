@@ -299,7 +299,8 @@ export function FieldControl({ field, working, onChange, errors = {}, serverIssu
         <Select
           id={inputId}
           options={field.options(ctx)}
-          placeholder="Chọn…"
+          // Ô tuỳ chọn tự đặt chữ cho lựa chọn trống (vd. "— Không hiện nhãn —").
+          placeholder={field.placeholder ?? 'Chọn…'}
           value={value ?? ''}
           onChange={(event) => setShared(event.target.value)}
           invalid={Boolean(error)}

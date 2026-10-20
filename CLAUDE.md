@@ -106,10 +106,16 @@ miễn phí" — nó không đúng.
 
 ### Hướng trượt hiện tại
 
+Thứ tự trang (từ 2026-10-20, xưởng và thiết bị lên đầu): Hero → StatsBar → **Facilities →
+Projects** → Pillars → Courses → Activities → Team → Partners → Testimonials → FinalCTA.
+
 Trong cùng section tiêu đề và lưới đi ngược chiều, rồi đảo lại ở section kế tiếp:
-Pillars `left`/`right` → Courses `right`/`left` → Facilities `left`/`right` →
-Partners `right`/`left` → Activities `left`/`right` → Team `right`/`left` →
-Testimonials `left`/`right`. StatsBar · FinalCTA · Footer · nút "Xem thêm" ·
+Facilities `left`/`right` → Projects `right`/`left` → Pillars `left`/`right` → Courses
+`right`/`left` → Activities `left`/`right` → Team `right`/`left` → Partners
+`left`/`right` → Testimonials `right`/`left`. Lần sắp lại này chỉ phải lật Partners và
+Testimonials — các section khác tình cờ giữ nguyên chẵn/lẻ. Trong Pillars, sau lưới trụ cột còn khối chia đôi
+Tầm nhìn `left` | Giá trị cốt lõi `right` (nền trắng, ngăn bằng đường kẻ — cố ý KHÔNG
+dùng nền navy, vì FinalCTA đã giữ bề mặt tối). StatsBar · FinalCTA · Footer · nút "Xem thêm" ·
 link tuyển dụng · chấm tròn dùng mặc định `up`.
 
 Courses và Activities đều có **hai khối** bên trong. Chiều của khối gán theo chỉ
@@ -137,6 +143,7 @@ chỉ gom các mục con.
 | Về chúng tôi | 1 | `#about` | `<Section id="about">` |
 | Sự kiện | 1 | `#events` | suy từ `activities.groups[].id` |
 | Thiết bị | 2 (FabLab) | `#facilities` | `<Section id="facilities">` |
+| Dự án | 2 (FabLab) | `#projects` | `<Section id="projects">` |
 | Cuộc thi | 2 (FabLab) | `#competitions` | suy từ `activities.groups[].id` |
 | Khóa học STEM | 2 (StemLab) | `#courses-stem` | suy từ `` `courses-${group.id}` `` |
 | Khóa học trải nghiệm | 2 (StemLab) | `#courses-experience` | như trên |
@@ -352,6 +359,54 @@ giữ đúng tỷ lệ kẻo `object-cover` cắt mất chủ thể.
 Ảnh hero là ảnh trên màn hình đầu: để `fetchPriority="high"`, **không** lazy-load.
 Mọi ảnh khác lazy-load. Ảnh nào cũng phải có `width`/`height` thật.
 
+## Section Dự án
+
+[Projects.jsx](src/components/Projects.jsx), ngay sau Thiết bị. 8 dự án lấy từ
+`fablab.eiu.edu.vn/vi/du-an/` và `/en/projects/`; ảnh gán bằng cách mở từng ảnh ra xem
+(bản VI và EN dùng hai file khác nhau cho cùng một ảnh ở ba mục — lấy bản lớn hơn).
+
+- **`status` cố ý VẮNG trên mọi dự án.** Trang gốc không ghi dự án nào đang làm hay đã
+  xong; người dùng chọn "có trường, để trống" thay vì để agent đoán. Vắng = không nhãn.
+  Có thì phải là khoá của `projects.statuses` (invariants), và là trường dùng chung.
+- **Ô chọn tuỳ chọn trong dashboard:** `fromWorking` ([model.js](src/admin/editor/model.js))
+  bỏ hẳn khoá khi ô `optional` để trống — gửi `""` là 422. ItemModal cũng không tự chọn
+  sẵn lựa chọn đầu cho ô `optional` (tự chọn là tự gắn nhãn thay người dùng).
+- **Migration 008 chèn "Dự án" vào menu và footer bằng SQL JSON**, không ghi đè cả
+  section: dựng lại mảng con bằng `json_group_array(json(v) ORDER BY o)` (SQLite ≥ 3.44,
+  bản đóng gói là 3.49), mục cũ ở vị trí `2k`, mục mới ở `2k+1` ngay sau `facilities`.
+  Admin đã đổi cấu trúc (không còn nhánh `fablab` / cột `explore`) thì câu đó bỏ qua.
+  Kiểm bằng `rev`: section +2, nav +2, footer +2.
+
+## Popup thông số thiết bị
+
+Bốn ô của section Thiết bị giữ nguyên; trong mỗi ô có một hàng nút tên máy, bấm vào
+mở [EquipmentModal.jsx](src/components/EquipmentModal.jsx). Dữ liệu là **section riêng
+`equipment`** chứ không nằm trong `facilities`: ảnh đi qua bảng `binding`, mà
+`SECTION_IMAGES` chỉ cho **một scope ảnh trên một section**. Tách ra thì đường ghi, lịch
+sử, ảnh và dashboard dùng lại nguyên si.
+
+- `equipment.items[].facility` trỏ về `facilities.items[].id` — **trường dùng chung**, và
+  là luật cắt ngang section trong invariants: id lạ là lỗi (máy biến mất khỏi trang), nên
+  xoá một ô còn máy trỏ tới bị chặn. Dashboard lấy danh sách ô qua `/meta` (`ctx` của một
+  section không thấy section khác).
+- Giá trị thông số tên là **`detail`, không phải `value`**: `value` nằm trong
+  `SHARED_FIELDS` (số liệu StatsBar), đặt trùng tên là bị đòi bằng nhau giữa VI và EN.
+  `check:content` đã bắt lỗi này ngay lần đầu.
+- **Ba máy điện tử cố ý có `specs: []`** — trang gốc không công bố thông số; popup hiện
+  `noSpecs`. Tên file ảnh có gợi ý thông số (200MHz, 30V 3A) — đừng điền từ đó.
+- Nguồn là `fablab.eiu.edu.vn/vi/thiet-bi/` và `/en/devices/`. Hai lỗi đánh máy của bản
+  VI đã sửa theo bản EN (Form 3: 145x145x185 **mm**; đầu in Cubicon 210F: 0.4 **mm**).
+  Bản EN gọi DS460 là "wire saw" và GDS-2204A là "pulse meter" — ảnh cho thấy đó là máy
+  cưa lọng và máy hiện sóng, đã ghi theo ảnh.
+- Ảnh máy là **ảnh sản phẩm** đăng trên trang Thiết bị (nên mang `// ~`), đã gán bằng
+  cách mở từng ảnh ra xem — 12/12 khớp chữ in trên máy.
+
+**Database đã seed nhận section qua migration 006, còn ẢNH qua `npm run seed:images`**
+(migration SQL không xử lý được file). Script chỉ điền scope **chưa có ảnh nào**, nên
+chạy lại an toàn và không gắn lại ảnh admin đã gỡ. Danh sách scope ảnh nằm ở **một chỗ**:
+[image-sources.js](server/scripts/image-sources.js), dùng chung cho `seed` và
+`seed:images`.
+
 ## Popup chi tiết khóa học
 
 [CourseModal.jsx](src/components/CourseModal.jsx) dùng `<dialog>` gốc +
@@ -535,6 +590,33 @@ trình trên cổng 3001 với giờ commit backend gần nhất. Lưu ý mọi 
 `requireSession` trước khi xét route, nên dò bằng curl chưa đăng nhập luôn ra 401 — không
 phân biệt được route có tồn tại hay không.
 
+### "Sửa xong phải tải lại vài lần mới thấy" — đã sửa, đừng làm hỏng lại
+
+Nguyên nhân là header `Cache-Control: public, max-age=60, stale-while-revalidate=600` của
+`/api/content`: 60 giây đầu trình duyệt dùng bản cũ không hỏi máy chủ, 10 phút sau đó
+còn hiện bản cũ TRƯỚC rồi mới lặng lẽ tải bản mới cho lần sau. Giờ là `no-cache` (luôn
+hỏi lại, ETag theo `rev` nên không đổi chỉ tốn một 304), và
+[contentStore.js](src/lib/contentStore.js) gọi `fetch(..., { cache: 'no-cache' })` để cả
+trình duyệt còn giữ phản hồi theo header cũ cũng phải hỏi lại. Route quản trị: `no-store`.
+
+Ba lớp xác nhận, cả ba đều có hiệu ứng loading:
+
+- **Dashboard tự kiểm sau mỗi lượt lưu / khôi phục / lưu popup**
+  ([publish.js](src/admin/lib/publish.js) + [usePublishCheck](src/admin/hooks/usePublishCheck.js)):
+  đọc `/api/content` y như trang công khai (`cache: 'no-store'`, không cookie) rồi so với
+  bản trong database — sắp khoá trước khi so (Zod dựng lại object theo thứ tự schema), ảnh
+  so riêng theo id mục. Chip ở thanh dưới: "Đang kiểm tra…" → "Đã lên trang công khai"
+  hoặc "chưa trả bản mới" kèm "Kiểm tra lại". Thử lại ~6 giây rồi mới báo hỏng.
+- **Nút Lưu / Xác nhận có vòng xoay** (`loading` của [Button](src/admin/ui/Button.jsx)).
+- **Trang công khai**: [ContentSyncBar](src/components/ContentSyncBar.jsx) — vạch mảnh mép
+  trên trong lúc hỏi máy chủ, hiện trễ 300ms để 304 nhanh không làm nháy. Trang tự hỏi lại
+  khi người xem **quay lại tab** (`visibilitychange`, cách nhau ≥ 3 giây), nên sửa ở tab
+  dashboard rồi chuyển sang tab trang là thấy, không cần tải lại. Trạng thái "đang đồng bộ"
+  là store RIÊNG — gộp vào store nội dung thì mỗi lượt hỏi làm cả trang vẽ lại hai lần.
+
+Animation lặp vô hạn của vạch tắt bằng `animation-name: none` khi giảm chuyển động (cùng
+bẫy `!important` + layer như marquee).
+
 ### Ba luật của đường ghi
 
 1. **Mọi thao tác ghi tác động lên CẢ HAI ngôn ngữ trong CÙNG một giao dịch.**
@@ -542,7 +624,7 @@ phân biệt được route có tồn tại hay không.
    lệch cấu trúc" là trạng thái **không thao tác ra được**, chứ không phải một lỗi
    trông chờ bộ kiểm bắt lại sau khi đã ghi.
 2. **Không có schema thì không ghi được.** `PUT` vào section chưa khai trong
-   [schema/sections.js](server/schema/sections.js) trả 400. Cả 13 section đã có
+   [schema/sections.js](server/schema/sections.js) trả 400. Cả 15 section đã có
    schema strict. Thêm section mới vào trang là phải thêm schema, không phải nới
    lỏng chốt chặn. `activities.items[].date` **được để trống** — 4 hoạt động thật
    không có ngày; đừng "sửa" schema thành bắt buộc.
@@ -554,7 +636,7 @@ Lịch sử chép bản cũ **trước** khi ghi đè, và khôi phục luôn l�
 cùng một thời điểm — khôi phục một nửa là đúng cái lệch cấu trúc vừa nói. Lịch sử lưu
 kèm ảnh (`bindings_json`), nên khôi phục trả lại cả ảnh.
 
-### 13 section, một bộ soạn thảo
+### 15 section, một bộ soạn thảo
 
 Không có editor viết tay cho từng section. [descriptors.js](src/admin/sections/descriptors.js)
 mô tả mỗi section bằng dữ liệu; `SectionPage` + `ItemList` + `ItemModal` dựng mọi thứ.

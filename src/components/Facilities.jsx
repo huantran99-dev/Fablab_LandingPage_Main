@@ -1,5 +1,8 @@
+import { useMemo, useState } from 'react'
 import { FACILITY_ICON_IDS, FacilityIcon } from '../assets/icons/Icons'
 import { useT } from '../i18n/context'
+import { EquipmentModal } from './EquipmentModal'
+import { Button } from './ui/Button'
 import { RevealGroup } from './ui/Reveal'
 import { Section, SectionHeading } from './ui/Section'
 
@@ -27,6 +30,25 @@ const LAYOUT = {
 export function Facilities() {
   const t = useT()
 
+  // Giữ `id` chứ không giữ object máy: đổi ngôn ngữ lúc popup đang mở thì nội dung
+  // dịch theo, y như popup khóa học.
+  const [openId, setOpenId] = useState(null)
+  // `equipment` có thể vắng (snapshot hay database cũ hơn section này): khi đó ô
+  // không có hàng nút, trang vẫn chạy.
+  const devices = t.equipment?.items
+  const openDevice = openId ? (devices?.find((device) => device.id === openId) ?? null) : null
+
+  // Gom máy về đúng ô một lần. `facility` lạ thì máy không thuộc ô nào — bộ bất
+  // biến chặn trường hợp đó từ lúc lưu, nên ở đây chỉ cần không sập.
+  const byFacility = useMemo(() => {
+    const buckets = new Map()
+    for (const device of devices ?? []) {
+      if (!buckets.has(device.facility)) buckets.set(device.facility, [])
+      buckets.get(device.facility).push(device)
+    }
+    return buckets
+  }, [devices])
+
   return (
     <Section id="facilities">
       <SectionHeading
@@ -41,6 +63,7 @@ export function Facilities() {
         {t.facilities.items.map((item, index) => {
           const layout = LAYOUT[item.id] ?? LAYOUT_CYCLE[index % LAYOUT_CYCLE.length]
           const image = item.image
+          const machines = byFacility.get(item.id) ?? []
           return (
             <article
               key={item.id}
@@ -74,10 +97,32 @@ export function Facilities() {
 
               <h3 className="text-heading-sm text-ink">{item.title}</h3>
               <p className="text-body-sm text-graphite max-w-[420px]">{item.description}</p>
+
+              {/* Máy trong ô này — mỗi nút mở popup thông số. `mt-auto` đẩy hàng
+                  nút xuống đáy để các ô cùng hàng thẳng chân nhau. */}
+              {machines.length > 0 && (
+                <ul aria-label={t.equipment.listLabel} className="mt-auto flex flex-wrap gap-2">
+                  {machines.map((device) => (
+                    <li key={device.id}>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setOpenId(device.id)}
+                      >
+                        <span className="sr-only">{t.equipment.openLabel} </span>
+                        {device.name}
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </article>
           )
         })}
       </RevealGroup>
+
+      {t.equipment && <EquipmentModal device={openDevice} onClose={() => setOpenId(null)} />}
     </Section>
   )
 }

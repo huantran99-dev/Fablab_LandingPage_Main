@@ -10,14 +10,14 @@ ExpressJS + SQLite trong [server/](server/).
 ## Dashboard quản trị
 
 Giao diện theo phong cách TailAdmin (sidebar thu gọn, giao diện sáng/tối, tìm nhanh
-bằng `Ctrl K`). Sửa được **cả 13 section** của trang, mỗi section một màn hình:
+bằng `Ctrl K`). Sửa được **cả 15 section** của trang, mỗi section một màn hình:
 
 | Màn hình | Làm được gì |
 |---|---|
 | Tổng quan | Đăng ký mới, lượt xem 7 ngày, số khóa học, ảnh; đăng ký và lần lưu gần nhất |
 | Đăng ký khóa học | Danh sách người gửi form (lọc theo trạng thái, khóa, ngày, tìm kiếm); gọi điện, đổi trạng thái, ghi chú nội bộ, xoá theo yêu cầu; số đăng ký theo từng khóa; xuất CSV mở được bằng Excel. Badge đỏ trên sidebar khi có đăng ký mới |
 | Thống kê truy cập | Lượt xem, lượt khách, đăng ký theo ngày (7 / 30 / 90 ngày); nguồn truy cập, thiết bị, ngôn ngữ, nút được bấm; tỉ lệ mở popup → đăng ký của từng khóa |
-| 13 section | Sửa chữ VI + EN cạnh nhau; thêm / sửa / xoá / đổi thứ tự mục; gắn ảnh. Gồm cả chữ của form đăng ký |
+| 15 section | Sửa chữ VI + EN cạnh nhau; thêm / sửa / xoá / đổi thứ tự mục; gắn ảnh. Gồm cả chữ của form đăng ký, thông số từng máy và dự án |
 | Khóa học › Popup chi tiết | Sửa nội dung popup theo từng ngôn ngữ; gỡ bản sửa là về bản gốc |
 | Thư viện ảnh | Tải lên, xem ảnh đang dùng ở đâu, ghi chú nguồn, xoá ảnh không dùng |
 | Tài khoản | Đổi mật khẩu (đăng xuất mọi nơi) |

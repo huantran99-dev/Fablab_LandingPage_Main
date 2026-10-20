@@ -1,5 +1,5 @@
 /**
- * Mô tả 13 section cho bộ soạn thảo chung.
+ * Mô tả 15 section cho bộ soạn thảo chung, theo đúng thứ tự trên trang (sidebar dùng thứ tự này).
  *
  * Mỗi section là DỮ LIỆU chứ không phải một editor viết tay: trường nào dịch (hai ô
  * VI | EN), trường nào dùng chung (một ô, ghi vào cả hai), danh sách nào thêm/xoá
@@ -24,6 +24,9 @@ const description = area('description', 'Mô tả')
 const altHelp = (token, what) => `${token} được thay bằng ${what}.`
 
 const courseGroupOptions = (ctx) => (ctx.vi?.groups ?? []).map((group) => ({ value: group.id, label: group.title }))
+/** Ô của section Thiết bị — section khác nên phải lấy qua `/meta`, không qua `ctx.vi`. */
+const facilityOptions = (ctx) => (ctx.meta?.facilities ?? []).map((facility) => ({ value: facility.id, label: facility.title }))
+const statusOptions = (ctx) => Object.entries(ctx.vi?.statuses ?? {}).map(([id, label]) => ({ value: id, label }))
 const kindOptions = (ctx) => Object.entries(ctx.vi?.kinds ?? {}).map(([id, label]) => ({ value: id, label }))
 
 export const SECTIONS = [
@@ -111,24 +114,6 @@ export const SECTIONS = [
     ],
   },
   {
-    key: 'pillars',
-    label: 'Trụ cột',
-    icon: 'pillars',
-    description: 'Ba thẻ giới thiệu hoạt động chính (Về chúng tôi).',
-    groups: [{ title: 'Chữ chung', fields: [eyebrow, title, description] }],
-    lists: [
-      {
-        path: 'items',
-        title: 'Trụ cột',
-        itemName: 'trụ cột',
-        titleField: 'title',
-        preview: 'pillar',
-        idHint: 'Icon và màu thẻ tra theo id. Id mới không có icon riêng và lấy màu theo vòng lặp.',
-        fields: [text('title', 'Tên'), area('description', 'Mô tả')],
-      },
-    ],
-  },
-  {
     key: 'stats',
     label: 'Số liệu',
     icon: 'stats',
@@ -147,6 +132,171 @@ export const SECTIONS = [
           { key: 'value', label: 'Giá trị', type: 'number' },
           { key: 'suffix', label: 'Hậu tố', type: 'text', optional: true, placeholder: '+', help: 'Tối đa 4 ký tự, ví dụ "+" hoặc "%". Có thể để trống.' },
         ],
+      },
+    ],
+  },
+  {
+    key: 'facilities',
+    label: 'Thiết bị',
+    icon: 'facilities',
+    description: 'Lưới thiết bị của xưởng.',
+    groups: [
+      {
+        title: 'Chữ chung',
+        fields: [eyebrow, title, description, area('imageAlt', 'Mô tả ảnh (alt)', { rows: 2, help: altHelp('{title}', 'tên thiết bị') })],
+      },
+    ],
+    lists: [
+      {
+        path: 'items',
+        title: 'Thiết bị',
+        itemName: 'thiết bị',
+        titleField: 'title',
+        image: { label: 'Ảnh' },
+        idHint: 'Icon và bố cục ô tra theo id. Id mới lấy bố cục theo vòng lặp.',
+        fields: [text('title', 'Tên'), area('description', 'Mô tả')],
+      },
+    ],
+  },
+  {
+    key: 'equipment',
+    label: 'Thông số thiết bị',
+    icon: 'facilities',
+    description: 'Từng máy hiện thành nút trong ô ở section Thiết bị; bấm vào mở popup thông số.',
+    notes: [
+      'Ô chứa máy chọn ở trường "Thuộc ô". Xoá một ô ở trang Thiết bị khi còn máy trỏ tới là máy chủ từ chối — chuyển máy sang ô khác trước.',
+      'Máy không có thông số công bố thì để trống danh sách thông số: popup hiện câu "chưa công bố" thay vì một bảng rỗng. Đừng điền số từ nguồn không chính thức.',
+    ],
+    groups: [
+      {
+        title: 'Chữ trên nút',
+        fields: [
+          text('listLabel', 'Nhãn nhóm nút (trợ năng)', { help: 'Trình đọc màn hình đọc nhãn này cho hàng nút tên máy.' }),
+          text('openLabel', 'Tiền tố nút (trợ năng)', { help: 'Đọc trước tên máy, vd. "Xem thông số Cubicon 210F".' }),
+        ],
+      },
+      {
+        title: 'Popup',
+        fields: [
+          text('specsTitle', 'Tiêu đề bảng thông số'),
+          area('noSpecs', 'Câu khi máy chưa có thông số', { rows: 2 }),
+          text('close', 'Nút đóng (trợ năng)'),
+          area('imageAlt', 'Mô tả ảnh (alt)', { rows: 2, help: altHelp('{name}', 'tên máy') }),
+          text('source', 'Chữ của link trang gốc'),
+          text('sourceUrl', 'Link trang gốc', { help: 'Mỗi ngôn ngữ trỏ tới trang của ngôn ngữ đó.' }),
+        ],
+      },
+    ],
+    lists: [
+      {
+        path: 'items',
+        title: 'Máy',
+        itemName: 'máy',
+        titleField: 'name',
+        minItems: 1,
+        image: { label: 'Ảnh máy' },
+        idHint: 'Id là khoá tra ảnh. Đặt theo mã máy, vd. cubicon-210f.',
+        columns: [
+          {
+            label: 'Thuộc ô',
+            value: (item, ctx) => ctx.meta?.facilities?.find((facility) => facility.id === item.facility)?.title ?? item.facility,
+          },
+          { label: 'Thông số', value: (item) => (item.specs?.length ? `${item.specs.length} dòng` : 'chưa có') },
+        ],
+        filter: { label: 'Ô', field: 'facility', options: facilityOptions },
+        fields: [
+          { key: 'facility', label: 'Thuộc ô', type: 'select', options: facilityOptions, help: 'Máy hiện thành nút trong ô này ở section Thiết bị.' },
+          text('name', 'Tên máy'),
+          text('type', 'Loại máy'),
+          {
+            key: 'specs',
+            label: 'Thông số kỹ thuật',
+            type: 'sublist',
+            itemFields: [text('label', 'Tên thông số'), text('detail', 'Giá trị')],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    key: 'projects',
+    label: 'Dự án',
+    icon: 'grid',
+    description: 'Lưới dự án làm ra từ xưởng, ngay sau section Thiết bị.',
+    notes: [
+      'Trạng thái để trống thì card không hiện nhãn. Trang gốc của trường không ghi dự án nào đang làm hay đã xong — chỉ đánh dấu khi chắc chắn.',
+    ],
+    groups: [
+      {
+        title: 'Chữ chung',
+        fields: [eyebrow, title, description, area('imageAlt', 'Mô tả ảnh (alt)', { rows: 2, help: altHelp('{title}', 'tên dự án') })],
+      },
+    ],
+    lists: [
+      {
+        path: 'items',
+        title: 'Dự án',
+        itemName: 'dự án',
+        titleField: 'title',
+        minItems: 1,
+        image: { label: 'Ảnh' },
+        idHint: 'Id là khoá tra ảnh. Đặt theo tên dự án không dấu, vd. vuon-thuy-canh.',
+        columns: [{ label: 'Trạng thái', value: (item, ctx) => (item.status ? (ctx.vi?.statuses?.[item.status] ?? item.status) : '—') }],
+        filter: { label: 'Trạng thái', field: 'status', options: statusOptions },
+        fields: [
+          text('title', 'Tên dự án'),
+          area('description', 'Mô tả'),
+          {
+            key: 'status',
+            label: 'Trạng thái',
+            type: 'select',
+            optional: true,
+            placeholder: '— Không hiện nhãn —',
+            options: statusOptions,
+            help: 'Để trống nếu chưa chắc. Danh sách trạng thái sửa ở mục "Trạng thái" bên dưới.',
+          },
+        ],
+      },
+    ],
+    records: [{ path: 'statuses', title: 'Trạng thái', description: 'Nhãn hiện trên card dự án.', itemName: 'trạng thái' }],
+  },
+  {
+    key: 'pillars',
+    label: 'Trụ cột',
+    icon: 'pillars',
+    description: 'Ba trụ cột sứ mạng, tầm nhìn và lưới giá trị cốt lõi (Về chúng tôi).',
+    groups: [
+      {
+        title: 'Chữ chung',
+        fields: [eyebrow, title, description],
+      },
+      {
+        title: 'Tầm nhìn',
+        fields: [text('vision.title', 'Tiêu đề'), area('vision.body', 'Câu tầm nhìn', { rows: 2 })],
+      },
+      {
+        title: 'Giá trị cốt lõi',
+        description: 'Tiêu đề cột bên phải khối Tầm nhìn. Các giá trị sửa ở danh sách bên dưới.',
+        fields: [text('valuesTitle', 'Tiêu đề cột')],
+      },
+    ],
+    lists: [
+      {
+        path: 'items',
+        title: 'Trụ cột sứ mạng',
+        itemName: 'trụ cột',
+        titleField: 'title',
+        preview: 'pillar',
+        idHint: 'Icon và màu thẻ tra theo id. Id mới không có icon riêng và lấy màu theo vòng lặp.',
+        fields: [text('title', 'Tên'), area('description', 'Mô tả')],
+      },
+      {
+        path: 'values',
+        title: 'Giá trị cốt lõi',
+        itemName: 'giá trị',
+        titleField: 'title',
+        columns: [{ label: 'Id', value: (item) => item.id }],
+        fields: [text('title', 'Tên ngắn (1 cụm từ)')],
       },
     ],
   },
@@ -295,54 +445,6 @@ export const SECTIONS = [
     records: [{ path: 'levels', title: 'Cấp độ', description: 'Dùng cho thẻ cấp độ.', itemName: 'cấp độ' }],
   },
   {
-    key: 'facilities',
-    label: 'Thiết bị',
-    icon: 'facilities',
-    description: 'Lưới thiết bị của xưởng.',
-    groups: [
-      {
-        title: 'Chữ chung',
-        fields: [eyebrow, title, description, area('imageAlt', 'Mô tả ảnh (alt)', { rows: 2, help: altHelp('{title}', 'tên thiết bị') })],
-      },
-    ],
-    lists: [
-      {
-        path: 'items',
-        title: 'Thiết bị',
-        itemName: 'thiết bị',
-        titleField: 'title',
-        image: { label: 'Ảnh' },
-        idHint: 'Icon và bố cục ô tra theo id. Id mới lấy bố cục theo vòng lặp.',
-        fields: [text('title', 'Tên'), area('description', 'Mô tả')],
-      },
-    ],
-  },
-  {
-    key: 'partners',
-    label: 'Đối tác',
-    icon: 'partners',
-    description: 'Dải logo đối tác chạy ngang.',
-    notes: [
-      'Chỉ gắn logo lấy từ nguồn chính thức của chính tổ chức đó. Không có logo thì để trống — trang hiện tên bằng chữ. Gán nhầm logo là gán sai nhận diện một tổ chức có thật.',
-    ],
-    groups: [
-      {
-        title: 'Chữ chung',
-        fields: [eyebrow, title, description, text('logoAlt', 'Mô tả logo (alt)', { help: altHelp('{name}', 'tên đối tác') })],
-      },
-    ],
-    lists: [
-      {
-        path: 'items',
-        title: 'Đối tác',
-        itemName: 'đối tác',
-        titleField: 'name',
-        image: { label: 'Logo', optional: true, hint: 'PNG nền trong suốt, cao tối thiểu 64px.' },
-        fields: [text('name', 'Tên tổ chức')],
-      },
-    ],
-  },
-  {
     key: 'activities',
     label: 'Hoạt động',
     icon: 'activities',
@@ -430,6 +532,31 @@ export const SECTIONS = [
             description: 'Chỉ một người. Bật ở đây sẽ tắt ở người đang giữ.',
           },
         ],
+      },
+    ],
+  },
+  {
+    key: 'partners',
+    label: 'Đối tác',
+    icon: 'partners',
+    description: 'Dải logo đối tác chạy ngang.',
+    notes: [
+      'Chỉ gắn logo lấy từ nguồn chính thức của chính tổ chức đó. Không có logo thì để trống — trang hiện tên bằng chữ. Gán nhầm logo là gán sai nhận diện một tổ chức có thật.',
+    ],
+    groups: [
+      {
+        title: 'Chữ chung',
+        fields: [eyebrow, title, description, text('logoAlt', 'Mô tả logo (alt)', { help: altHelp('{name}', 'tên đối tác') })],
+      },
+    ],
+    lists: [
+      {
+        path: 'items',
+        title: 'Đối tác',
+        itemName: 'đối tác',
+        titleField: 'name',
+        image: { label: 'Logo', optional: true, hint: 'PNG nền trong suốt, cao tối thiểu 64px.' },
+        fields: [text('name', 'Tên tổ chức')],
       },
     ],
   },

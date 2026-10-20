@@ -1,6 +1,6 @@
-import { PILLAR_ICON_IDS, PillarIcon } from '../assets/icons/Icons'
+import { PILLAR_ICON_IDS, PillarIcon, QuoteIcon } from '../assets/icons/Icons'
 import { useT } from '../i18n/context'
-import { RevealGroup } from './ui/Reveal'
+import { Reveal, RevealGroup } from './ui/Reveal'
 import { Section, SectionHeading } from './ui/Section'
 
 /**
@@ -26,8 +26,15 @@ const TONES = {
   entrepreneurship: TONE_CYCLE[2],
 }
 
+/** Nhãn nhỏ đầu hai cột Tầm nhìn | Giá trị — cùng một kiểu để hai cột đọc thành một cặp. */
+const LABEL = 'text-caption font-medium uppercase tracking-[0.12em] text-signal'
+
 export function Pillars() {
   const t = useT()
+  const vision = t.pillars.vision
+  const values = t.pillars.values ?? []
+  const hasVision = Boolean(vision?.body)
+  const hasValues = values.length > 0
 
   return (
     <Section id="about">
@@ -62,6 +69,57 @@ export function Pillars() {
           )
         })}
       </RevealGroup>
+
+      {/* Tầm nhìn | Giá trị cốt lõi — khối chia đôi kiểu tạp chí, nền trắng, ngăn với
+          lưới trụ cột bằng một đường kẻ chứ không bằng một bề mặt màu: khối kêu gọi
+          cuối trang đã giữ nền navy, hai bề mặt tối na ná nhau làm trang lặp nhịp.
+
+          Cả hai nửa đều có thể VẮNG trong dữ liệu (bản lịch sử cũ khôi phục bỏ qua
+          schema, database seed trước ngày có các khoá này). Thiếu nửa nào thì bỏ nửa
+          đó, nửa còn lại chiếm hết bề ngang; thiếu cả hai thì không vẽ đường kẻ. */}
+      {(hasVision || hasValues) && (
+        <div
+          className={[
+            'mt-16 md:mt-20 grid gap-12 border-t border-ash/60 pt-12 md:pt-16 lg:gap-16',
+            hasVision && hasValues ? 'lg:grid-cols-[5fr_7fr]' : '',
+          ].join(' ')}
+        >
+          {hasVision && (
+            <Reveal from="left" className="flex flex-col gap-5">
+              {vision.title && <h3 className={LABEL}>{vision.title}</h3>}
+              <QuoteIcon className="text-signal/30" size={44} />
+              <p className="text-heading-lg text-ink">{vision.body}</p>
+            </Reveal>
+          )}
+
+          {hasValues && (
+            <div className="flex flex-col gap-2">
+              {t.pillars.valuesTitle && (
+                <Reveal from="right">
+                  <h3 className={LABEL}>{t.pillars.valuesTitle}</h3>
+                </Reveal>
+              )}
+              {/* <ol> tự đọc thứ tự cho screen reader, nên số 01–06 hiển thị chỉ
+                  để nhìn (aria-hidden). Stagger của RevealGroup áp lên từng dòng. */}
+              <RevealGroup as="ol" from="right" className="divide-y divide-ash/60">
+                {values.map((value, index) => (
+                  <li key={value.id} className="flex items-baseline gap-5 py-4 md:py-5">
+                    <span
+                      className="w-8 shrink-0 font-display text-body-sm font-bold tabular-nums text-signal"
+                      aria-hidden="true"
+                    >
+                      {String(index + 1).padStart(2, '0')}
+                    </span>
+                    <span className="font-display text-subheading font-bold text-ink md:text-heading-sm">
+                      {value.title}
+                    </span>
+                  </li>
+                ))}
+              </RevealGroup>
+            </div>
+          )}
+        </div>
+      )}
     </Section>
   )
 }

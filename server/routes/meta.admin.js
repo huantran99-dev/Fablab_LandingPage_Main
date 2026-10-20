@@ -50,6 +50,9 @@ metaRouter.get('/meta', (_req, res) => {
       hasImages: Boolean(SECTION_IMAGES[key]),
     })),
     anchors: anchors ? [...anchors].sort() : null,
+    // Ô của section Thiết bị, cho ô chọn `facility` ở section Thông số thiết bị: bộ
+    // soạn của một section chỉ thấy chính nó, không thấy section khác.
+    facilities: (content.vi.facilities?.items ?? []).map((item) => ({ id: item.id, title: item.title })),
     icons: {
       course: lookups.courseIcons ?? [],
       pillar: lookups.pillarIcons ?? [],

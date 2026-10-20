@@ -72,6 +72,13 @@ export function createApp() {
     res.status(404).end()
   })
 
+  // Phản hồi quản trị và phiên đăng nhập không bao giờ được nằm trong cache nào: vừa có
+  // dữ liệu cá nhân, vừa phải luôn là bản vừa ghi (dashboard đọc lại ngay sau khi lưu).
+  app.use(['/api/admin', '/api/auth'], (_req, res, next) => {
+    res.set('Cache-Control', 'no-store')
+    next()
+  })
+
   app.use('/api', contentRouter)
   app.use('/api/auth', authRouter)
   app.use('/api/admin', adminContentRouter)

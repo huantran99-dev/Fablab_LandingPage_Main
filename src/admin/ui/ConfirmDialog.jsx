@@ -22,7 +22,7 @@ export function ConfirmDialog({
           <Button variant="outline" onClick={onCancel} disabled={busy}>
             Thôi
           </Button>
-          <Button variant={tone === 'danger' ? 'danger' : 'primary'} onClick={onConfirm} disabled={busy}>
+          <Button variant={tone === 'danger' ? 'danger' : 'primary'} loading={busy} onClick={onConfirm} disabled={busy}>
             {busy ? 'Đang xử lý…' : confirmLabel}
           </Button>
         </>

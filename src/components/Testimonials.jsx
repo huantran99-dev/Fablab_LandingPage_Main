@@ -20,10 +20,10 @@ export function Testimonials() {
         eyebrow={t.testimonials.eyebrow}
         title={t.testimonials.title}
         align="center"
-        from="left"
+        from="right"
       />
 
-      <Reveal from="right" className="mt-14 flex items-center gap-5">
+      <Reveal from="left" className="mt-14 flex items-center gap-5">
         <div className="hidden md:block">
           <RoundButton label={t.testimonials.previous} onClick={() => go(-1)}>
             <ArrowLeftIcon />

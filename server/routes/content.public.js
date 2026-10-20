@@ -12,7 +12,16 @@ import { getContent } from '../content/cache.js'
 export const contentRouter = Router()
 
 const LOCALES = new Set(['vi', 'en'])
-const CACHE_HEADER = 'public, max-age=60, stale-while-revalidate=600'
+/**
+ * `no-cache` = trình duyệt ĐƯỢC giữ bản sao nhưng PHẢI hỏi lại máy chủ mỗi lần dùng.
+ * Nhờ ETag theo `rev`, nội dung không đổi chỉ tốn một 304 rỗng — rẻ gần bằng cache.
+ *
+ * Bản trước là `public, max-age=60, stale-while-revalidate=600`: admin lưu xong, trình
+ * duyệt vẫn dùng bản cũ tới 60 giây KHÔNG hỏi máy chủ, rồi 10 phút sau đó còn hiện bản
+ * cũ TRƯỚC và chỉ lặng lẽ tải bản mới cho LẦN SAU — nên phải tải lại trang hai, ba lần
+ * mới thấy thay đổi. Đừng đưa max-age / stale-while-revalidate trở lại.
+ */
+const CACHE_HEADER = 'no-cache'
 
 /** Trả 304 nếu client đã có đúng bản này. */
 function sendCached(req, res, etag, body) {
@@ -57,9 +66,10 @@ contentRouter.get('/content/:locale', (req, res) => {
  * dashboard mới, còn `npm run server` thì KHÔNG tự nạp lại, nên dashboard mới nói
  * chuyện với máy chủ cũ và mọi lỗi đều trông như lỗi của dashboard.
  */
-export const API_VERSION = 3
+export const API_VERSION = 7
 
 contentRouter.get('/health', (_req, res) => {
   const { rev, updatedAt } = getContent()
+  res.set('Cache-Control', 'no-store')
   res.json({ ok: true, rev, updatedAt, api: API_VERSION })
 })

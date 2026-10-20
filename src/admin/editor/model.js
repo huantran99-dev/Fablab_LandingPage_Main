@@ -75,6 +75,9 @@ export function fromWorking(fields, working, locale) {
       if (value) out[field.key] = true
     } else if (field.type === 'number') {
       out[field.key] = Number(value)
+    } else if (field.type === 'select' && field.optional && (value === '' || value == null)) {
+      // Ô chọn tuỳ chọn để trống = khoá VẮNG, không phải chuỗi rỗng: schema từ chối
+      // `''`, và bản seed vốn không có khoá đó (vd. `projects.items[].status`).
     } else {
       out[field.key] = value
     }
