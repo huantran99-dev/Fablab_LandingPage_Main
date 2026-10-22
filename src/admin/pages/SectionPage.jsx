@@ -26,10 +26,27 @@ function imageItemIds(descriptor, vi) {
   return list ? (getPath(vi, list.path) ?? []).map((item) => item.id) : []
 }
 
+/** Id các mục được phép mang video nền (hiện chỉ Hoạt động). */
+function videoItemIds(descriptor, vi) {
+  const list = descriptor.lists.find((entry) => entry.video)
+  return list ? (getPath(vi, list.path) ?? []).map((item) => item.id) : []
+}
+
+/** Khác biệt media giữa bản đã tải và bản nháp: `{ idMục: idMedia | null }`. */
+function mediaDiff(ids, loadedMap, currentMap) {
+  const out = {}
+  for (const id of ids) {
+    const before = loadedMap?.[id]?.mediaId ?? null
+    const after = currentMap[id]?.mediaId ?? null
+    if (before !== after) out[id] = after
+  }
+  return out
+}
+
 /**
  * Trang soạn một section: bản nháp hai ngôn ngữ + ảnh, lưu một lượt.
  *
- * Mọi thao tác trên trang chỉ đổi bản nháp. Nút Lưu gửi `{ vi, en, rev, images }`;
+ * Mọi thao tác trên trang chỉ đổi bản nháp. Nút Lưu gửi `{ vi, en, rev, images, videos }`;
  * máy chủ kiểm schema, đối xứng và bất biến rồi mới ghi. `rev` sai (tab khác đã lưu)
  * thì 409 — không bao giờ lặng lẽ ghi đè.
  *
@@ -42,6 +59,7 @@ export function SectionPage({ descriptor, meta, onDirtyChange, onSaved }) {
   const [loaded, setLoaded] = useState(null)
   const [draft, setDraft] = useState(null)
   const [images, setImages] = useState({})
+  const [videos, setVideos] = useState({})
   const [history, setHistory] = useState([])
   const [loadError, setLoadError] = useState(null)
   const [reloadToken, setReloadToken] = useState(0)
@@ -83,6 +101,7 @@ export function SectionPage({ descriptor, meta, onDirtyChange, onSaved }) {
         setLoaded(pair)
         setDraft({ vi: pair.vi, en: pair.en })
         setImages(pair.images ?? {})
+        setVideos(pair.videos ?? {})
         setHistory(log.entries.filter((entry) => entry.locale === 'vi'))
         setIssues(null)
         setInvariants([])
@@ -97,22 +116,22 @@ export function SectionPage({ descriptor, meta, onDirtyChange, onSaved }) {
     }
   }, [key, reloadToken])
 
-  const imageDiff = useMemo(() => {
-    if (!loaded || !draft) return {}
-    const out = {}
-    for (const id of imageItemIds(descriptor, draft.vi)) {
-      const before = loaded.images?.[id]?.mediaId ?? null
-      const after = images[id]?.mediaId ?? null
-      if (before !== after) out[id] = after
-    }
-    return out
-  }, [loaded, draft, images, descriptor])
+  const imageDiff = useMemo(
+    () => (loaded && draft ? mediaDiff(imageItemIds(descriptor, draft.vi), loaded.images, images) : {}),
+    [loaded, draft, images, descriptor],
+  )
+  const videoDiff = useMemo(
+    () => (loaded && draft ? mediaDiff(videoItemIds(descriptor, draft.vi), loaded.videos, videos) : {}),
+    [loaded, draft, videos, descriptor],
+  )
 
   const dirty = useMemo(
     () =>
       Boolean(loaded && draft) &&
-      (JSON.stringify(draft) !== JSON.stringify({ vi: loaded.vi, en: loaded.en }) || Object.keys(imageDiff).length > 0),
-    [loaded, draft, imageDiff],
+      (JSON.stringify(draft) !== JSON.stringify({ vi: loaded.vi, en: loaded.en }) ||
+        Object.keys(imageDiff).length > 0 ||
+        Object.keys(videoDiff).length > 0),
+    [loaded, draft, imageDiff, videoDiff],
   )
 
   useEffect(() => {
@@ -139,6 +158,7 @@ export function SectionPage({ descriptor, meta, onDirtyChange, onSaved }) {
     try {
       const body = { vi: draft.vi, en: draft.en, rev: loaded.rev }
       if (Object.keys(imageDiff).length > 0) body.images = imageDiff
+      if (Object.keys(videoDiff).length > 0) body.videos = videoDiff
       const result = await api.writeSection(key, body)
 
       if (result.warnings?.length > 0) {
@@ -243,6 +263,7 @@ export function SectionPage({ descriptor, meta, onDirtyChange, onSaved }) {
   function discard() {
     setDraft({ vi: loaded.vi, en: loaded.en })
     setImages(loaded.images ?? {})
+    setVideos(loaded.videos ?? {})
     setIssues(null)
     setInvariants([])
     setDiscardOpen(false)
@@ -360,6 +381,8 @@ export function SectionPage({ descriptor, meta, onDirtyChange, onSaved }) {
             onChangeDraft={setDraft}
             images={images}
             onChangeImages={setImages}
+            videos={videos}
+            onChangeVideos={setVideos}
             issues={issues}
             ctx={ctx}
             savedIds={savedIds}

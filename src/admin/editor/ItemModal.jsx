@@ -10,7 +10,7 @@ import { FieldControl } from './FieldControl'
 import { ImageField } from './ImageField'
 import { activeFields, allFields, fillSubIds, toWorking, validateWorking } from './model'
 
-function ItemForm({ list, mode, itemId, draft, images, ctx, serverIssues, savedIds, onApply, onCancel, guardRef, initialShared }) {
+function ItemForm({ list, mode, itemId, draft, images, videos = {}, ctx, serverIssues, savedIds, onApply, onCancel, guardRef, initialShared }) {
   const fields = allFields(list)
   const titleField = fields.find((field) => field.key === list.titleField)
 
@@ -36,12 +36,14 @@ function ItemForm({ list, mode, itemId, draft, images, ctx, serverIssues, savedI
       working,
       variant: list.variants ? (viItem ? list.variants.detect(viItem) : list.variants.options[0].value) : null,
       image: list.image && viItem ? (images[viItem.id] ?? null) : null,
+      video: list.video && viItem ? (videos[viItem.id] ?? null) : null,
     }
   })
 
   const [working, setWorking] = useState(initial.working)
   const [variant, setVariant] = useState(initial.variant)
   const [image, setImage] = useState(initial.image)
+  const [video, setVideo] = useState(initial.video)
   const [idTouched, setIdTouched] = useState(false)
   const [errors, setErrors] = useState({})
   const [tab, setTab] = useState('card')
@@ -52,7 +54,7 @@ function ItemForm({ list, mode, itemId, draft, images, ctx, serverIssues, savedI
   const suggestedFrom = titleField?.translated ? working.vi[list.titleField] : working.shared[list.titleField]
   const current = mode === 'create' && !idTouched ? { ...working, id: uniqueId(slugify(suggestedFrom), usedIds) } : working
 
-  const dirty = JSON.stringify({ working, variant, image }) !== JSON.stringify(initial)
+  const dirty = JSON.stringify({ working, variant, image, video }) !== JSON.stringify(initial)
   useEffect(() => {
     guardRef.current = () => dirty
   })
@@ -70,6 +72,8 @@ function ItemForm({ list, mode, itemId, draft, images, ctx, serverIssues, savedI
       fields: active,
       image,
       imageChanged: JSON.stringify(image) !== JSON.stringify(initial.image),
+      video,
+      videoChanged: JSON.stringify(video) !== JSON.stringify(initial.video),
     })
   }
 
@@ -180,6 +184,10 @@ function ItemForm({ list, mode, itemId, draft, images, ctx, serverIssues, savedI
 
           {list.image && (
             <ImageField label={list.image.label} hint={list.image.hint} optional={list.image.optional} image={image} onChange={setImage} />
+          )}
+
+          {list.video && (
+            <ImageField kind="video" label={list.video.label} hint={list.video.hint} optional={list.video.optional} image={video} onChange={setVideo} />
           )}
 
           <div className="sticky -bottom-5 -mx-5 -mb-5 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 bg-white px-5 py-4 sm:-mx-6 sm:px-6 dark:border-gray-800 dark:bg-gray-900">

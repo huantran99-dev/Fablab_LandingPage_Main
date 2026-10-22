@@ -121,7 +121,7 @@ export function registrationsExportUrl(params) {
 export function describeError(error) {
   if (!(error instanceof ApiError)) return error?.message ?? 'Lỗi không xác định'
   if (error.status === 409) return 'Nội dung đã bị sửa ở nơi khác (tab khác?). Tải lại để lấy bản mới.'
-  if (error.status === 413) return 'File quá lớn (tối đa 15 MB).'
+  if (error.status === 413) return 'File quá lớn (ảnh tối đa 15 MB, video tối đa 40 MB).'
   // Hai câu trả lời đặc trưng của máy chủ bản cũ: route chưa tồn tại, và section chưa
   // có schema (bản đầu chỉ mở "Cảm nhận"). Vite tự nạp mã dashboard mới nhưng
   // `npm run server` thì không, nên đây là tình huống có thật chứ không phải phòng xa.

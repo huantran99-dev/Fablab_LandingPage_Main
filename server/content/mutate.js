@@ -17,7 +17,7 @@
  * thấy điều đó. better-sqlite3 đồng bộ nên `assemble()` trong giao dịch đọc được
  * chính những dòng vừa ghi.
  */
-import { SECTION_IMAGES, assemble, mediaUrl } from './assemble.js'
+import { SECTION_IMAGES, SECTION_VIDEOS, assemble, mediaUrl } from './assemble.js'
 import { invalidate } from './cache.js'
 import { checkInvariants } from './invariants.js'
 import { getLookups } from './lookups.js'
@@ -32,21 +32,46 @@ export class WriteError extends Error {
   }
 }
 
-/** Ảnh hiện gắn cho section (chỉ những mục thuộc về nó). `null` nếu section không có ảnh. */
-function readSectionBindings(db, section) {
-  const target = SECTION_IMAGES[section]
-  if (!target) return null
-  const rows = db
-    .prepare('SELECT item_id, media_id, note FROM binding WHERE scope = ? ORDER BY item_id')
-    .all(target.scope)
-  return target.itemIds ? rows.filter((row) => target.itemIds.includes(row.item_id)) : rows
+/**
+ * Các "khe" media của một section: ảnh (`images`) và, với Hoạt động, video nền
+ * (`videos`). Mỗi khe là một scope trong bảng `binding`; lượt lưu gửi thay đổi của từng
+ * khe trong trường cùng tên, lịch sử chụp lại mọi khe.
+ */
+function slotsOf(section) {
+  const slots = []
+  if (SECTION_IMAGES[section]) slots.push({ name: 'images', mime: 'image/', ...SECTION_IMAGES[section] })
+  if (SECTION_VIDEOS[section]) slots.push({ name: 'videos', mime: 'video/', ...SECTION_VIDEOS[section] })
+  return slots
 }
 
-/** Id các mục được phép mang ảnh trong bản sắp ghi. */
-function imageItemIds(section, dict) {
-  const target = SECTION_IMAGES[section]
-  if (target.itemIds) return new Set(target.itemIds)
-  return new Set((dict[target.arrayKey] ?? []).map((item) => item.id))
+/** Media hiện gắn vào một khe (chỉ những mục thuộc về section). */
+function readSlotBindings(db, slot) {
+  const rows = db
+    .prepare('SELECT item_id, media_id, note FROM binding WHERE scope = ? ORDER BY item_id')
+    .all(slot.scope)
+  return slot.itemIds ? rows.filter((row) => slot.itemIds.includes(row.item_id)) : rows
+}
+
+/** Id các mục được phép mang media của khe này trong bản sắp ghi. */
+function slotItemIds(slot, dict) {
+  if (slot.itemIds) return new Set(slot.itemIds)
+  return new Set((dict[slot.arrayKey] ?? []).map((item) => item.id))
+}
+
+/**
+ * `bindings_json` của lịch sử. Section chỉ có ảnh giữ ĐÚNG định dạng cũ (mảng), để mọi
+ * dòng lịch sử đã có vẫn là định dạng hiện hành; section nhiều khe ghi object theo tên
+ * khe. Đọc: mảng = chỉ khe ảnh (dòng cũ của Hoạt động, trước khi có video).
+ */
+function snapshotBindings(db, slots) {
+  if (slots.length === 0) return null
+  if (slots.length === 1 && slots[0].name === 'images') return JSON.stringify(readSlotBindings(db, slots[0]))
+  return JSON.stringify(Object.fromEntries(slots.map((slot) => [slot.name, readSlotBindings(db, slot)])))
+}
+
+function parseHistoryBindings(json) {
+  const parsed = JSON.parse(json)
+  return Array.isArray(parsed) ? { images: parsed } : parsed
 }
 
 export function readSectionPair(section) {
@@ -60,23 +85,23 @@ export function readSectionPair(section) {
     out.rev += row.rev
   }
 
-  const target = SECTION_IMAGES[section]
-  if (target) {
+  for (const slot of slotsOf(section)) {
     const rows = db
       .prepare(
-        `SELECT b.item_id, b.note, m.id, m.filename, m.width, m.height
+        `SELECT b.item_id, b.note, m.id, m.filename, m.width, m.height, m.duration
            FROM binding b JOIN media m ON m.id = b.media_id
           WHERE b.scope = ?`,
       )
-      .all(target.scope)
-    out.images = {}
+      .all(slot.scope)
+    out[slot.name] = {}
     for (const row of rows) {
-      if (target.itemIds && !target.itemIds.includes(row.item_id)) continue
-      out.images[row.item_id] = {
+      if (slot.itemIds && !slot.itemIds.includes(row.item_id)) continue
+      out[slot.name][row.item_id] = {
         mediaId: row.id,
         url: mediaUrl(row.filename),
         width: row.width,
         height: row.height,
+        ...(slot.name === 'videos' ? { duration: row.duration } : {}),
         note: row.note,
       }
     }
@@ -89,14 +114,16 @@ export function readSectionPair(section) {
  *
  * @param {object} args
  * @param {Record<string, number|null>} [args.images] thay ảnh từng mục; `null` = gỡ ảnh
- * @param {Array<{item_id, media_id, note}>} [args.bindings] THAY TOÀN BỘ ảnh của
- *   section — chỉ dùng khi khôi phục lịch sử
+ * @param {Record<string, number|null>} [args.videos] như trên, cho video nền
+ * @param {{ images?: Array<{item_id, media_id, note}>, videos?: Array }} [args.bindings]
+ *   THAY TOÀN BỘ media của những khe có mặt — chỉ dùng khi khôi phục lịch sử. Khe vắng
+ *   (lịch sử có từ trước khi khe đó tồn tại) giữ nguyên.
  * @returns {{ rev: number, warnings: string[] }}
  *
  * `expectedRev` là chốt chặn ghi đè: hai tab cùng mở, tab cũ bấm lưu sau sẽ nhận
  * 409 thay vì lặng lẽ xoá mất việc của tab kia.
  */
-export function writeSectionPair({ section, vi, en, expectedRev, note = null, images, bindings }) {
+export function writeSectionPair({ section, vi, en, expectedRev, note = null, images, videos, bindings }) {
   const db = getDb()
 
   const parity = assertParity({ [section]: vi }, { [section]: en })
@@ -108,10 +135,11 @@ export function writeSectionPair({ section, vi, en, expectedRev, note = null, im
     })
   }
 
-  const target = SECTION_IMAGES[section]
-  if (!target && (images || bindings)) {
-    throw new WriteError(400, { error: 'section nay khong co anh', section })
-  }
+  const slots = slotsOf(section)
+  const changesBySlot = { images, videos }
+  if (images && !SECTION_IMAGES[section]) throw new WriteError(400, { error: 'section nay khong co anh', section })
+  if (videos && !SECTION_VIDEOS[section]) throw new WriteError(400, { error: 'section nay khong co video', section })
+  if (bindings && slots.length === 0) throw new WriteError(400, { error: 'section nay khong co anh', section })
 
   const run = db.transaction(() => {
     const current = db.prepare('SELECT locale, json, rev FROM section WHERE key = ?').all(section)
@@ -134,12 +162,12 @@ export function writeSectionPair({ section, vi, en, expectedRev, note = null, im
     const baseline = checkInvariants(assemble(db), getLookups())
 
     const now = new Date().toISOString()
-    const before = readSectionBindings(db, section)
-    const beforeJson = before ? JSON.stringify(before) : null
-    // Id các mục TRƯỚC lượt lưu. Dọn ảnh chỉ được đụng mục có ở đây mà mất ở bản
-    // mới — tức mục người dùng vừa xoá.
+    const beforeJson = snapshotBindings(db, slots)
+    // Media từng khe và id các mục TRƯỚC lượt lưu. Dọn media chỉ được đụng mục có ở đây
+    // mà mất ở bản mới — tức mục người dùng vừa xoá.
     const viRow = current.find((row) => row.locale === 'vi')
-    const previousIds = target && viRow ? imageItemIds(section, JSON.parse(viRow.json)) : new Set()
+    const previousDict = viRow ? JSON.parse(viRow.json) : null
+    const before = new Map(slots.map((slot) => [slot.name, readSlotBindings(db, slot)]))
 
     for (const row of current) {
       // Chép bản cũ sang lịch sử TRƯỚC khi ghi đè, nên luôn quay lại được — cả ảnh.
@@ -160,48 +188,58 @@ export function writeSectionPair({ section, vi, en, expectedRev, note = null, im
 
     const warnings = []
 
-    if (target) {
-      const allowed = imageItemIds(section, vi)
-      const mediaExists = db.prepare('SELECT 1 FROM media WHERE id = ?')
-      const remove = db.prepare('DELETE FROM binding WHERE scope = ? AND item_id = ?')
-      // Giữ ghi chú nguồn (`~` ảnh gần đúng, `↺` ảnh dùng lại) khi ảnh không đổi.
-      // Thay ảnh thì ghi chú cũ mô tả một quan hệ không còn tồn tại -> xoá.
-      const upsert = db.prepare(
-        `INSERT INTO binding (scope, item_id, media_id, note) VALUES (?, ?, ?, ?)
-         ON CONFLICT (scope, item_id) DO UPDATE SET
-           note = CASE WHEN binding.media_id = excluded.media_id THEN binding.note ELSE excluded.note END,
-           media_id = excluded.media_id`,
-      )
+    const mediaRow = db.prepare('SELECT mime FROM media WHERE id = ?')
+    // Giữ ghi chú nguồn (`~` ảnh gần đúng, `↺` ảnh dùng lại) khi media không đổi.
+    // Thay media thì ghi chú cũ mô tả một quan hệ không còn tồn tại -> xoá.
+    const upsert = db.prepare(
+      `INSERT INTO binding (scope, item_id, media_id, note) VALUES (?, ?, ?, ?)
+       ON CONFLICT (scope, item_id) DO UPDATE SET
+         note = CASE WHEN binding.media_id = excluded.media_id THEN binding.note ELSE excluded.note END,
+         media_id = excluded.media_id`,
+    )
+    const remove = db.prepare('DELETE FROM binding WHERE scope = ? AND item_id = ?')
 
-      if (bindings) {
-        for (const row of before) {
-          if (allowed.has(row.item_id) || previousIds.has(row.item_id)) remove.run(target.scope, row.item_id)
+    for (const slot of slots) {
+      const allowed = slotItemIds(slot, vi)
+      const previousIds = previousDict ? slotItemIds(slot, previousDict) : new Set()
+      const what = slot.name === 'videos' ? 'video' : 'anh'
+
+      const restored = bindings?.[slot.name]
+      if (restored) {
+        for (const row of before.get(slot.name)) {
+          if (allowed.has(row.item_id) || previousIds.has(row.item_id)) remove.run(slot.scope, row.item_id)
         }
-        for (const row of bindings) {
+        for (const row of restored) {
           if (!allowed.has(row.item_id)) continue
-          if (!mediaExists.get(row.media_id)) {
-            warnings.push(`anh #${row.media_id} cua '${row.item_id}' da bi xoa khoi thu vien — muc nay de trong anh`)
+          if (!mediaRow.get(row.media_id)) {
+            warnings.push(`${what} #${row.media_id} cua '${row.item_id}' da bi xoa khoi thu vien — muc nay de trong ${what}`)
             continue
           }
-          upsert.run(target.scope, row.item_id, row.media_id, row.note ?? null)
+          upsert.run(slot.scope, row.item_id, row.media_id, row.note ?? null)
         }
       }
 
-      for (const [itemId, mediaId] of Object.entries(images ?? {})) {
+      for (const [itemId, mediaId] of Object.entries(changesBySlot[slot.name] ?? {})) {
         if (!allowed.has(itemId)) {
-          throw new WriteError(422, { error: 'gan anh cho muc khong ton tai', itemId })
+          throw new WriteError(422, { error: `gan ${what} cho muc khong ton tai`, itemId })
         }
         if (mediaId === null) {
-          remove.run(target.scope, itemId)
+          remove.run(slot.scope, itemId)
           continue
         }
-        if (!Number.isInteger(mediaId) || !mediaExists.get(mediaId)) {
-          throw new WriteError(422, { error: 'anh khong co trong thu vien', itemId, mediaId })
+        const media = Number.isInteger(mediaId) ? mediaRow.get(mediaId) : null
+        if (!media) {
+          throw new WriteError(422, { error: `${what} khong co trong thu vien`, itemId, mediaId })
         }
-        upsert.run(target.scope, itemId, mediaId, null)
+        // Khe ảnh chỉ nhận ảnh, khe video chỉ nhận video — gắn nhầm thì component nhận
+        // một `<img>` trỏ vào file MP4 (ô vỡ) hoặc ngược lại, không có cảnh báo nào.
+        if (!media.mime.startsWith(slot.mime)) {
+          throw new WriteError(422, { error: `media #${mediaId} khong phai ${what}`, itemId, mediaId })
+        }
+        upsert.run(slot.scope, itemId, mediaId, null)
       }
 
-      // Mục vừa bị xoá trong lượt này thì ảnh của nó đi theo.
+      // Mục vừa bị xoá trong lượt này thì media của nó đi theo.
       //
       // CHỈ mục vừa bị xoá — không phải mọi binding không khớp mục nào. Seed có
       // binding "mồ côi" CÓ CHỦ ĐÍCH: logo thật của Becamex và BBI nằm sẵn trong
@@ -209,8 +247,8 @@ export function writeSectionPair({ section, vi, en, expectedRev, note = null, im
       // "không khớp là xoá" và đã xoá im lặng cả hai ngay lượt lưu Đối tác đầu tiên,
       // kể cả khi người dùng không đổi gì. Giữ lại thì thêm lại đối tác đó là logo
       // tự về đúng chỗ.
-      for (const row of readSectionBindings(db, section)) {
-        if (previousIds.has(row.item_id) && !allowed.has(row.item_id)) remove.run(target.scope, row.item_id)
+      for (const row of readSlotBindings(db, slot)) {
+        if (previousIds.has(row.item_id) && !allowed.has(row.item_id)) remove.run(slot.scope, row.item_id)
       }
     }
 
@@ -267,13 +305,13 @@ export function restoreHistory(historyId) {
   }
 
   const bindingsJson = pair[0].bindings_json
-  const hasImages = Boolean(SECTION_IMAGES[row.key])
+  const hasMedia = slotsOf(row.key).length > 0
 
   return writeSectionPair({
     section: row.key,
     vi: values.vi,
     en: values.en,
-    bindings: hasImages && bindingsJson ? JSON.parse(bindingsJson) : undefined,
-    note: `khoi phuc tu ${row.saved_at}${hasImages && !bindingsJson ? ' (giu anh hien tai)' : ''}`,
+    bindings: hasMedia && bindingsJson ? parseHistoryBindings(bindingsJson) : undefined,
+    note: `khoi phuc tu ${row.saved_at}${hasMedia && !bindingsJson ? ' (giu anh hien tai)' : ''}`,
   })
 }

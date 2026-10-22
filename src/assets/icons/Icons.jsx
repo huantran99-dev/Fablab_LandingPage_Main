@@ -133,6 +133,22 @@ export function ArrowLeftIcon({ className = '', size = 18 }) {
   )
 }
 
+export function PauseIcon({ className = '', size = 18 }) {
+  return (
+    <Svg className={className} size={size} strokeWidth={1.8}>
+      <path d="M8.5 5.5v13M15.5 5.5v13" />
+    </Svg>
+  )
+}
+
+export function PlayIcon({ className = '', size = 18 }) {
+  return (
+    <Svg className={className} size={size} strokeWidth={1.8}>
+      <path d="M7.5 5.2v13.6L18.5 12z" />
+    </Svg>
+  )
+}
+
 export function ChevronDownIcon({ className = '', size = 16 }) {
   return (
     <Svg className={className} size={size} strokeWidth={2}>

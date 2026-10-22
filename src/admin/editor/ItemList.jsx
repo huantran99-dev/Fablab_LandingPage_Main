@@ -38,7 +38,7 @@ function Thumb({ list, item, image }) {
  * Thêm, sửa, xoá, đổi thứ tự đều đi qua `mapBoth` — cùng một phép biến đổi trên cả
  * hai ngôn ngữ. Tất cả chỉ đổi BẢN NHÁP; trang thật đổi khi bấm Lưu.
  */
-export function ItemList({ list, draft, onChangeDraft, images, onChangeImages, issues, ctx, savedIds }) {
+export function ItemList({ list, draft, onChangeDraft, images, onChangeImages, videos = {}, onChangeVideos, issues, ctx, savedIds }) {
   const items = getPath(draft.vi, list.path) ?? []
   const [filter, setFilter] = useState('')
   const [modal, setModal] = useState(null)
@@ -70,7 +70,7 @@ export function ItemList({ list, draft, onChangeDraft, images, onChangeImages, i
     setPendingDelete(null)
   }
 
-  function handleApply({ working, fields, image, imageChanged }) {
+  function handleApply({ working, fields, image, imageChanged, video, videoChanged }) {
     const built = { vi: fromWorking(fields, working, 'vi'), en: fromWorking(fields, working, 'en') }
     const exclusive = fields.filter((field) => field.type === 'exclusive' && built.vi[field.key])
 
@@ -86,6 +86,7 @@ export function ItemList({ list, draft, onChangeDraft, images, onChangeImages, i
       }),
     )
     if (list.image && imageChanged) onChangeImages({ ...images, [working.id]: image })
+    if (list.video && videoChanged) onChangeVideos({ ...videos, [working.id]: video })
     setModal(null)
   }
 
@@ -242,6 +243,7 @@ export function ItemList({ list, draft, onChangeDraft, images, onChangeImages, i
           onApply={handleApply}
           draft={draft}
           images={images}
+          videos={videos}
           ctx={ctx}
           savedIds={savedIds}
           serverIssues={editingIndex >= 0 ? issuesUnder(issues, `${list.path}.${editingIndex}`) : {}}
@@ -261,7 +263,11 @@ export function ItemList({ list, draft, onChangeDraft, images, onChangeImages, i
               <p>
                 Xoá <strong className="text-gray-800 dark:text-white/90">{titleOf(pendingDelete)}</strong> khỏi cả bản tiếng Việt và tiếng Anh?
               </p>
-              {list.image && <p className="mt-2">Ảnh gắn với mục này cũng được gỡ khi lưu (ảnh vẫn còn trong thư viện).</p>}
+              {list.image && (
+                <p className="mt-2">
+                  {list.video ? 'Ảnh và video' : 'Ảnh'} gắn với mục này cũng được gỡ khi lưu (file vẫn còn trong thư viện).
+                </p>
+              )}
               {list.courseDetails && <p className="mt-2">Nội dung popup gốc của khóa học vẫn được giữ trong database.</p>}
               <p className="mt-2">Trang thật chỉ đổi khi bấm Lưu.</p>
             </>

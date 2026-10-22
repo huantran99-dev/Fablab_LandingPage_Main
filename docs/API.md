@@ -74,7 +74,7 @@ gọn chỗ dài bằng `…`). Deploy thì xem [DEPLOY.md](DEPLOY.md).
 - **Định dạng:** JSON UTF-8, trừ `POST /api/admin/media` nhận byte ảnh thô.
 - **Không có CORS.** API chỉ dùng được từ chính trang (same-origin). Đây là chủ đích:
   cookie đăng nhập và kiểm `Origin` dựa trên điều đó.
-- **Phiên bản:** `GET /api/health` trả `api` (hiện là `7`, hằng `API_VERSION` trong
+- **Phiên bản:** `GET /api/health` trả `api` (hiện là `8`, hằng `API_VERSION` trong
   [content.public.js](../server/routes/content.public.js)). Dashboard so với
   `EXPECTED_API` trong [src/admin/App.jsx](../src/admin/App.jsx) và hiện băng đỏ nếu máy
   chủ thấp hơn — dấu hiệu máy chủ chưa được khởi động lại sau khi cập nhật.
@@ -180,9 +180,10 @@ Lỗi của **bộ đọc thân request** trả đúng mã của nó (từ API 3
 |---|---|---|
 | Thân JSON hỏng cú pháp | `400` | `{"error":"entity.parse.failed"}` |
 | Thân JSON lớn hơn 2 MB (8 KB với form đăng ký, 2 KB với sự kiện) | `413` | `{"error":"entity.too.large"}` |
-| Ảnh tải lên lớn hơn 15 MB | `413` | `{"error":"entity.too.large"}` |
+| File tải lên lớn hơn 40 MB (trần của video) | `413` | `{"error":"entity.too.large"}` |
+| Ảnh tải lên 15–40 MB *(từ API 10)* | `413` | `{"error":"anh qua lon (toi da 15 MB)"}` |
 
-Nếu nginx đứng trước với `client_max_body_size 16m` thì file trên 16 MB nhận `413`
+Nếu nginx đứng trước với `client_max_body_size 41m` thì file trên 41 MB nhận `413`
 **dạng HTML** từ nginx, không phải JSON.
 
 ---
@@ -196,7 +197,7 @@ Không cần đăng nhập. Trang công khai chỉ gọi `GET /api/content`.
 Máy chủ còn sống không, đang ở bản nội dung nào, phiên bản API nào.
 
 ```json
-{"ok":true,"rev":60,"updatedAt":"2026-10-20T08:39:00.871Z","api":7}
+{"ok":true,"rev":80,"updatedAt":"2026-10-21T09:08:07.235Z","api":10}
 ```
 
 | Trường | Ý nghĩa |
@@ -375,8 +376,10 @@ Cặp hai ngôn ngữ của một section, kèm `rev` để gửi lại khi lưu
 | `vi`, `en` | Dữ liệu thô của section — **không** có khoá `image` (ảnh nằm ở `images`) |
 | `rev` | Tổng `rev` của hai dòng VI + EN. **Mỗi lượt lưu tăng 2** |
 | `images` | `null` nếu section không mang ảnh. Ngược lại là map `idMục → ảnh`; `hero` dùng khoá `"hero"`. `note` là ghi chú nguồn (`~` ảnh gần đúng, `↺` ảnh dùng lại) |
+| `videos` | *(từ API 10)* Chỉ có ở `activities`: map `idMục → { mediaId, url, width, height, duration, note }` — video nền banner Cuộc thi. Section khác không có khoá này |
 
 Section có ảnh: `hero`, `courses`, `facilities`, `equipment`, `projects`, `activities`, `partners`, `team`.
+Section có video: `activities`.
 
 Section không tồn tại: `404 {"error":"khong co section nay","section":"khong-co"}`.
 
@@ -390,7 +393,8 @@ Ghi **cả hai ngôn ngữ** của một section, tuỳ chọn thay ảnh, trong
   "en":  { …toàn bộ section tiếng Anh, CÙNG CẤU TRÚC… },
   "rev": 10,
   "note": "sửa chức danh",
-  "images": { "tuan": 60, "hien": null }
+  "images": { "tuan": 60, "hien": null },
+  "videos": { "drone-soccer": 81 }
 }
 ```
 
@@ -400,19 +404,21 @@ Ghi **cả hai ngôn ngữ** của một section, tuỳ chọn thay ảnh, trong
 | `rev` | nên có | `rev` nhận từ `GET`. **Bỏ trống thì KHÔNG kiểm xung đột** — lượt lưu đè lên bất cứ thay đổi nào của người khác |
 | `note` | | Ghi chú lịch sử, cắt ở 200 ký tự |
 | `images` | | `{ idMục: idẢnh }` để gắn/thay, `{ idMục: null }` để gỡ. Mục không nhắc tới giữ nguyên ảnh. Chỉ dùng cho section có ảnh |
+| `videos` | | *(từ API 10)* Như `images`, cho video nền — chỉ `activities`. Media phải là **video** (`mime` `video/…`); khe ảnh cũng chỉ nhận ảnh |
 
 **Máy chủ xử lý theo đúng thứ tự**, dừng ở bước hỏng đầu tiên:
 
 1. Section có schema không → `400`
-2. `images` là object → `400`
+2. `images` / `videos` là object → `400`
 3. `vi` và `en` đúng schema → `422` dạng *schema*
 4. `vi` và `en` cùng cấu trúc khoá → `422` dạng *đối xứng*
-5. Gửi `images` cho section không mang ảnh → `400`
+5. Gửi `images` cho section không mang ảnh, hay `videos` cho section không mang video → `400`
 6. `rev` khớp → `409`
 6. Chép bản hiện tại (kèm ảnh) sang lịch sử
-7. Ghi hai ngôn ngữ, áp `images` → `422` nếu mục/ảnh không tồn tại
-8. **Mục vừa bị xoá trong lượt này** thì gỡ ảnh của nó (ảnh "mồ côi" có sẵn từ trước
-   được giữ nguyên, có chủ đích)
+7. Ghi hai ngôn ngữ, áp `images` và `videos` → `422` nếu mục/media không tồn tại, hoặc
+   gắn video vào khe ảnh (và ngược lại)
+8. **Mục vừa bị xoá trong lượt này** thì gỡ ảnh và video của nó (ảnh "mồ côi" có sẵn từ
+   trước được giữ nguyên, có chủ đích)
 9. Ráp lại toàn trang, chạy bộ ràng buộc, so với **kết quả chạy trước khi ghi** — chỉ
    **lỗi mới** mới chặn (`422` dạng *ràng buộc*, rollback toàn bộ), chỉ **cảnh báo
    mới** mới trả về
@@ -433,8 +439,9 @@ cảnh báo chỉ để hiện cho người sửa.
 {"error":"section nay chua mo cho sua","section":"khong-co","editable":["nav","hero",…]}
 
 // 400
-{"error":"images phai la object { idMuc: idAnh | null }"}
+{"error":"images phai la object { idMuc: idMedia | null }"}
 {"error":"section nay khong co anh","section":"finalCta"}
+{"error":"section nay khong co video","section":"team"}
 
 // 409 — người khác (hoặc tab khác) đã lưu trước. GET lại rồi áp thay đổi lên bản mới.
 {"error":"noi dung da bi nguoi khac sua","expectedRev":1,"currentRev":2}
@@ -455,9 +462,11 @@ cảnh báo chỉ để hiện cho người sửa.
                "vi activities.items[drone-soccer]: kind 'khong-co' khong khoi nao nhan -> roi vao khoi cuoi, sai cho",
                …]}
 
-// 422 — ảnh
+// 422 — ảnh / video
 {"error":"gan anh cho muc khong ton tai","itemId":"x"}
 {"error":"anh khong co trong thu vien","itemId":"tuan","mediaId":999}
+{"error":"media #1 khong phai video","itemId":"drone-soccer","mediaId":1}
+{"error":"media #81 khong phai anh","itemId":"drone-soccer","mediaId":81}
 ```
 
 ### `GET /api/admin/history/:section`
@@ -495,6 +504,10 @@ Khôi phục là một lượt lưu bình thường: tự tạo dòng lịch s�
 
 Ảnh đã bị xoá khỏi thư viện kể từ lúc đó thì mục đó để trống ảnh và có một dòng trong
 `warnings`. Bản lịch sử có từ trước migration 002 không lưu ảnh → giữ ảnh hiện tại.
+
+Video của `activities` cũng quay về theo bản lịch sử *(từ API 10)*. Bản lịch sử của
+`activities` lưu trước API 10 (chỉ có ảnh) thì **giữ video hiện tại** — lúc đó chưa có
+video nào để quay về.
 
 ---
 
@@ -620,7 +633,8 @@ Popup thông số từng máy. Mỗi máy hiện thành nút trong ô `facilitie
 ### projects *(có ảnh)* *(từ API 7)*
 
 `eyebrow` chữ(80) · `title` chữ(120) · `description` chữ(400) · `imageAlt` chữ(200),
-`{title}` thay bằng tên dự án · `statuses`: record `id → chữ(40)` (nhãn trạng thái) ·
+`{title}` thay bằng tên dự án · `previous`, `next`, `goTo` chữ(80) — nhãn trợ năng của
+vòng xoay 3D *(từ API 8)* · `statuses`: record `id → chữ(40)` (nhãn trạng thái) ·
 `items[]` (≥ 1): `{ id, title: chữ(120), description: chữ(400), status? }`.
 
 - `status` **tuỳ chọn** và là trường dùng chung. Vắng = card không hiện nhãn; đó là
@@ -628,7 +642,8 @@ Popup thông số từng máy. Mỗi máy hiện thành nút trong ô `facilitie
   là một khoá của `statuses` (ràng buộc toàn trang), và **không được là chuỗi rỗng** —
   gửi `"status": ""` là `422`; muốn gỡ thì bỏ hẳn khoá.
 - Database seed trước ngày có section này nhận nó qua migration
-  `008_projects_section.sql` (kèm mục "Dự án" trong menu FabLab và footer); ảnh qua
+  `008_projects_section.sql` (kèm mục "Dự án" trong menu FabLab và footer) và
+  `009_projects_carousel_labels.sql` (ba nhãn trợ năng); ảnh qua
   `npm run seed:images`.
 
 ### partners *(có ảnh — không bắt buộc, thiếu thì hiện tên)*
@@ -636,7 +651,7 @@ Popup thông số từng máy. Mỗi máy hiện thành nút trong ô `facilitie
 `eyebrow` chữ(80) · `title` chữ(120) · `description` chữ(400) · `logoAlt` chữ(200) ·
 `items[]`: `{ id, name: chữ(160) }`.
 
-### activities *(có ảnh)*
+### activities *(có ảnh, có video)*
 
 | Trường | Kiểu |
 |---|---|
@@ -645,8 +660,9 @@ Popup thông số từng máy. Mỗi máy hiện thành nút trong ô `facilitie
 | `description` | chữ(400) |
 | `imageAlt` | chữ(200) |
 | `previous`, `next`, `goTo` | chữ(60) |
+| `pause`, `play` | chữ(60) — nút dừng/phát của banner tự chạy *(từ API 9)* |
 | `kinds` | object `{ idLoai: chữ(40) }` — nhãn của từng loại |
-| `groups[]` (≥ 1) | `{ id, title: chữ(120), description: chữ(400), kinds: [idLoai] }` |
+| `groups[]` (≥ 1) | `{ id, title: chữ(120), description: chữ(400), kinds: [idLoai], videoBanner?: boolean }` |
 | `items[]` | `{ id, title: chữ(200), description: chữ(600), date, kind }` |
 
 - `date`: chuỗi ≤ 60 ký tự, **được rỗng** (vài hoạt động thật không có ngày).
@@ -654,6 +670,13 @@ Popup thông số từng máy. Mỗi máy hiện thành nút trong ô `facilitie
   trong `kinds` của một khối nào đó.
 - `groups[].id` sinh ra neo (`#competitions`, `#events`) mà menu trỏ tới — xoá khối đang
   được menu dùng là `422`.
+- `groups[].videoBanner` *(từ API 10)*: khối hiện dạng **banner video tràn màn hình**
+  (Cuộc thi). Trường dùng chung — phải bằng nhau giữa VI và EN. Vắng = banner ảnh.
+- Video nền của từng hoạt động **không nằm trong JSON section** — gắn qua trường `videos`
+  của `PUT`, y như ảnh. Trang công khai nhận nó thành `items[].video:
+  { url, width, height, duration }` (chỉ trên mục có video).
+- Database đã seed nhận `pause`/`play` qua migration `010_activities_banner_labels.sql`,
+  cờ `videoBanner` của khối `competitions` qua `012_competitions_video_banner.sql`.
 
 ### team *(có ảnh — thiếu thì hiện chữ cái đầu)*
 
@@ -729,35 +752,39 @@ thấy. Danh sách đầy đủ ở [invariants.js](../server/content/invariants
 
 ## 8. Thư viện ảnh
 
+Thư viện chứa cả **video nền** (MP4) từ API 10 — cùng bảng, cùng route, phân biệt bằng
+`kind`.
+
 ### `GET /api/admin/media`
 
-Mọi ảnh, mới nhất trước, kèm nơi đang dùng.
+Mọi ảnh và video, mới nhất trước, kèm nơi đang dùng.
 
 ```json
 {"items":[
   {"id":60,"url":"/media/anh-thu.b31f757e.jpg","filename":"anh-thu.b31f757e.jpg",
-   "mime":"image/jpeg","bytes":4077,"width":1600,"height":800,"origin":"upload",
+   "mime":"image/jpeg","kind":"image","duration":null,"bytes":4077,"width":1600,"height":800,"origin":"upload",
    "sourceNote":"anh thu nghiem","createdAt":"2026-09-15T04:33:25.188Z",
    "usages":[{"scope":"team","itemId":"tuan","section":"team","label":"Đỗ Nguyễn Anh Tuấn"}]},
   …
 ]}
 ```
 
-`origin`: `seed` (nạp lúc `npm run seed`) hoặc `upload`. `usages` rỗng = ảnh không ai
-dùng, xoá được. `scope` `singleton` với `itemId` `logo` là logo trang, không thuộc
+`origin`: `seed` (nạp lúc `npm run seed`) hoặc `upload`. `kind`: `image` hoặc `video`;
+`duration` (giây) chỉ video có. `usages` rỗng = không ai dùng, xoá được. Video đang
+dùng có `scope` `activity-video`. `scope` `singleton` với `itemId` `logo` là logo trang, không thuộc
 section nào.
 
 ### `POST /api/admin/media`
 
-Tải **một** ảnh. Thân là **byte thô của file**, không phải `multipart/form-data`.
+Tải **một** ảnh hoặc video. Thân là **byte thô của file**, không phải `multipart/form-data`.
 
 | Header | Giá trị |
 |---|---|
-| `Content-Type` | `image/jpeg`, `image/png` hoặc `image/webp` — phải đúng, máy chủ không đoán |
+| `Content-Type` | `image/jpeg`, `image/png`, `image/webp`, hoặc `video/mp4` *(từ API 10)* — phải đúng, máy chủ không đoán |
 | `x-filename` | Tên file gốc, **đã `encodeURIComponent`** (chỉ để đặt tên file dễ đọc) |
 | `x-csrf-token`, `Origin` | như mọi route ghi |
 
-Tối đa **15 MB**, **50 triệu điểm ảnh**.
+Ảnh tối đa **15 MB**, **50 triệu điểm ảnh**. Video tối đa **40 MB**.
 
 ```bash
 curl -s -b $JAR -H "$O" -H "x-csrf-token: $CSRF" \
@@ -774,6 +801,16 @@ Máy chủ xử lý trước khi lưu:
 3. **Xoá toàn bộ metadata** — EXIF, toạ độ GPS. Đã kiểm: ảnh gốc có EXIF, file lưu không còn.
 4. PNG, và WebP có kênh trong suốt → **PNG**; còn lại → **JPEG** chất lượng 82.
 5. Băm sha256 **bản đã xử lý**; tên file `<ten-khong-dau>.<8 ky tu bam>.<jpg|png>`.
+
+**Video (`video/mp4`)** — máy chủ không có ffmpeg nên **không chuyển mã, không nén**:
+
+1. Chỉ nhận MP4 có hình **H.264** (`avc1`/`avc3`) — định dạng duy nhất mọi trình duyệt
+   đều phát. HEVC (mặc định của iPhone) và `.mov` bị từ chối kèm hướng dẫn xuất lại.
+2. **Xoá metadata vị trí**: hộp `udta`, `meta`, `uuid` ở cấp file, trong `moov` và trong
+   từng `trak` được đổi thành `free` và ghi đè 0 — kích thước và mọi offset giữ nguyên
+   nên video vẫn phát. Đã kiểm: file có `©xyz` (GPS kiểu Android) → file lưu không còn.
+3. Đọc kích thước hiển thị (đã tính xoay của video quay dọc) và `duration`.
+4. Băm **sau** bước 2; tên file `<ten-khong-dau>.<8 ky tu bam>.mp4`.
 
 **201** — ảnh mới:
 
@@ -792,10 +829,11 @@ tạo bản sao.
 |---|---|
 | `415` | `{"error":"chi nhan anh JPEG, PNG, WebP (dat Content-Type dung kieu anh)"}` — sai `Content-Type` hoặc thân rỗng |
 | `415` | `{"error":"file khong phai anh hop le, hoac qua nhieu diem anh"}` — đúng header nhưng byte không phải ảnh |
-| `500` | `{"error":"loi may chu"}` — file lớn hơn 15 MB (xem [hạn chế](#3-mã-lỗi-chung)) |
+| `415` | `{"error":"khong phai file MP4 hop le"}` / `{"error":"ma hinh 'hvc1' khong phat duoc tren moi trinh duyet — xuat lai thanh MP4 H.264 (video iPhone mac dinh la HEVC)"}` / `{"error":"file .mov (QuickTime) — xuat lai thanh MP4 H.264 truoc khi tai len"}` |
+| `413` | Ảnh 15–40 MB: `{"error":"anh qua lon (toi da 15 MB)"}`; trên 40 MB: `{"error":"entity.too.large"}` (xem [mã lỗi chung](#3-mã-lỗi-chung)) |
 
-Tải lên chỉ thêm ảnh vào thư viện. Muốn nó hiện trên trang thì gắn qua trường `images`
-của [`PUT` section](#put-apiadmincontentsection).
+Tải lên chỉ thêm vào thư viện. Muốn nó hiện trên trang thì gắn qua trường `images`
+(hoặc `videos`) của [`PUT` section](#put-apiadmincontentsection).
 
 ### `PATCH /api/admin/media/:id`
 

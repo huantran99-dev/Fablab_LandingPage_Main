@@ -30,7 +30,7 @@ import { useToast } from './ui/toastContext'
  * thì KHÔNG: quên khởi động lại là dashboard mới nói chuyện với máy chủ cũ, và mọi
  * lỗi (không tải được ảnh, không lưu được) trông như lỗi của dashboard.
  */
-const EXPECTED_API = 7
+const EXPECTED_API = 10
 
 /** Nạp lại số liệu nền (badge đăng ký mới) theo chu kỳ khi tab đang hiện. */
 const META_POLL_MS = 120_000

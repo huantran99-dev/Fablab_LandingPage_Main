@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useMediaQuery } from '../hooks/useMediaQuery'
 import { useT } from '../i18n/context'
 import { track } from '../lib/track'
 import { CourseCard } from './CourseCard'
@@ -15,8 +16,12 @@ import { Section, SectionHeading } from './ui/Section'
  * Nhóm nào ít hơn ngưỡng này thì hiện đủ và không mọc ra nút — nên nhóm "Khóa học
  * STEM" (4 khóa) luôn hiện trọn, còn nhóm trải nghiệm (30 chương trình) cắt bớt để
  * trang không dài gấp năm ngay khi mở.
+ *
+ * Luôn là bội của số cột để hàng cuối không lẻ: 6 = 3 hàng × 2 cột (md) = 2 hàng × 3
+ * cột (lg); từ xl lưới 4 cột nên hiện 8. Đổi số cột của lưới là đổi cả hai số này.
  */
 const INITIAL_VISIBLE = 6
+const INITIAL_VISIBLE_XL = 8
 
 /**
  * Một hàng chip lọc: "Tất cả" rồi tới từng lựa chọn, mỗi chip kèm số chương trình
@@ -64,6 +69,8 @@ function CourseGroup({ group, courses, from, onOpen }) {
   const [expanded, setExpanded] = useState(false)
   const [stage, setStage] = useState(null)
   const [topic, setTopic] = useState(null)
+  const xl = useMediaQuery('(min-width: 1280px)')
+  const initial = xl ? INITIAL_VISIBLE_XL : INITIAL_VISIBLE
 
   const filtered = useMemo(() => {
     if (!group.filterable) return courses
@@ -73,8 +80,8 @@ function CourseGroup({ group, courses, from, onOpen }) {
     )
   }, [group.filterable, courses, stage, topic])
 
-  const visible = expanded ? filtered : filtered.slice(0, INITIAL_VISIBLE)
-  const hasMore = filtered.length > INITIAL_VISIBLE
+  const visible = expanded ? filtered : filtered.slice(0, initial)
+  const hasMore = filtered.length > initial
 
   // Cố ý KHÔNG reset `expanded` khi đổi bộ lọc: `hasMore` vốn tính từ số card đã
   // lọc nên nút tự ẩn/hiện đúng, còn reset bằng effect sẽ đụng luật lint
@@ -122,7 +129,7 @@ function CourseGroup({ group, courses, from, onOpen }) {
       )}
 
       {visible.length > 0 ? (
-        <RevealGroup from={from} className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <RevealGroup from={from} className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {visible.map((course, index) => (
             <CourseCard
               key={course.id}

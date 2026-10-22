@@ -5,12 +5,19 @@ import { FieldHelp } from '../ui/Field'
 import { Icon } from '../ui/Icon'
 import { MediaPicker } from './MediaPicker'
 
+const WORDS = {
+  image: { empty: 'Chưa có ảnh', pick: 'Chọn ảnh', change: 'Đổi ảnh', remove: 'Gỡ ảnh' },
+  video: { empty: 'Chưa có video', pick: 'Chọn video', change: 'Đổi video', remove: 'Gỡ video' },
+}
+
 /**
- * Ảnh của một mục. Chỉ đổi BẢN NHÁP: ảnh đi cùng lượt Lưu của section, nên "Bỏ thay
- * đổi" huỷ luôn việc thay ảnh, và lịch sử khôi phục trả lại cả ảnh.
+ * Ảnh (hoặc video nền, `kind="video"`) của một mục. Chỉ đổi BẢN NHÁP: media đi cùng
+ * lượt Lưu của section, nên "Bỏ thay đổi" huỷ luôn việc thay, và lịch sử khôi phục trả
+ * lại cả ảnh lẫn video.
  */
-export function ImageField({ label, hint, optional = false, image, onChange }) {
+export function ImageField({ label, hint, optional = false, image, onChange, kind = 'image' }) {
   const [picking, setPicking] = useState(false)
+  const words = WORDS[kind]
 
   return (
     <div>
@@ -20,12 +27,14 @@ export function ImageField({ label, hint, optional = false, image, onChange }) {
       </div>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         <div className="bg-checker flex h-36 w-full shrink-0 items-center justify-center overflow-hidden rounded-xl border border-gray-200 sm:w-56 dark:border-gray-800">
-          {image ? (
+          {image && kind === 'video' ? (
+            <video src={image.url} muted loop playsInline controls preload="metadata" className="max-h-full max-w-full" />
+          ) : image ? (
             <img src={image.url} alt="" width={image.width} height={image.height} className="max-h-full max-w-full object-contain" />
           ) : (
             <span className="flex flex-col items-center gap-1 text-theme-xs text-gray-400">
               <Icon name="image" size={28} />
-              Chưa có ảnh
+              {words.empty}
             </span>
           )}
         </div>
@@ -33,15 +42,16 @@ export function ImageField({ label, hint, optional = false, image, onChange }) {
           {image && (
             <p className="text-gray-500 dark:text-gray-400">
               {image.width}×{image.height}px
+              {image.duration ? ` · ${Math.round(image.duration)} giây` : ''}
             </p>
           )}
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" icon="image" onClick={() => setPicking(true)}>
-              {image ? 'Đổi ảnh' : 'Chọn ảnh'}
+              {image ? words.change : words.pick}
             </Button>
             {image && (
               <Button variant="ghost-danger" icon="trash" onClick={() => onChange(null)}>
-                Gỡ ảnh
+                {words.remove}
               </Button>
             )}
           </div>
@@ -51,10 +61,17 @@ export function ImageField({ label, hint, optional = false, image, onChange }) {
 
       <MediaPicker
         open={picking}
+        kind={kind}
         onClose={() => setPicking(false)}
         currentId={image?.mediaId}
         onPick={(media) => {
-          onChange({ mediaId: media.id, url: media.url, width: media.width, height: media.height })
+          onChange({
+            mediaId: media.id,
+            url: media.url,
+            width: media.width,
+            height: media.height,
+            ...(kind === 'video' ? { duration: media.duration } : {}),
+          })
           setPicking(false)
         }}
       />

@@ -11,7 +11,8 @@
           "kinds": [
             "competition"
           ],
-          "title": "Competitions"
+          "title": "Competitions",
+          "videoBanner": true
         },
         {
           "description": "Specialist seminars, hands-on workshops and partnership signings hosted at the lab between 2019 and 2023.",
@@ -202,6 +203,8 @@
         "workshop": "Workshop"
       },
       "next": "Next activity",
+      "pause": "Pause slideshow",
+      "play": "Play slideshow",
       "previous": "Previous activity",
       "title": "Annual activities & competitions"
     },
@@ -2024,6 +2027,7 @@
     "projects": {
       "description": "Models and products designed and built at FabLab EIU — from STEM teaching kits to robots and medical models.",
       "eyebrow": "Projects",
+      "goTo": "Go to project",
       "imageAlt": "Photo of the {title} project",
       "items": [
         {
@@ -2107,6 +2111,8 @@
           "title": "Hydroponic garden"
         }
       ],
+      "next": "Next project",
+      "previous": "Previous project",
       "statuses": {
         "done": "Completed",
         "ongoing": "In progress"
@@ -2394,8 +2400,8 @@
       "title": "What learners say about FabLab EIU"
     }
   },
-  "rev": 60,
-  "updatedAt": "2026-10-20T08:39:00.871Z",
+  "rev": 80,
+  "updatedAt": "2026-10-21T09:08:07.235Z",
   "vi": {
     "activities": {
       "description": "Sân chơi, hội thảo và workshop do EIU FabLab tổ chức cho sinh viên, học sinh và cộng đồng.",
@@ -2408,7 +2414,8 @@
           "kinds": [
             "competition"
           ],
-          "title": "Cuộc thi"
+          "title": "Cuộc thi",
+          "videoBanner": true
         },
         {
           "description": "Hội thảo chuyên đề, workshop thực hành và lễ hợp tác diễn ra tại FabLab trong khoảng 2019–2023.",
@@ -2599,6 +2606,8 @@
         "workshop": "Workshop"
       },
       "next": "Hoạt động tiếp theo",
+      "pause": "Tạm dừng trình chiếu",
+      "play": "Phát trình chiếu",
       "previous": "Hoạt động trước",
       "title": "Hoạt động & cuộc thi thường niên"
     },
@@ -4588,6 +4597,7 @@
     "projects": {
       "description": "Những mô hình và sản phẩm được thiết kế, chế tạo tại FabLab EIU — từ học cụ STEM tới robot và mô hình y tế.",
       "eyebrow": "Dự án",
+      "goTo": "Xem dự án số",
       "imageAlt": "Ảnh dự án {title}",
       "items": [
         {
@@ -4671,6 +4681,8 @@
           "title": "Vườn thủy canh"
         }
       ],
+      "next": "Dự án tiếp theo",
+      "previous": "Dự án trước",
       "statuses": {
         "done": "Đã hoàn thành",
         "ongoing": "Đang thực hiện"

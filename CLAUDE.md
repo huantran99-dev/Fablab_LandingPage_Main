@@ -97,6 +97,20 @@ Hệ quả kép của việc `translate:` là thuộc tính riêng:
 nhưng biến `body` thành scroll container và **làm chết `position: sticky` của
 Navbar**. `clip` cắt mà không tạo scroll container.
 
+**Nhưng `body` cắt thôi là KHÔNG đủ trên điện thoại.** Trình duyệt mobile vẫn tính phần
+khối reveal đang dịch ±56px vào bề ngang trang: trang 390px dàn thành ~426px, bị thu nhỏ
+hoặc kéo ngang được, vuốt hàng thẻ thì cả trang trôi theo. Vì vậy
+[Section.jsx](src/components/ui/Section.jsx) có `overflow-x-clip` — cắt tại nguồn, vẫn là
+`clip` nên không tạo vùng cuộn, chiều dọc không bị cắt, navbar vẫn dính (đã đo: header
+`top = 0` sau khi cuộn ở cả 390px lẫn 1280px). `Hero` và `FinalCTA` tự dựng `<section>`
+nhưng chỉ trượt dọc nên không cần.
+
+**Đừng truyền utility ẩn/hiện (`hidden sm:…`) vào `Button`/`Pill`.** Hai component đó
+có sẵn `inline-flex` trong class gốc, và trong CSS đã build `.inline-flex` phát sinh SAU
+`.hidden` nên luôn thắng: nút "Đăng ký ngay" của navbar từng hiện cả trên điện thoại (lỗi
+có từ commit đầu tiên), đẩy thanh menu rộng ~480px. Đặt ẩn/hiện lên một phần tử **bọc**
+(`hidden sm:contents` — `contents` để bố cục từ `sm` trở lên y như cũ).
+
 **4. Transition KHÔNG chạy trên phần tử vừa mount.** Card mới (bấm "Xem thêm")
 khớp `[data-reveal-group=shown] > *` ngay từ lần resolve style đầu tiên nên tính
 ra `opacity: 1` — không có thay đổi giá trị thì không có transition.
@@ -266,8 +280,8 @@ thứ tự trong HTML.
 Ba hoạt động không có ảnh riêng trên trang gốc (`stm32`, `print-3d-medical`,
 `pcb`) dùng lại ảnh thật khác của FabLab, đánh dấu `// ~`.
 
-Tỷ lệ ảnh hoạt động rất lệch nhau (poster dọc 0.7 đến ảnh ngang 2.05) nên carousel
-dùng `object-contain` trên nền pastel. **Đừng đổi sang `object-cover`** — nó sẽ
+Tỷ lệ ảnh hoạt động rất lệch nhau (poster dọc 0.7 đến ảnh ngang 2.05) nên banner
+dùng `object-contain` cho poster (nền banner là ảnh mờ, xem "Banner điện ảnh tự chạy"). **Đừng đổi sang `object-cover`** — nó sẽ
 cắt mất tiêu đề poster hoặc mặt người.
 
 **Đội ngũ: 14/15 người có ảnh.** Ảnh do người dùng tự tải về từ trang Google Sites
@@ -377,6 +391,27 @@ Mọi ảnh khác lazy-load. Ảnh nào cũng phải có `width`/`height` thật
   Admin đã đổi cấu trúc (không còn nhánh `fablab` / cột `explore`) thì câu đó bỏ qua.
   Kiểm bằng `rev`: section +2, nav +2, footer +2.
 
+### Vòng xoay 3D (từ 2026-10-21)
+
+Màn ≥ 768px và không giảm chuyển động: vòng trụ CSS 3D thuần, không thư viện (đã thử bằng
+puppeteer: nút, kéo chuột, bấm thẻ bên, lùi từ dự án 2 về 8 chỉ xoay +45°). Thẻ `i`
+`rotateY(i·θ) translateZ(R)`, cả vòng `translateZ(-R) rotateY(-turn·θ)`, với θ = 360°/N
+và **R tính từ N** (`(W/2 + khe/2) / tan(π/N)`): thêm/bớt dự án là vòng tự giãn. Dưới 3
+dự án hoặc màn hẹp / giảm chuyển động → hàng trượt ngang `snap-x` (cùng component thẻ).
+
+- **`turn` là số nguyên KHÔNG quấn vòng** (`useRing` trong Projects.jsx), `current =
+  mod(turn, N)`. Dùng `useCarousel` (quấn chỉ số) thì từ dự án cuối sang đầu góc nhảy
+  315° → 0° và cả vòng quay ngược gần một vòng. `goTo` đi đường ngắn nhất (±N/2).
+- **Không dùng RevealGroup cho vòng**: rule `[data-reveal-group] > *` ghi `transform` lên
+  con trực tiếp và đè transform 3D của thẻ. Vòng bọc trong `Reveal` — transform reveal
+  nằm ở phần tử ngoài, `perspective`/`preserve-3d` ở lớp trong nên không bị làm phẳng.
+- Kéo/vuốt **không** dùng pointer capture: capture làm cú bấm rơi vào khung chứ không vào
+  thẻ, mất tính năng bấm thẻ bên cạnh để xoay tới. Kéo xong nuốt click đi kèm.
+- Nhãn `previous`/`next`/`goTo` vào database cũ qua migration 009; thiếu thì
+  `aria-label` rơi về `projects.title`, trang không sập. Chọn bố cục bằng
+  [useMediaQuery](src/hooks/useMediaQuery.js) (`useSyncExternalStore`, không setState
+  trong effect).
+
 ## Popup thông số thiết bị
 
 Bốn ô của section Thiết bị giữ nguyên; trong mỗi ô có một hàng nút tên máy, bấm vào
@@ -450,6 +485,10 @@ tuổi hay mô tả ngắn, nên đừng đi tìm rồi điền vào.
 Tài liệu cũ từng ghi "không còn nút lọc": bộ lọc bị bỏ hồi section chỉ có 16 khóa
 chia hai nhóm, lúc đó hai nhóm là đủ. Với **30 chương trình trong một nhóm** thì lý
 do đó không còn đúng, và bộ lọc được thêm lại theo yêu cầu của người dùng.
+
+**Lưới 4 cột từ `xl`** (từ 2026-10-22, khi `container-page` nới từ 1200 lên 1440px), nên
+số thẻ hiện sẵn là 8 ở `xl`, 6 dưới đó (`INITIAL_VISIBLE_XL` / `INITIAL_VISIBLE`) — luôn là
+bội của số cột để hàng cuối không lẻ. Đổi số cột là đổi cả hai số này.
 
 Bật bằng cờ `filterable: true` trên phần tử của `courses.groups`, **không suy đoán
 theo số lượng**. Hai hàng chip (`stages`, `topics`) độc lập, kết hợp bằng AND.
@@ -525,6 +564,67 @@ chỗ, nhưng sai một cách nhìn thấy được. `npm run check:content` b�
 **Bậc heading: h2 (section) → h3 (khối) → h4 (tên hoạt động).** Giống hệt section
 Khóa học, và cùng một cái bẫy: thêm h3 cho khối mà quên hạ tên hoạt động xuống h4
 thì outline có hai h3 ngang hàng.
+
+### Hai kiểu banner tự chạy (từ 2026-10-21)
+
+| Khối | Kiểu | File |
+|---|---|---|
+| có `groups[].videoBanner: true` (Cuộc thi) | **banner video tràn màn hình**, mỗi cuộc thi một video nền | [ActivityVideoBanner.jsx](src/components/ActivityVideoBanner.jsx) |
+| còn lại (Sự kiện) | banner ảnh bo góc trong container, nền navy, 6,5 giây/slide | `ActivityBanner` trong [Activities.jsx](src/components/Activities.jsx) |
+
+Lịch sử: lần đầu người dùng nói "video banner auto run", agent hiểu thành banner ẢNH trông
+như video — **sai ý**. Ý thật: banner tràn màn hình, nền là video THẬT, lớp phủ trình bày
+nội dung. Hỏi rõ "video thật hay hiệu ứng" trước khi làm thứ gì có chữ "video".
+
+Hai kiểu dùng chung bộ não [useSlideshow](src/hooks/useSlideshow.js) (con trỏ, tự chạy,
+dừng, vuốt, phím) và [SlideProgress](src/components/SlideProgress.jsx) (vạch tiến trình =
+bộ đếm giờ). Sửa hành vi tự chạy là sửa ở hook, đừng chép lại vào từng banner.
+
+**Banner video:**
+
+- Tràn màn hình bằng `<Section contained={false}>` — Activities tự đặt `container-page`
+  cho phần còn lại. **Không dùng `100vw`**: nó tính cả thanh cuộn dọc nên rộng hơn trang.
+- Video `muted loop playsInline preload="none"`, phát/dừng bằng effect theo
+  `slide đang hiện && đang phát && banner trong khung nhìn` — slide khác, banner chưa cuộn
+  tới thì không tải byte nào (đã đo: `readyState 0` trước khi cuộn tới). `muted` phải gán
+  cả THUỘC TÍNH trong effect (Safari iOS). `play()` bị từ chối (iPhone tiết kiệm pin) thì
+  nuốt lỗi — ảnh poster mờ phía dưới vẫn còn. Video hiện dần khi `playing`, không chớp đen.
+- Cuộc thi chưa có video → nền là poster phóng to + mờ + Ken Burns. Poster thật (có mã QR
+  đăng ký) đứng bên phải từ `md`, `object-contain`.
+- Mỗi slide đứng theo `duration` của video, kẹp 8–20 giây.
+- Lớp phủ: điện thoại là dải DỌC (chữ dồn đáy, nửa trên để video lộ ra — bản đầu phủ đều
+  70% và video gần như biến mất), từ `md` là dải NGANG (chữ bên trái).
+- Nút dừng dừng CẢ chuyển slide lẫn video. Giảm chuyển động hoặc `navigator.connection
+  .saveData`: video không tự phát, bấm "Phát" mới chạy; slide vẫn không tự chuyển khi
+  giảm chuyển động (`playing` ≠ `autoplay` trong hook — đừng gộp).
+- Rê chuột lên nút bên trong banner cũng là "rê vào banner" → dừng. Bài thử tự động phải
+  đưa chuột ra ngoài sau khi bấm, kẻo tưởng tự chạy hỏng (đã tốn một lượt vì vậy).
+
+**Banner ảnh (Sự kiện):**
+
+- **Nền mờ được `object-cover`, poster thì KHÔNG.** Lớp nền là chính ảnh đó phóng to +
+  `blur-2xl` (cắt thoải mái, chỉ là nền, cùng URL nên không tải thêm); poster phía trước
+  vẫn `object-contain` như luật ảnh hoạt động ở trên. Lớp phủ `navy/85` giữ chữ trắng đủ
+  tương phản trên ảnh sáng nhất — đừng hạ xuống dưới ~80%.
+- Các slide chồng cùng một ô grid: banner cao bằng slide cao nhất, slide ngắn tự căn
+  giữa (`flex-1` + `content-center`). Không đặt chiều cao cứng, không cắt mô tả.
+- **Bộ đếm giờ là `animationend` của vạch tiến trình**, không có `setInterval`. Dừng chỉ
+  là `animation-play-state: paused` (bấm nút dừng, rê chuột, focus **bàn phím** trong
+  banner, banner ra khỏi khung nhìn). Focus do chạm/bấm chuột KHÔNG dừng — nếu không,
+  vuốt một cái là banner đứng luôn trên điện thoại.
+- ⚠️ **Giảm chuyển động bật giữa chừng → slide nhấp nháy.** Rule ở `@layer base` ép mọi
+  animation còn 0.01ms, tức `animationend` bắn gần như mỗi khung hình. Vì vậy chặn hai lớp:
+  component đọc media query **sống** qua `useMediaQuery` (không phải hằng `REDUCED_MOTION`)
+  để tắt tự chạy + Ken Burns + nút dừng, và CSS đặt `animation-name: none` cho
+  `animate-banner-progress` / `animate-ken-burns`. Đã thử bằng
+  `page.emulateMediaFeatures` cả lúc tải trang lẫn bật giữa chừng: slide đứng yên.
+- Ken Burns chạy lại nhờ `stamps[i]` làm `key` của lớp zoom (`useSlideshow`): slide vừa
+  được chọn mount lại nên zoom từ đầu, slide vừa rời đi giữ key nên vẫn zoom tiếp lúc mờ đi
+  thay vì giật về cỡ gốc.
+- `aria-live` của dòng sr-only là `off` khi đang tự chạy (mẫu carousel WAI-ARIA), `polite`
+  khi đã dừng. Nút dừng là bắt buộc (WCAG 2.2.2) — nhãn `activities.pause`/`play`, vào
+  database cũ qua migration 010; thiếu thì rơi về `activities.title`.
+- `KIND_TONES.partnership` là `white` chứ không phải `ink`: viên thuốc đen chìm trên navy.
 
 ## Bẫy khi sửa i18n bằng regex
 
@@ -707,6 +807,36 @@ dùng → 409 kèm danh sách chỗ dùng. Xoá chỉ xoá file ở `data/media/
 
 **`/media/<không tồn tại>` phải trả 404.** Không có chốt đó thì nó rơi xuống fallback SPA
 và nhận `index.html` mã 200 — ảnh vừa xoá trông như vẫn còn.
+
+### Video nền (từ API 10)
+
+Cùng bảng `media` (phân biệt bằng `mime`, cột `duration` từ migration 011), cùng route tải
+lên, cùng bảng `binding` nhưng **scope riêng `activity-video`** → trường `video` (không
+phải `image`) trên `activities.items`. Xử lý ở [video.js](server/media/video.js):
+
+- **Không có ffmpeg → không chuyển mã, không nén.** Chỉ nhận MP4 **H.264**; HEVC (mặc
+  định iPhone) và `.mov` bị từ chối 415 kèm hướng dẫn. Trần 40 MB (ảnh vẫn 15 MB) — nginx
+  phải `client_max_body_size 41m`.
+- **Xoá GPS mà không làm hỏng video:** video điện thoại mang toạ độ nơi quay
+  (`moov/udta/©xyz`, `moov/meta`). Xoá hẳn hộp sẽ dịch `mdat` và làm sai `stco`/`co64`;
+  vì vậy hộp `udta`/`meta`/`uuid` được ĐỔI TÊN thành `free` và ghi 0 — kích thước giữ
+  nguyên. Đã thử: chèn `©xyz` vào cả `moov` lẫn cấp file → file lưu không còn toạ độ,
+  Chrome vẫn phát.
+- MP4 phân mảnh (MediaRecorder…) ghi `duration` 0 ở `mvhd` → đọc thêm `mvex/mehd`.
+
+**Đường ghi có "khe" (slot):** `slotsOf(section)` trong [mutate.js](server/content/mutate.js)
+— `images` và (riêng Hoạt động) `videos`. Lượt lưu nhận `videos` y như `images`; khe ảnh
+chỉ nhận ảnh, khe video chỉ nhận video (422 — gắn nhầm thì `<img>` trỏ vào MP4, không ai
+báo). `bindings_json` của lịch sử: section chỉ có ảnh **giữ định dạng mảng cũ**; section
+nhiều khe ghi object `{ images, videos }`. Đọc mảng = chỉ khe ảnh → khôi phục bản cũ của
+Hoạt động giữ nguyên video hiện tại. Dashboard: `ImageField kind="video"`, `MediaPicker`
+lọc theo `kind`, bước "đã lên trang công khai" so cả video.
+
+Không có ffmpeg trên máy này thì tự tạo video thử bằng `MediaRecorder` của Chrome
+(`video/mp4;codecs=avc1.42E01E`) qua puppeteer — xem `pp/makevideo.cjs` trong scratchpad
+(ngoài git). Bài thử trọn đường (tải lên → gắn → công khai → khôi phục) chạy trên máy chủ
+bản sao cổng 3999; preview trỏ sang đó bằng một vite config riêng, KHÔNG đụng 3001/5173
+người dùng đang chạy.
 
 Kiểm kịch bản ghi thì chạy trên **bản sao** database: `DATA_DIR=<thư mục khác> npm run
 server`. Đừng thử trên `data/` thật — lịch sử và `rev` không quay lại được.
@@ -927,13 +1057,21 @@ kết quả là một chấm trống trơn. Phải hỏi tập id (`COURSE_ICON_
 
 ## Giới hạn của agent trong repo này
 
-**Xem được file ảnh, không xem được trang đã render.** Công cụ Read mở được
-`.jpg`/`.png`, nên việc chọn ảnh và kiểm tra khung cắt là làm thật được — đừng bỏ
-qua bước đó rồi chọn ảnh theo tên file. Nhưng không có công cụ chụp màn hình:
-không cách nào tự xác nhận bố cục, chuyển động hay khoảng cách của trang.
+**Xem được file ảnh — và CHỤP ĐƯỢC trang đã render** (từ 2026-10-21). Máy có Chrome ở
+`C:/Program Files/Google/Chrome/Application/chrome.exe`. Cài `puppeteer-core` vào
+**thư mục scratchpad** (không vào repo), chạy `vite build --outDir <scratch>` +
+`vite preview`, rồi `page.emulate({ viewport: { width: 390, isMobile: true, hasTouch:
+true } })` để giả lập điện thoại thật: đo `innerWidth`/`scrollWidth` (tràn ngang), thử
+vuốt bằng `page.touchscreen`, bấm nút, chụp `element.screenshot()` rồi mở bằng Read.
 
-Mọi kiểm chứng còn lại là **cấu trúc** (grep CSS đã build, byte offset, đối chiếu
-id ↔ ảnh, lint, build). Những thứ luôn phải nhờ người dùng nhìn: không có thanh
-cuộn ngang ở 375px và 1440px lúc đang trượt, Navbar còn dính, hover card nhấc
-mượt không giật, số liệu đếm lại từ 0 khi quay lại, và ảnh trong card không bị
-`object-cover` cắt mất chủ thể ở từng bề ngang màn hình.
+**Bẫy:** `chrome --headless --window-size=390,…` KHÔNG cho khung nhìn 390px — Chrome trên
+Windows ép tối thiểu **500px** nhưng ảnh vẫn cắt ở 390, nên trông như trang bị tràn mép
+phải trong khi đó là lỗi của công cụ. Luôn đo `innerWidth` trước khi tin ảnh chụp, và
+dùng `page.emulate` của puppeteer chứ không dùng cờ `--window-size`.
+
+Chụp được nhưng vẫn là trình duyệt giả lập: cảm giác cuộn, độ mượt animation và Safari
+thật trên iPhone vẫn nên nhờ người dùng xem lại.
+
+Ngoài ảnh chụp, các kiểm chứng **cấu trúc** vẫn dùng: grep CSS đã build, đối chiếu id ↔
+ảnh, lint, build. Tràn ngang ở 320–768px và navbar còn dính thì giờ tự đo được bằng
+puppeteer (xem trên); độ mượt của hover / animation thì vẫn nhờ người dùng nhìn.

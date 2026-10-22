@@ -1,7 +1,7 @@
 /**
- * Thư viện ảnh của dashboard.
+ * Thư viện ảnh (và video nền) của dashboard.
  *
- * Tải lên là `express.raw` với đúng ba kiểu ảnh, KHÔNG dùng multer: mỗi lượt gửi
+ * Tải lên là `express.raw` với đúng ba kiểu ảnh + MP4, KHÔNG dùng multer: mỗi lượt gửi
  * một file, tên file đi trong header `x-filename`. Không cần multipart thì không cần
  * thêm một thư viện phân tích form vào máy chủ công khai.
  *
@@ -18,10 +18,14 @@ import { join } from 'node:path'
 
 import { requireCsrf, requireSameOrigin, requireSession } from '../auth/middleware.js'
 import { paths } from '../config.js'
-import { SECTION_IMAGES, mediaUrl } from '../content/assemble.js'
+import { SECTION_IMAGES, SECTION_VIDEOS, mediaUrl } from '../content/assemble.js'
 import { getContent } from '../content/cache.js'
 import { getDb } from '../db/index.js'
 import { ACCEPTED_TYPES, MediaError, processImage, storeImage } from '../media/process.js'
+import { MAX_VIDEO_BYTES, VIDEO_TYPES, processVideo } from '../media/video.js'
+
+/** Ảnh vẫn giữ trần cũ; video có trần riêng (bộ đọc thân dùng trần lớn hơn của hai). */
+const MAX_IMAGE_BYTES = 15 * 1024 * 1024
 
 export const mediaRouter = Router()
 
@@ -29,9 +33,12 @@ mediaRouter.use(requireSameOrigin, requireSession)
 
 /** scope trong bảng binding -> section. `singleton` tách theo item: hero là section, logo thì không. */
 const SECTION_OF_SCOPE = Object.fromEntries(
-  Object.entries(SECTION_IMAGES)
+  [...Object.entries(SECTION_IMAGES), ...Object.entries(SECTION_VIDEOS)]
     .filter(([, target]) => !target.itemIds)
     .map(([section, target]) => [target.scope, section]),
+)
+const ARRAY_OF_SCOPE = Object.fromEntries(
+  [...Object.values(SECTION_IMAGES), ...Object.values(SECTION_VIDEOS)].map((target) => [target.scope, target.arrayKey]),
 )
 
 function describeUsage(row, dict) {
@@ -39,7 +46,7 @@ function describeUsage(row, dict) {
     return { scope: row.scope, itemId: row.item_id, section: row.item_id === 'hero' ? 'hero' : null, label: row.item_id }
   }
   const section = SECTION_OF_SCOPE[row.scope] ?? null
-  const arrayKey = section ? SECTION_IMAGES[section].arrayKey : null
+  const arrayKey = section ? ARRAY_OF_SCOPE[row.scope] : null
   const item = arrayKey ? dict[section]?.[arrayKey]?.find((entry) => entry.id === row.item_id) : null
   return {
     scope: row.scope,
@@ -65,6 +72,8 @@ function present(row, usages = []) {
     url: mediaUrl(row.filename),
     filename: row.filename,
     mime: row.mime,
+    kind: row.mime.startsWith('video/') ? 'video' : 'image',
+    duration: row.duration ?? null,
     bytes: row.bytes,
     width: row.width,
     height: row.height,
@@ -90,22 +99,30 @@ mediaRouter.get('/media', (_req, res) => {
 mediaRouter.post(
   '/media',
   requireCsrf,
-  express.raw({ type: ACCEPTED_TYPES, limit: '15mb' }),
+  express.raw({ type: [...ACCEPTED_TYPES, ...VIDEO_TYPES], limit: MAX_VIDEO_BYTES }),
   async (req, res) => {
     if (!Buffer.isBuffer(req.body) || req.body.length === 0) {
-      res.status(415).json({ error: 'chi nhan anh JPEG, PNG, WebP (dat Content-Type dung kieu anh)' })
+      res.status(415).json({ error: 'chi nhan anh JPEG, PNG, WebP hoac video MP4 (dat Content-Type dung kieu file)' })
       return
     }
 
-    let originalName = 'anh'
+    const isVideo = VIDEO_TYPES.includes(req.get('content-type')?.split(';')[0].trim())
+    if (!isVideo && req.body.length > MAX_IMAGE_BYTES) {
+      res.status(413).json({ error: 'anh qua lon (toi da 15 MB)' })
+      return
+    }
+
+    let originalName = isVideo ? 'video' : 'anh'
     try {
-      originalName = decodeURIComponent(req.get('x-filename') ?? 'anh')
+      originalName = decodeURIComponent(req.get('x-filename') ?? originalName)
     } catch {
       // Header hỏng thì dùng tên mặc định — tên file chỉ để đọc cho dễ, không quan trọng.
     }
 
     try {
-      const processed = await processImage(req.body)
+      // Video: không chuyển mã (máy chủ không có ffmpeg) — chỉ kiểm H.264 và xoá
+      // metadata vị trí, xem server/media/video.js.
+      const processed = isVideo ? processVideo(req.body) : await processImage(req.body)
       const db = getDb()
       const { row, created } = storeImage(db, processed, originalName)
       res.status(created ? 201 : 200).json({

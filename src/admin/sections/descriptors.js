@@ -231,6 +231,11 @@ export const SECTIONS = [
         title: 'Chữ chung',
         fields: [eyebrow, title, description, area('imageAlt', 'Mô tả ảnh (alt)', { rows: 2, help: altHelp('{title}', 'tên dự án') })],
       },
+      {
+        title: 'Nhãn trợ năng',
+        description: 'Trình đọc màn hình đọc các nhãn này cho nút xoay và chấm tròn của vòng dự án 3D.',
+        fields: [text('previous', 'Nút lùi'), text('next', 'Nút tiến'), text('goTo', 'Nhãn chấm tròn', { help: 'Đọc kèm số thứ tự, vd. "Xem dự án số 3".' })],
+      },
     ],
     lists: [
       {
@@ -448,7 +453,7 @@ export const SECTIONS = [
     key: 'activities',
     label: 'Hoạt động',
     icon: 'activities',
-    description: 'Cuộc thi, sự kiện và hội thảo — hai carousel.',
+    description: 'Cuộc thi (banner video tràn màn hình) và sự kiện, hội thảo (banner ảnh) — tự chạy.',
     groups: [
       {
         title: 'Chữ chung',
@@ -458,7 +463,9 @@ export const SECTIONS = [
           description,
           text('previous', 'Nút lùi'),
           text('next', 'Nút tiến'),
-          text('goTo', 'Nhãn chấm tròn'),
+          text('goTo', 'Nhãn vạch tiến trình'),
+          text('pause', 'Nút tạm dừng'),
+          text('play', 'Nút phát'),
           area('imageAlt', 'Mô tả ảnh (alt)', { rows: 2, help: altHelp('{title}', 'tên hoạt động') }),
         ],
       },
@@ -470,6 +477,11 @@ export const SECTIONS = [
         itemName: 'hoạt động',
         titleField: 'title',
         image: { label: 'Ảnh / poster', hint: 'Hiển thị trọn khung, không cắt — poster dọc vẫn ổn. Đọc nội dung poster, đừng tin tên file.' },
+        video: {
+          label: 'Video nền',
+          optional: true,
+          hint: 'Chỉ hiện ở khối bật "Banner video" (Cuộc thi). MP4 H.264, nên 10–30 giây, dưới ~15 MB; tiếng bị tắt. Không có video thì banner dùng ảnh poster làm nền.',
+        },
         filter: { label: 'Loại', field: 'kind', options: kindOptions },
         columns: [
           { label: 'Loại', value: (item, ctx) => ctx.vi?.kinds?.[item.kind] ?? item.kind },
@@ -489,11 +501,20 @@ export const SECTIONS = [
         titleField: 'title',
         minItems: 1,
         idHint: 'Id khối là neo trên trang (ví dụ #competitions) và menu có thể đang trỏ tới.',
-        columns: [{ label: 'Gồm loại', value: (item, ctx) => (item.kinds ?? []).map((kind) => ctx.vi?.kinds?.[kind] ?? kind).join(', ') || '—' }],
+        columns: [
+          { label: 'Gồm loại', value: (item, ctx) => (item.kinds ?? []).map((kind) => ctx.vi?.kinds?.[kind] ?? kind).join(', ') || '—' },
+          { label: 'Dạng', value: (item) => (item.videoBanner ? 'Banner video' : 'Banner ảnh') },
+        ],
         fields: [
           text('title', 'Tên khối'),
           area('description', 'Mô tả'),
           { key: 'kinds', label: 'Loại hoạt động thuộc khối này', type: 'multiselect', options: kindOptions, optional: true },
+          {
+            key: 'videoBanner',
+            label: 'Banner video tràn màn hình',
+            type: 'switch',
+            description: 'Nền là video gắn ở từng hoạt động (mục "Video nền"); hoạt động chưa có video dùng ảnh poster.',
+          },
         ],
       },
     ],

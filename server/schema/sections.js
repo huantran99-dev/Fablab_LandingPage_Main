@@ -180,6 +180,10 @@ export const projectsSchema = z.strictObject({
   title: text(120),
   description: text(400),
   imageAlt: text(200),
+  // Nhãn trợ năng của vòng xoay 3D (nút trước/sau, chấm tròn). Từ API 8.
+  previous: text(80),
+  next: text(80),
+  goTo: text(80),
   statuses: z.record(idSchema, text(40)),
   items: z
     .array(
@@ -209,6 +213,9 @@ export const activitiesSchema = z.strictObject({
   previous: text(60),
   next: text(60),
   goTo: text(60),
+  // Nút dừng/phát của banner tự chạy (WCAG 2.2.2). Từ API 9.
+  pause: text(60),
+  play: text(60),
   kinds: z.record(idSchema, text(40)),
   groups: z
     .array(
@@ -217,6 +224,8 @@ export const activitiesSchema = z.strictObject({
         title: text(120),
         description: text(400),
         kinds: z.array(idSchema),
+        // Khối hiện dạng banner video tràn màn hình. Từ API 9. Chỉ `true` hoặc vắng.
+        videoBanner: z.boolean().optional(),
       }),
     )
     .min(1, 'phai co it nhat mot khoi'),

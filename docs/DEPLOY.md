@@ -294,8 +294,9 @@ server {
     listen [::]:80;
     server_name fablab.example.vn;
 
-    # Anh tai len toi da 15 MB; mac dinh cua nginx la 1 MB -> 413 kho hieu.
-    client_max_body_size 16m;
+    # Anh tai len toi da 15 MB, video nen (MP4) toi da 40 MB; mac dinh cua nginx la
+    # 1 MB -> 413 kho hieu.
+    client_max_body_size 41m;
 
     gzip on;
     gzip_proxied any;
@@ -407,7 +408,7 @@ Chạy từ máy bất kỳ:
 D=https://fablab.example.vn
 
 curl -s $D/api/health
-# {"ok":true,"rev":60,"updatedAt":"...","api":7}
+# {"ok":true,"rev":80,"updatedAt":"...","api":10}
 
 curl -sI $D/ | grep -iE '^(HTTP|content-security-policy|strict-transport-security)'
 # HTTP/2 200 + ca hai header bao mat
@@ -428,6 +429,7 @@ Rồi làm bằng trình duyệt:
 - [ ] `/admin` đăng nhập được và **vẫn còn đăng nhập sau khi tải lại trang**.
 - [ ] Không có băng đỏ "Máy chủ đang chạy bản cũ".
 - [ ] Tải một ảnh lên Thư viện ảnh (kiểm `client_max_body_size`).
+- [ ] Tải một video MP4 ~20 MB lên Thư viện ảnh (kiểm `client_max_body_size 41m`).
 - [ ] Sửa một chữ ở một section, **Lưu**: thanh dưới cùng của dashboard chuyển từ
       "Đang kiểm tra trang công khai…" sang **"Đã lên trang công khai"**; tải lại trang
       công khai (một lần) thấy đổi.
@@ -535,8 +537,9 @@ nhập được. Muốn có dashboard thì dùng kiến trúc ở [mục 1](#1-k
 | Lưu trả `403 goc request khong hop le` | `SITE_ORIGIN` sai (thiếu `https://`, thừa `/` cuối, sai `www`) | Sửa `/etc/fablab.env`, restart |
 | Lưu trả `403 thieu hoac sai CSRF token` | Mở dashboard ở hai tab, một tab đăng nhập lại | Tải lại tab |
 | Vài lần sai mật khẩu, không ai đăng nhập được (`429`) | nginx thiếu `X-Forwarded-For` | Thêm header, `reload nginx`; chờ 15 phút |
-| Tải ảnh báo "File quá lớn" (`413`) | File vượt `client_max_body_size` của nginx | Đặt `16m`; ảnh nguồn nên nhỏ hơn 15 MB |
-| Tải ảnh 15–16 MB báo "File quá lớn" (`413` JSON) | Qua được nginx nhưng vượt giới hạn 15 MB của Express | Thu nhỏ ảnh trước khi tải (xem [API.md](API.md#3-mã-lỗi-chung)) |
+| Tải ảnh/video báo "File quá lớn" (`413`) | File vượt `client_max_body_size` của nginx | Đặt `41m`; ảnh nguồn nên nhỏ hơn 15 MB, video nhỏ hơn 40 MB |
+| Tải ảnh 15–40 MB báo "File quá lớn" (`413` JSON) | Qua được nginx nhưng vượt giới hạn 15 MB cho ảnh của Express | Thu nhỏ ảnh trước khi tải (xem [API.md](API.md#3-mã-lỗi-chung)) |
+| Tải video báo mã hình `hvc1` (`415`) | Video iPhone mặc định là HEVC — nhiều trình duyệt không phát được | Xuất lại thành MP4 H.264 (ứng dụng chỉnh video, HandBrake…) rồi tải lên |
 | Form đăng ký báo "gửi nhiều lần liên tiếp" với người mới gửi lần đầu | nginx thiếu `X-Forwarded-For` — mọi người chung một IP | Thêm header, `reload nginx` |
 | Form đăng ký báo "tạm ngưng nhận đăng ký" | Đã nhận đủ `REG_DAILY_CAP` lượt trong ngày — có thể đang bị spam | Xem danh sách đăng ký; nếu là spam, xoá và cân nhắc `limit_req` ở nginx. Log ghi `cham tran ... dang ky/ngay` |
 | Thống kê chỉ có 1–2 "khách" mỗi ngày dù có nhiều người vào | nginx thiếu `X-Forwarded-For` | Như trên |

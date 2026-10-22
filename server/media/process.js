@@ -97,10 +97,11 @@ export function storeImage(db, processed, originalName) {
   mkdirSync(paths.media, { recursive: true })
   writeFileSync(join(paths.media, filename), processed.data)
 
+  // Dùng chung cho ảnh và video (server/media/video.js); chỉ video có `duration`.
   const row = db
     .prepare(
-      `INSERT INTO media (filename, sha256, mime, bytes, width, height, kind, origin, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, NULL, 'upload', ?)
+      `INSERT INTO media (filename, sha256, mime, bytes, width, height, kind, origin, created_at, duration)
+       VALUES (?, ?, ?, ?, ?, ?, NULL, 'upload', ?, ?)
        RETURNING *`,
     )
     .get(
@@ -111,6 +112,7 @@ export function storeImage(db, processed, originalName) {
       processed.width,
       processed.height,
       new Date().toISOString(),
+      processed.duration ?? null,
     )
   return { row, created: true }
 }

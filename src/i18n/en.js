@@ -750,6 +750,9 @@ export const en = {
     title: 'Made in our workshop',
     description: 'Models and products designed and built at FabLab EIU — from STEM teaching kits to robots and medical models.',
     imageAlt: 'Photo of the {title} project',
+    previous: 'Previous project',
+    next: 'Next project',
+    goTo: 'Go to project',
     statuses: {
       ongoing: 'In progress',
       done: 'Completed',
@@ -841,6 +844,8 @@ export const en = {
     previous: 'Previous activity',
     next: 'Next activity',
     goTo: 'Go to activity',
+    pause: 'Pause slideshow',
+    play: 'Play slideshow',
     // `{title}` is replaced with the activity name at render time.
     imageAlt: 'Photo from {title}',
     kinds: {
@@ -865,6 +870,8 @@ export const en = {
         description:
           'Two annual contests run by FabLab EIU, open to university and high-school students across southern Vietnam.',
         kinds: ['competition'],
+        // Full-width video banner (each competition's video is attached in the dashboard).
+        videoBanner: true,
       },
       {
         id: 'events',

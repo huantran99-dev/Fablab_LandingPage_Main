@@ -752,6 +752,9 @@ export const vi = {
     title: 'Sản phẩm làm ra từ xưởng',
     description: 'Những mô hình và sản phẩm được thiết kế, chế tạo tại FabLab EIU — từ học cụ STEM tới robot và mô hình y tế.',
     imageAlt: 'Ảnh dự án {title}',
+    previous: 'Dự án trước',
+    next: 'Dự án tiếp theo',
+    goTo: 'Xem dự án số',
     statuses: {
       ongoing: 'Đang thực hiện',
       done: 'Đã hoàn thành',
@@ -843,6 +846,8 @@ export const vi = {
     previous: 'Hoạt động trước',
     next: 'Hoạt động tiếp theo',
     goTo: 'Xem hoạt động số',
+    pause: 'Tạm dừng trình chiếu',
+    play: 'Phát trình chiếu',
     // `{title}` được thay bằng tên hoạt động lúc render.
     imageAlt: 'Ảnh của {title}',
     kinds: {
@@ -867,6 +872,8 @@ export const vi = {
         description:
           'Hai sân chơi thường niên do EIU FabLab tổ chức, mở cho sinh viên và học sinh khu vực phía Nam.',
         kinds: ['competition'],
+        // Banner video tràn màn hình (video gắn từng cuộc thi qua dashboard).
+        videoBanner: true,
       },
       {
         id: 'events',
