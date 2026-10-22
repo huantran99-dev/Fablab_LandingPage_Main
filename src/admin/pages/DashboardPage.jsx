@@ -1,5 +1,6 @@
 import { PageHeader } from '../layout/PageHeader'
 import { formatBytes, formatDateTime } from '../lib/paths'
+import { STATUS } from '../lib/registrations'
 import { SECTIONS, SECTION_BY_KEY } from '../sections/descriptors'
 import { Alert } from '../ui/Alert'
 import { Badge } from '../ui/Badge'
@@ -27,10 +28,26 @@ export function DashboardPage({ meta, username }) {
   const bySection = Object.fromEntries(meta.sections.map((section) => [section.key, section]))
   const count = (key, path) => bySection[key]?.counts?.[path] ?? 0
 
+  // Máy chủ cũ (trước API 3) không trả hai khối này — hiện 0 thay vì sập trang.
+  const registrations = meta.registrations ?? { new: 0, total: 0, last7d: 0, recent: [] }
+  const analytics = meta.analytics ?? { views7d: 0, visitors7d: 0 }
+
   const metrics = [
+    {
+      label: 'Đăng ký mới',
+      value: registrations.new,
+      icon: 'inbox',
+      href: '#/registrations',
+      note: `${registrations.last7d} trong 7 ngày`,
+    },
+    {
+      label: 'Lượt xem 7 ngày',
+      value: analytics.views7d,
+      icon: 'chart',
+      href: '#/stats',
+      note: `${analytics.visitors7d} lượt khách`,
+    },
     { label: 'Khóa học', value: count('courses', 'items'), icon: 'courses', href: '#/sections/courses', note: `${count('courses', 'groups')} nhóm` },
-    { label: 'Hoạt động', value: count('activities', 'items'), icon: 'activities', href: '#/sections/activities', note: `${count('activities', 'groups')} khối` },
-    { label: 'Thành viên', value: count('team', 'members'), icon: 'team', href: '#/sections/team', note: `${count('partners', 'items')} đối tác` },
     {
       label: 'Ảnh trong thư viện',
       value: meta.media.total,
@@ -66,7 +83,7 @@ export function DashboardPage({ meta, username }) {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-12">
-        <Card className="xl:col-span-8" title="Nội dung trang" description="12 section, theo đúng thứ tự xuất hiện trên trang." bodyClassName="p-0!">
+        <Card className="xl:col-span-8" title="Nội dung trang" description={`${SECTIONS.length} section, theo đúng thứ tự xuất hiện trên trang.`} bodyClassName="p-0!">
           <div className="scrollbar-thin overflow-x-auto">
             <table className="min-w-full text-left">
               <thead>
@@ -113,6 +130,38 @@ export function DashboardPage({ meta, username }) {
         </Card>
 
         <div className="space-y-6 xl:col-span-4">
+          <Card
+            title="Đăng ký gần nhất"
+            actions={
+              <LinkButton href="#/registrations" size="xs" variant="ghost" iconRight="chevron-right">
+                Tất cả
+              </LinkButton>
+            }
+          >
+            {registrations.recent.length === 0 ? (
+              <p className="text-sm text-gray-500">Chưa có lượt đăng ký nào.</p>
+            ) : (
+              <ul className="space-y-4">
+                {registrations.recent.map((entry) => (
+                  <li key={entry.id} className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <a
+                        href={`#/registrations/${entry.id}`}
+                        className="block truncate text-theme-sm font-medium text-gray-800 hover:text-brand-500 dark:text-white/90"
+                      >
+                        {entry.studentName}
+                      </a>
+                      <p className="truncate text-theme-xs text-gray-500">
+                        {entry.courseTitle ?? (entry.courseId ? entry.courseId : 'Cần tư vấn')} · {formatDateTime(entry.createdAt)}
+                      </p>
+                    </div>
+                    <Badge color={STATUS[entry.status]?.color ?? 'gray'}>{STATUS[entry.status]?.label ?? entry.status}</Badge>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Card>
+
           <Card title="Lần lưu gần nhất">
             {meta.recent.length === 0 ? (
               <p className="text-sm text-gray-500">Chưa có lần lưu nào từ dashboard.</p>

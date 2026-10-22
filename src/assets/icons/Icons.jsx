@@ -157,6 +157,14 @@ export function CloseIcon({ className = '', size = 22 }) {
   )
 }
 
+export function CheckIcon({ className = '', size = 22 }) {
+  return (
+    <Svg className={className} size={size} strokeWidth={2}>
+      <path d="M5 12.5l4.5 4.5L19 7.5" />
+    </Svg>
+  )
+}
+
 export function QuoteIcon({ className = '', size = 40 }) {
   return (
     <svg

@@ -21,6 +21,8 @@ export const DETAIL_PRECEDENCE = ['scraped', 'handwritten', 'overridden']
 const BINDING_TARGETS = {
   course: ['courses', 'items'],
   facility: ['facilities', 'items'],
+  equipment: ['equipment', 'items'],
+  project: ['projects', 'items'],
   activity: ['activities', 'items'],
   partner: ['partners', 'items'],
   team: ['team', 'members'],

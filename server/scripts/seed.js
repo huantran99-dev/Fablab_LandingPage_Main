@@ -17,35 +17,17 @@ import sharp from 'sharp'
 
 import { ROOT, paths } from '../config.js'
 import { getDb, closeDb } from '../db/index.js'
+import { SRC_IMAGES, filenameOf, imageScopes, readImageNotes } from './image-sources.js'
 
 register('./import-hook.mjs', import.meta.url)
 
-const SRC_IMAGES = join(ROOT, 'src', 'assets', 'images')
 // `import()` trên Windows không nhận đường dẫn 'D:\...', phải là URL file://.
 const srcUrl = (...parts) => pathToFileURL(join(ROOT, 'src', ...parts)).href
 
 const SECTION_KEYS = [
-  'nav', 'hero', 'stats', 'pillars', 'courses', 'facilities',
-  'partners', 'activities', 'team', 'testimonials', 'finalCta', 'footer',
+  'nav', 'hero', 'stats', 'facilities', 'equipment', 'projects', 'pillars', 'courses',
+  'activities', 'team', 'partners', 'testimonials', 'finalCta', 'register', 'footer',
 ]
-
-/**
- * Ghi chú `// ~` và `// ↺` bóc thẳng từ mã nguồn của index.js.
- *
- * Bóc bằng regex chứ không chép tay: chép tay 15 dòng thì sai một dòng cũng không
- * ai biết, mà đây là thông tin không dựng lại được nếu mất.
- */
-function readImageNotes() {
-  const source = readFileSync(join(SRC_IMAGES, 'index.js'), 'utf8')
-  const notes = new Map()
-  for (const match of source.matchAll(/^\s{2}'?([A-Za-z0-9-]+)'?:\s*[^,\n]+,\s*\/\/\s*(.+)$/gm)) {
-    notes.set(match[1], match[2].trim())
-  }
-  return notes
-}
-
-/** Map ảnh trong index.js dùng hai quy ước giá trị khác nhau. */
-const filenameOf = (value) => (typeof value === 'string' ? value : value?.src)
 
 async function main() {
   const { vi } = await import(srcUrl('i18n', 'vi.js'))
@@ -73,14 +55,7 @@ async function main() {
   // khai đúng là sửa một lệch lạc đang có chứ không phải gây ra thay đổi.
   mkdirSync(paths.media, { recursive: true })
 
-  const scopes = [
-    ['course', images.COURSE_IMAGES],
-    ['facility', images.FACILITY_IMAGES],
-    ['activity', images.ACTIVITY_IMAGES],
-    ['partner', images.PARTNER_LOGOS],
-    ['team', images.TEAM_IMAGES],
-    ['singleton', { hero: images.HERO_IMAGE, logo: images.LOGO_MARK }],
-  ]
+  const scopes = imageScopes(images)
 
   const wanted = new Set()
   for (const [, map] of scopes) {

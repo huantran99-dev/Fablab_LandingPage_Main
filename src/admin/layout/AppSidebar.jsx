@@ -7,15 +7,26 @@ const SYSTEM_LINKS = [
   { name: 'account', href: '#/account', label: 'Tài khoản', icon: 'key' },
 ]
 
-function NavItem({ href, label, icon, active, collapsed, onNavigate }) {
+const ENROLLMENT_LINKS = [
+  { name: 'registrations', href: '#/registrations', label: 'Đăng ký khóa học', icon: 'inbox' },
+  { name: 'stats', href: '#/stats', label: 'Thống kê truy cập', icon: 'chart' },
+]
+
+/**
+ * `badge`: số việc đang chờ (đăng ký mới). Sidebar thu gọn thì chỉ còn một chấm —
+ * con số vẫn đọc được qua `aria-label` và `title`.
+ */
+function NavItem({ href, label, icon, active, collapsed, onNavigate, badge = 0 }) {
+  const badgeText = badge > 99 ? '99+' : String(badge)
   return (
     <li>
       <a
         href={href}
         onClick={onNavigate}
         aria-current={active ? 'page' : undefined}
-        title={collapsed ? label : undefined}
-        className={`group flex items-center gap-3 rounded-lg px-3 py-2 text-theme-sm font-medium transition-colors ${
+        aria-label={badge > 0 ? `${label}, ${badge} mới` : undefined}
+        title={collapsed ? (badge > 0 ? `${label} (${badge} mới)` : label) : undefined}
+        className={`group relative flex items-center gap-3 rounded-lg px-3 py-2 text-theme-sm font-medium transition-colors ${
           collapsed ? 'lg:justify-center lg:px-0' : ''
         } ${
           active
@@ -33,6 +44,19 @@ function NavItem({ href, label, icon, active, collapsed, onNavigate }) {
           }
         />
         <span className={collapsed ? 'lg:hidden' : ''}>{label}</span>
+        {badge > 0 && (
+          <>
+            <span
+              aria-hidden="true"
+              className={`ml-auto rounded-full bg-error-500 px-2 py-0.5 text-theme-xs font-semibold text-white ${collapsed ? 'lg:hidden' : ''}`}
+            >
+              {badgeText}
+            </span>
+            {collapsed && (
+              <span aria-hidden="true" className="absolute top-1.5 right-4 hidden size-2 rounded-full bg-error-500 lg:block" />
+            )}
+          </>
+        )}
       </a>
     </li>
   )
@@ -55,7 +79,7 @@ function GroupTitle({ collapsed, children }) {
  * Sidebar kiểu TailAdmin: 290px, thu gọn còn 90px chỉ icon trên màn hình lớn, trượt
  * vào kèm lớp phủ trên điện thoại. Thứ tự section trong menu = thứ tự trên trang.
  */
-export function AppSidebar({ route, collapsed, mobileOpen, onNavigate }) {
+export function AppSidebar({ route, collapsed, mobileOpen, onNavigate, newRegistrations = 0 }) {
   const isActive = (name, param) => route.name === name && (param === undefined || route.param === param)
 
   return (
@@ -78,6 +102,20 @@ export function AppSidebar({ route, collapsed, mobileOpen, onNavigate }) {
       <nav className="scrollbar-thin -mx-5 flex-1 overflow-y-auto px-5 pb-6">
         <ul className="space-y-1">
           <NavItem href="#/" label="Tổng quan" icon="grid" active={isActive('dashboard')} collapsed={collapsed} onNavigate={onNavigate} />
+        </ul>
+
+        <GroupTitle collapsed={collapsed}>Tuyển sinh</GroupTitle>
+        <ul className="space-y-1">
+          {ENROLLMENT_LINKS.map((link) => (
+            <NavItem
+              key={link.name}
+              {...link}
+              active={isActive(link.name)}
+              collapsed={collapsed}
+              onNavigate={onNavigate}
+              badge={link.name === 'registrations' ? newRegistrations : 0}
+            />
+          ))}
         </ul>
 
         <GroupTitle collapsed={collapsed}>Nội dung trang</GroupTitle>

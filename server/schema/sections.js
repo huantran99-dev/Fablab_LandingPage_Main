@@ -1,5 +1,5 @@
 /**
- * Hợp lệ hoá nội dung bằng Zod — đủ cả 12 section.
+ * Hợp lệ hoá nội dung bằng Zod — đủ cả 13 section.
  *
  * **Bao nhiêu section có schema là bấy nhiêu section sửa được.** Route từ chối ghi
  * vào section không có mặt ở `SECTION_SCHEMAS`, chứ không im lặng cho qua.
@@ -57,6 +57,11 @@ export const pillarsSchema = z.strictObject({
   eyebrow: text(80),
   title: text(120),
   description: text(400),
+  // Tầm nhìn — 1 dòng ngắn, đặt giữa 3 cột sứ mạng và lưới giá trị cốt lõi.
+  vision: z.strictObject({ title: text(80), body: text(400) }),
+  // Lưới giá trị cốt lõi — chỉ tên ngắn, không mô tả, để 6 thẻ ngang bằng.
+  valuesTitle: text(80),
+  values: z.array(z.strictObject({ id: idSchema, title: text(40) })).min(1, 'phai co it nhat mot gia tri cot loi'),
   items: z.array(z.strictObject({ id: idSchema, title: text(80), description: text(400) })),
 })
 
@@ -133,6 +138,59 @@ export const facilitiesSchema = z.strictObject({
   description: text(400),
   imageAlt: text(200),
   items: z.array(z.strictObject({ id: idSchema, title: text(80), description: text(400) })),
+})
+
+/**
+ * Popup thông số từng máy. Máy hiện thành nút trong ô `facilities.items[]` mà
+ * `facility` trỏ tới — id ô có thật hay không là luật cắt ngang section, do
+ * invariants kiểm (schema chỉ thấy một section).
+ *
+ * `specs` ĐƯỢC rỗng: ba máy điện tử không có thông số trên trang gốc, popup hiện câu
+ * `noSpecs` thay vì bịa số.
+ */
+export const equipmentSchema = z.strictObject({
+  listLabel: text(80),
+  openLabel: text(80),
+  specsTitle: text(80),
+  noSpecs: text(300),
+  close: text(40),
+  imageAlt: text(200),
+  source: text(80),
+  sourceUrl: z.url({ protocol: /^https?$/, error: 'phai la duong dan https://...' }),
+  items: z
+    .array(
+      z.strictObject({
+        id: idSchema,
+        facility: idSchema,
+        name: text(120),
+        type: text(80),
+        specs: z.array(z.strictObject({ id: idSchema, label: text(80), detail: text(300) })).max(30),
+      }),
+    )
+    .min(1, 'phai co it nhat mot thiet bi'),
+})
+
+/**
+ * Dự án của FabLab. `status` tuỳ chọn, là khoá của `statuses` (khoá có thật hay không
+ * do invariants kiểm). Vắng là có chủ đích: trang gốc không ghi trạng thái, và vắng thì
+ * card không hiện nhãn — đừng "sửa" thành bắt buộc.
+ */
+export const projectsSchema = z.strictObject({
+  eyebrow: text(80),
+  title: text(120),
+  description: text(400),
+  imageAlt: text(200),
+  statuses: z.record(idSchema, text(40)),
+  items: z
+    .array(
+      z.strictObject({
+        id: idSchema,
+        title: text(120),
+        description: text(400),
+        status: idSchema.optional(),
+      }),
+    )
+    .min(1, 'phai co it nhat mot du an'),
 })
 
 export const partnersSchema = z.strictObject({
@@ -212,6 +270,48 @@ export const finalCtaSchema = z.strictObject({
   secondaryCta: text(40),
 })
 
+/**
+ * Chữ của form đăng ký. Section riêng chứ không nằm trong `courses.modal` hay
+ * `finalCta`: khôi phục lịch sử ghi lại bản cũ nguyên khối, nên một bản `courses`
+ * trước ngày có form sẽ xoá mất các khoá này và trang sập ở `t.register.*`.
+ */
+export const registerSchema = z.strictObject({
+  title: text(80),
+  description: text(300),
+  course: text(60),
+  courseNone: text(80),
+  studentHeading: text(60),
+  studentName: text(60),
+  studentGrade: text(60),
+  studentGradeHint: text(80),
+  school: text(60),
+  parentHeading: text(60),
+  parentName: text(60),
+  phone: text(60),
+  email: text(60),
+  note: text(60),
+  notePlaceholder: text(120),
+  required: text(30),
+  optional: text(30),
+  consent: text(300),
+  privacy: text(800),
+  submit: text(40),
+  submitting: text(40),
+  close: text(30),
+  errorSummary: text(120),
+  errors: z.strictObject({
+    required: text(120),
+    phone: text(120),
+    email: text(120),
+    consent: text(120),
+    tooLong: text(120),
+    rateLimited: text(200),
+    paused: text(200),
+    network: text(200),
+  }),
+  success: z.strictObject({ title: text(80), message: text(300), close: text(30) }),
+})
+
 /** Mục menu cấp một: hoặc là link (`href`), hoặc là nhánh (`children`) — không bao giờ cả hai. */
 const navLink = z.union([
   z.strictObject({ id: idSchema, label: text(60), href: hrefSchema }),
@@ -239,15 +339,18 @@ export const footerSchema = z.strictObject({
 export const SECTION_SCHEMAS = {
   nav: navSchema,
   hero: heroSchema,
-  pillars: pillarsSchema,
   stats: statsSchema,
-  courses: coursesSchema,
   facilities: facilitiesSchema,
-  partners: partnersSchema,
+  equipment: equipmentSchema,
+  projects: projectsSchema,
+  pillars: pillarsSchema,
+  courses: coursesSchema,
   activities: activitiesSchema,
   team: teamSchema,
+  partners: partnersSchema,
   testimonials: testimonialsSchema,
   finalCta: finalCtaSchema,
+  register: registerSchema,
   footer: footerSchema,
 }
 

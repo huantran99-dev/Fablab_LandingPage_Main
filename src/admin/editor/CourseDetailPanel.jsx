@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
 
+import { usePublishCheck } from '../hooks/usePublishCheck'
 import { api, describeError } from '../lib/api'
 import { formatDateTime } from '../lib/paths'
+import { courseDetailMatches } from '../lib/publish'
 import { Badge } from '../ui/Badge'
 import { Button } from '../ui/Button'
 import { FieldError, FieldHelp, Input, Label, LocaleTag, Switch, TextArea } from '../ui/Field'
 import { Icon } from '../ui/Icon'
+import { PublishStatus } from '../ui/PublishStatus'
 import { useToast } from '../ui/toastContext'
 
 /**
@@ -62,6 +65,7 @@ export function CourseDetailPanel({ courseId }) {
   const [locale, setLocale] = useState('vi')
   const [busy, setBusy] = useState(false)
   const [issues, setIssues] = useState({ vi: [], en: [] })
+  const publish = usePublishCheck()
 
   useEffect(() => {
     let cancelled = false
@@ -96,7 +100,9 @@ export function CourseDetailPanel({ courseId }) {
       const result = await api.saveCourseDetail(courseId, body)
       setData(result)
       setForms({ vi: toForm(result.vi.effective), en: toForm(result.en.effective) })
-      toast({ tone: 'success', title, message: 'Popup đổi trên trang ngay — không cần bấm Lưu của section.' })
+      toast({ tone: 'success', title, message: 'Popup lưu riêng, không cần bấm Lưu của section. Đang kiểm tra trang công khai…' })
+      // So bản popup công khai với bản hiệu lực máy chủ vừa trả. Không chờ.
+      publish.run((content) => courseDetailMatches(content, courseId, result))
     } catch (caught) {
       if (caught.status === 422) setIssues({ vi: caught.body.vi ?? [], en: caught.body.en ?? [] })
       toast({ tone: 'error', title: 'Chưa lưu được popup', message: describeError(caught) })
@@ -197,13 +203,16 @@ export function CourseDetailPanel({ courseId }) {
         <FieldHelp>Dòng trống bị bỏ qua. Để trống cả một mục thì popup không hiện mục đó.</FieldHelp>
       </div>
 
-      <div className="flex flex-wrap justify-end gap-3 border-t border-gray-100 pt-4 dark:border-gray-800">
+      <div className="flex flex-wrap items-center justify-end gap-3 border-t border-gray-100 pt-4 dark:border-gray-800">
+        <span className="mr-auto">
+          <PublishStatus status={publish.status} compact onRetry={() => publish.run((content) => courseDetailMatches(content, courseId, data))} />
+        </span>
         {state.overridden && (
           <Button variant="ghost-danger" icon="refresh" disabled={busy} onClick={() => send(keepOther(null), `Đã gỡ bản sửa (${locale.toUpperCase()}) — về bản gốc`)}>
             Gỡ bản sửa
           </Button>
         )}
-        <Button icon="save" disabled={busy || !changed} onClick={() => send(keepOther(fromForm(form)), `Đã lưu popup (${locale.toUpperCase()})`)}>
+        <Button icon="save" loading={busy} disabled={busy || !changed} onClick={() => send(keepOther(fromForm(form)), `Đã lưu popup (${locale.toUpperCase()})`)}>
           {busy ? 'Đang lưu…' : `Lưu popup (${locale.toUpperCase()})`}
         </Button>
       </div>

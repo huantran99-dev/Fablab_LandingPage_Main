@@ -8,6 +8,7 @@
  */
 import { Router } from 'express'
 
+import { dayKey } from '../analytics/track.js'
 import { requireSameOrigin, requireSession } from '../auth/middleware.js'
 import { SECTION_IMAGES } from '../content/assemble.js'
 import { getContent } from '../content/cache.js'
@@ -49,6 +50,9 @@ metaRouter.get('/meta', (_req, res) => {
       hasImages: Boolean(SECTION_IMAGES[key]),
     })),
     anchors: anchors ? [...anchors].sort() : null,
+    // Ô của section Thiết bị, cho ô chọn `facility` ở section Thông số thiết bị: bộ
+    // soạn của một section chỉ thấy chính nó, không thấy section khác.
+    facilities: (content.vi.facilities?.items ?? []).map((item) => ({ id: item.id, title: item.title })),
     icons: {
       course: lookups.courseIcons ?? [],
       pillar: lookups.pillarIcons ?? [],
@@ -74,5 +78,29 @@ metaRouter.get('/meta', (_req, res) => {
       )
       .all(),
     warnings: lookups.problems,
+    // Badge "đăng ký mới" trên sidebar và các thẻ ở trang Tổng quan.
+    registrations: {
+      ...db
+        .prepare(
+          `SELECT COUNT(*) AS total,
+                  COALESCE(SUM(CASE WHEN status = 'new' THEN 1 ELSE 0 END), 0) AS new,
+                  COALESCE(SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END), 0) AS last7d
+             FROM registration`,
+        )
+        .get(new Date(Date.now() - 7 * 86_400_000).toISOString()),
+      recent: db
+        .prepare(
+          `SELECT id, created_at AS createdAt, student_name AS studentName, course_id AS courseId,
+                  course_title AS courseTitle, status
+             FROM registration ORDER BY created_at DESC, id DESC LIMIT 5`,
+        )
+        .all(),
+    },
+    analytics: db
+      .prepare(
+        `SELECT COUNT(*) AS views7d, COUNT(DISTINCT day || '|' || visitor) AS visitors7d
+           FROM event WHERE name = 'pageview' AND day >= ?`,
+      )
+      .get(dayKey(new Date(Date.now() - 6 * 86_400_000))),
   })
 })

@@ -1,7 +1,9 @@
 import { useEffect, useRef } from 'react'
-import { CourseIcon } from '../assets/icons/CourseIcons'
+import { COURSE_ICON_IDS, CourseIcon } from '../assets/icons/CourseIcons'
 import { ArrowRightIcon, CloseIcon } from '../assets/icons/Icons'
+import { useScrollLock } from '../hooks/useScrollLock'
 import { useT } from '../i18n/context'
+import { track } from '../lib/track'
 import { Button } from './ui/Button'
 import { Pill } from './ui/Pill'
 
@@ -58,7 +60,7 @@ function Curriculum({ title, items }) {
  * `course` là `null` khi đóng. Component luôn được mount để `<dialog>` giữ được
  * trạng thái và animation đóng/mở của chính nó.
  */
-export function CourseModal({ course, onClose }) {
+export function CourseModal({ course, onClose, onRegister }) {
   const ref = useRef(null)
   const open = Boolean(course)
 
@@ -70,23 +72,27 @@ export function CourseModal({ course, onClose }) {
     else if (!open && dialog.open) dialog.close()
   }, [open])
 
-  // Khóa cuộn nền khi popup mở. Đặt trên <html> chứ KHÔNG đặt trên <body>:
-  // body đang có `overflow-x: clip` để chặn tràn ngang lúc section trượt, ghi đè
-  // lên đó sẽ biến body thành scroll container và làm chết navbar sticky.
-  useEffect(() => {
-    if (!open) return
-
-    const root = document.documentElement
-    const previous = root.style.overflow
-    root.style.overflow = 'hidden'
-    return () => {
-      root.style.overflow = previous
-    }
-  }, [open])
+  // Khóa cuộn nền trên <html> (không phải <body>) — lý do ở useScrollLock. Khoá có
+  // bộ đếm vì nút đăng ký đóng popup này và mở form trong cùng một lượt render.
+  useScrollLock(open)
 
   const t = useT()
   const detail = course ? t.courses.details[course.id] : null
   const labels = t.courses.modal
+
+  const iconId = course ? (course.icon ?? course.id) : null
+  const hasIcon = iconId !== null && COURSE_ICON_IDS.has(iconId)
+
+  const stage = course?.stage && t.courses.stages.find((entry) => entry.id === course.stage)
+  const topic = course?.topic && t.courses.topics.find((entry) => entry.id === course.topic)
+  const level = course?.level && t.courses.levels[course.level]
+  const chips = [
+    level && { key: 'level', tone: 'wash', label: level },
+    stage && { key: 'stage', tone: 'wash', label: stage.label },
+    topic && { key: 'topic', tone: 'outline', label: topic.label },
+    course?.duration && { key: 'duration', tone: 'outline', label: course.duration },
+    course?.age && { key: 'age', tone: 'outline', label: `${t.courses.ageLabel} ${course.age}` },
+  ].filter(Boolean)
 
   // Bấm ra vùng nền: sự kiện click trên ::backdrop có target chính là <dialog>,
   // còn click vào ruột popup thì target là phần tử con — nên so sánh là đủ.
@@ -124,21 +130,32 @@ export function CourseModal({ course, onClose }) {
               <CloseIcon />
             </button>
 
-            <span className="absolute bottom-3 left-4 inline-flex size-11 items-center justify-center rounded-pill bg-white text-signal shadow-ambient">
-              <CourseIcon id={course.id} size={24} />
-            </span>
+            {/* Tra icon y như CourseCard: `icon` trước, rồi tới `id`. Phải hỏi tập
+                id — `<CourseIcon />` luôn truthy dù bên trong trả null, nên không
+                hỏi thì ra vòng tròn trắng trống trơn. */}
+            {hasIcon && (
+              <span className="absolute bottom-3 left-4 inline-flex size-11 items-center justify-center rounded-pill bg-white text-signal shadow-ambient">
+                <CourseIcon id={iconId} size={24} />
+              </span>
+            )}
           </div>
 
           {/* Vùng cuộn: chỉ phần ruột cuộn, ảnh và nút đăng ký luôn nhìn thấy. */}
           <div className="flex flex-col gap-8 overflow-y-auto px-6 py-6 md:px-8">
             <header className="flex flex-col gap-4">
-              <div className="flex flex-wrap items-center gap-2">
-                <Pill tone="wash">{t.courses.levels[course.level]}</Pill>
-                <Pill tone="outline">{course.duration}</Pill>
-                <Pill tone="outline">
-                  {t.courses.ageLabel} {course.age}
-                </Pill>
-              </div>
+              {/* Hai nhóm khóa học mang hai bộ trường khác nhau (xem CourseCard):
+                  STEM có level/duration/age, trải nghiệm có stage/topic. Chỉ dựng
+                  chip cho trường CÓ MẶT — dựng hết thì chương trình trải nghiệm
+                  ra ba chip trống. */}
+              {chips.length > 0 && (
+                <div className="flex flex-wrap items-center gap-2">
+                  {chips.map((chip) => (
+                    <Pill key={chip.key} tone={chip.tone}>
+                      {chip.label}
+                    </Pill>
+                  ))}
+                </div>
+              )}
 
               <h2 id={TITLE_ID} className="text-heading-lg text-ink">
                 {course.title}
@@ -183,7 +200,15 @@ export function CourseModal({ course, onClose }) {
           </div>
 
           <div className="shrink-0 border-t border-ash/60 px-6 py-4 md:px-8">
-            <Button href="#register" size="lg" className="w-full justify-center" onClick={onClose}>
+            <Button
+              type="button"
+              size="lg"
+              className="w-full justify-center"
+              onClick={() => {
+                track('cta_click', 'course-modal')
+                onRegister(course.id)
+              }}
+            >
               {labels.register}
               <ArrowRightIcon />
             </Button>

@@ -29,6 +29,7 @@ export const vi = {
         label: 'FabLab',
         children: [
           { id: 'facilities', label: 'Thiết bị', href: '#facilities' },
+          { id: 'projects', label: 'Dự án', href: '#projects' },
           { id: 'competitions', label: 'Cuộc thi', href: '#competitions' },
         ],
       },
@@ -84,25 +85,39 @@ export const vi = {
     eyebrow: 'Về chúng tôi',
     title: 'Sứ mệnh của EIU FabLab',
     description:
-      'Một không gian mở, năng động, nơi công nghệ được chia sẻ để tạo ra giá trị cho xã hội.',
+      'Phòng thí nghiệm chế tác, mang cơ hội tiếp cận và sử dụng thiết bị, kỹ thuật và công nghệ cho cộng đồng — nơi mọi người cùng học, cùng nghiên cứu, cùng thiết kế, cùng sáng tạo và cùng khởi nghiệp.',
+    vision: {
+      title: 'Tầm nhìn',
+      body:
+        'Trở thành xưởng chế tác số điển hình với công nghệ hiện đại, không gian mở năng động – sáng tạo, hỗ trợ tốt nhất để hiện thực hóa ý tưởng và thúc đẩy khởi nghiệp, tạo giá trị tích cực cho cộng đồng.',
+    },
+    valuesTitle: 'Giá trị cốt lõi',
+    values: [
+      { id: 'open-space', title: 'Không gian công nghệ mở' },
+      { id: 'experiment', title: 'Thử nghiệm' },
+      { id: 'problem-solving', title: 'Giải quyết vấn đề' },
+      { id: 'creativity', title: 'Sáng tạo' },
+      { id: 'collaboration', title: 'Chia sẻ và hợp tác' },
+      { id: 'achievement', title: 'Thành tựu' },
+    ],
     items: [
       {
         id: 'education',
-        title: 'Giáo dục',
+        title: 'Giáo dục – Đào tạo',
         description:
-          'Học qua thực hành với thiết bị hiện đại. Người học tự tay thiết kế, gia công và hoàn thiện sản phẩm của chính mình.',
+          'Tiếp cận các kỹ thuật, công nghệ để hiện thực hóa ý tưởng; nâng cao kiến thức và kỹ năng qua học đi đôi với hành.',
       },
       {
         id: 'research',
-        title: 'Nghiên cứu',
+        title: 'Nghiên cứu – Phát triển',
         description:
-          'Phát triển sản phẩm từ những ý tưởng sáng tạo, biến nguyên mẫu thành giải pháp kỹ thuật hoàn chỉnh.',
+          'Tìm kiếm ý tưởng mới, tạo ra sản phẩm sáng tạo phục vụ cộng đồng.',
       },
       {
         id: 'entrepreneurship',
         title: 'Khởi nghiệp',
         description:
-          'Đồng hành cùng bạn thương mại hóa nguyên mẫu thành công, đưa sản phẩm từ xưởng ra thị trường.',
+          'Thúc đẩy thương mại hóa sản phẩm từ các dự án thử nghiệm thành công.',
       },
     ],
   },
@@ -570,6 +585,229 @@ export const vi = {
     ],
   },
 
+  // Popup thông số từng máy trong section Thiết bị. Nguồn: fablab.eiu.edu.vn/vi/thiet-bi/.
+  // `facility` trỏ về `facilities.items[].id` — máy hiện thành nút trong đúng ô đó.
+  // Sửa theo bản EN hai lỗi đánh máy của trang VI: Form 3 là 145x145x185 mm (không
+  // phải micrometer), đầu in Cubicon 210F là 0.4 mm. Ba máy điện tử: trang gốc KHÔNG
+  // có thông số — để `specs` rỗng, đừng điền từ nguồn khác.
+  equipment: {
+    listLabel: 'Các máy trong khu này',
+    openLabel: 'Xem thông số',
+    specsTitle: 'Thông số kỹ thuật',
+    noSpecs: 'Trang thiết bị của FabLab chưa công bố thông số chi tiết cho máy này.',
+    close: 'Đóng',
+    imageAlt: 'Ảnh {name}',
+    source: 'Xem trang thiết bị của FabLab',
+    sourceUrl: 'https://fablab.eiu.edu.vn/vi/thiet-bi/',
+    items: [
+      {
+        id: 'form-3',
+        facility: 'printer-3d',
+        name: 'Formlabs Form 3',
+        type: 'Máy in 3D resin',
+        specs: [
+          { id: 'technology', label: 'Công nghệ in', detail: 'SLA – Stereolithography Apparatus; LFS – Low Force Stereolithography' },
+          { id: 'print-size', label: 'Kích thước vật in', detail: '145x145x185 mm (Ngang – Dọc – Cao)' },
+          { id: 'layer', label: 'Độ dày lớp in', detail: '25 – 300 µm' },
+          { id: 'material', label: 'Vật liệu', detail: 'Resin' },
+        ],
+      },
+      {
+        id: 'cubicon-210f',
+        facility: 'printer-3d',
+        name: 'Cubicon 210F',
+        type: 'Máy in 3D',
+        specs: [
+          { id: 'technology', label: 'Công nghệ in', detail: 'FFF – Fused Filament Fabrication' },
+          { id: 'print-size', label: 'Kích thước vật in', detail: '150x150x150 mm (Ngang – Dọc – Cao)' },
+          { id: 'layer', label: 'Độ dày lớp in', detail: '150 – 300 µm (nhỏ nhất 100 µm)' },
+          { id: 'material-diameter', label: 'Đường kính vật liệu', detail: '1.75 mm' },
+          { id: 'material', label: 'Vật liệu', detail: 'ABS, PLA, TPU' },
+          { id: 'nozzle', label: 'Đường kính đầu in', detail: '0.4 mm' },
+          { id: 'accuracy-xy', label: 'Độ chính xác trục XY', detail: '6.25 µm' },
+          { id: 'accuracy-z', label: 'Độ chính xác trục Z', detail: '1.25 µm' },
+          { id: 'nozzle-temp', label: 'Nhiệt độ đầu in (tối đa)', detail: '260 °C' },
+          { id: 'bed-temp', label: 'Nhiệt độ bàn in (tối đa)', detail: '120 °C' },
+        ],
+      },
+      {
+        id: 'cubicon-310f',
+        facility: 'printer-3d',
+        name: 'Cubicon 310F',
+        type: 'Máy in 3D',
+        specs: [
+          { id: 'technology', label: 'Công nghệ in', detail: 'FFF – Fused Filament Fabrication' },
+          { id: 'print-size', label: 'Kích thước vật in', detail: '240x190x200 mm (Ngang – Dọc – Cao)' },
+          { id: 'layer', label: 'Độ dày lớp in', detail: '150 – 300 µm (nhỏ nhất 100 µm)' },
+          { id: 'material-diameter', label: 'Đường kính vật liệu', detail: '1.75 mm' },
+          { id: 'material', label: 'Vật liệu', detail: 'ABS, PLA, TPU' },
+          { id: 'nozzle', label: 'Đường kính đầu in', detail: '0.4 mm' },
+          { id: 'accuracy-xy', label: 'Độ chính xác trục XY', detail: '6.25 µm' },
+          { id: 'accuracy-z', label: 'Độ chính xác trục Z', detail: '1.25 µm' },
+          { id: 'nozzle-temp', label: 'Nhiệt độ đầu in (tối đa)', detail: '260 °C' },
+          { id: 'bed-temp', label: 'Nhiệt độ bàn in (tối đa)', detail: '120 °C' },
+        ],
+      },
+      {
+        id: 'shining-3d',
+        facility: 'printer-3d',
+        name: 'Shining 3D',
+        type: 'Máy scan 3D',
+        specs: [
+          { id: 'mode', label: 'Chế độ', detail: 'Scan cố định – Scan tự động' },
+          { id: 'min-size', label: 'Kích thước vật nhỏ nhất', detail: '30x30x30 mm' },
+          { id: 'max-size', label: 'Kích thước vật lớn nhất', detail: '200x200x200 mm' },
+          { id: 'speed', label: 'Tốc độ scan', detail: '4 giây' },
+          { id: 'formats', label: 'Định dạng xuất', detail: 'OBJ, STL, ASC, PLY' },
+          { id: 'camera', label: 'Độ phân giải camera', detail: '1.3 megapixel' },
+          { id: 'light', label: 'Nguồn sáng', detail: 'Ánh sáng trắng' },
+          { id: 'connection', label: 'Kết nối', detail: 'USB' },
+        ],
+      },
+      {
+        id: 'epilog-mini-helix-18',
+        facility: 'laser',
+        name: 'Epilog Mini Helix 18',
+        type: 'Máy cắt laser',
+        specs: [
+          { id: 'table-size', label: 'Kích thước bàn cắt', detail: '18″ x 12″ (457 x 305 mm)' },
+          { id: 'thickness', label: 'Độ dày vật liệu (tối đa)', detail: '4″ (102 mm)' },
+          { id: 'power', label: 'Công suất đầu phóng', detail: '40 W' },
+          { id: 'resolution', label: 'Độ phân giải', detail: '75 – 1200 DPI' },
+          { id: 'connection', label: 'Kết nối', detail: 'Cáp Ethernet T-Base hoặc USB' },
+        ],
+      },
+      {
+        id: 'roland-srm-20',
+        facility: 'cnc',
+        name: 'Roland SRM-20',
+        type: 'Máy phay CNC',
+        specs: [
+          { id: 'table-size', label: 'Kích thước bàn cắt', detail: '100 x 100 mm' },
+          { id: 'connection', label: 'Kết nối', detail: 'Cáp Ethernet T-Base hoặc USB' },
+        ],
+      },
+      {
+        id: 'proxxon-ff500',
+        facility: 'cnc',
+        name: 'Proxxon FF500',
+        type: 'Máy phay',
+        specs: [
+          { id: 'machine-size', label: 'Kích thước máy', detail: '400 x 125 mm, cao 780 mm' },
+          { id: 'workpiece-size', label: 'Kích thước vật gia công', detail: 'Dài 450 x Rộng 270 x Cao 60 mm' },
+          { id: 'power', label: 'Công suất động cơ', detail: 'BLDC 400 W' },
+        ],
+      },
+      {
+        id: 'proxxon-pd400',
+        facility: 'cnc',
+        name: 'Proxxon PD400',
+        type: 'Máy tiện',
+        specs: [
+          { id: 'machine-size', label: 'Kích thước máy', detail: 'Dài 900 x Ngang 400 x Cao 300 mm' },
+          { id: 'workpiece-size', label: 'Kích thước vật gia công', detail: 'Dài 450 x Ngang 270 x Cao 60 mm' },
+          { id: 'power', label: 'Công suất động cơ', detail: '550 W' },
+        ],
+      },
+      {
+        id: 'proxxon-ds460',
+        facility: 'cnc',
+        name: 'Proxxon DS460',
+        type: 'Máy cưa lọng',
+        specs: [
+          { id: 'machine-size', label: 'Kích thước máy', detail: 'Dài 900 x Ngang 400 x Cao 300 mm' },
+          { id: 'workpiece-size', label: 'Kích thước vật gia công', detail: 'Dài 450 x Ngang 270 x Cao 60 mm' },
+          { id: 'power', label: 'Công suất động cơ', detail: '550 W' },
+        ],
+      },
+      {
+        id: 'gwinstek-gfg-8255a',
+        facility: 'electronics-lab',
+        name: 'GW Instek GFG-8255A',
+        type: 'Máy phát xung',
+        specs: [],
+      },
+      {
+        id: 'gwinstek-gds-2204a',
+        facility: 'electronics-lab',
+        name: 'GW Instek GDS-2204A',
+        type: 'Máy hiện sóng số',
+        specs: [],
+      },
+      {
+        id: 'gwinstek-gpd-2303s',
+        facility: 'electronics-lab',
+        name: 'GW Instek GPD-2303S',
+        type: 'Bộ nguồn DC 2 kênh',
+        specs: [],
+      },
+    ],
+  },
+
+  // Dự án của FabLab. Nguồn: fablab.eiu.edu.vn/vi/du-an/. Trang gốc KHÔNG ghi trạng
+  // thái, nên `status` (khoá của `statuses`) cố ý vắng trên mọi mục — vắng thì không
+  // hiện nhãn. Admin tự đánh dấu "đang thực hiện" / "đã hoàn thành" trong dashboard.
+  projects: {
+    eyebrow: 'Dự án',
+    title: 'Sản phẩm làm ra từ xưởng',
+    description: 'Những mô hình và sản phẩm được thiết kế, chế tạo tại FabLab EIU — từ học cụ STEM tới robot và mô hình y tế.',
+    imageAlt: 'Ảnh dự án {title}',
+    statuses: {
+      ongoing: 'Đang thực hiện',
+      done: 'Đã hoàn thành',
+    },
+    items: [
+      {
+        id: 'cobot',
+        title: 'Mô hình Cobot',
+        description:
+          'Cobot là mô hình robot đa chức năng nhằm thực hiện các tác vụ hỗ trợ con người (vận chuyển, giám sát an ninh,…) ở nơi công cộng.',
+      },
+      {
+        id: 'plane',
+        title: 'Mô hình máy bay',
+        description:
+          'Mô hình máy bay được thiết kế đơn giản, dễ dàng lắp ráp và áp dụng vào trong lớp học STEM.',
+      },
+      {
+        id: 'microbit-kit',
+        title: 'Bộ kit micro:bit mở rộng',
+        description:
+          'Giúp học sinh tiếp cận công nghệ, lập trình, thúc đẩy các hoạt động nghiên cứu khoa học kĩ thuật cho sinh viên.',
+      },
+      {
+        id: 'jaw-model',
+        title: 'Mô hình xương hàm cho phẫu thuật nha',
+        description:
+          'Mô hình xương sọ thực hiện bằng phương pháp in 3D giúp hỗ trợ cho bác sĩ làm thí nghiệm trong phẫu thuật tạo hình.',
+      },
+      {
+        id: 'smart-light',
+        title: 'Đèn thông minh',
+        description:
+          'Đèn thay đổi màu sắc, độ sáng bằng nút nhấn, qua điện thoại hoặc để đèn chạy tự động bật nếu có người trong điều kiện ánh sáng yếu.',
+      },
+      {
+        id: 'refraction-model',
+        title: 'Mô hình khúc xạ ánh sáng',
+        description:
+          'Mô hình học cụ vật lý ứng dụng vào chương trình trải nghiệm Quang học trong chuỗi chương trình trải nghiệm STEM của STEM Lab.',
+      },
+      {
+        id: 'mcr-racing-car',
+        title: 'Xe đua MCR – EIU',
+        description:
+          'Mô hình xe đua MCR giúp sinh viên nâng cao kiến thức chuyên ngành thông qua sản phẩm.',
+      },
+      {
+        id: 'hydroponic-garden',
+        title: 'Vườn thủy canh',
+        description:
+          'Mô hình trồng rau thủy canh có các chức năng tự động như hẹn giờ phun sương, điều khiển từ xa, đèn mô phỏng ánh sáng mặt trời, bón phân theo lịch trình hay cảm biến.',
+      },
+    ],
+  },
+
   partners: {
     eyebrow: 'Đối tác',
     title: 'Đồng hành cùng EIU FabLab',
@@ -854,6 +1092,50 @@ export const vi = {
     secondaryCta: 'Liên hệ với chúng tôi',
   },
 
+  // Form đăng ký khóa học. {email}, {phone}, {count} được thay lúc render.
+  // Đoạn `privacy` là thông báo xử lý dữ liệu cá nhân — FabLab cần duyệt câu chữ.
+  register: {
+    title: 'Đăng ký khóa học',
+    description: 'Để lại thông tin, EIU FabLab sẽ liên hệ lại để tư vấn khóa học phù hợp.',
+    course: 'Khóa học quan tâm',
+    courseNone: 'Chưa chọn — cần tư vấn thêm',
+    studentHeading: 'Thông tin học viên',
+    studentName: 'Họ và tên học viên',
+    studentGrade: 'Năm sinh hoặc lớp',
+    studentGradeHint: 'Ví dụ: 2014 hoặc lớp 6',
+    school: 'Trường đang học',
+    parentHeading: 'Thông tin phụ huynh',
+    parentName: 'Họ và tên phụ huynh',
+    phone: 'Số điện thoại',
+    email: 'Email',
+    note: 'Ghi chú',
+    notePlaceholder: 'Lịch học mong muốn, câu hỏi cho FabLab…',
+    required: 'bắt buộc',
+    optional: 'không bắt buộc',
+    consent: 'Tôi đồng ý để EIU FabLab xử lý các thông tin trên nhằm liên hệ tư vấn khóa học.',
+    privacy:
+      'Thông tin chỉ dùng để tư vấn và xếp lớp, do EIU FabLab (Đại học Quốc tế Miền Đông) quản lý và lưu tối đa 12 tháng. Bạn có thể rút lại đồng ý hoặc yêu cầu xoá dữ liệu qua {email} (Nghị định 13/2023/NĐ-CP).',
+    submit: 'Gửi đăng ký',
+    submitting: 'Đang gửi…',
+    close: 'Đóng',
+    errorSummary: 'Vui lòng kiểm tra lại {count} mục bên dưới.',
+    errors: {
+      required: 'Vui lòng điền mục này.',
+      phone: 'Số điện thoại chưa đúng (ví dụ 0912 345 678).',
+      email: 'Email chưa đúng định dạng.',
+      consent: 'Cần đồng ý để FabLab có thể liên hệ với bạn.',
+      tooLong: 'Nội dung quá dài.',
+      rateLimited: 'Bạn đã gửi nhiều lần liên tiếp. Vui lòng thử lại sau ít phút.',
+      paused: 'Hệ thống tạm ngưng nhận đăng ký trực tuyến. Vui lòng gọi {phone}.',
+      network: 'Chưa gửi được. Vui lòng thử lại hoặc gọi {phone}.',
+    },
+    success: {
+      title: 'Đã nhận đăng ký!',
+      message: 'Cảm ơn bạn. EIU FabLab sẽ liên hệ qua số điện thoại bạn đã cung cấp.',
+      close: 'Đóng',
+    },
+  },
+
   footer: {
     description:
       'Xưởng chế tạo số của Đại học Quốc tế Miền Đông — mở cho giáo dục, nghiên cứu và khởi nghiệp.',
@@ -867,6 +1149,7 @@ export const vi = {
           // "Khóa học STEM" ở cột Chương trình vốn trỏ riêng neo `#courses-stem`.
           { id: 'courses', label: 'Khóa học', href: '#courses' },
           { id: 'facilities', label: 'Thiết bị', href: '#facilities' },
+          { id: 'projects', label: 'Dự án', href: '#projects' },
           { id: 'activities', label: 'Hoạt động & cuộc thi', href: '#activities' },
         ],
       },

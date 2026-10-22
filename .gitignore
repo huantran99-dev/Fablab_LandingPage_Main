@@ -30,3 +30,7 @@ data/
 
 # Sinh ra tu data/media luc build, khong commit
 public/media/
+
+# Thu muc nhap cua cong cu tao nham trong repo (duong dan "C:\Users\My Asus" bi cat
+# o dau cach). Khong phai ma nguon.
+Asus/

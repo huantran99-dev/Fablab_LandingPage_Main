@@ -93,6 +93,8 @@ console.log(`  anh gan vao noi dung: vi=${attached.vi.length} en=${attached.en.l
 const byPath = new Map(attached.vi.map((entry) => [entry.path, entry.image]))
 const declared = [
   ['facilities', 'facilities.items', images.FACILITY_IMAGES],
+  ['equipment', 'equipment.items', images.EQUIPMENT_IMAGES],
+  ['projects', 'projects.items', images.PROJECT_IMAGES],
   ['partners', 'partners.items', images.PARTNER_LOGOS],
 ]
 const resized = []

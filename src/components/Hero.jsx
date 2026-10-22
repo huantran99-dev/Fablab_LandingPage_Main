@@ -1,5 +1,6 @@
 import { ArrowRightIcon } from '../assets/icons/Icons'
 import { useT } from '../i18n/context'
+import { track } from '../lib/track'
 import { Button } from './ui/Button'
 import { Pill } from './ui/Pill'
 
@@ -19,11 +20,16 @@ export function Hero() {
           </p>
 
           <div className="flex flex-wrap items-center gap-3 pt-2">
-            <Button href="#courses" size="lg">
+            <Button href="#courses" size="lg" onClick={() => track('cta_click', 'hero-primary')}>
               {t.hero.primaryCta}
               <ArrowRightIcon />
             </Button>
-            <Button href="#facilities" variant="outlined" size="lg">
+            <Button
+              href="#facilities"
+              variant="outlined"
+              size="lg"
+              onClick={() => track('cta_click', 'hero-secondary')}
+            >
               {t.hero.secondaryCta}
             </Button>
           </div>

@@ -1,8 +1,9 @@
 # API — FabLab EIU
 
 Mô tả toàn bộ HTTP API của máy chủ Express trong [server/](../server/): đọc nội dung
-công khai, đăng nhập, sửa 12 section, thư viện ảnh, popup chi tiết khóa học. Viết cho
-lập trình viên bảo trì dashboard hoặc tích hợp thêm công cụ.
+công khai, đăng nhập, sửa 15 section, thư viện ảnh, popup chi tiết khóa học, form đăng
+ký khóa học và thống kê truy cập. Viết cho lập trình viên bảo trì dashboard hoặc tích
+hợp thêm công cụ.
 
 Mọi phản hồi mẫu dưới đây là **phản hồi thật**, chạy trên một bản sao database (rút
 gọn chỗ dài bằng `…`). Deploy thì xem [DEPLOY.md](DEPLOY.md).
@@ -21,11 +22,13 @@ gọn chỗ dài bằng `…`). Deploy thì xem [DEPLOY.md](DEPLOY.md).
 4. [Route công khai](#4-route-công-khai)
 5. [Đăng nhập — `/api/auth`](#5-đăng-nhập--apiauth)
 6. [Nội dung section — `/api/admin`](#6-nội-dung-section--apiadmin)
-7. [Hình dạng 12 section](#7-hình-dạng-12-section)
+7. [Hình dạng 15 section](#7-hình-dạng-15-section)
 8. [Thư viện ảnh](#8-thư-viện-ảnh)
 9. [Popup chi tiết khóa học](#9-popup-chi-tiết-khóa-học)
 10. [Meta cho dashboard](#10-meta-cho-dashboard)
 11. [Ví dụ trọn luồng bằng curl](#11-ví-dụ-trọn-luồng-bằng-curl)
+12. [Đăng ký khóa học](#12-đăng-ký-khóa-học)
+13. [Thống kê truy cập](#13-thống-kê-truy-cập)
 
 ### Bảng route
 
@@ -51,6 +54,14 @@ gọn chỗ dài bằng `…`). Deploy thì xem [DEPLOY.md](DEPLOY.md).
 | GET | [`/api/admin/course-details/:id`](#get-apiadmincourse-detailsid) | ✔ | |
 | PUT | [`/api/admin/course-details/:id`](#put-apiadmincourse-detailsid) | ✔ | ✔ |
 | GET | [`/api/admin/meta`](#get-apiadminmeta) | ✔ | |
+| POST | [`/api/registrations`](#post-apiregistrations) | | |
+| POST | [`/api/events`](#post-apievents) | | |
+| GET | [`/api/admin/registrations`](#get-apiadminregistrations) | ✔ | |
+| GET | [`/api/admin/registrations/export`](#get-apiadminregistrationsexport) | ✔ | |
+| GET | [`/api/admin/registrations/:id`](#get-apiadminregistrationsid) | ✔ | |
+| PATCH | [`/api/admin/registrations/:id`](#patch-apiadminregistrationsid) | ✔ | ✔ |
+| DELETE | [`/api/admin/registrations/:id`](#delete-apiadminregistrationsid) | ✔ | ✔ |
+| GET | [`/api/admin/stats`](#get-apiadminstats) | ✔ | |
 
 "Cần đăng nhập" kéo theo kiểm `Origin` cho mọi phương thức không phải GET (xem mục 2).
 
@@ -63,7 +74,7 @@ gọn chỗ dài bằng `…`). Deploy thì xem [DEPLOY.md](DEPLOY.md).
 - **Định dạng:** JSON UTF-8, trừ `POST /api/admin/media` nhận byte ảnh thô.
 - **Không có CORS.** API chỉ dùng được từ chính trang (same-origin). Đây là chủ đích:
   cookie đăng nhập và kiểm `Origin` dựa trên điều đó.
-- **Phiên bản:** `GET /api/health` trả `api` (hiện là `2`, hằng `API_VERSION` trong
+- **Phiên bản:** `GET /api/health` trả `api` (hiện là `7`, hằng `API_VERSION` trong
   [content.public.js](../server/routes/content.public.js)). Dashboard so với
   `EXPECTED_API` trong [src/admin/App.jsx](../src/admin/App.jsx) và hiện băng đỏ nếu máy
   chủ thấp hơn — dấu hiệu máy chủ chưa được khởi động lại sau khi cập nhật.
@@ -158,21 +169,21 @@ Mọi lỗi có dạng `{ "error": "<ma>", ...chi tiết }`.
 | `409` | `rev` lệch (người khác đã sửa); xoá ảnh đang dùng | `noi dung da bi nguoi khac sua`, `anh dang duoc dung, go khoi cac muc truoc` |
 | `415` | Tải lên thứ không phải JPEG/PNG/WebP | `chi nhan anh JPEG, PNG, WebP ...`, `file khong phai anh hop le ...` |
 | `422` | Nội dung sai — ba dạng, xem [PUT section](#put-apiadmincontentsection) | `noi dung khong hop le`, `hai ngon ngu khong cung cau truc`, `noi dung vi pham rang buoc cua trang` |
-| `429` | Quá giới hạn đăng nhập | `thu qua nhieu lan, doi mot lat` |
-| `500` | Lỗi máy chủ — **và ba trường hợp đáng lẽ là 4xx**, xem dưới | `loi may chu` |
+| `429` | Quá giới hạn đăng nhập; gửi form đăng ký quá nhiều lần | `thu qua nhieu lan, doi mot lat`, `gui qua nhieu lan` |
+| `503` | Form đăng ký chạm trần số lượt trong ngày | `tam ngung nhan dang ky` (`code: "paused"`) |
+| `500` | Lỗi máy chủ thật | `loi may chu` |
 
-> ⚠️ **Hạn chế hiện tại:** bộ xử lý lỗi cuối trong [app.js](../server/app.js) luôn trả
-> `500`, bỏ qua mã của lỗi. Nên ba trường hợp sau nhận `500 loi may chu` thay vì mã đúng:
->
-> | Trường hợp | Đáng lẽ |
-> |---|---|
-> | Thân JSON hỏng cú pháp | `400` |
-> | Thân JSON lớn hơn 2 MB | `413` |
-> | Ảnh tải lên lớn hơn 15 MB | `413` |
->
-> Client đừng coi mọi `500` là máy chủ sập. Nếu nginx đứng trước với
-> `client_max_body_size 16m` thì file trên 16 MB nhận `413` **dạng HTML** từ nginx,
-> không phải JSON.
+Lỗi của **bộ đọc thân request** trả đúng mã của nó (từ API 3; trước đó bị gộp thành
+`500`), với `error` là loại lỗi của body-parser:
+
+| Trường hợp | Mã | Thân |
+|---|---|---|
+| Thân JSON hỏng cú pháp | `400` | `{"error":"entity.parse.failed"}` |
+| Thân JSON lớn hơn 2 MB (8 KB với form đăng ký, 2 KB với sự kiện) | `413` | `{"error":"entity.too.large"}` |
+| Ảnh tải lên lớn hơn 15 MB | `413` | `{"error":"entity.too.large"}` |
+
+Nếu nginx đứng trước với `client_max_body_size 16m` thì file trên 16 MB nhận `413`
+**dạng HTML** từ nginx, không phải JSON.
 
 ---
 
@@ -185,7 +196,7 @@ Không cần đăng nhập. Trang công khai chỉ gọi `GET /api/content`.
 Máy chủ còn sống không, đang ở bản nội dung nào, phiên bản API nào.
 
 ```json
-{"ok":true,"rev":36,"updatedAt":"2026-09-14T08:57:52.474Z","api":2}
+{"ok":true,"rev":60,"updatedAt":"2026-10-20T08:39:00.871Z","api":7}
 ```
 
 | Trường | Ý nghĩa |
@@ -204,7 +215,7 @@ Toàn bộ nội dung cả hai ngôn ngữ, đúng hình dạng mà component Re
   "generatedAt": "2026-09-15T04:33:22.698Z",
   "updatedAt": "2026-09-14T08:57:52.474Z",
   "vi": { "nav": {…}, "hero": {…}, "pillars": {…}, "stats": {…}, "courses": {…},
-          "facilities": {…}, "partners": {…}, "activities": {…}, "team": {…},
+          "facilities": {…}, "equipment": {…}, "projects": {…}, "partners": {…}, "activities": {…}, "team": {…},
           "testimonials": {…}, "finalCta": {…}, "footer": {…} },
   "en": { … cùng khoá … }
 }
@@ -213,12 +224,15 @@ Toàn bộ nội dung cả hai ngôn ngữ, đúng hình dạng mà component Re
 **Header cache:**
 
 ```
-ETag: W/"content-36"
-Cache-Control: public, max-age=60, stale-while-revalidate=600
+ETag: W/"content-70"
+Cache-Control: no-cache
 ```
 
-Gửi `If-None-Match: W/"content-36"` → `304 Not Modified`, không thân. ETag chỉ đổi khi
-`rev` đổi. Admin lưu xong, trình duyệt có thể còn giữ bản cũ tối đa 60 giây.
+Gửi `If-None-Match: W/"content-70"` → `304 Not Modified`, không thân. ETag chỉ đổi khi
+`rev` đổi. `no-cache` buộc trình duyệt **hỏi lại mỗi lần** (nội dung không đổi chỉ tốn
+một 304 rỗng), nên admin lưu xong là lần tải kế tiếp thấy ngay. Bản trước dùng
+`public, max-age=60, stale-while-revalidate=600` và phải tải lại vài lần mới thấy thay
+đổi — đừng đưa lại. `/api/health` và mọi `/api/admin/*`, `/api/auth/*` trả `no-store`.
 
 **So với dữ liệu trong `PUT` section**, bản ráp này có thêm:
 
@@ -336,7 +350,7 @@ Mọi route trong mục này cần phiên; route ghi cần thêm `Origin` + CSRF
 Các section sửa được, **theo thứ tự xuất hiện trên trang**.
 
 ```json
-{"editable":["nav","hero","pillars","stats","courses","facilities","partners","activities","team","testimonials","finalCta","footer"]}
+{"editable":["nav","hero","stats","facilities","equipment","projects","pillars","courses","activities","team","partners","testimonials","finalCta","register","footer"]}
 ```
 
 ### `GET /api/admin/content/:section`
@@ -362,7 +376,7 @@ Cặp hai ngôn ngữ của một section, kèm `rev` để gửi lại khi lưu
 | `rev` | Tổng `rev` của hai dòng VI + EN. **Mỗi lượt lưu tăng 2** |
 | `images` | `null` nếu section không mang ảnh. Ngược lại là map `idMục → ảnh`; `hero` dùng khoá `"hero"`. `note` là ghi chú nguồn (`~` ảnh gần đúng, `↺` ảnh dùng lại) |
 
-Section có ảnh: `hero`, `courses`, `facilities`, `activities`, `partners`, `team`.
+Section có ảnh: `hero`, `courses`, `facilities`, `equipment`, `projects`, `activities`, `partners`, `team`.
 
 Section không tồn tại: `404 {"error":"khong co section nay","section":"khong-co"}`.
 
@@ -382,7 +396,7 @@ Ghi **cả hai ngôn ngữ** của một section, tuỳ chọn thay ảnh, trong
 
 | Trường | Bắt buộc | Ý nghĩa |
 |---|---|---|
-| `vi`, `en` | ✔ | Toàn bộ section (ghi đè, không phải vá từng phần). Hình dạng ở [mục 7](#7-hình-dạng-12-section) |
+| `vi`, `en` | ✔ | Toàn bộ section (ghi đè, không phải vá từng phần). Hình dạng ở [mục 7](#7-hình-dạng-13-section) |
 | `rev` | nên có | `rev` nhận từ `GET`. **Bỏ trống thì KHÔNG kiểm xung đột** — lượt lưu đè lên bất cứ thay đổi nào của người khác |
 | `note` | | Ghi chú lịch sử, cắt ở 200 ký tự |
 | `images` | | `{ idMục: idẢnh }` để gắn/thay, `{ idMục: null }` để gỡ. Mục không nhắc tới giữ nguyên ảnh. Chỉ dùng cho section có ảnh |
@@ -484,7 +498,7 @@ Khôi phục là một lượt lưu bình thường: tự tạo dòng lịch s�
 
 ---
 
-## 7. Hình dạng 12 section
+## 7. Hình dạng 15 section
 
 Tóm tắt [server/schema/sections.js](../server/schema/sections.js). Luật chung:
 
@@ -502,7 +516,7 @@ Tóm tắt [server/schema/sections.js](../server/schema/sections.js). Luật chu
 
 Trên mọi phần tử mảng có `id`, các trường sau không được dịch:
 `group`, `level`, `stage`, `topic`, `icon`, `kind`, `kinds`, `value`, `suffix`, `lead`,
-`href`, `filterable` — cộng thêm `team.members[].name`. Lệch → `422` dạng ràng buộc
+`href`, `filterable`, `facility`, `status` — cộng thêm `team.members[].name`. Lệch → `422` dạng ràng buộc
 (`truong khong dich nhung khac nhau`).
 
 ### nav
@@ -529,6 +543,15 @@ Trên mọi phần tử mảng có `id`, các trường sau không được dị
 `eyebrow` chữ(80) · `title` chữ(120) · `description` chữ(400) ·
 `items[]`: `{ id, title: chữ(80), description: chữ(400) }`.
 `id` của mục tra icon; id không có icon thì component dùng icon theo vị trí.
+
+- `vision`: `{ title: chữ(80), body: chữ(400) }` — khối Tầm nhìn. *(từ API 4)*
+- `valuesTitle`: chữ(80) — tiêu đề cột "Giá trị cốt lõi". *(từ API 6)*
+- `values[]` (≥ 1): `{ id, title: chữ(40) }` — danh sách giá trị đánh số 01, 02…, chỉ tên ngắn. *(từ API 4)*
+
+Database seed trước ngày có các khoá này nhận chúng qua migration
+`005_pillars_vision_values.sql` (`vision`, `values`) và `007_pillars_values_title.sql`
+(`valuesTitle`). Component vẫn chịu được khi chúng vắng (bản lịch
+sử cũ khôi phục lại bỏ qua schema): thiếu thì bỏ hẳn khối, không sập trang.
 
 ### stats
 
@@ -572,6 +595,42 @@ Ràng buộc: `group` phải có trong `groups`, `level` trong `levels`, `stage`
 `eyebrow` chữ(80) · `title` chữ(120) · `description` chữ(400) · `imageAlt` chữ(200) ·
 `items[]`: `{ id, title: chữ(80), description: chữ(400) }`.
 
+### equipment *(có ảnh — không bắt buộc, thiếu thì popup bỏ khung ảnh)* *(từ API 5)*
+
+Popup thông số từng máy. Mỗi máy hiện thành nút trong ô `facilities.items[]` có id bằng
+`facility` của nó.
+
+| Trường | Kiểu |
+|---|---|
+| `listLabel`, `openLabel`, `specsTitle`, `source` | chữ(80) |
+| `noSpecs` | chữ(300) — hiện khi máy không có dòng thông số nào |
+| `close` | chữ(40) |
+| `imageAlt` | chữ(200), `{name}` thay bằng tên máy |
+| `sourceUrl` | URL `http(s)://` — mỗi ngôn ngữ trỏ trang của ngôn ngữ đó |
+| `items[]` (≥ 1) | `{ id, facility, name: chữ(120), type: chữ(80), specs[] }` |
+| `items[].specs[]` (≤ 30, **được rỗng**) | `{ id, label: chữ(80), detail: chữ(300) }` |
+
+- `facility` là **trường dùng chung** và phải là id có trong `facilities.items` (ràng
+  buộc toàn trang). Hệ quả: xoá một ô ở `facilities` khi còn máy trỏ tới bị `422`.
+- Giá trị thông số tên là `detail` chứ không phải `value`: `value` đã là trường dùng
+  chung (số liệu của `stats`), đặt trùng tên là bị đòi bằng nhau giữa VI và EN.
+- Database seed trước ngày có section này nhận nó qua migration
+  `006_equipment_content.sql`; ảnh máy thì qua `npm run seed:images`.
+
+### projects *(có ảnh)* *(từ API 7)*
+
+`eyebrow` chữ(80) · `title` chữ(120) · `description` chữ(400) · `imageAlt` chữ(200),
+`{title}` thay bằng tên dự án · `statuses`: record `id → chữ(40)` (nhãn trạng thái) ·
+`items[]` (≥ 1): `{ id, title: chữ(120), description: chữ(400), status? }`.
+
+- `status` **tuỳ chọn** và là trường dùng chung. Vắng = card không hiện nhãn; đó là
+  trạng thái mặc định có chủ đích (trang gốc không ghi trạng thái dự án). Có thì phải
+  là một khoá của `statuses` (ràng buộc toàn trang), và **không được là chuỗi rỗng** —
+  gửi `"status": ""` là `422`; muốn gỡ thì bỏ hẳn khoá.
+- Database seed trước ngày có section này nhận nó qua migration
+  `008_projects_section.sql` (kèm mục "Dự án" trong menu FabLab và footer); ảnh qua
+  `npm run seed:images`.
+
 ### partners *(có ảnh — không bắt buộc, thiếu thì hiện tên)*
 
 `eyebrow` chữ(80) · `title` chữ(120) · `description` chữ(400) · `logoAlt` chữ(200) ·
@@ -613,6 +672,28 @@ Ràng buộc: `group` phải có trong `groups`, `level` trong `levels`, `stage`
 
 `title` chữ(120) · `description` chữ(400) · `primaryCta`, `secondaryCta` chữ(40).
 
+### register
+
+Chữ của form đăng ký khóa học. Toàn bộ là chữ dịch, không có mảng.
+
+| Trường | Kiểu |
+|---|---|
+| `title` | chữ(80) |
+| `description` | chữ(300) |
+| `course`, `studentHeading`, `studentName`, `studentGrade`, `school`, `parentHeading`, `parentName`, `phone`, `email`, `note` | chữ(60) |
+| `courseNone`, `studentGradeHint` | chữ(80) |
+| `notePlaceholder`, `errorSummary` | chữ(120) |
+| `required`, `optional`, `close` | chữ(30) |
+| `consent` | chữ(300) |
+| `privacy` | chữ(800) |
+| `submit`, `submitting` | chữ(40) |
+| `errors` | `{ required, phone, email, consent, tooLong: chữ(120), rateLimited, paused, network: chữ(200) }` |
+| `success` | `{ title: chữ(80), message: chữ(300), close: chữ(30) }` |
+
+Token `{email}` / `{phone}` được thay bằng `footer.contact.*`, `{count}` bằng số mục lỗi.
+Section này được thêm sau ngày seed, nên database cũ nhận nó qua migration
+[004_register_content.sql](../server/db/migrations/004_register_content.sql).
+
 ### footer
 
 | Trường | Kiểu |
@@ -638,8 +719,10 @@ thấy. Danh sách đầy đủ ở [invariants.js](../server/content/invariants
 | Lỗi | `stats.items[].value` không phải số |
 | Lỗi | `href` `#neo` trỏ tới neo không có trên trang (menu, footer) |
 | Lỗi | Mục menu có cả `href` lẫn `children`, hoặc không có cả hai |
-| Cảnh báo | Khóa học / thiết bị / hoạt động / hero chưa có ảnh (khung ảnh trống) |
-| *(không báo)* | Đối tác / thành viên chưa có ảnh — trang có bản dự phòng (tên bằng chữ, chữ cái đầu) |
+| Lỗi | `equipment.items[].facility` không phải id trong `facilities.items` |
+| Lỗi | `projects.items[].status` có mặt nhưng không phải khoá của `projects.statuses` |
+| Cảnh báo | Khóa học / thiết bị / dự án / hoạt động / hero chưa có ảnh (khung ảnh trống) |
+| *(không báo)* | Đối tác / thành viên / máy chưa có ảnh — trang có bản dự phòng (tên bằng chữ, chữ cái đầu) |
 | Cảnh báo | Khóa học kiểu cấp độ không có icon tra theo `id` |
 
 ---
@@ -848,11 +931,17 @@ Số liệu trang Tổng quan và danh sách cho các ô chọn.
     …
   ],
   "anchors": ["about","activities","competitions","contact", …],
+  "facilities": [{"id":"printer-3d","title":"Máy in 3D"},{"id":"cnc","title":"Máy CNC"}, …],
   "icons": { "course": ["automation","plastics","process", …], "pillar": [ … ], "facility": [ … ] },
   "media": {"total":59,"bytes":4554327,"unused":0},
   "overriddenDetails": 0,
   "recent": [{"id":17,"key":"team","savedAt":"2026-09-15T04:33:25.986Z","note":"khoi phuc tu 2026-09-15T04:33:25.630Z"}, …],
-  "warnings": []
+  "warnings": [],
+  "registrations": {
+    "total": 1, "new": 0, "last7d": 1,
+    "recent": [{"id":1,"createdAt":"2026-09-18T04:47:50.335Z","studentName":"Nguyễn Minh An","courseId":"robotic-arm","courseTitle":"Cánh tay Robot","status":"contacted"}]
+  },
+  "analytics": {"views7d":1,"visitors7d":1}
 }
 ```
 
@@ -865,6 +954,10 @@ Số liệu trang Tổng quan và danh sách cho các ô chọn.
 | `overriddenDetails` | Số khóa học đang có bản sửa popup |
 | `recent` | 10 lượt lưu gần nhất (mọi section) |
 | `warnings` | Khác rỗng nghĩa là máy chủ **không quét được** `src/` — bộ kiểm href/icon đang tắt. Xem [DEPLOY.md](DEPLOY.md#3-vì-sao-cần-cả-repo-trên-máy-chủ-không-chỉ-dist) |
+| `registrations.new` | Số đăng ký trạng thái `new` — badge trên sidebar |
+| `registrations.last7d` | Số đăng ký gửi trong 7 × 24 giờ qua |
+| `registrations.recent` | 5 đăng ký mới nhất (khối "Đăng ký gần nhất" ở Tổng quan) |
+| `analytics` | Lượt xem và lượt khách (theo ngày) của 7 ngày gần nhất, tính cả hôm nay |
 
 Neo và icon quét từ **cùng nguồn** với bộ ràng buộc chặn lượt lưu, nên giá trị lấy từ
 đây không bao giờ bị máy chủ từ chối.
@@ -936,3 +1029,283 @@ curl -s -b $JAR -H "$O" -H "x-csrf-token: $CSRF" -X POST $D/api/admin/history/$H
 # 8. Dang xuat
 curl -s -b $JAR -H "$O" -X POST $D/api/auth/logout
 ```
+
+---
+
+## 12. Đăng ký khóa học
+
+Form đăng ký trên trang công khai gửi vào `POST /api/registrations`; dashboard đọc và
+xử lý qua `/api/admin/registrations`. Đây là **dữ liệu cá nhân** (có trẻ em) — đọc mục
+[Dữ liệu cá nhân](#dữ-liệu-cá-nhân) trước khi làm thêm gì với nó.
+
+> **Không route nào ở đây đổi `rev` nội dung.** Đăng ký nằm ở bảng `registration`,
+> không đụng `section` hay `content_counter` — nếu đụng, mỗi lượt đăng ký sẽ phá bộ đệm
+> nội dung của mọi người đang xem trang.
+
+### `POST /api/registrations`
+
+Công khai, không cần đăng nhập, không có CSRF token (không có phiên để giả mạo). Chốt
+gốc request vẫn áp: phải có `Origin` thuộc danh sách cho phép hoặc
+`Sec-Fetch-Site: same-origin`, không thì `403`.
+
+```json
+{
+  "course": "robotic-arm",
+  "studentName": "Nguyễn Minh An",
+  "studentGrade": "lớp 7",
+  "school": "THCS Mẫu",
+  "parentName": "Nguyễn Văn Bình",
+  "phone": "0912 345 678",
+  "email": "binh@example.com",
+  "note": "Muốn học cuối tuần",
+  "consent": true,
+  "locale": "vi",
+  "source": "course-modal",
+  "website": "",
+  "elapsed": 42000,
+  "ref": "facebook.com",
+  "width": 1440
+}
+```
+
+| Trường | Luật |
+|---|---|
+| `course` | Id khóa học hoặc `""` (chưa chọn — cần tư vấn). Id không còn trên trang vẫn nhận, tên khóa để `null` |
+| `studentName`, `parentName` | Bắt buộc, ≤ 120 ký tự |
+| `studentGrade` ≤ 40 · `school` ≤ 160 · `email` ≤ 160 · `note` ≤ 1000 | Không bắt buộc; chuỗi rỗng = không có |
+| `phone` | Bỏ khoảng trắng / `.` / `-` / `()`, đổi `+84`/`84` thành `0`, rồi phải khớp `^0\d{9,10}$` |
+| `consent` | Phải là `true` |
+| `locale` | `vi` \| `en` — chọn bản chữ đồng ý được lưu làm bằng chứng |
+| `source` | `course-modal` \| `final-cta` \| `nav` \| `nav-drawer` |
+| `website` | **Ô bẫy bot** — người thật để trống |
+| `elapsed` | Số ms từ lúc mở form tới lúc gửi |
+| `ref`, `width` | Chỉ phục vụ thống kê; `ref` chỉ giữ tên host |
+
+Máy chủ **tự tra** tên khóa và nguyên văn câu đồng ý kèm thông báo quyền riêng tư (đã
+thay `{email}`) từ nội dung hiện hành — không nhận hai thứ đó từ client.
+
+**Thành công — `201`:**
+
+```
+ratelimit: limit=20, remaining=19, reset=86400
+ratelimit-policy: 20;w=86400
+
+{"ok":true}
+```
+
+**Sai dữ liệu — `422`.** `code` là mã, không phải câu chữ: trang tự dịch bằng
+`register.errors.<code>`. Mã có thể gặp: `required`, `tooLong`, `phone`, `email`,
+`consent`, `course`, và `invalid` (khoá thừa, sai kiểu).
+
+```json
+{"error":"du lieu khong hop le","issues":[{"path":"studentName","code":"required"},{"path":"phone","code":"phone"},{"path":"consent","code":"consent"}]}
+```
+
+| Mã khác | Thân | Khi nào |
+|---|---|---|
+| `403` | `{"error":"goc request khong hop le"}` | Không có `Origin` hợp lệ lẫn `Sec-Fetch-Site: same-origin` |
+| `413` | `{"error":"entity.too.large"}` | Thân > 8 KB |
+| `429` | `{"error":"gui qua nhieu lan","code":"rateLimited"}` | Quá **5 lượt / 10 phút** hoặc **20 lượt / ngày** từ một IP |
+| `503` | `{"error":"tam ngung nhan dang ky","code":"paused"}` | Cả trang đã nhận `REG_DAILY_CAP` lượt trong ngày (mặc định 300) |
+
+Header `RateLimit` chỉ phản ánh bộ giới hạn theo ngày: hai bộ giới hạn chồng nhau và bộ
+sau ghi đè header của bộ trước.
+
+**Những lượt `201` mà không lưu gì** — cố ý, để bot không học được là mình bị chặn:
+
+| Trường hợp | Ghi chú |
+|---|---|
+| `website` khác rỗng | Ô bẫy bị điền |
+| `elapsed` < 3000 | Nhanh hơn người thật. Form của trang tự chờ cho đủ trước khi gửi |
+| User-Agent rỗng hoặc giống bot (`bot`, `curl`, `python`, `headless`…) | |
+| Trùng `phone` + `course` trong 10 phút | Bấm đúp / gửi lại sau lỗi mạng — giữ một dòng |
+
+Lượt lưu thật cũng ghi sự kiện thống kê `register_submit` trong cùng giao dịch (trừ khi
+trình duyệt gửi `DNT: 1` hoặc `Sec-GPC: 1`).
+
+### `GET /api/admin/registrations`
+
+Danh sách có lọc, **phân trang ở máy chủ**, mới nhất trước.
+
+| Tham số | Ý nghĩa |
+|---|---|
+| `status` | `new` \| `contacted` \| `enrolled` \| `cancelled` |
+| `course` | Id khóa học; `-` = chưa chọn khóa |
+| `from`, `to` | `YYYY-MM-DD` theo **ngày Việt Nam** (UTC+7), gồm cả hai đầu |
+| `q` | Tìm trong tên học viên, tên phụ huynh, điện thoại, email, trường. Gõ `0912 345` vẫn khớp số liền |
+| `page` | Từ 1 |
+| `pageSize` | 10–100, mặc định 25 |
+
+```json
+{
+  "items": [{
+    "id": 1,
+    "createdAt": "2026-09-18T04:47:50.335Z",
+    "updatedAt": "2026-09-18T04:47:50.335Z",
+    "status": "new",
+    "statusAt": null,
+    "courseId": "robotic-arm",
+    "courseTitle": "Cánh tay Robot",
+    "locale": "vi",
+    "studentName": "Nguyễn Minh An",
+    "studentGrade": "lớp 7",
+    "school": "THCS Mẫu",
+    "parentName": "Nguyễn Văn Bình",
+    "phone": "0912345678",
+    "email": "binh@example.com",
+    "note": "Muốn học cuối tuần",
+    "adminNote": null,
+    "source": "course-modal",
+    "referrerHost": "facebook.com",
+    "consentAt": "2026-09-18T04:47:50.335Z",
+    "consentText": "Tôi đồng ý để EIU FabLab xử lý các thông tin trên nhằm liên hệ tư vấn khóa học.\n\nThông tin chỉ dùng để tư vấn và xếp lớp, do EIU FabLab (Đại học Quốc tế Miền Đông) quản lý và lưu tối đa 12 tháng. Bạn có thể rút lại đồng ý hoặc yêu cầu xoá dữ liệu qua fablab@eiu.edu.vn (Nghị định 13/2023/NĐ-CP).",
+    "courseOnPage": true
+  }],
+  "total": 1,
+  "page": 1,
+  "pageSize": 25,
+  "counts": {
+    "byStatus": {"new":1,"contacted":0,"enrolled":0,"cancelled":0,"all":1},
+    "byCourse": [{"courseId":"robotic-arm","title":"Cánh tay Robot","total":1,"new":1}]
+  }
+}
+```
+
+| Trường | Ý nghĩa |
+|---|---|
+| `courseTitle` | Tên khóa **hiện tại** trên trang; khóa đã bị xoá thì là tên chụp lúc gửi |
+| `courseOnPage` | `false` = khóa không còn trên trang; `null` = không chọn khóa |
+| `counts.byStatus` | Số theo trạng thái với **mọi bộ lọc trừ `status`** — để tab nào cũng hiện số thật |
+| `counts.byCourse` | Số theo khóa trên **toàn bộ** đăng ký, không theo bộ lọc. `new` = chưa xử lý |
+
+### `GET /api/admin/registrations/export`
+
+Cùng tham số lọc như danh sách (bỏ `page`/`pageSize`), trả **CSV** để mở bằng Excel.
+
+```
+content-type: text/csv; charset=utf-8
+content-disposition: attachment; filename="dang-ky-20260918.csv"
+
+Mã,Thời gian gửi,Trạng thái,Khóa học,Mã khóa,Học viên,Năm sinh / lớp,Trường,Phụ huynh,Điện thoại,Email,Ghi chú,Ghi chú quản trị,Nguồn,Ngôn ngữ,Đồng ý lúc
+1,2026-09-18 11:47,Đã liên hệ,Cánh tay Robot,robotic-arm,Nguyễn Minh An,lớp 7,THCS Mẫu,Nguyễn Văn Bình,="0912345678",binh@example.com,Muốn học cuối tuần,"Đã gọi, hẹn học thử thứ 7",Popup khóa học,vi,2026-09-18 11:47
+```
+
+- Bắt đầu bằng **BOM UTF-8** (`EF BB BF`) — thiếu nó Excel đọc tiếng Việt thành ký tự rác.
+- Giờ là giờ Việt Nam. Xuống dòng CRLF, trích dẫn theo RFC 4180.
+- Số điện thoại bọc `="…"` để Excel không cắt số 0 đầu. An toàn vì máy chủ đã chuẩn hoá
+  nó thành toàn chữ số.
+- Ô do người ngoài gõ mà bắt đầu bằng `= + - @` được thêm `'` phía trước — chống chèn
+  công thức Excel.
+- Mỗi lượt xuất ghi một dòng log `[registration] xuat CSV N dong`.
+
+### `GET /api/admin/registrations/:id`
+
+```json
+{"item":{"id":1,"createdAt":"2026-09-18T04:47:50.335Z", …cùng hình dạng một phần tử của danh sách…}}
+```
+
+`404 {"error":"khong tim thay dang ky","id":"1"}` nếu không có.
+
+### `PATCH /api/admin/registrations/:id`
+
+```json
+{"status":"contacted","adminNote":"Đã gọi, hẹn học thử thứ 7"}
+```
+
+Cả hai trường đều không bắt buộc. `adminNote` ≤ 2000 ký tự; `null` hoặc `""` là xoá ghi
+chú. Đổi `status` thì `statusAt` được đặt lại. Trả về `{"item":{…}}` bản sau khi sửa.
+Trạng thái lạ:
+
+```json
+{"error":"du lieu khong hop le","issues":[{"path":"status","message":"Tùy chọn không hợp lệ: mong đợi một trong các giá trị \"new\"|\"contacted\"|\"enrolled\"|\"cancelled\""}]}
+```
+
+### `DELETE /api/admin/registrations/:id`
+
+**Xoá cứng** — phục vụ quyền yêu cầu xoá dữ liệu. Trả `{"ok":true}`, hoặc `404`. Sự
+kiện thống kê không mang dữ liệu cá nhân và không nối được về dòng này, nên không cần
+xoá theo.
+
+### Dữ liệu cá nhân
+
+| Điều | Chỗ lo |
+|---|---|
+| Thời hạn lưu | Đăng ký cũ hơn `REGISTRATION_RETENTION_DAYS` (mặc định 365) **tự bị xoá**, kiểm lúc khởi động và mỗi 6 giờ. Đổi số này thì sửa luôn câu `register.privacy` trong dashboard |
+| Bằng chứng đồng ý | `consentAt` + `consentText` (nguyên văn người gửi đã thấy) |
+| Nằm ngoài tầm với của nút Xoá | Bản sao lưu database, file CSV đã tải về, log truy cập của nginx |
+
+---
+
+## 13. Thống kê truy cập
+
+Tự lưu trên máy chủ của trang: **không cookie, không lưu IP, không dịch vụ bên ngoài**.
+
+Khách được nhận diện bằng `sha256(muối trong ngày | IP | User-Agent)` cắt 16 ký tự hex.
+Muối ngẫu nhiên, đổi mỗi ngày, và muối cũ bị xoá — qua hôm sau thì không còn cách nào
+nối mã băm về một IP. Hệ quả: **"khách" chỉ duy nhất trong một ngày**, và "lượt khách"
+của một khoảng là tổng khách từng ngày.
+
+### `POST /api/events`
+
+Công khai; cùng chốt gốc request như form đăng ký. Trang gửi bằng
+`navigator.sendBeacon(url, JSON.stringify(payload))` — **thân là chuỗi nên
+`Content-Type: text/plain`**; đường lui `fetch(…, { keepalive: true })` cũng gửi
+`text/plain`. Máy chủ nhận cả `text/plain` lẫn `application/json`, tối đa 2 KB.
+
+```json
+{"n":"pageview","l":"vi","w":1440,"r":"google.com"}
+```
+
+| Trường | Ý nghĩa |
+|---|---|
+| `n` | `pageview` \| `course_open` \| `cta_click` \| `register_open`. `register_submit` **chỉ máy chủ ghi được** |
+| `t` | Đích, kiểm theo `n`: `course_open` → id khóa có thật; `cta_click` → `nav`, `nav-drawer`, `hero-primary`, `hero-secondary`, `final-primary`, `final-secondary`, `course-modal`; `register_open` → một `source` của form |
+| `l` | Ngôn ngữ trang lúc gửi |
+| `w` | Bề rộng khung nhìn: < 768 điện thoại, < 1024 máy tính bảng, còn lại máy tính |
+| `r` | Chỉ với `pageview`: tên host trang giới thiệu, hoặc `utm:<nguồn>` |
+
+Trả **`204` rỗng trong mọi trường hợp** trừ `403` (sai gốc) và `413` (> 2 KB). Bỏ im
+lặng: dữ liệu sai, JSON hỏng, bot, `DNT: 1` / `Sec-GPC: 1`, quá 120 lượt/phút/IP, quá
+50.000 sự kiện/ngày cho cả trang.
+
+### `GET /api/admin/stats`
+
+`?range=7d|30d|90d`, mặc định `30d`. Giá trị khác →
+`400 {"error":"range phai la 7d, 30d hoac 90d","range":"1y"}`.
+
+```json
+{
+  "range": "7d",
+  "from": "2026-09-12",
+  "to": "2026-09-18",
+  "days": [
+    {"day":"2026-09-12","views":0,"visitors":0,"registrations":0},
+    …
+    {"day":"2026-09-18","views":1,"visitors":1,"registrations":1}
+  ],
+  "totals": {"views":1,"visitors":1,"registrations":1,"courseOpens":1,"ctaClicks":1,"registerOpens":0,"conversion":1},
+  "referrers": [{"host":"google.com","views":1}],
+  "devices": [{"device":"desktop","visitors":1}],
+  "languages": [{"lang":"vi","views":1}],
+  "ctas": [{"cta":"nav","clicks":1}],
+  "courses": [{"courseId":"robotic-arm","title":"Cánh tay Robot","opens":1,"openVisitors":1,"registrations":1,"conversion":1}],
+  "retentionDays": 90
+}
+```
+
+| Trường | Ý nghĩa |
+|---|---|
+| `days` | Đủ mọi ngày của khoảng (ngày Việt Nam), ngày trống là `0` |
+| `visitors` | Lượt khách theo ngày |
+| `registrations` | Đếm từ bảng `registration` — số thật admin phải xử lý, kể cả người bật chống theo dõi |
+| `totals.conversion` | Cặp (ngày, khách) đã gửi đăng ký / cặp (ngày, khách) đã xem trang. `null` nếu chưa có lượt xem |
+| `referrers[].host` | `null` = vào thẳng / không rõ nguồn |
+| `courses[].conversion` | Khách mở popup khóa X rồi gửi đăng ký **đúng khóa X** trong cùng ngày / khách mở popup khóa X |
+| `retentionDays` | Số ngày giữ sự kiện bản thô (`ANALYTICS_RETENTION_DAYS`) |
+
+Sự kiện cũ hơn `retentionDays` được gộp vào bảng `stat_daily` (lượt xem, lượt khách,
+đăng ký, mở popup theo khóa, bấm nút theo nút) rồi xoá bản thô. Route này hiện chỉ đọc
+bản thô, nên khoảng dài nhất là 90 ngày.
+
+Số liệu **thấp hơn thực tế**: người bật Do Not Track / Global Privacy Control không được
+đếm, và trình chặn quảng cáo có thể chặn `sendBeacon`.

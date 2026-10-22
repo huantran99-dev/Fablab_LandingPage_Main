@@ -23,7 +23,9 @@ function ItemForm({ list, mode, itemId, draft, images, ctx, serverIssues, savedI
       // Ô chọn bắt buộc lấy sẵn lựa chọn đầu — form trống thì lượt Áp dụng đầu tiên
       // nào cũng báo lỗi "chưa chọn", vô ích.
       for (const field of fields) {
-        if (field.type === 'select' && !working.shared[field.key]) {
+        // Ô chọn TUỲ CHỌN thì để trống: trống là một lựa chọn hợp lệ (vd. dự án chưa
+        // đánh dấu trạng thái), tự chọn sẵn là tự gắn nhãn thay người dùng.
+        if (field.type === 'select' && !field.optional && !working.shared[field.key]) {
           working.shared[field.key] = field.options(ctx)[0]?.value ?? ''
         }
       }

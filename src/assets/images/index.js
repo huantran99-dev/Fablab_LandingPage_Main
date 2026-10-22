@@ -69,6 +69,26 @@ import teamThy from './team-thy.jpg'
 import teamTinh from './team-tinh.jpg'
 import teamTran from './team-tran.jpg'
 import teamTuan from './team-tuan.jpg'
+import equipForm3 from './equipment-form-3.jpg'
+import equipCubicon210f from './equipment-cubicon-210f.jpg'
+import equipCubicon310f from './equipment-cubicon-310f.jpg'
+import equipShining3d from './equipment-shining-3d.jpg'
+import equipEpilogMiniHelix18 from './equipment-epilog-mini-helix-18.jpg'
+import equipRolandSrm20 from './equipment-roland-srm-20.jpg'
+import equipProxxonFf500 from './equipment-proxxon-ff500.jpg'
+import equipProxxonPd400 from './equipment-proxxon-pd400.jpg'
+import equipProxxonDs460 from './equipment-proxxon-ds460.jpg'
+import equipGwinstekGfg8255a from './equipment-gwinstek-gfg-8255a.jpg'
+import equipGwinstekGds2204a from './equipment-gwinstek-gds-2204a.jpg'
+import equipGwinstekGpd2303s from './equipment-gwinstek-gpd-2303s.jpg'
+import projectCobot from './project-cobot.jpg'
+import projectPlane from './project-plane.jpg'
+import projectMicrobitKit from './project-microbit-kit.jpg'
+import projectJawModel from './project-jaw-model.jpg'
+import projectSmartLight from './project-smart-light.jpg'
+import projectRefractionModel from './project-refraction-model.jpg'
+import projectMcrRacingCar from './project-mcr-racing-car.jpg'
+import projectHydroponicGarden from './project-hydroponic-garden.jpg'
 
 export const HERO_IMAGE = { src: heroStemWorkshop, width: 1200, height: 900 }
 
@@ -91,6 +111,48 @@ export const FACILITY_IMAGES = {
   cnc: { src: labMachineShop, width: 760, height: 560 },
   laser: { src: labLaserCutter, width: 679, height: 500 },
   'electronics-lab': { src: labWorkbenches, width: 1000, height: 600 }, // ~ ảnh xưởng chung
+}
+
+/**
+ * Khớp với `equipment.items[].id` trong i18n — ảnh trong popup thông số thiết bị.
+ *
+ * Đây là ảnh SẢN PHẨM (nền trắng) đăng trên trang Thiết bị của FabLab
+ * (`fablab.eiu.edu.vn/vi/thiet-bi/`), không phải ảnh chụp tại xưởng — nên mọi dòng
+ * đều mang `// ~`. Gán bằng cách mở từng ảnh ra xem và khớp chữ in trên máy, KHÔNG
+ * theo thứ tự trong HTML. Đã làm phẳng nền trong suốt sang trắng và thu về ≤ 800px.
+ */
+export const EQUIPMENT_IMAGES = {
+  'form-3': { src: equipForm3, width: 339, height: 414 }, // ~ ảnh sản phẩm
+  'cubicon-210f': { src: equipCubicon210f, width: 300, height: 300 }, // ~ ảnh sản phẩm
+  'cubicon-310f': { src: equipCubicon310f, width: 800, height: 790 }, // ~ ảnh sản phẩm
+  'shining-3d': { src: equipShining3d, width: 800, height: 737 }, // ~ ảnh sản phẩm
+  'epilog-mini-helix-18': { src: equipEpilogMiniHelix18, width: 800, height: 545 }, // ~ ảnh sản phẩm
+  'roland-srm-20': { src: equipRolandSrm20, width: 480, height: 360 }, // ~ ảnh sản phẩm
+  'proxxon-ff500': { src: equipProxxonFf500, width: 663, height: 800 }, // ~ ảnh sản phẩm
+  'proxxon-pd400': { src: equipProxxonPd400, width: 800, height: 436 }, // ~ ảnh sản phẩm
+  'proxxon-ds460': { src: equipProxxonDs460, width: 800, height: 623 }, // ~ ảnh sản phẩm
+  'gwinstek-gfg-8255a': { src: equipGwinstekGfg8255a, width: 800, height: 480 }, // ~ ảnh sản phẩm
+  'gwinstek-gds-2204a': { src: equipGwinstekGds2204a, width: 378, height: 378 }, // ~ ảnh sản phẩm
+  'gwinstek-gpd-2303s': { src: equipGwinstekGpd2303s, width: 378, height: 378 }, // ~ ảnh sản phẩm
+}
+
+/**
+ * Khớp với `projects.items[].id` trong i18n.
+ *
+ * Ảnh dự án thật đăng trên trang Dự án của FabLab (`fablab.eiu.edu.vn/vi/du-an/`),
+ * gán bằng cách mở từng ảnh ra xem chứ không theo thứ tự HTML. Phần lớn là ảnh đã
+ * tách nền — đã làm phẳng nền trong suốt sang trắng. Bản VI và EN dùng hai file khác
+ * nhau cho kit micro:bit, máy bay và đèn thông minh nhưng cùng một ảnh; lấy bản lớn hơn.
+ */
+export const PROJECT_IMAGES = {
+  cobot: { src: projectCobot, width: 278, height: 681 },
+  plane: { src: projectPlane, width: 577, height: 433 },
+  'microbit-kit': { src: projectMicrobitKit, width: 617, height: 404 },
+  'jaw-model': { src: projectJawModel, width: 317, height: 453 },
+  'smart-light': { src: projectSmartLight, width: 530, height: 471 },
+  'refraction-model': { src: projectRefractionModel, width: 483, height: 449 },
+  'mcr-racing-car': { src: projectMcrRacingCar, width: 517, height: 229 },
+  'hydroponic-garden': { src: projectHydroponicGarden, width: 598, height: 417 },
 }
 
 /**

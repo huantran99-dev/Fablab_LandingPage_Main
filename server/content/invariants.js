@@ -39,6 +39,8 @@ export const SHARED_FIELDS = new Set([
   'lead',
   'href',
   'filterable',
+  'facility',
+  'status',
 ])
 
 const isObject = (value) => typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -179,6 +181,38 @@ export function checkInvariants({ vi, en }, lookups, { imageMaps = null } = {}) 
     }
   }
 
+  // --- 3b. Máy: mọi `facility` phải là một ô có thật ở section Thiết bị -------
+  //
+  // Luật cắt ngang hai section, nên chỉ kiểm được trên từ điển đã ráp. Sai là máy
+  // biến mất khỏi trang không một lời báo (không ô nào nhận nó). Chiều ngược lại
+  // cũng được chặn nhờ đây: xoá một ô còn máy trỏ tới là lượt lưu bị từ chối.
+
+  for (const [lang, dict] of Object.entries(dicts)) {
+    if (!dict.equipment || !dict.facilities) continue
+    const facilityIds = new Set((dict.facilities.items ?? []).map((item) => item.id))
+    for (const device of dict.equipment.items ?? []) {
+      if (!facilityIds.has(device.facility)) {
+        fail(`${lang} equipment.items[${device.id}]: facility '${device.facility}' khong co trong facilities.items -> may bien mat khoi trang`)
+      }
+    }
+  }
+
+  // --- 3c. Dự án: `status` (nếu có) phải là một khoá của `projects.statuses` ----
+  //
+  // Vắng là hợp lệ và có chủ đích (trang gốc không ghi trạng thái). Có mà tra hụt thì
+  // card bỏ nhãn — người sửa tưởng đã đánh dấu mà trang không hiện gì.
+
+  for (const [lang, dict] of Object.entries(dicts)) {
+    const projects = dict.projects
+    if (!projects) continue
+    const statusIds = new Set(Object.keys(projects.statuses ?? {}))
+    for (const project of projects.items ?? []) {
+      if ('status' in project && !statusIds.has(project.status)) {
+        fail(`${lang} projects.items[${project.id}]: status '${project.status}' khong co trong projects.statuses -> khong hien nhan`)
+      }
+    }
+  }
+
   // --- 4. Trụ cột và thiết bị: có đường lui, chỉ ghi chú ----------------------
 
   const TOLERANT = [
@@ -201,7 +235,10 @@ export function checkInvariants({ vi, en }, lookups, { imageMaps = null } = {}) 
     ['courses.items', vi.courses?.items, 'COURSE_IMAGES', true],
     ['facilities.items', vi.facilities?.items, 'FACILITY_IMAGES', true],
     ['activities.items', vi.activities?.items, 'ACTIVITY_IMAGES', true],
+    ['projects.items', vi.projects?.items, 'PROJECT_IMAGES', true],
     ['partners.items', vi.partners?.items, 'PARTNER_LOGOS', false],
+    // Thiếu ảnh thì popup chỉ bỏ khung ảnh, phần thông số vẫn đủ — nên chỉ ghi chú.
+    ['equipment.items', vi.equipment?.items, 'EQUIPMENT_IMAGES', false],
     ['team.members', vi.team?.members, 'TEAM_IMAGES', false],
   ]
   for (const [label, items, mapName, card] of IMAGE_TARGETS) {

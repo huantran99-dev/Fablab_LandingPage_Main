@@ -45,10 +45,10 @@ export function Partners() {
         title={t.partners.title}
         description={t.partners.description}
         align="center"
-        from="right"
+        from="left"
       />
 
-      <Reveal from="left" className="mt-14">
+      <Reveal from="right" className="mt-14">
         {/* `overflow-hidden` cắt phần track thò ra hai bên; mặt nạ gradient làm
             hai mép mờ dần để dải trông như chạy vô tận thay vì bị cắt cụt. */}
         <div
