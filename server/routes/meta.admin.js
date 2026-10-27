@@ -90,7 +90,7 @@ metaRouter.get('/meta', (_req, res) => {
         .get(new Date(Date.now() - 7 * 86_400_000).toISOString()),
       recent: db
         .prepare(
-          `SELECT id, created_at AS createdAt, student_name AS studentName, course_id AS courseId,
+          `SELECT id, created_at AS createdAt, kind, student_name AS studentName, course_id AS courseId,
                   course_title AS courseTitle, status
              FROM registration ORDER BY created_at DESC, id DESC LIMIT 5`,
         )

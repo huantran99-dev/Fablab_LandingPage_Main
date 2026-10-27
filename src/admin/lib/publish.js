@@ -24,15 +24,17 @@ async function fetchPublic() {
 
 /**
  * Dạng chuẩn để so: sắp khoá (Zod dựng lại object theo thứ tự schema, không theo thứ
- * tự gửi lên) và bỏ `image` (bản công khai gắn ảnh lên từng mục, bản quản trị để ảnh
- * riêng — ảnh so riêng bên dưới).
+ * tự gửi lên) và bỏ `image` / `video` (bản công khai gắn media lên từng mục, bản quản
+ * trị để media riêng — so riêng bên dưới).
  */
+const MEDIA_KEYS = new Set(['image', 'video'])
+
 function canonical(value) {
   if (Array.isArray(value)) return value.map(canonical)
   if (value && typeof value === 'object') {
     const out = {}
     for (const key of Object.keys(value).sort()) {
-      if (key !== 'image') out[key] = canonical(value[key])
+      if (!MEDIA_KEYS.has(key)) out[key] = canonical(value[key])
     }
     return out
   }
@@ -41,15 +43,15 @@ function canonical(value) {
 
 const same = (a, b) => JSON.stringify(canonical(a ?? null)) === JSON.stringify(canonical(b ?? null))
 
-/** `{ idMục: url }` của mọi ảnh gắn trong một section công khai (hero: khoá là tên section). */
-function publicImages(section, sectionKey) {
+/** `{ idMục: url }` của mọi ảnh (`field = 'image'`) hoặc video gắn trong một section công khai (hero: khoá là tên section). */
+function publicMedia(section, sectionKey, field) {
   const out = {}
-  if (section?.image?.url) out[sectionKey] = section.image.url
+  if (section?.[field]?.url) out[sectionKey] = section[field].url
   const walk = (node) => {
     if (Array.isArray(node)) node.forEach(walk)
     else if (node && typeof node === 'object') {
-      if (typeof node.id === 'string' && node.image?.url) out[node.id] = node.image.url
-      for (const [key, child] of Object.entries(node)) if (key !== 'image') walk(child)
+      if (typeof node.id === 'string' && node[field]?.url) out[node.id] = node[field].url
+      for (const [key, child] of Object.entries(node)) if (!MEDIA_KEYS.has(key)) walk(child)
     }
   }
   walk(section)
@@ -83,12 +85,16 @@ export function sectionMatches(content, sectionKey, truth) {
   }
 
   const ids = itemIds(truth.vi, sectionKey)
-  const expected = Object.fromEntries(
-    Object.entries(truth.images ?? {})
-      .filter(([id]) => ids.has(id))
-      .map(([id, image]) => [id, image.url]),
+  const expected = (bound) =>
+    Object.fromEntries(
+      Object.entries(bound ?? {})
+        .filter(([id]) => ids.has(id))
+        .map(([id, media]) => [id, media.url]),
+    )
+  return (
+    same(publicMedia(content.vi[sectionKey], sectionKey, 'image'), expected(truth.images)) &&
+    same(publicMedia(content.vi[sectionKey], sectionKey, 'video'), expected(truth.videos))
   )
-  return same(publicImages(content.vi[sectionKey], sectionKey), expected)
 }
 
 /** So nội dung popup công khai của một khóa với bản hiệu lực trong database. */

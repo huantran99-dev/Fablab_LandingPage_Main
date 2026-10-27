@@ -116,6 +116,12 @@
     font-family: var(--font-text);
     font-size: var(--text-body);
     line-height: 1.6;
+    /* Không để một chữ đứng trơ trọi ở dòng cuối đoạn văn ("…cho cộng / đồng.").
+       Đặt ở body vì thuộc tính kế thừa: mọi đoạn văn, kể cả nội dung admin sửa từ
+       dashboard, đều nhận mà không phải chèn &nbsp; vào dữ liệu. Tiêu đề dùng `balance`
+       ở rule bên dưới; phần tử nowrap (pill, nút, marquee) tự ghi đè. Firefox chưa hỗ
+       trợ `pretty` → xuống dòng như thường, không vỡ gì. */
+    text-wrap: pretty;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -189,14 +195,22 @@
 /* ==========================================================================
    Utilities
    ========================================================================== */
+/* Khung nội dung chung của MỌI phần trang công khai (navbar, hero, section, footer).
+   1440px tính cả lề trong (border-box) → nội dung tối đa 1344px. Từ 2026-10-22 nới từ
+   1200px theo yêu cầu "lề hai bên ngắn lại". Độ dài dòng chữ vẫn do max-width riêng
+   của tiêu đề/đoạn mô tả giữ — đừng nới chúng theo. */
 @utility container-page {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1440px;
   margin-inline: auto;
-  padding-inline: 20px;
+  padding-inline: 16px;
 
   @media (width >= 768px) {
     padding-inline: 32px;
+  }
+
+  @media (width >= 1280px) {
+    padding-inline: 48px;
   }
 }
 
@@ -305,6 +319,52 @@
 
 @media (prefers-reduced-motion: reduce) {
   .animate-sync {
+    animation-name: none !important;
+  }
+}
+
+/* Banner hoạt động (Activities.jsx).
+ *
+ * `ken-burns`: ảnh phóng chậm như đang quay phim. Mỗi lớp tự đặt `--kb-from`/`--kb-to`
+ * (nền mờ phóng mạnh, poster phóng nhẹ) và `--kb-duration`.
+ *
+ * `banner-progress`: vạch tiến trình — đồng thời là BỘ ĐẾM GIỜ của banner: hết
+ * animation (`animationend`) là sang slide. Tạm dừng = `animation-play-state: paused`.
+ *
+ * Tắt chuyển động: `animation-name: none` cho CẢ HAI. Với vạch tiến trình đây là chốt an
+ * toàn chứ không chỉ là thẩm mỹ: rule ở base ép animation còn 0.01ms, tức `animationend`
+ * bắn gần như mỗi khung hình và slide nhấp nháy liên tục. Component cũng tự tắt tự chạy
+ * khi giảm chuyển động — hai lớp chặn cho một lỗi gây hại thật. */
+@keyframes ken-burns {
+  from {
+    transform: scale(var(--kb-from, 1));
+  }
+  to {
+    transform: scale(var(--kb-to, 1.08));
+  }
+}
+
+@utility animate-ken-burns {
+  animation: ken-burns var(--kb-duration, 7s) linear both;
+}
+
+@keyframes banner-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@utility animate-banner-progress {
+  transform-origin: left center;
+  animation: banner-progress var(--progress-duration, 6.5s) linear both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-ken-burns,
+  .animate-banner-progress {
     animation-name: none !important;
   }
 }

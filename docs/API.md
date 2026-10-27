@@ -74,7 +74,7 @@ gọn chỗ dài bằng `…`). Deploy thì xem [DEPLOY.md](DEPLOY.md).
 - **Định dạng:** JSON UTF-8, trừ `POST /api/admin/media` nhận byte ảnh thô.
 - **Không có CORS.** API chỉ dùng được từ chính trang (same-origin). Đây là chủ đích:
   cookie đăng nhập và kiểm `Origin` dựa trên điều đó.
-- **Phiên bản:** `GET /api/health` trả `api` (hiện là `7`, hằng `API_VERSION` trong
+- **Phiên bản:** `GET /api/health` trả `api` (hiện là `12`, hằng `API_VERSION` trong
   [content.public.js](../server/routes/content.public.js)). Dashboard so với
   `EXPECTED_API` trong [src/admin/App.jsx](../src/admin/App.jsx) và hiện băng đỏ nếu máy
   chủ thấp hơn — dấu hiệu máy chủ chưa được khởi động lại sau khi cập nhật.
@@ -180,9 +180,10 @@ Lỗi của **bộ đọc thân request** trả đúng mã của nó (từ API 3
 |---|---|---|
 | Thân JSON hỏng cú pháp | `400` | `{"error":"entity.parse.failed"}` |
 | Thân JSON lớn hơn 2 MB (8 KB với form đăng ký, 2 KB với sự kiện) | `413` | `{"error":"entity.too.large"}` |
-| Ảnh tải lên lớn hơn 15 MB | `413` | `{"error":"entity.too.large"}` |
+| File tải lên lớn hơn 40 MB (trần của video) | `413` | `{"error":"entity.too.large"}` |
+| Ảnh tải lên 15–40 MB *(từ API 10)* | `413` | `{"error":"anh qua lon (toi da 15 MB)"}` |
 
-Nếu nginx đứng trước với `client_max_body_size 16m` thì file trên 16 MB nhận `413`
+Nếu nginx đứng trước với `client_max_body_size 41m` thì file trên 41 MB nhận `413`
 **dạng HTML** từ nginx, không phải JSON.
 
 ---
@@ -196,7 +197,7 @@ Không cần đăng nhập. Trang công khai chỉ gọi `GET /api/content`.
 Máy chủ còn sống không, đang ở bản nội dung nào, phiên bản API nào.
 
 ```json
-{"ok":true,"rev":60,"updatedAt":"2026-10-20T08:39:00.871Z","api":7}
+{"ok":true,"rev":88,"updatedAt":"2026-10-27T08:49:55.625Z","api":12}
 ```
 
 | Trường | Ý nghĩa |
@@ -375,8 +376,10 @@ Cặp hai ngôn ngữ của một section, kèm `rev` để gửi lại khi lưu
 | `vi`, `en` | Dữ liệu thô của section — **không** có khoá `image` (ảnh nằm ở `images`) |
 | `rev` | Tổng `rev` của hai dòng VI + EN. **Mỗi lượt lưu tăng 2** |
 | `images` | `null` nếu section không mang ảnh. Ngược lại là map `idMục → ảnh`; `hero` dùng khoá `"hero"`. `note` là ghi chú nguồn (`~` ảnh gần đúng, `↺` ảnh dùng lại) |
+| `videos` | *(từ API 10)* Chỉ có ở `activities`: map `idMục → { mediaId, url, width, height, duration, note }` — video nền banner Cuộc thi. Section khác không có khoá này |
 
 Section có ảnh: `hero`, `courses`, `facilities`, `equipment`, `projects`, `activities`, `partners`, `team`.
+Section có video: `activities`.
 
 Section không tồn tại: `404 {"error":"khong co section nay","section":"khong-co"}`.
 
@@ -390,7 +393,8 @@ Ghi **cả hai ngôn ngữ** của một section, tuỳ chọn thay ảnh, trong
   "en":  { …toàn bộ section tiếng Anh, CÙNG CẤU TRÚC… },
   "rev": 10,
   "note": "sửa chức danh",
-  "images": { "tuan": 60, "hien": null }
+  "images": { "tuan": 60, "hien": null },
+  "videos": { "drone-soccer": 81 }
 }
 ```
 
@@ -400,19 +404,21 @@ Ghi **cả hai ngôn ngữ** của một section, tuỳ chọn thay ảnh, trong
 | `rev` | nên có | `rev` nhận từ `GET`. **Bỏ trống thì KHÔNG kiểm xung đột** — lượt lưu đè lên bất cứ thay đổi nào của người khác |
 | `note` | | Ghi chú lịch sử, cắt ở 200 ký tự |
 | `images` | | `{ idMục: idẢnh }` để gắn/thay, `{ idMục: null }` để gỡ. Mục không nhắc tới giữ nguyên ảnh. Chỉ dùng cho section có ảnh |
+| `videos` | | *(từ API 10)* Như `images`, cho video nền — chỉ `activities`. Media phải là **video** (`mime` `video/…`); khe ảnh cũng chỉ nhận ảnh |
 
 **Máy chủ xử lý theo đúng thứ tự**, dừng ở bước hỏng đầu tiên:
 
 1. Section có schema không → `400`
-2. `images` là object → `400`
+2. `images` / `videos` là object → `400`
 3. `vi` và `en` đúng schema → `422` dạng *schema*
 4. `vi` và `en` cùng cấu trúc khoá → `422` dạng *đối xứng*
-5. Gửi `images` cho section không mang ảnh → `400`
+5. Gửi `images` cho section không mang ảnh, hay `videos` cho section không mang video → `400`
 6. `rev` khớp → `409`
 6. Chép bản hiện tại (kèm ảnh) sang lịch sử
-7. Ghi hai ngôn ngữ, áp `images` → `422` nếu mục/ảnh không tồn tại
-8. **Mục vừa bị xoá trong lượt này** thì gỡ ảnh của nó (ảnh "mồ côi" có sẵn từ trước
-   được giữ nguyên, có chủ đích)
+7. Ghi hai ngôn ngữ, áp `images` và `videos` → `422` nếu mục/media không tồn tại, hoặc
+   gắn video vào khe ảnh (và ngược lại)
+8. **Mục vừa bị xoá trong lượt này** thì gỡ ảnh và video của nó (ảnh "mồ côi" có sẵn từ
+   trước được giữ nguyên, có chủ đích)
 9. Ráp lại toàn trang, chạy bộ ràng buộc, so với **kết quả chạy trước khi ghi** — chỉ
    **lỗi mới** mới chặn (`422` dạng *ràng buộc*, rollback toàn bộ), chỉ **cảnh báo
    mới** mới trả về
@@ -433,8 +439,9 @@ cảnh báo chỉ để hiện cho người sửa.
 {"error":"section nay chua mo cho sua","section":"khong-co","editable":["nav","hero",…]}
 
 // 400
-{"error":"images phai la object { idMuc: idAnh | null }"}
+{"error":"images phai la object { idMuc: idMedia | null }"}
 {"error":"section nay khong co anh","section":"finalCta"}
+{"error":"section nay khong co video","section":"team"}
 
 // 409 — người khác (hoặc tab khác) đã lưu trước. GET lại rồi áp thay đổi lên bản mới.
 {"error":"noi dung da bi nguoi khac sua","expectedRev":1,"currentRev":2}
@@ -455,9 +462,11 @@ cảnh báo chỉ để hiện cho người sửa.
                "vi activities.items[drone-soccer]: kind 'khong-co' khong khoi nao nhan -> roi vao khoi cuoi, sai cho",
                …]}
 
-// 422 — ảnh
+// 422 — ảnh / video
 {"error":"gan anh cho muc khong ton tai","itemId":"x"}
 {"error":"anh khong co trong thu vien","itemId":"tuan","mediaId":999}
+{"error":"media #1 khong phai video","itemId":"drone-soccer","mediaId":1}
+{"error":"media #81 khong phai anh","itemId":"drone-soccer","mediaId":81}
 ```
 
 ### `GET /api/admin/history/:section`
@@ -495,6 +504,10 @@ Khôi phục là một lượt lưu bình thường: tự tạo dòng lịch s�
 
 Ảnh đã bị xoá khỏi thư viện kể từ lúc đó thì mục đó để trống ảnh và có một dòng trong
 `warnings`. Bản lịch sử có từ trước migration 002 không lưu ảnh → giữ ảnh hiện tại.
+
+Video của `activities` cũng quay về theo bản lịch sử *(từ API 10)*. Bản lịch sử của
+`activities` lưu trước API 10 (chỉ có ảnh) thì **giữ video hiện tại** — lúc đó chưa có
+video nào để quay về.
 
 ---
 
@@ -544,13 +557,16 @@ Trên mọi phần tử mảng có `id`, các trường sau không được dị
 `items[]`: `{ id, title: chữ(80), description: chữ(400) }`.
 `id` của mục tra icon; id không có icon thì component dùng icon theo vị trí.
 
+- `missionTitle`: chữ(80) — tiêu đề khối Sứ mệnh (h3, ngang cấp Tầm nhìn / Giá trị cốt lõi). *(từ API 11)*
 - `vision`: `{ title: chữ(80), body: chữ(400) }` — khối Tầm nhìn. *(từ API 4)*
-- `valuesTitle`: chữ(80) — tiêu đề cột "Giá trị cốt lõi". *(từ API 6)*
-- `values[]` (≥ 1): `{ id, title: chữ(40) }` — danh sách giá trị đánh số 01, 02…, chỉ tên ngắn. *(từ API 4)*
+- `visionHighlights[]` (≤ 4, có thể vắng): `{ id, label: chữ(60) }` — điểm nhấn dưới câu tầm nhìn. *(từ API 11)*
+- `valuesTitle`: chữ(80) — tiêu đề khối "Giá trị cốt lõi". *(từ API 6)*
+- `values[]` (≥ 1): `{ id, title: chữ(40), description: chữ(300) }` — accordion đánh số 01, 02…; `description` hiện khi bấm mở. *(từ API 4; `description` từ API 11)*
 
 Database seed trước ngày có các khoá này nhận chúng qua migration
-`005_pillars_vision_values.sql` (`vision`, `values`) và `007_pillars_values_title.sql`
-(`valuesTitle`). Component vẫn chịu được khi chúng vắng (bản lịch
+`005_pillars_vision_values.sql` (`vision`, `values`), `007_pillars_values_title.sql`
+(`valuesTitle`) và `013_about_restructure.sql` (`missionTitle`, `visionHighlights`,
+`values[].description`, đổi `title` cũ "Sứ mệnh của EIU FabLab" thành "Về EIU FabLab"). Component vẫn chịu được khi chúng vắng (bản lịch
 sử cũ khôi phục lại bỏ qua schema): thiếu thì bỏ hẳn khối, không sập trang.
 
 ### stats
@@ -620,7 +636,8 @@ Popup thông số từng máy. Mỗi máy hiện thành nút trong ô `facilitie
 ### projects *(có ảnh)* *(từ API 7)*
 
 `eyebrow` chữ(80) · `title` chữ(120) · `description` chữ(400) · `imageAlt` chữ(200),
-`{title}` thay bằng tên dự án · `statuses`: record `id → chữ(40)` (nhãn trạng thái) ·
+`{title}` thay bằng tên dự án · `previous`, `next`, `goTo` chữ(80) — nhãn trợ năng của
+vòng xoay 3D *(từ API 8)* · `statuses`: record `id → chữ(40)` (nhãn trạng thái) ·
 `items[]` (≥ 1): `{ id, title: chữ(120), description: chữ(400), status? }`.
 
 - `status` **tuỳ chọn** và là trường dùng chung. Vắng = card không hiện nhãn; đó là
@@ -628,7 +645,8 @@ Popup thông số từng máy. Mỗi máy hiện thành nút trong ô `facilitie
   là một khoá của `statuses` (ràng buộc toàn trang), và **không được là chuỗi rỗng** —
   gửi `"status": ""` là `422`; muốn gỡ thì bỏ hẳn khoá.
 - Database seed trước ngày có section này nhận nó qua migration
-  `008_projects_section.sql` (kèm mục "Dự án" trong menu FabLab và footer); ảnh qua
+  `008_projects_section.sql` (kèm mục "Dự án" trong menu FabLab và footer) và
+  `009_projects_carousel_labels.sql` (ba nhãn trợ năng); ảnh qua
   `npm run seed:images`.
 
 ### partners *(có ảnh — không bắt buộc, thiếu thì hiện tên)*
@@ -636,7 +654,7 @@ Popup thông số từng máy. Mỗi máy hiện thành nút trong ô `facilitie
 `eyebrow` chữ(80) · `title` chữ(120) · `description` chữ(400) · `logoAlt` chữ(200) ·
 `items[]`: `{ id, name: chữ(160) }`.
 
-### activities *(có ảnh)*
+### activities *(có ảnh, có video)*
 
 | Trường | Kiểu |
 |---|---|
@@ -645,8 +663,9 @@ Popup thông số từng máy. Mỗi máy hiện thành nút trong ô `facilitie
 | `description` | chữ(400) |
 | `imageAlt` | chữ(200) |
 | `previous`, `next`, `goTo` | chữ(60) |
+| `pause`, `play` | chữ(60) — nút dừng/phát của banner tự chạy *(từ API 9)* |
 | `kinds` | object `{ idLoai: chữ(40) }` — nhãn của từng loại |
-| `groups[]` (≥ 1) | `{ id, title: chữ(120), description: chữ(400), kinds: [idLoai] }` |
+| `groups[]` (≥ 1) | `{ id, title: chữ(120), description: chữ(400), kinds: [idLoai], videoBanner?: boolean }` |
 | `items[]` | `{ id, title: chữ(200), description: chữ(600), date, kind }` |
 
 - `date`: chuỗi ≤ 60 ký tự, **được rỗng** (vài hoạt động thật không có ngày).
@@ -654,6 +673,13 @@ Popup thông số từng máy. Mỗi máy hiện thành nút trong ô `facilitie
   trong `kinds` của một khối nào đó.
 - `groups[].id` sinh ra neo (`#competitions`, `#events`) mà menu trỏ tới — xoá khối đang
   được menu dùng là `422`.
+- `groups[].videoBanner` *(từ API 10)*: khối hiện dạng **banner video tràn màn hình**
+  (Cuộc thi). Trường dùng chung — phải bằng nhau giữa VI và EN. Vắng = banner ảnh.
+- Video nền của từng hoạt động **không nằm trong JSON section** — gắn qua trường `videos`
+  của `PUT`, y như ảnh. Trang công khai nhận nó thành `items[].video:
+  { url, width, height, duration }` (chỉ trên mục có video).
+- Database đã seed nhận `pause`/`play` qua migration `010_activities_banner_labels.sql`,
+  cờ `videoBanner` của khối `competitions` qua `012_competitions_video_banner.sql`.
 
 ### team *(có ảnh — thiếu thì hiện chữ cái đầu)*
 
@@ -674,7 +700,8 @@ Popup thông số từng máy. Mỗi máy hiện thành nút trong ô `facilitie
 
 ### register
 
-Chữ của form đăng ký khóa học. Toàn bộ là chữ dịch, không có mảng.
+Chữ của form đăng ký. Toàn bộ là chữ dịch, không có mảng. Các khoá cấp một bên dưới
+thuộc tab **Khóa học**; tab **Thành viên FabLab** nằm ở `member` *(từ API 12)*.
 
 | Trường | Kiểu |
 |---|---|
@@ -687,12 +714,19 @@ Chữ của form đăng ký khóa học. Toàn bộ là chữ dịch, không có
 | `consent` | chữ(300) |
 | `privacy` | chữ(800) |
 | `submit`, `submitting` | chữ(40) |
-| `errors` | `{ required, phone, email, consent, tooLong: chữ(120), rateLimited, paused, network: chữ(200) }` |
-| `success` | `{ title: chữ(80), message: chữ(300), close: chữ(30) }` |
+| `errors` | `{ required, phone, email, consent, tooLong, birthYear, role: chữ(120), rateLimited, paused, network, age: chữ(200) }` — `age`, `birthYear`, `role` từ API 12 |
+| `success` | `{ title: chữ(80), message: chữ(300), close: chữ(30) }` — dùng chung hai tab |
+| `tabs` | `{ label: chữ(60), member, course: chữ(40) }` — nhãn nhóm tab (trình đọc màn hình) và hai tab *(từ API 12)* |
+| `member` | `{ description: chữ(300), ageNote: chữ(200), heading, fullName, birthYear, role, roleNone, organization, interests: chữ(60), birthYearHint: chữ(80), notePlaceholder: chữ(120), consent: chữ(300), privacy: chữ(800) }` *(từ API 12)* |
+| `memberRoles` | Object **đúng 5 khoá cố định** `eiu-student`, `eiu-staff`, `student`, `worker`, `other` → chữ(60) *(từ API 12)* |
+| `memberInterests` | Object **đúng 6 khoá cố định** `3d-printing`, `laser`, `cnc`, `electronics`, `robotics`, `other` → chữ(60) *(từ API 12)* |
 
 Token `{email}` / `{phone}` được thay bằng `footer.contact.*`, `{count}` bằng số mục lỗi.
 Section này được thêm sau ngày seed, nên database cũ nhận nó qua migration
-[004_register_content.sql](../server/db/migrations/004_register_content.sql).
+[004_register_content.sql](../server/db/migrations/004_register_content.sql); phần tab
+Thành viên qua [015_register_member_content.sql](../server/db/migrations/015_register_member_content.sql)
+(đổi `title` "Đăng ký khóa học" → "Đăng ký" chỉ khi còn nguyên văn cũ). Bảng
+`registration` có cột `kind` từ [014_registration_kind.sql](../server/db/migrations/014_registration_kind.sql).
 
 ### footer
 
@@ -729,35 +763,39 @@ thấy. Danh sách đầy đủ ở [invariants.js](../server/content/invariants
 
 ## 8. Thư viện ảnh
 
+Thư viện chứa cả **video nền** (MP4) từ API 10 — cùng bảng, cùng route, phân biệt bằng
+`kind`.
+
 ### `GET /api/admin/media`
 
-Mọi ảnh, mới nhất trước, kèm nơi đang dùng.
+Mọi ảnh và video, mới nhất trước, kèm nơi đang dùng.
 
 ```json
 {"items":[
   {"id":60,"url":"/media/anh-thu.b31f757e.jpg","filename":"anh-thu.b31f757e.jpg",
-   "mime":"image/jpeg","bytes":4077,"width":1600,"height":800,"origin":"upload",
+   "mime":"image/jpeg","kind":"image","duration":null,"bytes":4077,"width":1600,"height":800,"origin":"upload",
    "sourceNote":"anh thu nghiem","createdAt":"2026-09-15T04:33:25.188Z",
    "usages":[{"scope":"team","itemId":"tuan","section":"team","label":"Đỗ Nguyễn Anh Tuấn"}]},
   …
 ]}
 ```
 
-`origin`: `seed` (nạp lúc `npm run seed`) hoặc `upload`. `usages` rỗng = ảnh không ai
-dùng, xoá được. `scope` `singleton` với `itemId` `logo` là logo trang, không thuộc
+`origin`: `seed` (nạp lúc `npm run seed`) hoặc `upload`. `kind`: `image` hoặc `video`;
+`duration` (giây) chỉ video có. `usages` rỗng = không ai dùng, xoá được. Video đang
+dùng có `scope` `activity-video`. `scope` `singleton` với `itemId` `logo` là logo trang, không thuộc
 section nào.
 
 ### `POST /api/admin/media`
 
-Tải **một** ảnh. Thân là **byte thô của file**, không phải `multipart/form-data`.
+Tải **một** ảnh hoặc video. Thân là **byte thô của file**, không phải `multipart/form-data`.
 
 | Header | Giá trị |
 |---|---|
-| `Content-Type` | `image/jpeg`, `image/png` hoặc `image/webp` — phải đúng, máy chủ không đoán |
+| `Content-Type` | `image/jpeg`, `image/png`, `image/webp`, hoặc `video/mp4` *(từ API 10)* — phải đúng, máy chủ không đoán |
 | `x-filename` | Tên file gốc, **đã `encodeURIComponent`** (chỉ để đặt tên file dễ đọc) |
 | `x-csrf-token`, `Origin` | như mọi route ghi |
 
-Tối đa **15 MB**, **50 triệu điểm ảnh**.
+Ảnh tối đa **15 MB**, **50 triệu điểm ảnh**. Video tối đa **40 MB**.
 
 ```bash
 curl -s -b $JAR -H "$O" -H "x-csrf-token: $CSRF" \
@@ -774,6 +812,16 @@ Máy chủ xử lý trước khi lưu:
 3. **Xoá toàn bộ metadata** — EXIF, toạ độ GPS. Đã kiểm: ảnh gốc có EXIF, file lưu không còn.
 4. PNG, và WebP có kênh trong suốt → **PNG**; còn lại → **JPEG** chất lượng 82.
 5. Băm sha256 **bản đã xử lý**; tên file `<ten-khong-dau>.<8 ky tu bam>.<jpg|png>`.
+
+**Video (`video/mp4`)** — máy chủ không có ffmpeg nên **không chuyển mã, không nén**:
+
+1. Chỉ nhận MP4 có hình **H.264** (`avc1`/`avc3`) — định dạng duy nhất mọi trình duyệt
+   đều phát. HEVC (mặc định của iPhone) và `.mov` bị từ chối kèm hướng dẫn xuất lại.
+2. **Xoá metadata vị trí**: hộp `udta`, `meta`, `uuid` ở cấp file, trong `moov` và trong
+   từng `trak` được đổi thành `free` và ghi đè 0 — kích thước và mọi offset giữ nguyên
+   nên video vẫn phát. Đã kiểm: file có `©xyz` (GPS kiểu Android) → file lưu không còn.
+3. Đọc kích thước hiển thị (đã tính xoay của video quay dọc) và `duration`.
+4. Băm **sau** bước 2; tên file `<ten-khong-dau>.<8 ky tu bam>.mp4`.
 
 **201** — ảnh mới:
 
@@ -792,10 +840,11 @@ tạo bản sao.
 |---|---|
 | `415` | `{"error":"chi nhan anh JPEG, PNG, WebP (dat Content-Type dung kieu anh)"}` — sai `Content-Type` hoặc thân rỗng |
 | `415` | `{"error":"file khong phai anh hop le, hoac qua nhieu diem anh"}` — đúng header nhưng byte không phải ảnh |
-| `500` | `{"error":"loi may chu"}` — file lớn hơn 15 MB (xem [hạn chế](#3-mã-lỗi-chung)) |
+| `415` | `{"error":"khong phai file MP4 hop le"}` / `{"error":"ma hinh 'hvc1' khong phat duoc tren moi trinh duyet — xuat lai thanh MP4 H.264 (video iPhone mac dinh la HEVC)"}` / `{"error":"file .mov (QuickTime) — xuat lai thanh MP4 H.264 truoc khi tai len"}` |
+| `413` | Ảnh 15–40 MB: `{"error":"anh qua lon (toi da 15 MB)"}`; trên 40 MB: `{"error":"entity.too.large"}` (xem [mã lỗi chung](#3-mã-lỗi-chung)) |
 
-Tải lên chỉ thêm ảnh vào thư viện. Muốn nó hiện trên trang thì gắn qua trường `images`
-của [`PUT` section](#put-apiadmincontentsection).
+Tải lên chỉ thêm vào thư viện. Muốn nó hiện trên trang thì gắn qua trường `images`
+(hoặc `videos`) của [`PUT` section](#put-apiadmincontentsection).
 
 ### `PATCH /api/admin/media/:id`
 
@@ -1032,10 +1081,12 @@ curl -s -b $JAR -H "$O" -X POST $D/api/auth/logout
 
 ---
 
-## 12. Đăng ký khóa học
+## 12. Đăng ký (khóa học và thành viên FabLab)
 
 Form đăng ký trên trang công khai gửi vào `POST /api/registrations`; dashboard đọc và
-xử lý qua `/api/admin/registrations`. Đây là **dữ liệu cá nhân** (có trẻ em) — đọc mục
+xử lý qua `/api/admin/registrations`. Từ API 12 có **hai loại**, phân biệt bằng `kind`:
+`course` (phụ huynh đăng ký khóa học cho con) và `member` (người từ 16 tuổi tự đăng ký
+thành viên FabLab). Đây là **dữ liệu cá nhân** (có trẻ em) — đọc mục
 [Dữ liệu cá nhân](#dữ-liệu-cá-nhân) trước khi làm thêm gì với nó.
 
 > **Không route nào ở đây đổi `rev` nội dung.** Đăng ký nằm ở bảng `registration`,
@@ -1080,6 +1131,45 @@ gốc request vẫn áp: phải có `Origin` thuộc danh sách cho phép hoặc
 | `website` | **Ô bẫy bot** — người thật để trống |
 | `elapsed` | Số ms từ lúc mở form tới lúc gửi |
 | `ref`, `width` | Chỉ phục vụ thống kê; `ref` chỉ giữ tên host |
+| `kind` | `course` (mặc định khi vắng — bundle cũ trong cache vẫn gửi được) \| `member` *(từ API 12)* |
+
+**Thân của `kind: "member"`** *(từ API 12)* — không có `course` / `studentName` /
+`studentGrade` / `school` / `parentName`; gửi kèm là `422 invalid`:
+
+```json
+{
+  "kind": "member",
+  "fullName": "Trần Thị Cúc",
+  "birthYear": "2003",
+  "phone": "0911 222 333",
+  "email": "cuc@example.com",
+  "role": "eiu-student",
+  "organization": "EIU",
+  "interests": ["3d-printing", "laser"],
+  "note": "",
+  "consent": true, "locale": "vi", "source": "nav", "website": "", "elapsed": 42000
+}
+```
+
+| Trường | Luật |
+|---|---|
+| `fullName` | Bắt buộc, ≤ 120 |
+| `birthYear` | Bắt buộc, 4 chữ số, 1900 → năm nay (mã `birthYear`); chưa đủ **16 tuổi** tính theo năm → mã `age` |
+| `phone` | Như trên |
+| `email` | **Bắt buộc** (khác `course`) — mã `required` / `email` |
+| `role` | `eiu-student` \| `eiu-staff` \| `student` \| `worker` \| `other` — sai là mã `role` |
+| `organization` | Không bắt buộc, ≤ 160 |
+| `interests` | Mảng, không trùng, mỗi phần tử thuộc `3d-printing` \| `laser` \| `cnc` \| `electronics` \| `robotics` \| `other` — sai là mã `interests` (đường dẫn gom về `interests`, không có chỉ số) |
+
+Id của `role` / `interests` **cố định trong mã** (`MEMBER_ROLES` / `MEMBER_INTERESTS` ở
+`server/schema/registration.js`); nhãn hiển thị nằm ở `register.memberRoles` /
+`register.memberInterests` và sửa được từ dashboard.
+
+Thành viên lưu vào cùng bảng `registration` với `kind = 'member'`: `student_name` = họ
+tên, `school` = trường / đơn vị, `parent_name` / `course_id` = NULL, cộng `birth_year`,
+`member_role`, `interests` (JSON). Câu đồng ý lưu làm bằng chứng lấy từ
+`register.member.consent` + `register.member.privacy`. Sự kiện `register_submit` mang
+`target = "member"`.
 
 Máy chủ **tự tra** tên khóa và nguyên văn câu đồng ý kèm thông báo quyền riêng tư (đã
 thay `{email}`) từ nội dung hiện hành — không nhận hai thứ đó từ client.
@@ -1095,7 +1185,8 @@ ratelimit-policy: 20;w=86400
 
 **Sai dữ liệu — `422`.** `code` là mã, không phải câu chữ: trang tự dịch bằng
 `register.errors.<code>`. Mã có thể gặp: `required`, `tooLong`, `phone`, `email`,
-`consent`, `course`, và `invalid` (khoá thừa, sai kiểu).
+`consent`, `course`, `age`, `birthYear`, `role`, `interests` và `invalid` (khoá thừa,
+sai kiểu).
 
 ```json
 {"error":"du lieu khong hop le","issues":[{"path":"studentName","code":"required"},{"path":"phone","code":"phone"},{"path":"consent","code":"consent"}]}
@@ -1118,7 +1209,7 @@ sau ghi đè header của bộ trước.
 | `website` khác rỗng | Ô bẫy bị điền |
 | `elapsed` < 3000 | Nhanh hơn người thật. Form của trang tự chờ cho đủ trước khi gửi |
 | User-Agent rỗng hoặc giống bot (`bot`, `curl`, `python`, `headless`…) | |
-| Trùng `phone` + `course` trong 10 phút | Bấm đúp / gửi lại sau lỗi mạng — giữ một dòng |
+| Trùng `phone` + `kind` + `course` trong 10 phút | Bấm đúp / gửi lại sau lỗi mạng — giữ một dòng |
 
 Lượt lưu thật cũng ghi sự kiện thống kê `register_submit` trong cùng giao dịch (trừ khi
 trình duyệt gửi `DNT: 1` hoặc `Sec-GPC: 1`).
@@ -1129,8 +1220,9 @@ Danh sách có lọc, **phân trang ở máy chủ**, mới nhất trước.
 
 | Tham số | Ý nghĩa |
 |---|---|
-| `status` | `new` \| `contacted` \| `enrolled` \| `cancelled` |
-| `course` | Id khóa học; `-` = chưa chọn khóa |
+| `status` | `new` \| `contacted` \| `enrolled` \| `cancelled` (với thành viên, `enrolled` hiển thị là "Đã kết nạp") |
+| `kind` | `course` \| `member` *(từ API 12)* |
+| `course` | Id khóa học; `-` = đăng ký **khóa học** chưa chọn khóa (không gồm thành viên) |
 | `from`, `to` | `YYYY-MM-DD` theo **ngày Việt Nam** (UTC+7), gồm cả hai đầu |
 | `q` | Tìm trong tên học viên, tên phụ huynh, điện thoại, email, trường. Gõ `0912 345` vẫn khớp số liền |
 | `page` | Từ 1 |
@@ -1144,6 +1236,7 @@ Danh sách có lọc, **phân trang ở máy chủ**, mới nhất trước.
     "updatedAt": "2026-09-18T04:47:50.335Z",
     "status": "new",
     "statusAt": null,
+    "kind": "course",
     "courseId": "robotic-arm",
     "courseTitle": "Cánh tay Robot",
     "locale": "vi",
@@ -1155,18 +1248,24 @@ Danh sách có lọc, **phân trang ở máy chủ**, mới nhất trước.
     "email": "binh@example.com",
     "note": "Muốn học cuối tuần",
     "adminNote": null,
+    "birthYear": null,
+    "memberRole": null,
+    "interests": [],
     "source": "course-modal",
     "referrerHost": "facebook.com",
     "consentAt": "2026-09-18T04:47:50.335Z",
     "consentText": "Tôi đồng ý để EIU FabLab xử lý các thông tin trên nhằm liên hệ tư vấn khóa học.\n\nThông tin chỉ dùng để tư vấn và xếp lớp, do EIU FabLab (Đại học Quốc tế Miền Đông) quản lý và lưu tối đa 12 tháng. Bạn có thể rút lại đồng ý hoặc yêu cầu xoá dữ liệu qua fablab@eiu.edu.vn (Nghị định 13/2023/NĐ-CP).",
-    "courseOnPage": true
+    "courseOnPage": true,
+    "memberRoleLabel": null,
+    "interestLabels": []
   }],
   "total": 1,
   "page": 1,
   "pageSize": 25,
   "counts": {
     "byStatus": {"new":1,"contacted":0,"enrolled":0,"cancelled":0,"all":1},
-    "byCourse": [{"courseId":"robotic-arm","title":"Cánh tay Robot","total":1,"new":1}]
+    "byCourse": [{"courseId":"robotic-arm","title":"Cánh tay Robot","total":1,"new":1}],
+    "byKind": {"course":1,"member":0}
   }
 }
 ```
@@ -1176,7 +1275,10 @@ Danh sách có lọc, **phân trang ở máy chủ**, mới nhất trước.
 | `courseTitle` | Tên khóa **hiện tại** trên trang; khóa đã bị xoá thì là tên chụp lúc gửi |
 | `courseOnPage` | `false` = khóa không còn trên trang; `null` = không chọn khóa |
 | `counts.byStatus` | Số theo trạng thái với **mọi bộ lọc trừ `status`** — để tab nào cũng hiện số thật |
-| `counts.byCourse` | Số theo khóa trên **toàn bộ** đăng ký, không theo bộ lọc. `new` = chưa xử lý |
+| `counts.byCourse` | Số theo khóa trên **toàn bộ đăng ký khóa học** (không gồm thành viên), không theo bộ lọc. `new` = chưa xử lý |
+| `counts.byKind` | Số theo loại trên toàn bộ đăng ký *(từ API 12)* |
+| `kind`, `birthYear`, `memberRole`, `interests` | *(từ API 12)* Ba trường sau chỉ có giá trị với `kind: "member"`; `interests` luôn là mảng |
+| `memberRoleLabel`, `interestLabels` | Nhãn tiếng Việt hiện tại của đối tượng / lĩnh vực; id lạ thì trả chính id |
 
 ### `GET /api/admin/registrations/export`
 
@@ -1186,10 +1288,12 @@ Cùng tham số lọc như danh sách (bỏ `page`/`pageSize`), trả **CSV** đ
 content-type: text/csv; charset=utf-8
 content-disposition: attachment; filename="dang-ky-20260918.csv"
 
-Mã,Thời gian gửi,Trạng thái,Khóa học,Mã khóa,Học viên,Năm sinh / lớp,Trường,Phụ huynh,Điện thoại,Email,Ghi chú,Ghi chú quản trị,Nguồn,Ngôn ngữ,Đồng ý lúc
-1,2026-09-18 11:47,Đã liên hệ,Cánh tay Robot,robotic-arm,Nguyễn Minh An,lớp 7,THCS Mẫu,Nguyễn Văn Bình,="0912345678",binh@example.com,Muốn học cuối tuần,"Đã gọi, hẹn học thử thứ 7",Popup khóa học,vi,2026-09-18 11:47
+Mã,Thời gian gửi,Loại,Trạng thái,Khóa học,Mã khóa,Họ tên,Năm sinh / lớp,Trường / đơn vị,Phụ huynh,Đối tượng,Lĩnh vực quan tâm,Điện thoại,Email,Ghi chú,Ghi chú quản trị,Nguồn,Ngôn ngữ,Đồng ý lúc
+1,2026-09-18 11:47,Khóa học,Đã liên hệ,Cánh tay Robot,robotic-arm,Nguyễn Minh An,lớp 7,THCS Mẫu,Nguyễn Văn Bình,,,="0912345678",binh@example.com,Muốn học cuối tuần,"Đã gọi, hẹn học thử thứ 7",Popup khóa học,vi,2026-09-18 11:47
+3,2026-10-27 16:25,Thành viên FabLab,Mới,,,Trần Thị Cúc,2003,EIU,,Sinh viên EIU,In 3D; Cắt khắc laser,="0911222333",cuc@example.com,,,Thanh menu,vi,2026-10-27 16:25
 ```
 
+- Cột "Năm sinh / lớp" là năm sinh với thành viên, năm sinh hoặc lớp với học viên.
 - Bắt đầu bằng **BOM UTF-8** (`EF BB BF`) — thiếu nó Excel đọc tiếng Việt thành ký tự rác.
 - Giờ là giờ Việt Nam. Xuống dòng CRLF, trích dẫn theo RFC 4180.
 - Số điện thoại bọc `="…"` để Excel không cắt số 0 đầu. An toàn vì máy chủ đã chuẩn hoá

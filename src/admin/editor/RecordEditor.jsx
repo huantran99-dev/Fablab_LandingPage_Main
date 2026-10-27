@@ -10,6 +10,9 @@ import { omitKey } from './model'
 /**
  * Bảng khoá → nhãn (cấp độ khóa học, loại hoạt động). Dữ liệu là object chứ không
  * phải mảng, nên khoá chính là id: thêm/xoá khoá áp lên cả hai ngôn ngữ, nhãn thì dịch.
+ *
+ * `record.fixed`: khoá cố định trong mã (vd. đối tượng / lĩnh vực của form thành viên —
+ * máy chủ không nhận id lạ), chỉ sửa nhãn, không có nút thêm/xoá.
  */
 export function RecordEditor({ record, draft, onChangeDraft, issues }) {
   const viMap = getPath(draft.vi, record.path) ?? {}
@@ -90,7 +93,9 @@ export function RecordEditor({ record, draft, onChangeDraft, issues }) {
                   </td>
                 ))}
                 <td className="py-2 pr-5 text-right align-top sm:pr-6">
-                  <IconButton icon="trash" variant="ghost-danger" label={`Xoá ${record.itemName} ${id}`} onClick={() => setPendingDelete(id)} />
+                  {!record.fixed && (
+                    <IconButton icon="trash" variant="ghost-danger" label={`Xoá ${record.itemName} ${id}`} onClick={() => setPendingDelete(id)} />
+                  )}
                 </td>
               </tr>
             ))}
@@ -98,6 +103,7 @@ export function RecordEditor({ record, draft, onChangeDraft, issues }) {
         </table>
       </div>
 
+      {!record.fixed && (
       <div className="border-t border-gray-100 px-5 py-4 sm:px-6 dark:border-gray-800">
         <div className="flex flex-wrap items-start gap-3">
           <div className="min-w-0 flex-1 basis-48">
@@ -123,6 +129,7 @@ export function RecordEditor({ record, draft, onChangeDraft, issues }) {
         </div>
         <FieldHelp>Xoá một {record.itemName} đang có mục dùng tới sẽ bị máy chủ từ chối khi lưu.</FieldHelp>
       </div>
+      )}
 
       <ConfirmDialog
         open={Boolean(pendingDelete)}

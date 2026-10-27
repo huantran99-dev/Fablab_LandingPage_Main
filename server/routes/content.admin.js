@@ -51,11 +51,13 @@ adminContentRouter.put('/content/:section', requireCsrf, (req, res) => {
     return
   }
 
-  const { vi, en, rev, note, images } = req.body ?? {}
+  const { vi, en, rev, note, images, videos } = req.body ?? {}
 
-  if (images !== undefined && (typeof images !== 'object' || images === null || Array.isArray(images))) {
-    res.status(400).json({ error: 'images phai la object { idMuc: idAnh | null }' })
-    return
+  for (const [name, value] of [['images', images], ['videos', videos]]) {
+    if (value !== undefined && (typeof value !== 'object' || value === null || Array.isArray(value))) {
+      res.status(400).json({ error: `${name} phai la object { idMuc: idMedia | null }` })
+      return
+    }
   }
 
   const parsed = { vi: schema.safeParse(vi), en: schema.safeParse(en) }
@@ -74,6 +76,7 @@ adminContentRouter.put('/content/:section', requireCsrf, (req, res) => {
       vi: parsed.vi.data,
       en: parsed.en.data,
       images,
+      videos,
       expectedRev: typeof rev === 'number' ? rev : undefined,
       note: typeof note === 'string' ? note.slice(0, 200) : null,
     })

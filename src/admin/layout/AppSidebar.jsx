@@ -8,7 +8,7 @@ const SYSTEM_LINKS = [
 ]
 
 const ENROLLMENT_LINKS = [
-  { name: 'registrations', href: '#/registrations', label: 'Đăng ký khóa học', icon: 'inbox' },
+  { name: 'registrations', href: '#/registrations', label: 'Đăng ký', icon: 'inbox' },
   { name: 'stats', href: '#/stats', label: 'Thống kê truy cập', icon: 'chart' },
 ]
 

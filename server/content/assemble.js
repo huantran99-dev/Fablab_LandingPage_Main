@@ -5,7 +5,7 @@
  * Ba nguồn ghép lại:
  *   `section`       -> 12 khối nội dung của mỗi ngôn ngữ
  *   `course_detail` -> nhánh `courses.details`, vốn để riêng vì bất đối xứng
- *   `binding`+`media` -> trường `image` gắn vào từng mục
+ *   `binding`+`media` -> trường `image` (và `video` cho Cuộc thi) gắn vào từng mục
  */
 import { getDb } from '../db/index.js'
 
@@ -29,6 +29,15 @@ const BINDING_TARGETS = {
 }
 
 /**
+ * Video nền: cùng bảng `binding`, scope RIÊNG, gắn thành trường `video` (không phải
+ * `image`). Scope riêng chứ không phải cột mới: khoá `(scope, item_id)` giữ nguyên nghĩa
+ * "một mục một media cho mỗi khe", và mọi đường ghi/lịch sử/dọn dẹp đã viết cho scope.
+ */
+const VIDEO_TARGETS = {
+  'activity-video': ['activities', 'items'],
+}
+
+/**
  * Chiều ngược của `BINDING_TARGETS`, cho đường ghi: lưu section nào thì được gắn
  * ảnh cho những mục nào.
  *
@@ -41,6 +50,11 @@ export const SECTION_IMAGES = {
   ),
   hero: { scope: 'singleton', arrayKey: null, itemIds: ['hero'] },
 }
+
+/** Như `SECTION_IMAGES`, cho video: lưu section nào thì được gắn video cho mục nào. */
+export const SECTION_VIDEOS = Object.fromEntries(
+  Object.entries(VIDEO_TARGETS).map(([scope, [section, arrayKey]]) => [section, { scope, arrayKey }]),
+)
 
 export function mediaUrl(filename) {
   return `/media/${filename}`
@@ -70,7 +84,7 @@ function readDetails(db) {
 function readBindings(db) {
   const rows = db
     .prepare(
-      `SELECT b.scope, b.item_id, m.filename, m.width, m.height
+      `SELECT b.scope, b.item_id, m.filename, m.width, m.height, m.duration
          FROM binding b JOIN media m ON m.id = b.media_id`,
     )
     .all()
@@ -78,11 +92,10 @@ function readBindings(db) {
   const byScope = new Map()
   for (const row of rows) {
     if (!byScope.has(row.scope)) byScope.set(row.scope, new Map())
-    byScope.get(row.scope).set(row.item_id, {
-      url: mediaUrl(row.filename),
-      width: row.width,
-      height: row.height,
-    })
+    const media = { url: mediaUrl(row.filename), width: row.width, height: row.height }
+    // Chỉ video mang `duration` — ảnh giữ nguyên hình dạng cũ (verify-seed so tuyệt đối).
+    if (row.scope in VIDEO_TARGETS && row.duration != null) media.duration = row.duration
+    byScope.get(row.scope).set(row.item_id, media)
   }
   return byScope
 }
@@ -94,14 +107,18 @@ function readBindings(db) {
  * kiểm sẽ phải học cách bỏ qua chúng — thà giữ bộ kiểm ngu ngốc và nghiêm ngặt.
  */
 function attachImages(dict, byScope) {
-  for (const [scope, [sectionKey, arrayKey]] of Object.entries(BINDING_TARGETS)) {
+  const targets = [
+    ...Object.entries(BINDING_TARGETS).map(([scope, path]) => [scope, path, 'image']),
+    ...Object.entries(VIDEO_TARGETS).map(([scope, path]) => [scope, path, 'video']),
+  ]
+  for (const [scope, [sectionKey, arrayKey], field] of targets) {
     const bound = byScope.get(scope)
     if (!bound) continue
     const items = dict[sectionKey]?.[arrayKey]
     if (!Array.isArray(items)) continue
     for (const item of items) {
-      const image = bound.get(item.id)
-      if (image) item.image = image
+      const media = bound.get(item.id)
+      if (media) item[field] = media
     }
   }
 

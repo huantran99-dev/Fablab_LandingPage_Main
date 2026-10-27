@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { UploadButton } from '../editor/MediaPicker'
+import { IMAGE_ACCEPT, MediaThumb, UploadButton, VIDEO_ACCEPT } from '../editor/MediaPicker'
 import { PageHeader } from '../layout/PageHeader'
 import { api, describeError } from '../lib/api'
 import { formatBytes, formatDateTime } from '../lib/paths'
@@ -18,6 +18,7 @@ const FILTERS = [
   ['all', 'Tất cả'],
   ['used', 'Đang dùng'],
   ['unused', 'Chưa dùng'],
+  ['video', 'Video'],
 ]
 
 function usageLabel(usage) {
@@ -76,8 +77,8 @@ export function MediaPage({ onChanged }) {
     if (created + duplicates > 0) {
       toast({
         tone: 'success',
-        title: `Đã tải lên ${created} ảnh`,
-        message: duplicates > 0 ? `${duplicates} ảnh đã có sẵn trong thư viện nên không tạo bản sao.` : 'Gắn ảnh vào mục trong trang section tương ứng.',
+        title: `Đã tải lên ${created} file`,
+        message: duplicates > 0 ? `${duplicates} file đã có sẵn trong thư viện nên không tạo bản sao.` : 'Gắn vào mục trong trang section tương ứng.',
       })
       setReloadToken((token) => token + 1)
       onChanged()
@@ -119,8 +120,10 @@ export function MediaPage({ onChanged }) {
     all: items?.length ?? 0,
     used: items?.filter((media) => media.usages.length > 0).length ?? 0,
     unused: items?.filter((media) => media.usages.length === 0).length ?? 0,
+    video: items?.filter((media) => media.kind === 'video').length ?? 0,
   }
   const visible = (items ?? []).filter((media) => {
+    if (filter === 'video' && media.kind !== 'video') return false
     if (filter === 'used' && media.usages.length === 0) return false
     if (filter === 'unused' && media.usages.length > 0) return false
     return !needle || media.filename.toLowerCase().includes(needle) || (media.sourceNote ?? '').toLowerCase().includes(needle)
@@ -130,15 +133,16 @@ export function MediaPage({ onChanged }) {
     <>
       <PageHeader
         title="Thư viện ảnh"
-        description="Mọi ảnh trang đang dùng hoặc từng được tải lên."
+        description="Mọi ảnh và video nền trang đang dùng hoặc từng được tải lên."
         breadcrumb={[{ label: 'Hệ thống' }, { label: 'Thư viện ảnh' }]}
-        actions={<UploadButton onFiles={upload} busy={uploading} multiple label="Tải ảnh lên" />}
+        actions={<UploadButton onFiles={upload} busy={uploading} multiple label="Tải ảnh / video lên" accept={`${IMAGE_ACCEPT},${VIDEO_ACCEPT}`} />}
       />
 
       <div className="space-y-6">
         <Alert tone="info">
-          Máy chủ tự xoay ảnh đúng chiều, thu về cạnh dài 1600px và xoá thông tin vị trí chụp (EXIF). Ảnh mới có trên trang ngay khi được gắn và lưu; riêng bản chạy
-          offline (<code>dist/</code>) chỉ có ảnh mới sau lần <code>npm run build</code> kế tiếp.
+          Máy chủ tự xoay ảnh đúng chiều, thu về cạnh dài 1600px và xoá thông tin vị trí chụp (EXIF). Video: chỉ MP4 H.264, tối đa 40 MB, máy chủ{' '}
+          <strong>không nén lại</strong> (chỉ xoá thông tin vị trí quay) — nên cắt ngắn, dưới ~15 MB. Ảnh/video mới có trên trang ngay khi được gắn và lưu; riêng
+          bản chạy offline (<code>dist/</code>) chỉ có sau lần <code>npm run build</code> kế tiếp.
         </Alert>
 
         <Card bodyClassName="p-4! sm:p-5!">
@@ -173,8 +177,8 @@ export function MediaPage({ onChanged }) {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 2xl:grid-cols-4">
             {visible.map((media) => (
               <article key={media.id} className="flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
-                <a href={media.url} target="_blank" rel="noreferrer" className="bg-checker flex aspect-[4/3] items-center justify-center" title="Mở ảnh gốc">
-                  <img src={media.url} alt="" loading="lazy" className="max-h-full max-w-full object-contain" />
+                <a href={media.url} target="_blank" rel="noreferrer" className="bg-checker flex aspect-[4/3] items-center justify-center" title="Mở file gốc">
+                  <MediaThumb media={media} />
                 </a>
                 <div className="flex flex-1 flex-col gap-3 p-4">
                   <div className="min-w-0">
@@ -182,7 +186,9 @@ export function MediaPage({ onChanged }) {
                       {media.filename}
                     </p>
                     <p className="mt-0.5 text-theme-xs text-gray-500">
-                      {media.width}×{media.height} · {formatBytes(media.bytes)} · {media.origin === 'seed' ? 'ảnh gốc của trang' : `tải lên ${formatDateTime(media.createdAt)}`}
+                      {media.kind === 'video' ? 'Video · ' : ''}
+                      {media.width}×{media.height}
+                      {media.duration ? ` · ${Math.round(media.duration)} giây` : ''} · {formatBytes(media.bytes)} · {media.origin === 'seed' ? 'ảnh gốc của trang' : `tải lên ${formatDateTime(media.createdAt)}`}
                     </p>
                   </div>
 

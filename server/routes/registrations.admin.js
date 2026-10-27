@@ -1,5 +1,5 @@
 /**
- * Quản lý đăng ký khóa học: danh sách có lọc + phân trang, sửa trạng thái / ghi
+ * Quản lý đăng ký (khóa học và thành viên FabLab): danh sách có lọc + phân trang, sửa trạng thái / ghi
  * chú, xoá, xuất CSV.
  *
  * Phân trang ở MÁY CHỦ (khác thư viện ảnh): danh sách này lớn dần theo thời gian.
@@ -14,16 +14,19 @@ import { z } from 'zod'
 import { requireCsrf, requireSameOrigin, requireSession } from '../auth/middleware.js'
 import { getContent } from '../content/cache.js'
 import { getDb } from '../db/index.js'
-import { REGISTRATION_STATUSES } from '../schema/registration.js'
+import { REGISTRATION_KINDS, REGISTRATION_STATUSES } from '../schema/registration.js'
 
 export const registrationsRouter = Router()
 
 registrationsRouter.use('/registrations', requireSameOrigin, requireSession)
 
-const COLUMNS = `id, created_at AS createdAt, updated_at AS updatedAt, status, status_at AS statusAt,
+// Thành viên (`kind = 'member'`): `studentName` = họ tên, `school` = trường / đơn vị —
+// quy ước của migration 014.
+const COLUMNS = `id, created_at AS createdAt, updated_at AS updatedAt, kind, status, status_at AS statusAt,
   course_id AS courseId, course_title AS courseTitle, locale,
   student_name AS studentName, student_grade AS studentGrade, school,
   parent_name AS parentName, phone, email, note, admin_note AS adminNote,
+  birth_year AS birthYear, member_role AS memberRole, interests,
   source, referrer_host AS referrerHost, consent_at AS consentAt, consent_text AS consentText`
 
 const DAY = /^\d{4}-\d{2}-\d{2}$/
@@ -45,8 +48,16 @@ function buildFilter(query, { ignoreStatus = false } = {}) {
     params.push(status)
   }
 
+  const kind = str(query.kind)
+  if (REGISTRATION_KINDS.includes(kind)) {
+    where.push('kind = ?')
+    params.push(kind)
+  }
+
+  // "Cần tư vấn" (`-`) chỉ là đăng ký KHÓA HỌC chưa chọn khóa — thành viên cũng có
+  // `course_id` NULL và không được lẫn vào đây.
   const course = str(query.course)
-  if (course === '-') where.push('course_id IS NULL')
+  if (course === '-') where.push("kind = 'course' AND course_id IS NULL")
   else if (course) {
     where.push('course_id = ?')
     params.push(course)
@@ -84,11 +95,31 @@ function currentTitles() {
   return new Map((getContent().vi.courses?.items ?? []).map((item) => [item.id, item.title]))
 }
 
-function decorate(row, titles) {
+/** Nhãn đối tượng / lĩnh vực của thành viên, theo bản VI hiện tại trên trang. */
+function memberLabels() {
+  const register = getContent().vi.register ?? {}
+  return { roles: register.memberRoles ?? {}, interests: register.memberInterests ?? {} }
+}
+
+function parseInterests(text) {
+  try {
+    const list = JSON.parse(text ?? '[]')
+    return Array.isArray(list) ? list : []
+  } catch {
+    return []
+  }
+}
+
+function decorate(row, titles, labels = memberLabels()) {
+  const interests = parseInterests(row.interests)
   return {
     ...row,
     courseTitle: (row.courseId && titles.get(row.courseId)) ?? row.courseTitle,
     courseOnPage: row.courseId ? titles.has(row.courseId) : null,
+    interests,
+    // Id lạ (nhãn bị xoá khỏi nội dung) thì hiện chính id — vẫn đọc được, không mất.
+    memberRoleLabel: row.memberRole ? (labels.roles[row.memberRole] ?? row.memberRole) : null,
+    interestLabels: interests.map((id) => labels.interests[id] ?? id),
   }
 }
 
@@ -101,10 +132,11 @@ registrationsRouter.get('/registrations', (req, res) => {
 
   const filter = buildFilter(req.query)
   const total = db.prepare(`SELECT COUNT(*) AS n FROM registration ${filter.sql}`).get(...filter.params).n
+  const labels = memberLabels()
   const items = db
     .prepare(`SELECT ${COLUMNS} FROM registration ${filter.sql} ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?`)
     .all(...filter.params, pageSize, (page - 1) * pageSize)
-    .map((row) => decorate(row, titles))
+    .map((row) => decorate(row, titles, labels))
 
   // Bộ đếm tab bỏ qua chính bộ lọc trạng thái, để tab nào cũng hiện số thật của nó.
   const statusFilter = buildFilter(req.query, { ignoreStatus: true })
@@ -117,11 +149,13 @@ registrationsRouter.get('/registrations', (req, res) => {
     all += row.n
   }
 
+  // Chỉ đăng ký khóa học: thành viên có `course_id` NULL, không lọc là cả nhóm thành viên
+  // dồn vào dòng "chưa chọn — cần tư vấn".
   const byCourse = db
     .prepare(
       `SELECT course_id AS courseId, MAX(course_title) AS title, COUNT(*) AS total,
               SUM(CASE WHEN status = 'new' THEN 1 ELSE 0 END) AS fresh
-         FROM registration GROUP BY course_id ORDER BY total DESC`,
+         FROM registration WHERE kind = 'course' GROUP BY course_id ORDER BY total DESC`,
     )
     .all()
     .map((row) => ({
@@ -131,10 +165,16 @@ registrationsRouter.get('/registrations', (req, res) => {
       new: row.fresh,
     }))
 
-  res.json({ items, total, page, pageSize, counts: { byStatus: { ...byStatus, all }, byCourse } })
+  const byKind = Object.fromEntries(REGISTRATION_KINDS.map((kind) => [kind, 0]))
+  for (const row of db.prepare('SELECT kind, COUNT(*) AS n FROM registration GROUP BY kind').all()) byKind[row.kind] = row.n
+
+  res.json({ items, total, page, pageSize, counts: { byStatus: { ...byStatus, all }, byCourse, byKind } })
 })
 
 const STATUS_LABELS = { new: 'Mới', contacted: 'Đã liên hệ', enrolled: 'Đã nhập học', cancelled: 'Đã huỷ' }
+// Cùng trạng thái `enrolled`, nhưng với thành viên nghĩa là đã kết nạp.
+const MEMBER_STATUS_LABELS = { ...STATUS_LABELS, enrolled: 'Đã kết nạp' }
+const KIND_LABELS = { course: 'Khóa học', member: 'Thành viên FabLab' }
 const SOURCE_LABELS = { 'course-modal': 'Popup khóa học', 'final-cta': 'Khối kêu gọi cuối trang', nav: 'Thanh menu', 'nav-drawer': 'Menu di động' }
 
 /** Giờ Việt Nam, dạng Excel đọc được: `2026-09-18 14:05`. */
@@ -154,14 +194,16 @@ registrationsRouter.get('/registrations/export', (req, res) => {
   const db = getDb()
   const titles = currentTitles()
   const filter = buildFilter(req.query)
+  const labels = memberLabels()
   const rows = db
     .prepare(`SELECT ${COLUMNS} FROM registration ${filter.sql} ORDER BY created_at DESC, id DESC`)
     .all(...filter.params)
-    .map((row) => decorate(row, titles))
+    .map((row) => decorate(row, titles, labels))
 
   const header = [
-    'Mã', 'Thời gian gửi', 'Trạng thái', 'Khóa học', 'Mã khóa', 'Học viên', 'Năm sinh / lớp', 'Trường',
-    'Phụ huynh', 'Điện thoại', 'Email', 'Ghi chú', 'Ghi chú quản trị', 'Nguồn', 'Ngôn ngữ', 'Đồng ý lúc',
+    'Mã', 'Thời gian gửi', 'Loại', 'Trạng thái', 'Khóa học', 'Mã khóa', 'Họ tên', 'Năm sinh / lớp', 'Trường / đơn vị',
+    'Phụ huynh', 'Đối tượng', 'Lĩnh vực quan tâm', 'Điện thoại', 'Email', 'Ghi chú', 'Ghi chú quản trị', 'Nguồn',
+    'Ngôn ngữ', 'Đồng ý lúc',
   ]
   const lines = [header.map(cell).join(',')]
   for (const row of rows) {
@@ -169,13 +211,16 @@ registrationsRouter.get('/registrations/export', (req, res) => {
       [
         cell(row.id),
         cell(vnTime(row.createdAt)),
-        cell(STATUS_LABELS[row.status] ?? row.status),
-        cell(row.courseTitle ?? (row.courseId ? row.courseId : 'Cần tư vấn')),
+        cell(KIND_LABELS[row.kind] ?? row.kind),
+        cell((row.kind === 'member' ? MEMBER_STATUS_LABELS : STATUS_LABELS)[row.status] ?? row.status),
+        cell(row.kind === 'member' ? '' : (row.courseTitle ?? (row.courseId ? row.courseId : 'Cần tư vấn'))),
         cell(row.courseId),
         cell(row.studentName),
-        cell(row.studentGrade),
+        cell(row.kind === 'member' ? row.birthYear : row.studentGrade),
         cell(row.school),
         cell(row.parentName),
+        cell(row.memberRoleLabel),
+        cell(row.interestLabels.join('; ')),
         // Excel bỏ số 0 đầu của "0912…". Số đã được máy chủ chuẩn hoá thành toàn chữ
         // số, nên bọc ="…" ở đây là an toàn — không có gì người gửi chèn được vào.
         `="${row.phone}"`,

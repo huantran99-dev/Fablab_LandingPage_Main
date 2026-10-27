@@ -39,6 +39,7 @@ export const SHARED_FIELDS = new Set([
   'lead',
   'href',
   'filterable',
+  'videoBanner',
   'facility',
   'status',
 ])

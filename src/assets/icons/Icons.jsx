@@ -133,6 +133,22 @@ export function ArrowLeftIcon({ className = '', size = 18 }) {
   )
 }
 
+export function PauseIcon({ className = '', size = 18 }) {
+  return (
+    <Svg className={className} size={size} strokeWidth={1.8}>
+      <path d="M8.5 5.5v13M15.5 5.5v13" />
+    </Svg>
+  )
+}
+
+export function PlayIcon({ className = '', size = 18 }) {
+  return (
+    <Svg className={className} size={size} strokeWidth={1.8}>
+      <path d="M7.5 5.2v13.6L18.5 12z" />
+    </Svg>
+  )
+}
+
 export function ChevronDownIcon({ className = '', size = 16 }) {
   return (
     <Svg className={className} size={size} strokeWidth={2}>
@@ -153,6 +169,15 @@ export function CloseIcon({ className = '', size = 22 }) {
   return (
     <Svg className={className} size={size} strokeWidth={1.8}>
       <path d="M6 6l12 12M18 6L6 18" />
+    </Svg>
+  )
+}
+
+/** Dấu cộng của accordion — xoay 45° thành dấu nhân khi mở. */
+export function PlusIcon({ className = '', size = 18 }) {
+  return (
+    <Svg className={className} size={size} strokeWidth={2}>
+      <path d="M12 5v14M5 12h14" />
     </Svg>
   )
 }

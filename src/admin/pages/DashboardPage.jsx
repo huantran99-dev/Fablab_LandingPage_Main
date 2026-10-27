@@ -1,6 +1,6 @@
 import { PageHeader } from '../layout/PageHeader'
 import { formatBytes, formatDateTime } from '../lib/paths'
-import { STATUS } from '../lib/registrations'
+import { STATUS, registrationTopic, statusLabel } from '../lib/registrations'
 import { SECTIONS, SECTION_BY_KEY } from '../sections/descriptors'
 import { Alert } from '../ui/Alert'
 import { Badge } from '../ui/Badge'
@@ -152,10 +152,10 @@ export function DashboardPage({ meta, username }) {
                         {entry.studentName}
                       </a>
                       <p className="truncate text-theme-xs text-gray-500">
-                        {entry.courseTitle ?? (entry.courseId ? entry.courseId : 'Cần tư vấn')} · {formatDateTime(entry.createdAt)}
+                        {registrationTopic(entry)} · {formatDateTime(entry.createdAt)}
                       </p>
                     </div>
-                    <Badge color={STATUS[entry.status]?.color ?? 'gray'}>{STATUS[entry.status]?.label ?? entry.status}</Badge>
+                    <Badge color={STATUS[entry.status]?.color ?? 'gray'}>{statusLabel(entry.status, entry.kind)}</Badge>
                   </li>
                 ))}
               </ul>

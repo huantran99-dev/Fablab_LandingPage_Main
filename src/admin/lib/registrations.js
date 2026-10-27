@@ -12,6 +12,24 @@ export const STATUS = {
 
 export const STATUS_KEYS = Object.keys(STATUS)
 
+/** Cùng trạng thái `enrolled`, nhưng với thành viên FabLab nghĩa là đã kết nạp. */
+export function statusLabel(status, kind) {
+  if (kind === 'member' && status === 'enrolled') return 'Đã kết nạp'
+  return STATUS[status]?.label ?? status
+}
+
+/** Hai loại đăng ký — khớp `REGISTRATION_KINDS` ở server/schema/registration.js. */
+export const KIND = {
+  course: { label: 'Khóa học', color: 'gray' },
+  member: { label: 'Thành viên FabLab', color: 'info' },
+}
+
+/** Dòng phụ dưới tên trong danh sách: khóa học (hoặc "cần tư vấn") / "Thành viên FabLab". */
+export function registrationTopic(entry) {
+  if (entry.kind === 'member') return KIND.member.label
+  return entry.courseTitle ?? (entry.courseId ? entry.courseId : 'Cần tư vấn')
+}
+
 export const SOURCE_LABELS = {
   'course-modal': 'Popup khóa học',
   'final-cta': 'Khối kêu gọi cuối trang',
