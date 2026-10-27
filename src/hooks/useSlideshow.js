@@ -17,19 +17,24 @@ const mod = (value, total) => ((value % total) + total) % total
  * mount lại nên zoom chạy từ đầu, slide vừa rời đi GIỮ key nên vẫn zoom tiếp lúc mờ đi.
  * `current` kẹp lúc render: đổi ngôn ngữ mà danh sách ngắn đi thì tự về đầu.
  *
- * Tự chạy dừng khi: người dùng bấm dừng, rê chuột vào, focus BÀN PHÍM trong banner, hoặc
- * banner ra khỏi khung nhìn. Focus do chạm/bấm chuột KHÔNG dừng — nếu không, vuốt một cái
- * là banner đứng luôn trên điện thoại.
+ * Tự chạy dừng khi: người dùng bấm dừng, focus BÀN PHÍM trong banner, banner ra khỏi khung
+ * nhìn, và (chỉ khi `pauseOnHover`) rê chuột vào. Focus do chạm/bấm chuột KHÔNG dừng — nếu
+ * không, vuốt một cái là banner đứng luôn trên điện thoại.
+ *
+ * `pauseOnHover` mặc định TẮT: banner Cuộc thi cao gần trọn màn hình nên lúc xem chuột hầu
+ * như luôn nằm trên nó — dừng khi rê chuột làm banner đứng yên như bị hỏng (người dùng đã
+ * báo đúng như vậy). Chỉ bật cho carousel thẻ nhỏ, nơi rê chuột vào là chủ ý đọc.
  *
  * Giảm chuyển động đọc SỐNG (không dùng hằng `REDUCED_MOTION`): bật giữa chừng thì rule ở
  * base ép animation còn 0.01ms, `animationend` của vạch tiến trình bắn liên tục và slide
  * nhấp nháy. Khi giảm chuyển động: KHÔNG tự chuyển slide, và `playing` mặc định là tắt.
  *
  * @param {number} total số slide
- * @param {{ playByDefault?: boolean }} [options] `false` để mặc định dừng ngay cả khi không
- *   giảm chuyển động (vd. người xem bật tiết kiệm dữ liệu — đừng tự tải video).
+ * @param {{ playByDefault?: boolean, pauseOnHover?: boolean }} [options]
+ *   `playByDefault: false` để mặc định dừng ngay cả khi không giảm chuyển động (vd. người
+ *   xem bật tiết kiệm dữ liệu — đừng tự tải video).
  */
-export function useSlideshow(total, { playByDefault = true } = {}) {
+export function useSlideshow(total, { playByDefault = true, pauseOnHover = false } = {}) {
   const [state, setState] = useState({ index: 0, cycle: 0, stamps: {} })
   const current = state.index < total ? state.index : 0
 
@@ -56,7 +61,7 @@ export function useSlideshow(total, { playByDefault = true } = {}) {
   // Tự CHUYỂN slide thì không bao giờ khi giảm chuyển động, kể cả khi người dùng bấm phát
   // (phát lúc đó chỉ là cho video chạy).
   const autoplay = !reduced && total > 1
-  const running = autoplay && playing && !hovered && !keyboardFocus && inView
+  const running = autoplay && playing && !(pauseOnHover && hovered) && !keyboardFocus && inView
 
   // Kéo / vuốt: không pointer capture (để cú bấm vẫn rơi đúng nút bên trong), kéo xong
   // thì nuốt click đi kèm.

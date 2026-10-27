@@ -109,7 +109,9 @@ nhưng chỉ trượt dọc nên không cần.
 có sẵn `inline-flex` trong class gốc, và trong CSS đã build `.inline-flex` phát sinh SAU
 `.hidden` nên luôn thắng: nút "Đăng ký ngay" của navbar từng hiện cả trên điện thoại (lỗi
 có từ commit đầu tiên), đẩy thanh menu rộng ~480px. Đặt ẩn/hiện lên một phần tử **bọc**
-(`hidden sm:contents` — `contents` để bố cục từ `sm` trở lên y như cũ).
+(`hidden sm:contents` — `contents` để bố cục từ `sm` trở lên y như cũ). Cùng lý do, cỡ của
+`Pill` đi qua prop `size` (`md` mặc định, `lg` cho nhãn đầu section và hero) — đừng truyền
+`text-*` / `px-*` vào `className`.
 
 **4. Transition KHÔNG chạy trên phần tử vừa mount.** Card mới (bấm "Xem thêm")
 khớp `[data-reveal-group=shown] > *` ngay từ lần resolve style đầu tiên nên tính
@@ -281,7 +283,7 @@ Ba hoạt động không có ảnh riêng trên trang gốc (`stm32`, `print-3d-
 `pcb`) dùng lại ảnh thật khác của FabLab, đánh dấu `// ~`.
 
 Tỷ lệ ảnh hoạt động rất lệch nhau (poster dọc 0.7 đến ảnh ngang 2.05) nên banner
-dùng `object-contain` cho poster (nền banner là ảnh mờ, xem "Banner điện ảnh tự chạy"). **Đừng đổi sang `object-cover`** — nó sẽ
+dùng `object-contain` cho poster (xem "Hai kiểu banner tự chạy"). **Đừng đổi sang `object-cover`** — nó sẽ
 cắt mất tiêu đề poster hoặc mặt người.
 
 **Đội ngũ: 14/15 người có ảnh.** Ảnh do người dùng tự tải về từ trang Google Sites
@@ -541,8 +543,8 @@ tiếng Anh được đánh dấu `viOnly: true`.
 
 ## Hai khối hoạt động
 
-Section Hoạt động cũng chia hai khối như section Khóa học: **Cuộc thi** (2 mục) và
-**Sự kiện & hội thảo** (11 mục), mỗi khối một carousel riêng gọi `useCarousel` của
+Section Hoạt động cũng chia hai khối như section Khóa học: **Cuộc thi** (3 mục) và
+**Sự kiện & hội thảo** (11 mục), mỗi khối một carousel riêng gọi `useSlideshow` của
 chính nó.
 
 **Khối nào chứa hoạt động nào suy từ `kind`, KHÔNG có trường `group` trên từng mục
@@ -569,16 +571,24 @@ thì outline có hai h3 ngang hàng.
 
 | Khối | Kiểu | File |
 |---|---|---|
-| có `groups[].videoBanner: true` (Cuộc thi) | **banner video tràn màn hình**, mỗi cuộc thi một video nền | [ActivityVideoBanner.jsx](src/components/ActivityVideoBanner.jsx) |
-| còn lại (Sự kiện) | banner ảnh bo góc trong container, nền navy, 6,5 giây/slide | `ActivityBanner` trong [Activities.jsx](src/components/Activities.jsx) |
+| có `groups[].videoBanner: true` (Cuộc thi) | **banner video tràn màn hình**, mỗi cuộc thi một video nền, chỉ chữ trên lớp phủ | [ActivityVideoBanner.jsx](src/components/ActivityVideoBanner.jsx) |
+| còn lại (Sự kiện) | **carousel truyền thống**: thẻ trắng ảnh trái / chữ phải, ← → hai bên, chấm tròn, 6,5 giây/slide | `ActivityCarousel` trong [Activities.jsx](src/components/Activities.jsx) |
 
 Lịch sử: lần đầu người dùng nói "video banner auto run", agent hiểu thành banner ẢNH trông
 như video — **sai ý**. Ý thật: banner tràn màn hình, nền là video THẬT, lớp phủ trình bày
 nội dung. Hỏi rõ "video thật hay hiệu ứng" trước khi làm thứ gì có chữ "video".
 
 Hai kiểu dùng chung bộ não [useSlideshow](src/hooks/useSlideshow.js) (con trỏ, tự chạy,
-dừng, vuốt, phím) và [SlideProgress](src/components/SlideProgress.jsx) (vạch tiến trình =
-bộ đếm giờ). Sửa hành vi tự chạy là sửa ở hook, đừng chép lại vào từng banner.
+dừng, vuốt, phím) và [SlideProgress](src/components/SlideProgress.jsx) (chỉ báo slide =
+bộ đếm giờ; `variant="bars"` vạch trắng cho banner tối, `variant="dots"` chấm tròn cho
+thẻ trắng). Sửa hành vi tự chạy là sửa ở hook, đừng chép lại vào từng banner.
+
+⚠️ **Rê chuột dừng banner tràn màn hình = trông như HỎNG.** Bản đầu dừng tự chạy khi chuột
+nằm trên banner; banner Cuộc thi cao gần trọn màn hình nên lúc xem chuột hầu như luôn ở
+trên nó → người dùng báo "không tự chạy". Giờ `pauseOnHover` mặc định TẮT, chỉ carousel
+Sự kiện (thẻ nhỏ) bật. Bài thử: đặt chuột GIỮA banner rồi chờ — phải tự chuyển. Trước khi
+kết luận "tự chạy hỏng", kiểm luôn Windows có tắt hiệu ứng chuyển động không (đọc bằng
+`SystemParametersInfo(SPI_GETCLIENTAREAANIMATION)`).
 
 **Banner video:**
 
@@ -589,8 +599,9 @@ bộ đếm giờ). Sửa hành vi tự chạy là sửa ở hook, đừng chép
   tới thì không tải byte nào (đã đo: `readyState 0` trước khi cuộn tới). `muted` phải gán
   cả THUỘC TÍNH trong effect (Safari iOS). `play()` bị từ chối (iPhone tiết kiệm pin) thì
   nuốt lỗi — ảnh poster mờ phía dưới vẫn còn. Video hiện dần khi `playing`, không chớp đen.
-- Cuộc thi chưa có video → nền là poster phóng to + mờ + Ken Burns. Poster thật (có mã QR
-  đăng ký) đứng bên phải từ `md`, `object-contain`.
+- Cuộc thi chưa có video → nền là poster phóng to + mờ + Ken Burns. **Không còn poster
+  bên phải và không còn tiêu đề khối nhìn thấy được** (người dùng yêu cầu bỏ, 2026-10-23);
+  h3 vẫn ở đó dạng `sr-only` để giữ thứ bậc h2 → h3 → h4.
 - Mỗi slide đứng theo `duration` của video, kẹp 8–20 giây.
 - Lớp phủ: điện thoại là dải DỌC (chữ dồn đáy, nửa trên để video lộ ra — bản đầu phủ đều
   70% và video gần như biến mất), từ `md` là dải NGANG (chữ bên trái).
@@ -600,31 +611,25 @@ bộ đếm giờ). Sửa hành vi tự chạy là sửa ở hook, đừng chép
 - Rê chuột lên nút bên trong banner cũng là "rê vào banner" → dừng. Bài thử tự động phải
   đưa chuột ra ngoài sau khi bấm, kẻo tưởng tự chạy hỏng (đã tốn một lượt vì vậy).
 
-**Banner ảnh (Sự kiện):**
+**Carousel Sự kiện (từ 2026-10-23, thay banner ảnh nền navy):**
 
-- **Nền mờ được `object-cover`, poster thì KHÔNG.** Lớp nền là chính ảnh đó phóng to +
-  `blur-2xl` (cắt thoải mái, chỉ là nền, cùng URL nên không tải thêm); poster phía trước
-  vẫn `object-contain` như luật ảnh hoạt động ở trên. Lớp phủ `navy/85` giữ chữ trắng đủ
-  tương phản trên ảnh sáng nhất — đừng hạ xuống dưới ~80%.
-- Các slide chồng cùng một ô grid: banner cao bằng slide cao nhất, slide ngắn tự căn
-  giữa (`flex-1` + `content-center`). Không đặt chiều cao cứng, không cắt mô tả.
-- **Bộ đếm giờ là `animationend` của vạch tiến trình**, không có `setInterval`. Dừng chỉ
-  là `animation-play-state: paused` (bấm nút dừng, rê chuột, focus **bàn phím** trong
-  banner, banner ra khỏi khung nhìn). Focus do chạm/bấm chuột KHÔNG dừng — nếu không,
-  vuốt một cái là banner đứng luôn trên điện thoại.
+- Người dùng muốn "kiểu truyền thống": thẻ trắng (dựng lại theo bản trước commit 5eb524a),
+  ← → hai bên thẻ từ `md`. Ẩn/hiện mũi tên đặt trên DIV bọc, không truyền vào `RoundButton`.
+- Các slide chồng cùng một ô grid và hoà vào nhau bằng opacity: thẻ cao bằng slide cao nhất,
+  không nhảy chiều cao. Poster vẫn `object-contain` trên nền `wash`.
+- **Chấm đang chọn là bộ đếm giờ** (viên dài tô dần `signal`). Điện thoại: hàng chấm RIÊNG
+  một dòng, ← ⏸ → ở dòng dưới — chen chung một hàng thì 11 chấm gãy 2–3 dòng ở 320–390px.
 - ⚠️ **Giảm chuyển động bật giữa chừng → slide nhấp nháy.** Rule ở `@layer base` ép mọi
   animation còn 0.01ms, tức `animationend` bắn gần như mỗi khung hình. Vì vậy chặn hai lớp:
-  component đọc media query **sống** qua `useMediaQuery` (không phải hằng `REDUCED_MOTION`)
-  để tắt tự chạy + Ken Burns + nút dừng, và CSS đặt `animation-name: none` cho
-  `animate-banner-progress` / `animate-ken-burns`. Đã thử bằng
-  `page.emulateMediaFeatures` cả lúc tải trang lẫn bật giữa chừng: slide đứng yên.
-- Ken Burns chạy lại nhờ `stamps[i]` làm `key` của lớp zoom (`useSlideshow`): slide vừa
-  được chọn mount lại nên zoom từ đầu, slide vừa rời đi giữ key nên vẫn zoom tiếp lúc mờ đi
-  thay vì giật về cỡ gốc.
+  hook đọc media query **sống** qua `useMediaQuery` (không phải hằng `REDUCED_MOTION`) để
+  tắt tự chạy, và CSS đặt `animation-name: none` cho `animate-banner-progress` /
+  `animate-ken-burns`. Đã thử bằng `page.emulateMediaFeatures` cả lúc tải trang lẫn bật
+  giữa chừng: slide đứng yên.
 - `aria-live` của dòng sr-only là `off` khi đang tự chạy (mẫu carousel WAI-ARIA), `polite`
   khi đã dừng. Nút dừng là bắt buộc (WCAG 2.2.2) — nhãn `activities.pause`/`play`, vào
   database cũ qua migration 010; thiếu thì rơi về `activities.title`.
-- `KIND_TONES.partnership` là `white` chứ không phải `ink`: viên thuốc đen chìm trên navy.
+- Ken Burns (`stamps[i]` làm `key` lớp zoom) giờ chỉ còn ở nền mờ của banner Cuộc thi khi
+  chưa có video.
 
 ## Bẫy khi sửa i18n bằng regex
 

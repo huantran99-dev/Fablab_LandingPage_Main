@@ -82,8 +82,13 @@ function BannerVideo({ video, play }) {
  * Tràn màn hình: render NGOÀI `container-page` (Section `contained={false}`), nội dung bên
  * trong tự đặt lại container để thẳng hàng với phần còn lại của trang.
  *
+ * Chỉ có chữ trên lớp phủ: không poster bên phải, không tiêu đề khối nhìn thấy được (h3
+ * `sr-only`) — người dùng yêu cầu bỏ cả hai (2026-10-23).
+ *
  * Nút dừng là bắt buộc (WCAG 2.2.2) và dừng CẢ việc chuyển slide lẫn video. Giảm chuyển
- * động / tiết kiệm dữ liệu: video không tự phát, bấm "Phát" mới chạy.
+ * động / tiết kiệm dữ liệu: video không tự phát, bấm "Phát" mới chạy. KHÔNG dừng khi rê
+ * chuột (`pauseOnHover` mặc định tắt): banner gần trọn màn hình nên chuột hầu như luôn ở
+ * trên nó, và bản đầu trông như không tự chạy.
  */
 export function ActivityVideoBanner({ group, items, from }) {
   const t = useT()
@@ -156,11 +161,9 @@ export function ActivityVideoBanner({ group, items, from }) {
           <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-linear-to-t from-ink/80 to-transparent" />
 
           <div className="container-page relative flex flex-col justify-end gap-10 py-14 md:justify-center md:py-20">
-            {/* h3: dưới h2 của section, trên h4 là tên từng cuộc thi. */}
-            <div className="flex flex-wrap items-center gap-3">
-              <h3 className="text-heading-sm text-white">{group.title}</h3>
-              <Pill tone="white">{total}</Pill>
-            </div>
+            {/* h3 ẨN theo yêu cầu người dùng (banner tự nói lên nó là cuộc thi), nhưng VẪN
+                trong DOM: giữ thứ bậc h2 → h3 → h4 cho trình đọc màn hình. */}
+            <h3 className="sr-only">{group.title}</h3>
 
             <div className="grid">
               {items.map((item, index) => {
@@ -174,7 +177,7 @@ export function ActivityVideoBanner({ group, items, from }) {
                     aria-hidden={isActive ? undefined : true}
                     inert={!isActive}
                     className={[
-                      'col-start-1 row-start-1 grid items-center gap-10 transition-opacity duration-700 ease-[var(--ease-out-soft)] md:grid-cols-[minmax(0,1fr)_auto]',
+                      'col-start-1 row-start-1 flex items-center transition-opacity duration-700 ease-[var(--ease-out-soft)]',
                       isActive ? 'opacity-100' : 'opacity-0',
                     ].join(' ')}
                   >
@@ -186,21 +189,8 @@ export function ActivityVideoBanner({ group, items, from }) {
                       <h4 className="text-heading-lg md:text-display text-white">{item.title}</h4>
                       <p className="text-body-sm md:text-subheading text-white/85">{item.description}</p>
                     </div>
-
-                    {/* Poster thật (có mã QR đăng ký) — trọn khung, không cắt. Ẩn trên
-                        điện thoại: chữ đã chiếm hết bề ngang, poster nhỏ không đọc được. */}
-                    {item.image && (
-                      <img
-                        src={item.image.url}
-                        width={item.image.width}
-                        height={item.image.height}
-                        alt={labels.imageAlt.replace('{title}', item.title)}
-                        loading="lazy"
-                        decoding="async"
-                        draggable={false}
-                        className="hidden max-h-[380px] w-auto max-w-[280px] rounded-image-sm object-contain shadow-ambient md:block"
-                      />
-                    )}
+                    {/* Không còn poster bên phải (người dùng yêu cầu ẩn, 2026-10-23). Poster
+                        chỉ còn làm nền mờ khi cuộc thi chưa có video. */}
                   </div>
                 )
               })}

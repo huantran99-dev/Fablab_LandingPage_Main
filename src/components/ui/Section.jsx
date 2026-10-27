@@ -55,7 +55,11 @@ export function SectionHeading({
         className,
       ].join(' ')}
     >
-      {eyebrow && <Pill tone={tone}>{eyebrow}</Pill>}
+      {eyebrow && (
+        <Pill tone={tone} size="lg">
+          {eyebrow}
+        </Pill>
+      )}
       <h2 className="text-heading-lg md:text-display text-ink">{title}</h2>
       {description && (
         <p className="text-subheading text-graphite max-w-[600px]">{description}</p>

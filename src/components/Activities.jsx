@@ -14,14 +14,11 @@ const KIND_TONES = {
   competition: 'signal',
   seminar: 'wash',
   workshop: 'outline',
-  // Không dùng `ink`: viên thuốc đen chìm mất trên nền navy của banner.
-  partnership: 'white',
+  partnership: 'ink',
 }
 
-/** Thời gian mỗi slide đứng (ms) — cũng là thời lượng vạch tiến trình chạy. */
+/** Thời gian mỗi slide đứng (ms) — cũng là thời lượng chấm đang chọn tô đầy. */
 const SLIDE_MS = 6500
-/** Thời gian hai slide hoà vào nhau (ms) — khớp `duration-700` của slide. */
-const FADE_MS = 700
 
 /**
  * Khối nào chứa hoạt động nào — vẫn suy từ `kind`, KHÔNG có trường `group` trên
@@ -56,40 +53,46 @@ function groupActivities(groups, items) {
   return buckets
 }
 
-/** Biến CSS cho một lớp Ken Burns: phóng từ `from` tới `to` suốt slide + lúc mờ đi. */
-const kenBurns = (from, to, playState) => ({
-  '--kb-from': from,
-  '--kb-to': to,
-  '--kb-duration': `${SLIDE_MS + FADE_MS}ms`,
-  animationPlayState: playState,
-})
-
 /**
- * Một khối hoạt động dạng banner ảnh tự chạy (khối không bật `videoBanner`).
+ * Một khối hoạt động dạng carousel truyền thống (khối không bật `videoBanner` — Sự kiện):
+ * thẻ trắng ảnh trái / chữ phải, hai nút ← → hai bên (điện thoại: hai bên hàng chấm),
+ * chấm tròn bên dưới, tự chạy.
  *
- * Mỗi slide ba lớp: nền là CHÍNH ảnh đó phóng to + làm mờ (`object-cover` được phép cắt
- * vì chỉ là nền, cùng URL nên không tải thêm), lớp phủ navy giữ chữ trắng đủ tương phản
- * trên mọi ảnh, và nội dung — poster vẫn `object-contain` (poster dọc 0.7 mà cover là
- * mất tiêu đề). Các slide chồng cùng một ô grid nên banner cao bằng slide cao nhất,
- * không phải cắt mô tả.
+ * Chấm đang chọn là BỘ ĐẾM GIỜ (`SlideProgress variant="dots"`): viên dài tô dần, đầy là
+ * sang slide. Dừng khi rê chuột vào thẻ (`pauseOnHover` — thẻ nhỏ, rê vào là chủ ý đọc),
+ * khi focus bàn phím, khi ra khỏi khung nhìn, hoặc khi bấm nút ⏸. Giảm chuyển động: không
+ * tự chạy, xem `useSlideshow`.
  *
- * Tự chạy / tạm dừng / vuốt / giảm chuyển động: xem `useSlideshow`. Bộ đếm giờ là vạch
- * tiến trình (`SlideProgress`).
+ * Các slide chồng cùng một ô grid và hoà vào nhau bằng opacity: thẻ cao bằng slide cao
+ * nhất nên không nhảy chiều cao khi chuyển. Poster `object-contain` trên nền pastel —
+ * nguồn trộn poster dọc với ảnh chụp ngang, `object-cover` sẽ cắt mất tiêu đề poster
+ * hoặc mặt người.
  */
-function ActivityBanner({ group, items, from }) {
+function ActivityCarousel({ group, items, from }) {
   const t = useT()
   const labels = t.activities
   const total = items.length
-  const show = useSlideshow(total)
-  const { current, cycle, stamps, go, goTo, autoplay, playing, running, playState, regionProps } = show
+  const show = useSlideshow(total, { pauseOnHover: true })
+  const { current, cycle, go, goTo, autoplay, playing, running, playState, regionProps } = show
 
-  // Khối rỗng thì không dựng banner.
+  // Khối rỗng thì không dựng carousel.
   if (total === 0) return null
 
   // Thiếu nhãn (bản lịch sử cũ, database chưa áp migration 010) thì rơi về tiêu đề
   // section — vẫn đọc được, trang không sập.
   const label = (key) => labels[key] ?? labels.title
-  const zoomClass = autoplay ? 'animate-ken-burns' : ''
+  const multiple = total > 1
+
+  const previous = (
+    <RoundButton label={label('previous')} onClick={() => go(-1)}>
+      <ArrowLeftIcon />
+    </RoundButton>
+  )
+  const next = (
+    <RoundButton label={label('next')} onClick={() => go(1)}>
+      <ArrowRightIcon />
+    </RoundButton>
+  )
 
   return (
     // Neo suy từ `group.id`: menu ở navbar trỏ thẳng vào `#events`.
@@ -103,19 +106,21 @@ function ActivityBanner({ group, items, from }) {
         <p className="max-w-[620px] text-body-sm text-graphite">{group.description}</p>
       </Reveal>
 
-      <Reveal from={from} className="mt-8">
+      <Reveal from={from} className="mt-8 flex items-center gap-5">
+        {/* Mũi tên hai bên thẻ từ md. Ẩn/hiện đặt trên DIV bọc, không truyền vào nút. */}
+        {multiple && <div className="hidden md:block">{previous}</div>}
+
         <div
           {...regionProps}
           role="region"
           aria-roledescription="carousel"
           aria-label={group.title}
-          className="relative grid touch-pan-y select-none overflow-hidden rounded-card-sm bg-navy text-white outline-none focus-visible:ring-2 focus-visible:ring-signal focus-visible:ring-offset-4 md:rounded-card"
+          className="grid min-w-0 flex-1 touch-pan-y select-none overflow-hidden rounded-card-sm border border-ash/60 bg-white outline-none focus-visible:ring-2 focus-visible:ring-signal md:rounded-card"
         >
           {items.map((item, index) => {
             const active = index === current
-            const stamp = stamps[index] ?? 0
             return (
-              <div
+              <article
                 key={item.id}
                 role="group"
                 aria-roledescription="slide"
@@ -123,105 +128,79 @@ function ActivityBanner({ group, items, from }) {
                 aria-hidden={active ? undefined : true}
                 inert={!active}
                 className={[
-                  // `flex flex-col` + nội dung `flex-1`: slide ngắn vẫn kéo đủ chiều cao
-                  // banner (= slide cao nhất) và căn giữa, không dồn lên mép trên.
-                  'relative col-start-1 row-start-1 flex flex-col transition-opacity duration-700 ease-[var(--ease-out-soft)]',
+                  'col-start-1 row-start-1 grid transition-opacity duration-700 ease-[var(--ease-out-soft)] md:grid-cols-2',
                   active ? 'z-10 opacity-100' : 'opacity-0',
                 ].join(' ')}
               >
-                {item.image && (
-                  <div
-                    key={`bg-${stamp}`}
-                    aria-hidden="true"
-                    className={`absolute inset-0 ${zoomClass}`}
-                    style={kenBurns(1.15, 1.3, playState)}
-                  >
+                <div className="flex items-center justify-center bg-wash p-6 md:p-8">
+                  {item.image && (
                     <img
                       src={item.image.url}
-                      alt=""
+                      width={item.image.width}
+                      height={item.image.height}
+                      alt={labels.imageAlt.replace('{title}', item.title)}
                       loading="lazy"
                       decoding="async"
                       draggable={false}
-                      className="size-full object-cover blur-2xl"
+                      className="max-h-[280px] w-auto rounded-image-sm object-contain md:max-h-[340px]"
                     />
-                  </div>
-                )}
-                <div aria-hidden="true" className="absolute inset-0 bg-navy/85" />
-
-                <div className="relative grid flex-1 content-center items-center gap-6 px-6 pt-8 pb-14 md:grid-cols-2 md:gap-10 md:px-14 md:pt-12 md:pb-18">
-                  <div className="flex items-center justify-center">
-                    {item.image && (
-                      <img
-                        key={`fg-${stamp}`}
-                        src={item.image.url}
-                        width={item.image.width}
-                        height={item.image.height}
-                        alt={labels.imageAlt.replace('{title}', item.title)}
-                        loading="lazy"
-                        decoding="async"
-                        draggable={false}
-                        className={`max-h-[220px] w-auto rounded-image-sm object-contain md:max-h-[360px] ${zoomClass}`}
-                        style={kenBurns(1, 1.05, playState)}
-                      />
-                    )}
-                  </div>
-
-                  <div className="flex flex-col gap-4">
-                    <div className="flex flex-wrap items-center gap-2">
-                      {/* `kind` lạ vẫn hiện được nhãn: rơi về sắc mặc định và lấy chính
-                          `kind` làm chữ, thay vì một nhãn trống không đọc được. */}
-                      <Pill tone={KIND_TONES[item.kind] ?? 'outline'}>
-                        {labels.kinds[item.kind] ?? item.kind}
-                      </Pill>
-                      {item.date && <Pill tone="white">{item.date}</Pill>}
-                    </div>
-                    <h4 className="text-heading-sm md:text-heading-lg text-white">{item.title}</h4>
-                    <p className="text-body-sm text-white/80">{item.description}</p>
-                  </div>
+                  )}
                 </div>
-              </div>
+
+                <div className="flex flex-col justify-center gap-4 p-6 md:p-10">
+                  <div className="flex flex-wrap items-center gap-2">
+                    {/* `kind` lạ vẫn hiện được nhãn: rơi về sắc mặc định và lấy chính
+                        `kind` làm chữ, thay vì một nhãn trống không đọc được. */}
+                    <Pill tone={KIND_TONES[item.kind] ?? 'outline'}>{labels.kinds[item.kind] ?? item.kind}</Pill>
+                    {item.date && <Pill tone="outline">{item.date}</Pill>}
+                  </div>
+                  <h4 className="text-heading-sm md:text-heading-lg text-ink">{item.title}</h4>
+                  <p className="text-body-sm text-graphite">{item.description}</p>
+                </div>
+              </article>
             )
           })}
-
-          {total > 1 && (
-            <SlideProgress
-              className="absolute inset-x-0 bottom-0 z-20 px-8 pb-3 md:px-16 md:pb-5"
-              items={items}
-              current={current}
-              cycle={cycle}
-              autoplay={autoplay}
-              playState={playState}
-              durationMs={SLIDE_MS}
-              onDone={() => go(1)}
-              goTo={goTo}
-              label={label('goTo')}
-            />
-          )}
         </div>
 
-        {/* Đọc slide mới khi người dùng tự chuyển; đang tự chạy thì im (mẫu carousel
-            của WAI-ARIA) — đọc mỗi 6,5 giây là quấy rầy. */}
-        <p className="sr-only" aria-live={running ? 'off' : 'polite'}>
-          {current + 1} / {total} — {items[current].title}
-        </p>
+        {multiple && <div className="hidden md:block">{next}</div>}
+      </Reveal>
 
-        {total > 1 && (
-          <div className="mt-6 flex items-center justify-center gap-3">
-            <RoundButton label={label('previous')} onClick={() => go(-1)}>
-              <ArrowLeftIcon />
-            </RoundButton>
-            {/* Nút dừng bắt buộc (WCAG 2.2.2): nội dung tự chuyển động quá 5 giây. */}
+      {/* Đọc slide mới khi người dùng tự chuyển; đang tự chạy thì im (mẫu carousel
+          của WAI-ARIA) — đọc mỗi 6,5 giây là quấy rầy. */}
+      <p className="sr-only" aria-live={running ? 'off' : 'polite'}>
+        {current + 1} / {total} — {items[current].title}
+      </p>
+
+      {/* Điện thoại: hàng chấm riêng một dòng, bên dưới là ← ⏸ → (chen chung một hàng thì
+          11 chấm gãy thành 2–3 dòng ở 320–390px). Từ md: chấm + nút dừng chung một hàng,
+          mũi tên đã đứng hai bên thẻ. */}
+      {multiple && (
+        <Reveal className="mt-6 flex flex-col items-center gap-4 md:flex-row md:justify-center">
+          <SlideProgress
+            variant="dots"
+            items={items}
+            current={current}
+            cycle={cycle}
+            autoplay={autoplay}
+            playState={playState}
+            durationMs={SLIDE_MS}
+            onDone={() => go(1)}
+            goTo={goTo}
+            label={label('goTo')}
+          />
+
+          <div className="flex items-center gap-3">
+            <div className="md:hidden">{previous}</div>
+            {/* Nút dừng bắt buộc (WCAG 2.2.2): nội dung tự chuyển hơn 5 giây. */}
             {autoplay && (
               <RoundButton label={label(playing ? 'pause' : 'play')} onClick={show.togglePlaying}>
                 {playing ? <PauseIcon /> : <PlayIcon />}
               </RoundButton>
             )}
-            <RoundButton label={label('next')} onClick={() => go(1)}>
-              <ArrowRightIcon />
-            </RoundButton>
+            <div className="md:hidden">{next}</div>
           </div>
-        )}
-      </Reveal>
+        </Reveal>
+      )}
     </div>
   )
 }
@@ -261,7 +240,7 @@ export function Activities() {
             <ActivityVideoBanner key={group.id} {...props} />
           ) : (
             <div key={group.id} className="container-page">
-              <ActivityBanner {...props} />
+              <ActivityCarousel {...props} />
             </div>
           )
         })}

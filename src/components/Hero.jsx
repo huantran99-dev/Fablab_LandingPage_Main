@@ -11,7 +11,7 @@ export function Hero() {
     <section id="top" className="pt-10 pb-16 md:pt-16 md:pb-24 lg:pb-28">
       <div className="container-page grid gap-12 lg:grid-cols-[1fr_1.05fr] lg:items-center lg:gap-16">
         <div className="flex flex-col items-start gap-6 animate-rise">
-          <Pill>{t.hero.eyebrow}</Pill>
+          <Pill size="lg">{t.hero.eyebrow}</Pill>
 
           <h1 className="text-display-lg text-ink">{t.hero.title}</h1>
 
