@@ -74,7 +74,7 @@ gọn chỗ dài bằng `…`). Deploy thì xem [DEPLOY.md](DEPLOY.md).
 - **Định dạng:** JSON UTF-8, trừ `POST /api/admin/media` nhận byte ảnh thô.
 - **Không có CORS.** API chỉ dùng được từ chính trang (same-origin). Đây là chủ đích:
   cookie đăng nhập và kiểm `Origin` dựa trên điều đó.
-- **Phiên bản:** `GET /api/health` trả `api` (hiện là `8`, hằng `API_VERSION` trong
+- **Phiên bản:** `GET /api/health` trả `api` (hiện là `12`, hằng `API_VERSION` trong
   [content.public.js](../server/routes/content.public.js)). Dashboard so với
   `EXPECTED_API` trong [src/admin/App.jsx](../src/admin/App.jsx) và hiện băng đỏ nếu máy
   chủ thấp hơn — dấu hiệu máy chủ chưa được khởi động lại sau khi cập nhật.
@@ -197,7 +197,7 @@ Không cần đăng nhập. Trang công khai chỉ gọi `GET /api/content`.
 Máy chủ còn sống không, đang ở bản nội dung nào, phiên bản API nào.
 
 ```json
-{"ok":true,"rev":80,"updatedAt":"2026-10-21T09:08:07.235Z","api":10}
+{"ok":true,"rev":88,"updatedAt":"2026-10-27T08:49:55.625Z","api":12}
 ```
 
 | Trường | Ý nghĩa |
@@ -557,13 +557,16 @@ Trên mọi phần tử mảng có `id`, các trường sau không được dị
 `items[]`: `{ id, title: chữ(80), description: chữ(400) }`.
 `id` của mục tra icon; id không có icon thì component dùng icon theo vị trí.
 
+- `missionTitle`: chữ(80) — tiêu đề khối Sứ mệnh (h3, ngang cấp Tầm nhìn / Giá trị cốt lõi). *(từ API 11)*
 - `vision`: `{ title: chữ(80), body: chữ(400) }` — khối Tầm nhìn. *(từ API 4)*
-- `valuesTitle`: chữ(80) — tiêu đề cột "Giá trị cốt lõi". *(từ API 6)*
-- `values[]` (≥ 1): `{ id, title: chữ(40) }` — danh sách giá trị đánh số 01, 02…, chỉ tên ngắn. *(từ API 4)*
+- `visionHighlights[]` (≤ 4, có thể vắng): `{ id, label: chữ(60) }` — điểm nhấn dưới câu tầm nhìn. *(từ API 11)*
+- `valuesTitle`: chữ(80) — tiêu đề khối "Giá trị cốt lõi". *(từ API 6)*
+- `values[]` (≥ 1): `{ id, title: chữ(40), description: chữ(300) }` — accordion đánh số 01, 02…; `description` hiện khi bấm mở. *(từ API 4; `description` từ API 11)*
 
 Database seed trước ngày có các khoá này nhận chúng qua migration
-`005_pillars_vision_values.sql` (`vision`, `values`) và `007_pillars_values_title.sql`
-(`valuesTitle`). Component vẫn chịu được khi chúng vắng (bản lịch
+`005_pillars_vision_values.sql` (`vision`, `values`), `007_pillars_values_title.sql`
+(`valuesTitle`) và `013_about_restructure.sql` (`missionTitle`, `visionHighlights`,
+`values[].description`, đổi `title` cũ "Sứ mệnh của EIU FabLab" thành "Về EIU FabLab"). Component vẫn chịu được khi chúng vắng (bản lịch
 sử cũ khôi phục lại bỏ qua schema): thiếu thì bỏ hẳn khối, không sập trang.
 
 ### stats
@@ -697,7 +700,8 @@ vòng xoay 3D *(từ API 8)* · `statuses`: record `id → chữ(40)` (nhãn tr�
 
 ### register
 
-Chữ của form đăng ký khóa học. Toàn bộ là chữ dịch, không có mảng.
+Chữ của form đăng ký. Toàn bộ là chữ dịch, không có mảng. Các khoá cấp một bên dưới
+thuộc tab **Khóa học**; tab **Thành viên FabLab** nằm ở `member` *(từ API 12)*.
 
 | Trường | Kiểu |
 |---|---|
@@ -710,12 +714,19 @@ Chữ của form đăng ký khóa học. Toàn bộ là chữ dịch, không có
 | `consent` | chữ(300) |
 | `privacy` | chữ(800) |
 | `submit`, `submitting` | chữ(40) |
-| `errors` | `{ required, phone, email, consent, tooLong: chữ(120), rateLimited, paused, network: chữ(200) }` |
-| `success` | `{ title: chữ(80), message: chữ(300), close: chữ(30) }` |
+| `errors` | `{ required, phone, email, consent, tooLong, birthYear, role: chữ(120), rateLimited, paused, network, age: chữ(200) }` — `age`, `birthYear`, `role` từ API 12 |
+| `success` | `{ title: chữ(80), message: chữ(300), close: chữ(30) }` — dùng chung hai tab |
+| `tabs` | `{ label: chữ(60), member, course: chữ(40) }` — nhãn nhóm tab (trình đọc màn hình) và hai tab *(từ API 12)* |
+| `member` | `{ description: chữ(300), ageNote: chữ(200), heading, fullName, birthYear, role, roleNone, organization, interests: chữ(60), birthYearHint: chữ(80), notePlaceholder: chữ(120), consent: chữ(300), privacy: chữ(800) }` *(từ API 12)* |
+| `memberRoles` | Object **đúng 5 khoá cố định** `eiu-student`, `eiu-staff`, `student`, `worker`, `other` → chữ(60) *(từ API 12)* |
+| `memberInterests` | Object **đúng 6 khoá cố định** `3d-printing`, `laser`, `cnc`, `electronics`, `robotics`, `other` → chữ(60) *(từ API 12)* |
 
 Token `{email}` / `{phone}` được thay bằng `footer.contact.*`, `{count}` bằng số mục lỗi.
 Section này được thêm sau ngày seed, nên database cũ nhận nó qua migration
-[004_register_content.sql](../server/db/migrations/004_register_content.sql).
+[004_register_content.sql](../server/db/migrations/004_register_content.sql); phần tab
+Thành viên qua [015_register_member_content.sql](../server/db/migrations/015_register_member_content.sql)
+(đổi `title` "Đăng ký khóa học" → "Đăng ký" chỉ khi còn nguyên văn cũ). Bảng
+`registration` có cột `kind` từ [014_registration_kind.sql](../server/db/migrations/014_registration_kind.sql).
 
 ### footer
 
@@ -1070,10 +1081,12 @@ curl -s -b $JAR -H "$O" -X POST $D/api/auth/logout
 
 ---
 
-## 12. Đăng ký khóa học
+## 12. Đăng ký (khóa học và thành viên FabLab)
 
 Form đăng ký trên trang công khai gửi vào `POST /api/registrations`; dashboard đọc và
-xử lý qua `/api/admin/registrations`. Đây là **dữ liệu cá nhân** (có trẻ em) — đọc mục
+xử lý qua `/api/admin/registrations`. Từ API 12 có **hai loại**, phân biệt bằng `kind`:
+`course` (phụ huynh đăng ký khóa học cho con) và `member` (người từ 16 tuổi tự đăng ký
+thành viên FabLab). Đây là **dữ liệu cá nhân** (có trẻ em) — đọc mục
 [Dữ liệu cá nhân](#dữ-liệu-cá-nhân) trước khi làm thêm gì với nó.
 
 > **Không route nào ở đây đổi `rev` nội dung.** Đăng ký nằm ở bảng `registration`,
@@ -1118,6 +1131,45 @@ gốc request vẫn áp: phải có `Origin` thuộc danh sách cho phép hoặc
 | `website` | **Ô bẫy bot** — người thật để trống |
 | `elapsed` | Số ms từ lúc mở form tới lúc gửi |
 | `ref`, `width` | Chỉ phục vụ thống kê; `ref` chỉ giữ tên host |
+| `kind` | `course` (mặc định khi vắng — bundle cũ trong cache vẫn gửi được) \| `member` *(từ API 12)* |
+
+**Thân của `kind: "member"`** *(từ API 12)* — không có `course` / `studentName` /
+`studentGrade` / `school` / `parentName`; gửi kèm là `422 invalid`:
+
+```json
+{
+  "kind": "member",
+  "fullName": "Trần Thị Cúc",
+  "birthYear": "2003",
+  "phone": "0911 222 333",
+  "email": "cuc@example.com",
+  "role": "eiu-student",
+  "organization": "EIU",
+  "interests": ["3d-printing", "laser"],
+  "note": "",
+  "consent": true, "locale": "vi", "source": "nav", "website": "", "elapsed": 42000
+}
+```
+
+| Trường | Luật |
+|---|---|
+| `fullName` | Bắt buộc, ≤ 120 |
+| `birthYear` | Bắt buộc, 4 chữ số, 1900 → năm nay (mã `birthYear`); chưa đủ **16 tuổi** tính theo năm → mã `age` |
+| `phone` | Như trên |
+| `email` | **Bắt buộc** (khác `course`) — mã `required` / `email` |
+| `role` | `eiu-student` \| `eiu-staff` \| `student` \| `worker` \| `other` — sai là mã `role` |
+| `organization` | Không bắt buộc, ≤ 160 |
+| `interests` | Mảng, không trùng, mỗi phần tử thuộc `3d-printing` \| `laser` \| `cnc` \| `electronics` \| `robotics` \| `other` — sai là mã `interests` (đường dẫn gom về `interests`, không có chỉ số) |
+
+Id của `role` / `interests` **cố định trong mã** (`MEMBER_ROLES` / `MEMBER_INTERESTS` ở
+`server/schema/registration.js`); nhãn hiển thị nằm ở `register.memberRoles` /
+`register.memberInterests` và sửa được từ dashboard.
+
+Thành viên lưu vào cùng bảng `registration` với `kind = 'member'`: `student_name` = họ
+tên, `school` = trường / đơn vị, `parent_name` / `course_id` = NULL, cộng `birth_year`,
+`member_role`, `interests` (JSON). Câu đồng ý lưu làm bằng chứng lấy từ
+`register.member.consent` + `register.member.privacy`. Sự kiện `register_submit` mang
+`target = "member"`.
 
 Máy chủ **tự tra** tên khóa và nguyên văn câu đồng ý kèm thông báo quyền riêng tư (đã
 thay `{email}`) từ nội dung hiện hành — không nhận hai thứ đó từ client.
@@ -1133,7 +1185,8 @@ ratelimit-policy: 20;w=86400
 
 **Sai dữ liệu — `422`.** `code` là mã, không phải câu chữ: trang tự dịch bằng
 `register.errors.<code>`. Mã có thể gặp: `required`, `tooLong`, `phone`, `email`,
-`consent`, `course`, và `invalid` (khoá thừa, sai kiểu).
+`consent`, `course`, `age`, `birthYear`, `role`, `interests` và `invalid` (khoá thừa,
+sai kiểu).
 
 ```json
 {"error":"du lieu khong hop le","issues":[{"path":"studentName","code":"required"},{"path":"phone","code":"phone"},{"path":"consent","code":"consent"}]}
@@ -1156,7 +1209,7 @@ sau ghi đè header của bộ trước.
 | `website` khác rỗng | Ô bẫy bị điền |
 | `elapsed` < 3000 | Nhanh hơn người thật. Form của trang tự chờ cho đủ trước khi gửi |
 | User-Agent rỗng hoặc giống bot (`bot`, `curl`, `python`, `headless`…) | |
-| Trùng `phone` + `course` trong 10 phút | Bấm đúp / gửi lại sau lỗi mạng — giữ một dòng |
+| Trùng `phone` + `kind` + `course` trong 10 phút | Bấm đúp / gửi lại sau lỗi mạng — giữ một dòng |
 
 Lượt lưu thật cũng ghi sự kiện thống kê `register_submit` trong cùng giao dịch (trừ khi
 trình duyệt gửi `DNT: 1` hoặc `Sec-GPC: 1`).
@@ -1167,8 +1220,9 @@ Danh sách có lọc, **phân trang ở máy chủ**, mới nhất trước.
 
 | Tham số | Ý nghĩa |
 |---|---|
-| `status` | `new` \| `contacted` \| `enrolled` \| `cancelled` |
-| `course` | Id khóa học; `-` = chưa chọn khóa |
+| `status` | `new` \| `contacted` \| `enrolled` \| `cancelled` (với thành viên, `enrolled` hiển thị là "Đã kết nạp") |
+| `kind` | `course` \| `member` *(từ API 12)* |
+| `course` | Id khóa học; `-` = đăng ký **khóa học** chưa chọn khóa (không gồm thành viên) |
 | `from`, `to` | `YYYY-MM-DD` theo **ngày Việt Nam** (UTC+7), gồm cả hai đầu |
 | `q` | Tìm trong tên học viên, tên phụ huynh, điện thoại, email, trường. Gõ `0912 345` vẫn khớp số liền |
 | `page` | Từ 1 |
@@ -1182,6 +1236,7 @@ Danh sách có lọc, **phân trang ở máy chủ**, mới nhất trước.
     "updatedAt": "2026-09-18T04:47:50.335Z",
     "status": "new",
     "statusAt": null,
+    "kind": "course",
     "courseId": "robotic-arm",
     "courseTitle": "Cánh tay Robot",
     "locale": "vi",
@@ -1193,18 +1248,24 @@ Danh sách có lọc, **phân trang ở máy chủ**, mới nhất trước.
     "email": "binh@example.com",
     "note": "Muốn học cuối tuần",
     "adminNote": null,
+    "birthYear": null,
+    "memberRole": null,
+    "interests": [],
     "source": "course-modal",
     "referrerHost": "facebook.com",
     "consentAt": "2026-09-18T04:47:50.335Z",
     "consentText": "Tôi đồng ý để EIU FabLab xử lý các thông tin trên nhằm liên hệ tư vấn khóa học.\n\nThông tin chỉ dùng để tư vấn và xếp lớp, do EIU FabLab (Đại học Quốc tế Miền Đông) quản lý và lưu tối đa 12 tháng. Bạn có thể rút lại đồng ý hoặc yêu cầu xoá dữ liệu qua fablab@eiu.edu.vn (Nghị định 13/2023/NĐ-CP).",
-    "courseOnPage": true
+    "courseOnPage": true,
+    "memberRoleLabel": null,
+    "interestLabels": []
   }],
   "total": 1,
   "page": 1,
   "pageSize": 25,
   "counts": {
     "byStatus": {"new":1,"contacted":0,"enrolled":0,"cancelled":0,"all":1},
-    "byCourse": [{"courseId":"robotic-arm","title":"Cánh tay Robot","total":1,"new":1}]
+    "byCourse": [{"courseId":"robotic-arm","title":"Cánh tay Robot","total":1,"new":1}],
+    "byKind": {"course":1,"member":0}
   }
 }
 ```
@@ -1214,7 +1275,10 @@ Danh sách có lọc, **phân trang ở máy chủ**, mới nhất trước.
 | `courseTitle` | Tên khóa **hiện tại** trên trang; khóa đã bị xoá thì là tên chụp lúc gửi |
 | `courseOnPage` | `false` = khóa không còn trên trang; `null` = không chọn khóa |
 | `counts.byStatus` | Số theo trạng thái với **mọi bộ lọc trừ `status`** — để tab nào cũng hiện số thật |
-| `counts.byCourse` | Số theo khóa trên **toàn bộ** đăng ký, không theo bộ lọc. `new` = chưa xử lý |
+| `counts.byCourse` | Số theo khóa trên **toàn bộ đăng ký khóa học** (không gồm thành viên), không theo bộ lọc. `new` = chưa xử lý |
+| `counts.byKind` | Số theo loại trên toàn bộ đăng ký *(từ API 12)* |
+| `kind`, `birthYear`, `memberRole`, `interests` | *(từ API 12)* Ba trường sau chỉ có giá trị với `kind: "member"`; `interests` luôn là mảng |
+| `memberRoleLabel`, `interestLabels` | Nhãn tiếng Việt hiện tại của đối tượng / lĩnh vực; id lạ thì trả chính id |
 
 ### `GET /api/admin/registrations/export`
 
@@ -1224,10 +1288,12 @@ Cùng tham số lọc như danh sách (bỏ `page`/`pageSize`), trả **CSV** đ
 content-type: text/csv; charset=utf-8
 content-disposition: attachment; filename="dang-ky-20260918.csv"
 
-Mã,Thời gian gửi,Trạng thái,Khóa học,Mã khóa,Học viên,Năm sinh / lớp,Trường,Phụ huynh,Điện thoại,Email,Ghi chú,Ghi chú quản trị,Nguồn,Ngôn ngữ,Đồng ý lúc
-1,2026-09-18 11:47,Đã liên hệ,Cánh tay Robot,robotic-arm,Nguyễn Minh An,lớp 7,THCS Mẫu,Nguyễn Văn Bình,="0912345678",binh@example.com,Muốn học cuối tuần,"Đã gọi, hẹn học thử thứ 7",Popup khóa học,vi,2026-09-18 11:47
+Mã,Thời gian gửi,Loại,Trạng thái,Khóa học,Mã khóa,Họ tên,Năm sinh / lớp,Trường / đơn vị,Phụ huynh,Đối tượng,Lĩnh vực quan tâm,Điện thoại,Email,Ghi chú,Ghi chú quản trị,Nguồn,Ngôn ngữ,Đồng ý lúc
+1,2026-09-18 11:47,Khóa học,Đã liên hệ,Cánh tay Robot,robotic-arm,Nguyễn Minh An,lớp 7,THCS Mẫu,Nguyễn Văn Bình,,,="0912345678",binh@example.com,Muốn học cuối tuần,"Đã gọi, hẹn học thử thứ 7",Popup khóa học,vi,2026-09-18 11:47
+3,2026-10-27 16:25,Thành viên FabLab,Mới,,,Trần Thị Cúc,2003,EIU,,Sinh viên EIU,In 3D; Cắt khắc laser,="0911222333",cuc@example.com,,,Thanh menu,vi,2026-10-27 16:25
 ```
 
+- Cột "Năm sinh / lớp" là năm sinh với thành viên, năm sinh hoặc lớp với học viên.
 - Bắt đầu bằng **BOM UTF-8** (`EF BB BF`) — thiếu nó Excel đọc tiếng Việt thành ký tự rác.
 - Giờ là giờ Việt Nam. Xuống dòng CRLF, trích dẫn theo RFC 4180.
 - Số điện thoại bọc `="…"` để Excel không cắt số 0 đầu. An toàn vì máy chủ đã chuẩn hoá

@@ -269,23 +269,37 @@ export const SECTIONS = [
     key: 'pillars',
     label: 'Trụ cột',
     icon: 'pillars',
-    description: 'Ba trụ cột sứ mạng, tầm nhìn và lưới giá trị cốt lõi (Về chúng tôi).',
+    description: 'Section Về chúng tôi: ba khối ngang cấp Sứ mệnh (3 trụ cột), Tầm nhìn và Giá trị cốt lõi.',
     groups: [
       {
         title: 'Chữ chung',
         fields: [eyebrow, title, description],
       },
       {
+        title: 'Sứ mệnh',
+        description: 'Tiêu đề khối đứng trên ba thẻ trụ cột. Các trụ cột sửa ở danh sách bên dưới.',
+        fields: [text('missionTitle', 'Tiêu đề khối')],
+      },
+      {
         title: 'Tầm nhìn',
-        fields: [text('vision.title', 'Tiêu đề'), area('vision.body', 'Câu tầm nhìn', { rows: 2 })],
+        description: 'Điểm nhấn dưới câu tầm nhìn sửa ở danh sách bên dưới.',
+        fields: [text('vision.title', 'Tiêu đề khối'), area('vision.body', 'Câu tầm nhìn', { rows: 2 })],
       },
       {
         title: 'Giá trị cốt lõi',
-        description: 'Tiêu đề cột bên phải khối Tầm nhìn. Các giá trị sửa ở danh sách bên dưới.',
-        fields: [text('valuesTitle', 'Tiêu đề cột')],
+        description: 'Các giá trị sửa ở danh sách bên dưới.',
+        fields: [text('valuesTitle', 'Tiêu đề khối')],
       },
     ],
     lists: [
+      {
+        path: 'visionHighlights',
+        title: 'Điểm nhấn tầm nhìn',
+        itemName: 'điểm nhấn',
+        titleField: 'label',
+        columns: [{ label: 'Id', value: (item) => item.id }],
+        fields: [text('label', 'Nhãn ngắn')],
+      },
       {
         path: 'items',
         title: 'Trụ cột sứ mạng',
@@ -301,7 +315,7 @@ export const SECTIONS = [
         itemName: 'giá trị',
         titleField: 'title',
         columns: [{ label: 'Id', value: (item) => item.id }],
-        fields: [text('title', 'Tên ngắn (1 cụm từ)')],
+        fields: [text('title', 'Tên ngắn (1 cụm từ)'), area('description', 'Mô tả (hiện khi bấm mở)', { rows: 3 })],
       },
     ],
   },
@@ -621,17 +635,27 @@ export const SECTIONS = [
     key: 'register',
     label: 'Form đăng ký',
     icon: 'register',
-    description: 'Chữ của form đăng ký khóa học (popup mở từ nút "Đăng ký").',
+    description: 'Chữ của form đăng ký (popup mở từ nút "Đăng ký"): hai tab Thành viên FabLab và Khóa học.',
     notes: [
       '{email} và {phone} được thay bằng email / số điện thoại ở mục Liên hệ của Chân trang; {count} là số mục còn lỗi. Giữ nguyên các dấu ngoặc nhọn.',
       'Đoạn "Thông báo quyền riêng tư" là thông báo xử lý dữ liệu cá nhân theo Nghị định 13/2023 — nêu mục đích, bên quản lý, thời hạn lưu, quyền yêu cầu xoá. Thời hạn ghi ở đây phải khớp REGISTRATION_RETENTION_DAYS trên máy chủ (mặc định 365 ngày).',
       'Chữ đồng ý người gửi nhìn thấy được lưu nguyên văn vào từng lượt đăng ký, làm bằng chứng — sửa câu chữ không làm đổi các lượt đã gửi.',
+      'Tab Thành viên dành cho người từ 16 tuổi (máy chủ kiểm năm sinh). Hai bảng "Đối tượng" và "Lĩnh vực quan tâm" chỉ sửa được nhãn — lựa chọn cố định trong mã.',
     ],
     groups: [
-      { title: 'Tiêu đề', fields: [title, area('description', 'Mô tả ngắn', { rows: 2 })] },
       {
-        title: 'Khóa học và học viên',
+        title: 'Tiêu đề và tab',
         fields: [
+          title,
+          text('tabs.label', 'Tên nhóm tab (trình đọc màn hình)'),
+          text('tabs.member', 'Tab thành viên'),
+          text('tabs.course', 'Tab khóa học'),
+        ],
+      },
+      {
+        title: 'Tab Khóa học — mô tả, khóa học và học viên',
+        fields: [
+          area('description', 'Mô tả ngắn', { rows: 2 }),
           text('course', 'Nhãn ô chọn khóa học'),
           text('courseNone', 'Lựa chọn "chưa chọn khóa"'),
           text('studentHeading', 'Tiêu đề nhóm học viên'),
@@ -660,6 +684,24 @@ export const SECTIONS = [
         ],
       },
       {
+        title: 'Tab Thành viên FabLab',
+        fields: [
+          area('member.description', 'Mô tả ngắn', { rows: 2 }),
+          area('member.ageNote', 'Ghi chú độ tuổi', { rows: 2 }),
+          text('member.heading', 'Tiêu đề nhóm thông tin'),
+          text('member.fullName', 'Nhãn: họ tên'),
+          text('member.birthYear', 'Nhãn: năm sinh'),
+          text('member.birthYearHint', 'Gợi ý dưới ô năm sinh'),
+          text('member.role', 'Nhãn: đối tượng'),
+          text('member.roleNone', 'Lựa chọn trống của ô đối tượng'),
+          text('member.organization', 'Nhãn: trường / đơn vị'),
+          text('member.interests', 'Tiêu đề nhóm lĩnh vực quan tâm'),
+          text('member.notePlaceholder', 'Chữ mờ trong ô ghi chú'),
+          area('member.consent', 'Câu đồng ý (cạnh ô tích)', { rows: 2 }),
+          area('member.privacy', 'Thông báo quyền riêng tư', { rows: 4, help: altHelp('{email}', 'email liên hệ') }),
+        ],
+      },
+      {
         title: 'Nút và nhãn chung',
         fields: [
           text('submit', 'Nút gửi'),
@@ -682,6 +724,9 @@ export const SECTIONS = [
           text('errors.rateLimited', 'Gửi quá nhiều lần'),
           text('errors.paused', 'Tạm ngưng nhận đăng ký', { help: altHelp('{phone}', 'số điện thoại liên hệ') }),
           text('errors.network', 'Lỗi mạng / máy chủ', { help: altHelp('{phone}', 'số điện thoại liên hệ') }),
+          text('errors.age', 'Thành viên chưa đủ 16 tuổi'),
+          text('errors.birthYear', 'Năm sinh sai'),
+          text('errors.role', 'Chưa chọn đối tượng'),
         ],
       },
       {
@@ -690,6 +735,10 @@ export const SECTIONS = [
       },
     ],
     lists: [],
+    records: [
+      { path: 'memberRoles', title: 'Đối tượng (tab Thành viên)', description: 'Ô "Bạn là". Lựa chọn cố định, chỉ sửa nhãn.', itemName: 'đối tượng', fixed: true },
+      { path: 'memberInterests', title: 'Lĩnh vực quan tâm (tab Thành viên)', description: 'Các ô tích chọn nhiều. Lựa chọn cố định, chỉ sửa nhãn.', itemName: 'lĩnh vực', fixed: true },
+    ],
   },
   {
     key: 'footer',

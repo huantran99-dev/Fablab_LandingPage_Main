@@ -264,8 +264,11 @@ export function Navbar() {
         scrolled ? 'bg-white/85 backdrop-blur-lg border-b border-ash/50' : 'bg-transparent',
       ].join(' ')}
     >
-      <nav ref={navRef} className="container-page flex items-center justify-between gap-3 py-4 sm:gap-6">
-        <a href="#top" className="shrink-0" aria-label="FabLab EIU">
+      {/* 320px tiếng Anh: logo (dòng phụ "Digital fabrication lab" dài hơn bản Việt) + VI/EN
+          + nút menu từng vượt khung 2px → cả trang kéo ngang được. Khe 8px trên điện thoại,
+          và logo được co (`min-w-0`): chật thì dòng phụ xuống hàng thay vì đẩy tràn. */}
+      <nav ref={navRef} className="container-page flex items-center justify-between gap-2 py-4 sm:gap-6">
+        <a href="#top" className="min-w-0" aria-label="FabLab EIU">
           <Logo tagline={t.nav.brandTagline} />
         </a>
 

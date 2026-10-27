@@ -17,6 +17,8 @@
  */
 import { z } from 'zod'
 
+import { MEMBER_INTERESTS, MEMBER_ROLES } from './registration.js'
+
 // Thông báo mặc định của Zod hiện thẳng dưới ô nhập của dashboard, nên dùng bản
 // tiếng Việt có sẵn trong Zod. Cấu hình toàn cục, nhưng chỉ tiến trình máy chủ
 // import file này.
@@ -57,11 +59,20 @@ export const pillarsSchema = z.strictObject({
   eyebrow: text(80),
   title: text(120),
   description: text(400),
-  // Tầm nhìn — 1 dòng ngắn, đặt giữa 3 cột sứ mạng và lưới giá trị cốt lõi.
+  // Tiêu đề khối Sứ mệnh (h3, ngang cấp Tầm nhìn / Giá trị cốt lõi). Từ API 11.
+  missionTitle: text(80),
+  // Tầm nhìn — một câu, hiện trong thẻ pastel.
   vision: z.strictObject({ title: text(80), body: text(400) }),
-  // Lưới giá trị cốt lõi — chỉ tên ngắn, không mô tả, để 6 thẻ ngang bằng.
+  // Điểm nhấn dưới câu tầm nhìn. Ở cấp trên cùng chứ không trong `vision` để bản lịch sử
+  // cũ (vision chỉ có title/body) vẫn hợp lệ. Từ API 11.
+  visionHighlights: z.array(idLabel(60)).max(4, 'toi da 4 diem nhan').optional(),
   valuesTitle: text(80),
-  values: z.array(z.strictObject({ id: idSchema, title: text(40) })).min(1, 'phai co it nhat mot gia tri cot loi'),
+  // Giá trị cốt lõi dạng accordion: tên ngắn + mô tả hiện khi bấm mở (từ API 11). Bắt buộc
+  // khi ghi (ô dịch để trống thì dashboard gửi "" chứ không bỏ khoá); component vẫn chịu
+  // được mục thiếu mô tả từ bản lịch sử cũ — dòng đó thành chữ thường, không bấm được.
+  values: z
+    .array(z.strictObject({ id: idSchema, title: text(40), description: text(300) }))
+    .min(1, 'phai co it nhat mot gia tri cot loi'),
   items: z.array(z.strictObject({ id: idSchema, title: text(80), description: text(400) })),
 })
 
@@ -317,8 +328,33 @@ export const registerSchema = z.strictObject({
     rateLimited: text(200),
     paused: text(200),
     network: text(200),
+    // Ba mã của tab Thành viên — từ API 12.
+    age: text(200),
+    birthYear: text(120),
+    role: text(120),
   }),
   success: z.strictObject({ title: text(80), message: text(300), close: text(30) }),
+  // Hai tab của form (từ API 12). Các khoá cấp một phía trên là của tab Khóa học.
+  tabs: z.strictObject({ label: text(60), member: text(40), course: text(40) }),
+  member: z.strictObject({
+    description: text(300),
+    ageNote: text(200),
+    heading: text(60),
+    fullName: text(60),
+    birthYear: text(60),
+    birthYearHint: text(80),
+    role: text(60),
+    roleNone: text(60),
+    organization: text(60),
+    interests: text(60),
+    notePlaceholder: text(120),
+    consent: text(300),
+    privacy: text(800),
+  }),
+  // Khoá là id CỐ ĐỊNH trong mã (MEMBER_ROLES / MEMBER_INTERESTS) — strictObject đúng các
+  // khoá đó: admin sửa được nhãn, không thêm/bớt được lựa chọn (máy chủ không nhận id lạ).
+  memberRoles: z.strictObject(Object.fromEntries(MEMBER_ROLES.map((id) => [id, text(60)]))),
+  memberInterests: z.strictObject(Object.fromEntries(MEMBER_INTERESTS.map((id) => [id, text(60)]))),
 })
 
 /** Mục menu cấp một: hoặc là link (`href`), hoặc là nhánh (`children`) — không bao giờ cả hai. */

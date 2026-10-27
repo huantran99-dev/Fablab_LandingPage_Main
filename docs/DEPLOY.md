@@ -408,7 +408,7 @@ Chạy từ máy bất kỳ:
 D=https://fablab.example.vn
 
 curl -s $D/api/health
-# {"ok":true,"rev":80,"updatedAt":"...","api":10}
+# {"ok":true,"rev":88,"updatedAt":"...","api":12}
 
 curl -sI $D/ | grep -iE '^(HTTP|content-security-policy|strict-transport-security)'
 # HTTP/2 200 + ca hai header bao mat

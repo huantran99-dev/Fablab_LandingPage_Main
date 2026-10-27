@@ -1,4 +1,5 @@
 import snapshot from '../content/snapshot.json'
+import { tieLastWords } from './typography'
 
 /**
  * Nguồn nội dung của trang: bản đóng gói sẵn, rồi thay nóng bằng bản từ API.
@@ -26,11 +27,13 @@ import snapshot from '../content/snapshot.json'
 
 const listeners = new Set()
 
+// Mọi nội dung vào trang đều đi qua đúng hai chỗ gán `state` dưới đây — cả hai đều qua
+// `tieLastWords` để dòng cuối đoạn văn không còn một chữ (xem lib/typography.js).
 let state = {
   rev: snapshot.rev ?? 0,
   updatedAt: snapshot.updatedAt ?? null,
-  vi: snapshot.vi,
-  en: snapshot.en,
+  vi: tieLastWords(snapshot.vi),
+  en: tieLastWords(snapshot.en),
   /** 'snapshot' = bản đóng gói; 'api' = đã lấy được bản mới từ máy chủ. */
   source: 'snapshot',
 }
@@ -99,7 +102,13 @@ export function refreshContent() {
       // làm gì. Đây cũng là thứ giữ cho lần tải thường không hề nháy.
       if (data.rev === state.rev) return
 
-      state = { rev: data.rev, updatedAt: data.updatedAt ?? null, vi: data.vi, en: data.en, source: 'api' }
+      state = {
+        rev: data.rev,
+        updatedAt: data.updatedAt ?? null,
+        vi: tieLastWords(data.vi),
+        en: tieLastWords(data.en),
+        source: 'api',
+      }
       for (const listener of listeners) listener()
     })
     .catch(() => {

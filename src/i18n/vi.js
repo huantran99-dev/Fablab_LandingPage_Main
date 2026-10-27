@@ -83,22 +83,58 @@ export const vi = {
 
   pillars: {
     eyebrow: 'Về chúng tôi',
-    title: 'Sứ mệnh của EIU FabLab',
+    // "Về EIU FabLab" là tên mục trên trang gốc. Sứ mệnh / Tầm nhìn / Giá trị cốt lõi là
+    // ba khối NGANG CẤP bên dưới (mỗi khối một h3), không còn Sứ mệnh làm tiêu đề section.
+    title: 'Về EIU FabLab',
     description:
       'Phòng thí nghiệm chế tác, mang cơ hội tiếp cận và sử dụng thiết bị, kỹ thuật và công nghệ cho cộng đồng — nơi mọi người cùng học, cùng nghiên cứu, cùng thiết kế, cùng sáng tạo và cùng khởi nghiệp.',
+    missionTitle: 'Sứ mệnh',
     vision: {
       title: 'Tầm nhìn',
       body:
         'Trở thành xưởng chế tác số điển hình với công nghệ hiện đại, không gian mở năng động – sáng tạo, hỗ trợ tốt nhất để hiện thực hóa ý tưởng và thúc đẩy khởi nghiệp, tạo giá trị tích cực cho cộng đồng.',
     },
+    // Ba điểm nhấn tách từ chính câu tầm nhìn — không thêm ý mới.
+    visionHighlights: [
+      { id: 'technology', label: 'Công nghệ, thiết bị hiện đại' },
+      { id: 'open-space', label: 'Không gian mở năng động – sáng tạo' },
+      { id: 'startup', label: 'Hiện thực hóa ý tưởng, thúc đẩy khởi nghiệp' },
+    ],
     valuesTitle: 'Giá trị cốt lõi',
+    // Mô tả rút gọn từ khối "GIÁ TRỊ CỐT LÕI" trên fablab.eiu.edu.vn/vi/.
     values: [
-      { id: 'open-space', title: 'Không gian công nghệ mở' },
-      { id: 'experiment', title: 'Thử nghiệm' },
-      { id: 'problem-solving', title: 'Giải quyết vấn đề' },
-      { id: 'creativity', title: 'Sáng tạo' },
-      { id: 'collaboration', title: 'Chia sẻ và hợp tác' },
-      { id: 'achievement', title: 'Thành tựu' },
+      {
+        id: 'open-space',
+        title: 'Không gian công nghệ mở',
+        description:
+          'Dễ dàng tiếp cận và sử dụng thiết bị công nghệ để hiện thực hóa ý tưởng — động lực cho học tập và sáng tạo trong cộng đồng.',
+      },
+      {
+        id: 'experiment',
+        title: 'Thử nghiệm',
+        description: 'Mạnh dạn thử nghiệm để học thêm kiến thức, từ đó cải tiến và hoàn thiện sản phẩm.',
+      },
+      {
+        id: 'problem-solving',
+        title: 'Giải quyết vấn đề',
+        description: 'Kỹ năng giải quyết vấn đề là yếu tố quan trọng để dự án thành công.',
+      },
+      {
+        id: 'creativity',
+        title: 'Sáng tạo',
+        description: 'Sáng tạo để nâng cao giá trị sản phẩm, mang lại giá trị tích cực cho xã hội.',
+      },
+      {
+        id: 'collaboration',
+        title: 'Chia sẻ và hợp tác',
+        description: 'Chia sẻ kiến thức, kinh nghiệm và hợp tác giúp chúng ta đi nhanh và xa hơn.',
+      },
+      {
+        id: 'achievement',
+        title: 'Thành tựu',
+        description:
+          'Điều EIU FabLab hướng đến: tiếp thêm động lực đổi mới, sáng tạo cho cộng đồng để tạo ra giá trị tích cực cho xã hội.',
+      },
     ],
     items: [
       {
@@ -1102,8 +1138,16 @@ export const vi = {
   // Form đăng ký khóa học. {email}, {phone}, {count} được thay lúc render.
   // Đoạn `privacy` là thông báo xử lý dữ liệu cá nhân — FabLab cần duyệt câu chữ.
   register: {
-    title: 'Đăng ký khóa học',
+    // Form có hai loại (hai tab): đăng ký khóa học (phụ huynh cho con) và đăng ký thành
+    // viên FabLab (người từ 16 tuổi tự đăng ký). Các khoá cấp một bên dưới là của tab
+    // Khóa học như trước; tab Thành viên nằm trong `member`.
+    title: 'Đăng ký',
     description: 'Để lại thông tin, EIU FabLab sẽ liên hệ lại để tư vấn khóa học phù hợp.',
+    tabs: {
+      label: 'Loại đăng ký',
+      member: 'Thành viên FabLab',
+      course: 'Khóa học',
+    },
     course: 'Khóa học quan tâm',
     courseNone: 'Chưa chọn — cần tư vấn thêm',
     studentHeading: 'Thông tin học viên',
@@ -1135,11 +1179,50 @@ export const vi = {
       rateLimited: 'Bạn đã gửi nhiều lần liên tiếp. Vui lòng thử lại sau ít phút.',
       paused: 'Hệ thống tạm ngưng nhận đăng ký trực tuyến. Vui lòng gọi {phone}.',
       network: 'Chưa gửi được. Vui lòng thử lại hoặc gọi {phone}.',
+      age: 'Thành viên cần từ 16 tuổi trở lên. Học sinh nhỏ hơn vui lòng đăng ký khóa học.',
+      birthYear: 'Năm sinh chưa đúng (ví dụ 2004).',
+      role: 'Vui lòng chọn một mục.',
     },
     success: {
       title: 'Đã nhận đăng ký!',
       message: 'Cảm ơn bạn. EIU FabLab sẽ liên hệ qua số điện thoại bạn đã cung cấp.',
       close: 'Đóng',
+    },
+    // Tab Thành viên. Trang gốc không có trang thành viên — câu chữ cố ý không hứa quyền
+    // lợi cụ thể nào; FabLab bổ sung từ dashboard khi có.
+    member: {
+      description:
+        'Thành viên được sử dụng không gian và thiết bị của xưởng. Để lại thông tin, EIU FabLab sẽ liên hệ hướng dẫn thủ tục.',
+      ageNote: 'Dành cho người từ 16 tuổi trở lên. Học sinh nhỏ hơn vui lòng để phụ huynh đăng ký khóa học.',
+      heading: 'Thông tin của bạn',
+      fullName: 'Họ và tên',
+      birthYear: 'Năm sinh',
+      birthYearHint: 'Ví dụ: 2004',
+      role: 'Bạn là',
+      roleNone: 'Chọn một mục',
+      organization: 'Trường hoặc đơn vị',
+      interests: 'Lĩnh vực quan tâm',
+      notePlaceholder: 'Dự án bạn muốn làm, thời gian có thể đến xưởng…',
+      consent: 'Tôi đồng ý để EIU FabLab xử lý các thông tin trên nhằm liên hệ về việc đăng ký thành viên.',
+      privacy:
+        'Thông tin chỉ dùng để liên hệ và quản lý thành viên, do EIU FabLab (Đại học Quốc tế Miền Đông) quản lý và lưu tối đa 12 tháng. Bạn có thể rút lại đồng ý hoặc yêu cầu xoá dữ liệu qua {email} (Nghị định 13/2023/NĐ-CP).',
+    },
+    // Khoá (id) cố định trong mã — xem MEMBER_ROLES / MEMBER_INTERESTS ở
+    // server/schema/registration.js. Chỉ sửa nhãn, không thêm/bớt khoá.
+    memberRoles: {
+      'eiu-student': 'Sinh viên EIU',
+      'eiu-staff': 'Giảng viên – cán bộ EIU',
+      student: 'Học sinh',
+      worker: 'Người đi làm',
+      other: 'Khác',
+    },
+    memberInterests: {
+      '3d-printing': 'In 3D',
+      laser: 'Cắt khắc laser',
+      cnc: 'Gia công CNC',
+      electronics: 'Điện tử – lập trình',
+      robotics: 'Robot – tự động hoá',
+      other: 'Khác',
     },
   },
 

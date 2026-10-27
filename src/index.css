@@ -116,6 +116,12 @@
     font-family: var(--font-text);
     font-size: var(--text-body);
     line-height: 1.6;
+    /* Không để một chữ đứng trơ trọi ở dòng cuối đoạn văn ("…cho cộng / đồng.").
+       Đặt ở body vì thuộc tính kế thừa: mọi đoạn văn, kể cả nội dung admin sửa từ
+       dashboard, đều nhận mà không phải chèn &nbsp; vào dữ liệu. Tiêu đề dùng `balance`
+       ở rule bên dưới; phần tử nowrap (pill, nút, marquee) tự ghi đè. Firefox chưa hỗ
+       trợ `pretty` → xuống dòng như thường, không vỡ gì. */
+    text-wrap: pretty;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }

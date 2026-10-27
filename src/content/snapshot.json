@@ -37,7 +37,13 @@
             "width": 453
           },
           "kind": "competition",
-          "title": "EIU Drone Soccer Championship 2026"
+          "title": "EIU Drone Soccer Championship 2026",
+          "video": {
+            "duration": 24.3,
+            "height": 706,
+            "url": "/media/drone-intro.1567fa9e.mp4",
+            "width": 1416
+          }
         },
         {
           "date": "21–29 Mar 2026",
@@ -49,7 +55,13 @@
             "width": 452
           },
           "kind": "competition",
-          "title": "EIU MCR 2026 — Autonomous car programming"
+          "title": "EIU MCR 2026 — Autonomous car programming",
+          "video": {
+            "duration": 28.9,
+            "height": 482,
+            "url": "/media/mcr-intro.732c2b9f.mp4",
+            "width": 1170
+          }
         },
         {
           "date": "",
@@ -1794,7 +1806,7 @@
       "social": {
         "items": [
           {
-            "href": "#",
+            "href": "https://www.facebook.com/EIUfablab",
             "id": "facebook",
             "label": "Facebook"
           },
@@ -1991,29 +2003,36 @@
           "title": "Entrepreneurship"
         }
       ],
-      "title": "Mission of EIU FabLab",
+      "missionTitle": "Mission",
+      "title": "About EIU FabLab",
       "values": [
         {
+          "description": "Easy access to modern equipment helps turn early ideas into reality and drives learning and innovation in the community.",
           "id": "open-space",
           "title": "Open technology space"
         },
         {
+          "description": "Daring to experiment builds knowledge and leads to better, more refined products.",
           "id": "experiment",
           "title": "Experimentation"
         },
         {
+          "description": "Problem-solving skills are a key to success in any project.",
           "id": "problem-solving",
           "title": "Problem solving"
         },
         {
+          "description": "Creativity adds value to products and brings positive value to society.",
           "id": "creativity",
           "title": "Creativity"
         },
         {
+          "description": "Sharing knowledge and experience, and working together, helps us go faster and farther.",
           "id": "collaboration",
           "title": "Sharing and collaboration"
         },
         {
+          "description": "What EIU FabLab aims for: boosting creativity, development and positive values in the community.",
           "id": "achievement",
           "title": "Achievement"
         }
@@ -2022,7 +2041,21 @@
       "vision": {
         "body": "To become a model digital fabrication workshop with modern technology, a dynamic and creative open space, the best support for turning ideas into reality, and a driver of entrepreneurship that creates positive value for the community.",
         "title": "Vision"
-      }
+      },
+      "visionHighlights": [
+        {
+          "id": "technology",
+          "label": "Modern technology and equipment"
+        },
+        {
+          "id": "open-space",
+          "label": "A dynamic, creative open space"
+        },
+        {
+          "id": "startup",
+          "label": "Turning ideas into reality and start-ups"
+        }
+      ]
     },
     "projects": {
       "description": "Models and products designed and built at FabLab EIU — from STEM teaching kits to robots and medical models.",
@@ -2128,6 +2161,8 @@
       "email": "Email",
       "errorSummary": "Please check {count} fields below.",
       "errors": {
+        "age": "Members must be 16 or older. Younger students, please register for a course.",
+        "birthYear": "Year of birth looks wrong (e.g. 2004).",
         "consent": "We need your consent to contact you.",
         "email": "Email address looks wrong.",
         "network": "Could not send. Please try again or call {phone}.",
@@ -2135,7 +2170,38 @@
         "phone": "Phone number looks wrong (e.g. 0912 345 678).",
         "rateLimited": "Too many attempts in a row. Please try again in a few minutes.",
         "required": "Please fill in this field.",
+        "role": "Please choose one.",
         "tooLong": "This is too long."
+      },
+      "member": {
+        "ageNote": "For people aged 16 and over. Younger students, please ask a parent to register for a course.",
+        "birthYear": "Year of birth",
+        "birthYearHint": "E.g. 2004",
+        "consent": "I agree that EIU FabLab may process the information above to contact me about membership.",
+        "description": "Members can use the workshop space and equipment. Leave your details and EIU FabLab will contact you about the next steps.",
+        "fullName": "Full name",
+        "heading": "About you",
+        "interests": "Areas of interest",
+        "notePlaceholder": "Projects you want to build, when you can come to the lab…",
+        "organization": "School or organisation",
+        "privacy": "Your information is used only for contacting you and managing membership, is managed by EIU FabLab (Eastern International University) and kept for at most 12 months. You can withdraw consent or ask for deletion at {email} (Decree 13/2023/ND-CP).",
+        "role": "You are",
+        "roleNone": "Choose one"
+      },
+      "memberInterests": {
+        "3d-printing": "3D printing",
+        "cnc": "CNC machining",
+        "electronics": "Electronics and programming",
+        "laser": "Laser cutting and engraving",
+        "other": "Other",
+        "robotics": "Robotics and automation"
+      },
+      "memberRoles": {
+        "eiu-staff": "EIU lecturer or staff",
+        "eiu-student": "EIU student",
+        "other": "Other",
+        "student": "School student",
+        "worker": "Working professional"
       },
       "note": "Note",
       "notePlaceholder": "Preferred schedule, questions for FabLab…",
@@ -2157,7 +2223,12 @@
         "message": "Thank you. EIU FabLab will contact you on the phone number you provided.",
         "title": "Registration received!"
       },
-      "title": "Course registration"
+      "tabs": {
+        "course": "Courses",
+        "label": "Registration type",
+        "member": "FabLab membership"
+      },
+      "title": "Register"
     },
     "stats": {
       "items": [
@@ -2400,8 +2471,8 @@
       "title": "What learners say about FabLab EIU"
     }
   },
-  "rev": 80,
-  "updatedAt": "2026-10-21T09:08:07.235Z",
+  "rev": 90,
+  "updatedAt": "2026-10-27T09:33:00.621Z",
   "vi": {
     "activities": {
       "description": "Sân chơi, hội thảo và workshop do EIU FabLab tổ chức cho sinh viên, học sinh và cộng đồng.",
@@ -2440,7 +2511,13 @@
             "width": 453
           },
           "kind": "competition",
-          "title": "EIU Drone Soccer Championship 2026"
+          "title": "EIU Drone Soccer Championship 2026",
+          "video": {
+            "duration": 24.3,
+            "height": 706,
+            "url": "/media/drone-intro.1567fa9e.mp4",
+            "width": 1416
+          }
         },
         {
           "date": "21–29/3/2026",
@@ -2452,7 +2529,13 @@
             "width": 452
           },
           "kind": "competition",
-          "title": "EIU MCR 2026 — Lập trình xe đua tự động"
+          "title": "EIU MCR 2026 — Lập trình xe đua tự động",
+          "video": {
+            "duration": 28.9,
+            "height": 482,
+            "url": "/media/mcr-intro.732c2b9f.mp4",
+            "width": 1170
+          }
         },
         {
           "date": "",
@@ -4364,7 +4447,7 @@
       "social": {
         "items": [
           {
-            "href": "#",
+            "href": "https://www.facebook.com/EIUfablab",
             "id": "facebook",
             "label": "Facebook"
           },
@@ -4561,29 +4644,36 @@
           "title": "Khởi nghiệp"
         }
       ],
-      "title": "Sứ mệnh của EIU FabLab",
+      "missionTitle": "Sứ mệnh",
+      "title": "Về EIU FabLab",
       "values": [
         {
+          "description": "Dễ dàng tiếp cận và sử dụng thiết bị công nghệ để hiện thực hóa ý tưởng — động lực cho học tập và sáng tạo trong cộng đồng.",
           "id": "open-space",
           "title": "Không gian công nghệ mở"
         },
         {
+          "description": "Mạnh dạn thử nghiệm để học thêm kiến thức, từ đó cải tiến và hoàn thiện sản phẩm.",
           "id": "experiment",
           "title": "Thử nghiệm"
         },
         {
+          "description": "Kỹ năng giải quyết vấn đề là yếu tố quan trọng để dự án thành công.",
           "id": "problem-solving",
           "title": "Giải quyết vấn đề"
         },
         {
+          "description": "Sáng tạo để nâng cao giá trị sản phẩm, mang lại giá trị tích cực cho xã hội.",
           "id": "creativity",
           "title": "Sáng tạo"
         },
         {
+          "description": "Chia sẻ kiến thức, kinh nghiệm và hợp tác giúp chúng ta đi nhanh và xa hơn.",
           "id": "collaboration",
           "title": "Chia sẻ và hợp tác"
         },
         {
+          "description": "Điều EIU FabLab hướng đến: tiếp thêm động lực đổi mới, sáng tạo cho cộng đồng để tạo ra giá trị tích cực cho xã hội.",
           "id": "achievement",
           "title": "Thành tựu"
         }
@@ -4592,7 +4682,21 @@
       "vision": {
         "body": "Trở thành xưởng chế tác số điển hình với công nghệ hiện đại, không gian mở năng động – sáng tạo, hỗ trợ tốt nhất để hiện thực hóa ý tưởng và thúc đẩy khởi nghiệp, tạo giá trị tích cực cho cộng đồng.",
         "title": "Tầm nhìn"
-      }
+      },
+      "visionHighlights": [
+        {
+          "id": "technology",
+          "label": "Công nghệ, thiết bị hiện đại"
+        },
+        {
+          "id": "open-space",
+          "label": "Không gian mở năng động – sáng tạo"
+        },
+        {
+          "id": "startup",
+          "label": "Hiện thực hóa ý tưởng, thúc đẩy khởi nghiệp"
+        }
+      ]
     },
     "projects": {
       "description": "Những mô hình và sản phẩm được thiết kế, chế tạo tại FabLab EIU — từ học cụ STEM tới robot và mô hình y tế.",
@@ -4698,6 +4802,8 @@
       "email": "Email",
       "errorSummary": "Vui lòng kiểm tra lại {count} mục bên dưới.",
       "errors": {
+        "age": "Thành viên cần từ 16 tuổi trở lên. Học sinh nhỏ hơn vui lòng đăng ký khóa học.",
+        "birthYear": "Năm sinh chưa đúng (ví dụ 2004).",
         "consent": "Cần đồng ý để FabLab có thể liên hệ với bạn.",
         "email": "Email chưa đúng định dạng.",
         "network": "Chưa gửi được. Vui lòng thử lại hoặc gọi {phone}.",
@@ -4705,7 +4811,38 @@
         "phone": "Số điện thoại chưa đúng (ví dụ 0912 345 678).",
         "rateLimited": "Bạn đã gửi nhiều lần liên tiếp. Vui lòng thử lại sau ít phút.",
         "required": "Vui lòng điền mục này.",
+        "role": "Vui lòng chọn một mục.",
         "tooLong": "Nội dung quá dài."
+      },
+      "member": {
+        "ageNote": "Dành cho người từ 16 tuổi trở lên. Học sinh nhỏ hơn vui lòng để phụ huynh đăng ký khóa học.",
+        "birthYear": "Năm sinh",
+        "birthYearHint": "Ví dụ: 2004",
+        "consent": "Tôi đồng ý để EIU FabLab xử lý các thông tin trên nhằm liên hệ về việc đăng ký thành viên.",
+        "description": "Thành viên được sử dụng không gian và thiết bị của xưởng. Để lại thông tin, EIU FabLab sẽ liên hệ hướng dẫn thủ tục.",
+        "fullName": "Họ và tên",
+        "heading": "Thông tin của bạn",
+        "interests": "Lĩnh vực quan tâm",
+        "notePlaceholder": "Dự án bạn muốn làm, thời gian có thể đến xưởng…",
+        "organization": "Trường hoặc đơn vị",
+        "privacy": "Thông tin chỉ dùng để liên hệ và quản lý thành viên, do EIU FabLab (Đại học Quốc tế Miền Đông) quản lý và lưu tối đa 12 tháng. Bạn có thể rút lại đồng ý hoặc yêu cầu xoá dữ liệu qua {email} (Nghị định 13/2023/NĐ-CP).",
+        "role": "Bạn là",
+        "roleNone": "Chọn một mục"
+      },
+      "memberInterests": {
+        "3d-printing": "In 3D",
+        "cnc": "Gia công CNC",
+        "electronics": "Điện tử – lập trình",
+        "laser": "Cắt khắc laser",
+        "other": "Khác",
+        "robotics": "Robot – tự động hoá"
+      },
+      "memberRoles": {
+        "eiu-staff": "Giảng viên – cán bộ EIU",
+        "eiu-student": "Sinh viên EIU",
+        "other": "Khác",
+        "student": "Học sinh",
+        "worker": "Người đi làm"
       },
       "note": "Ghi chú",
       "notePlaceholder": "Lịch học mong muốn, câu hỏi cho FabLab…",
@@ -4727,7 +4864,12 @@
         "message": "Cảm ơn bạn. EIU FabLab sẽ liên hệ qua số điện thoại bạn đã cung cấp.",
         "title": "Đã nhận đăng ký!"
       },
-      "title": "Đăng ký khóa học"
+      "tabs": {
+        "course": "Khóa học",
+        "label": "Loại đăng ký",
+        "member": "Thành viên FabLab"
+      },
+      "title": "Đăng ký"
     },
     "stats": {
       "items": [

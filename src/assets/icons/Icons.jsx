@@ -173,6 +173,15 @@ export function CloseIcon({ className = '', size = 22 }) {
   )
 }
 
+/** Dấu cộng của accordion — xoay 45° thành dấu nhân khi mở. */
+export function PlusIcon({ className = '', size = 18 }) {
+  return (
+    <Svg className={className} size={size} strokeWidth={2}>
+      <path d="M12 5v14M5 12h14" />
+    </Svg>
+  )
+}
+
 export function CheckIcon({ className = '', size = 22 }) {
   return (
     <Svg className={className} size={size} strokeWidth={2}>

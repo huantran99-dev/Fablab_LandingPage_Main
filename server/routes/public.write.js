@@ -109,14 +109,15 @@ publicWriteRouter.post(
       return
     }
 
-    const courseId = data.course || null
+    const member = data.kind === 'member'
+    const courseId = member ? null : data.course || null
     const now = new Date()
     const duplicate = db
       .prepare(
         `SELECT 1 FROM registration
-          WHERE phone = ? AND COALESCE(course_id, '') = ? AND created_at > ?`,
+          WHERE phone = ? AND kind = ? AND COALESCE(course_id, '') = ? AND created_at > ?`,
       )
-      .get(data.phone, courseId ?? '', new Date(now.getTime() - DEDUPE_MS).toISOString())
+      .get(data.phone, data.kind, courseId ?? '', new Date(now.getTime() - DEDUPE_MS).toISOString())
     if (duplicate) {
       // Bấm đúp hoặc gửi lại sau lỗi mạng: người gửi thấy thành công, database giữ một dòng.
       res.status(201).json({ ok: true })
@@ -124,46 +125,73 @@ publicWriteRouter.post(
     }
 
     // Tên khóa và câu đồng ý lấy từ nội dung phía máy chủ, không bao giờ tin client.
+    // Thành viên đồng ý theo câu chữ của riêng loại đó (`register.member.*`).
     const content = getContent()
     const course = courseId ? content.vi.courses?.items?.find((item) => item.id === courseId) : null
     const dict = content[data.locale]
-    const consentText = [
-      dict.register?.consent,
-      fill(dict.register?.privacy, { email: dict.footer?.contact?.email }),
-    ]
+    const words = member ? dict.register?.member : dict.register
+    const consentText = [words?.consent, fill(words?.privacy, { email: dict.footer?.contact?.email })]
       .filter(Boolean)
       .join('\n\n')
+
+    // Thành viên: `student_name` = họ tên, `school` = trường / đơn vị (xem migration 014).
+    const row = member
+      ? {
+          studentName: data.fullName,
+          studentGrade: null,
+          school: data.organization ?? null,
+          parentName: null,
+          birthYear: Number(data.birthYear),
+          memberRole: data.role,
+          interests: data.interests?.length ? JSON.stringify(data.interests) : null,
+        }
+      : {
+          studentName: data.studentName,
+          studentGrade: data.studentGrade ?? null,
+          school: data.school ?? null,
+          parentName: data.parentName,
+          birthYear: null,
+          memberRole: null,
+          interests: null,
+        }
 
     const stamp = now.toISOString()
     db.transaction(() => {
       db.prepare(
         `INSERT INTO registration
-           (created_at, updated_at, status, course_id, course_title, locale,
+           (created_at, updated_at, kind, status, course_id, course_title, locale,
             student_name, student_grade, school, parent_name, phone, email, note,
+            birth_year, member_role, interests,
             source, referrer_host, consent_at, consent_text)
-         VALUES (?, ?, 'new', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+         VALUES (?, ?, ?, 'new', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       ).run(
         stamp,
         stamp,
+        data.kind,
         courseId,
         course?.title ?? null,
         data.locale,
-        data.studentName,
-        data.studentGrade ?? null,
-        data.school ?? null,
-        data.parentName,
+        row.studentName,
+        row.studentGrade,
+        row.school,
+        row.parentName,
         data.phone,
         data.email ?? null,
         data.note ?? null,
+        row.birthYear,
+        row.memberRole,
+        row.interests,
         data.source,
         normalizeRef(data.ref),
         stamp,
         consentText || '(khong co noi dung dong y)',
       )
       // Sự kiện chuyển đổi do MÁY CHỦ ghi, client không gửi được — nên tỉ lệ đáng tin.
+      // Thành viên mang target 'member': thống kê chuyển đổi theo khóa nối với
+      // `course_open` theo target, nên không bao giờ khớp nhầm.
       recordEvent(db, req, {
         name: 'register_submit',
-        target: courseId,
+        target: member ? 'member' : courseId,
         width: data.width,
         lang: data.locale,
       })

@@ -83,22 +83,54 @@ export const en = {
 
   pillars: {
     eyebrow: 'About us',
-    title: 'Mission of EIU FabLab',
+    title: 'About EIU FabLab',
     description:
       'A fabrication laboratory that gives the community access to the equipment, techniques and technology they need — a shared space to learn, research, design, create and start up together.',
+    missionTitle: 'Mission',
     vision: {
       title: 'Vision',
       body:
         'To become a model digital fabrication workshop with modern technology, a dynamic and creative open space, the best support for turning ideas into reality, and a driver of entrepreneurship that creates positive value for the community.',
     },
+    visionHighlights: [
+      { id: 'technology', label: 'Modern technology and equipment' },
+      { id: 'open-space', label: 'A dynamic, creative open space' },
+      { id: 'startup', label: 'Turning ideas into reality and start-ups' },
+    ],
     valuesTitle: 'Core values',
+    // Condensed from the "Core Values" block on fablab.eiu.edu.vn/en/.
     values: [
-      { id: 'open-space', title: 'Open technology space' },
-      { id: 'experiment', title: 'Experimentation' },
-      { id: 'problem-solving', title: 'Problem solving' },
-      { id: 'creativity', title: 'Creativity' },
-      { id: 'collaboration', title: 'Sharing and collaboration' },
-      { id: 'achievement', title: 'Achievement' },
+      {
+        id: 'open-space',
+        title: 'Open technology space',
+        description:
+          'Easy access to modern equipment helps turn early ideas into reality and drives learning and innovation in the community.',
+      },
+      {
+        id: 'experiment',
+        title: 'Experimentation',
+        description: 'Daring to experiment builds knowledge and leads to better, more refined products.',
+      },
+      {
+        id: 'problem-solving',
+        title: 'Problem solving',
+        description: 'Problem-solving skills are a key to success in any project.',
+      },
+      {
+        id: 'creativity',
+        title: 'Creativity',
+        description: 'Creativity adds value to products and brings positive value to society.',
+      },
+      {
+        id: 'collaboration',
+        title: 'Sharing and collaboration',
+        description: 'Sharing knowledge and experience, and working together, helps us go faster and farther.',
+      },
+      {
+        id: 'achievement',
+        title: 'Achievement',
+        description: 'What EIU FabLab aims for: boosting creativity, development and positive values in the community.',
+      },
     ],
     items: [
       {
@@ -1100,8 +1132,13 @@ export const en = {
 
   // Course registration form. {email}, {phone}, {count} are replaced at render time.
   register: {
-    title: 'Course registration',
+    title: 'Register',
     description: 'Leave your details and EIU FabLab will get back to you with advice on a suitable course.',
+    tabs: {
+      label: 'Registration type',
+      member: 'FabLab membership',
+      course: 'Courses',
+    },
     course: 'Course of interest',
     courseNone: 'Not sure yet — please advise',
     studentHeading: 'Student',
@@ -1133,11 +1170,46 @@ export const en = {
       rateLimited: 'Too many attempts in a row. Please try again in a few minutes.',
       paused: 'Online registration is paused. Please call {phone}.',
       network: 'Could not send. Please try again or call {phone}.',
+      age: 'Members must be 16 or older. Younger students, please register for a course.',
+      birthYear: 'Year of birth looks wrong (e.g. 2004).',
+      role: 'Please choose one.',
     },
     success: {
       title: 'Registration received!',
       message: 'Thank you. EIU FabLab will contact you on the phone number you provided.',
       close: 'Close',
+    },
+    member: {
+      description:
+        'Members can use the workshop space and equipment. Leave your details and EIU FabLab will contact you about the next steps.',
+      ageNote: 'For people aged 16 and over. Younger students, please ask a parent to register for a course.',
+      heading: 'About you',
+      fullName: 'Full name',
+      birthYear: 'Year of birth',
+      birthYearHint: 'E.g. 2004',
+      role: 'You are',
+      roleNone: 'Choose one',
+      organization: 'School or organisation',
+      interests: 'Areas of interest',
+      notePlaceholder: 'Projects you want to build, when you can come to the lab…',
+      consent: 'I agree that EIU FabLab may process the information above to contact me about membership.',
+      privacy:
+        'Your information is used only for contacting you and managing membership, is managed by EIU FabLab (Eastern International University) and kept for at most 12 months. You can withdraw consent or ask for deletion at {email} (Decree 13/2023/ND-CP).',
+    },
+    memberRoles: {
+      'eiu-student': 'EIU student',
+      'eiu-staff': 'EIU lecturer or staff',
+      student: 'School student',
+      worker: 'Working professional',
+      other: 'Other',
+    },
+    memberInterests: {
+      '3d-printing': '3D printing',
+      laser: 'Laser cutting and engraving',
+      cnc: 'CNC machining',
+      electronics: 'Electronics and programming',
+      robotics: 'Robotics and automation',
+      other: 'Other',
     },
   },
 

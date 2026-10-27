@@ -36,11 +36,13 @@ const snapshot = JSON.parse(readFileSync(paths.snapshot, 'utf8'))
 const problems = []
 const fail = (message) => problems.push(message)
 
+// `image` và `video` đến từ bảng binding (khe ảnh / khe video), không đi qua form chữ.
+const BINDING_KEYS = new Set(['image', 'video'])
 const withoutImages = (value) =>
   Array.isArray(value)
     ? value.map(withoutImages)
     : value && typeof value === 'object'
-      ? Object.fromEntries(Object.entries(value).filter(([key]) => key !== 'image').map(([key, child]) => [key, withoutImages(child)]))
+      ? Object.fromEntries(Object.entries(value).filter(([key]) => !BINDING_KEYS.has(key)).map(([key, child]) => [key, withoutImages(child)]))
       : value
 
 const sortKeys = (value) =>

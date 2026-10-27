@@ -49,6 +49,13 @@ Muốn đổi nội dung: dùng dashboard, hoặc sửa DB. Muốn dựng lại 
 - Mọi nút đi qua `ui/Button.jsx`, mọi nhãn qua `ui/Pill.jsx`, mọi section qua
   `ui/Section.jsx`. Đây là chốt chặn giữ style khỏi lệch.
 - Mọi truy cập `localStorage` phải bọc `try/catch` (chế độ riêng tư ném lỗi).
+- **Chữ rớt đơn lẻ ở dòng cuối: hai lớp, đừng gỡ lớp nào.** `body { text-wrap: pretty }`
+  ở index.css (tiêu đề dùng `balance`), cộng [tieLastWords](src/lib/typography.js) nối hai
+  chữ cuối mỗi chuỗi bằng U+00A0 lúc NẠP nội dung trong contentStore. Chỉ có CSS thì còn
+  25 chỗ (Chrome bỏ qua khi chữ cuối dài như "2019–2023.", Firefox không hỗ trợ `pretty`);
+  có cả hai thì 0, đo bằng puppeteer ở 5 bề rộng × 2 ngôn ngữ kể cả popup. **Đừng chèn
+  `&nbsp;` vào database** — admin sửa chữ là mất. Thêm khoá tra cứu mới (kiểu `kind`,
+  `stage`) thì thêm vào `SKIP_KEYS`, kẻo id bị dính ký tự lạ và tra hụt.
 
 ## Hệ scroll reveal — đọc trước khi động vào
 
@@ -129,9 +136,9 @@ Trong cùng section tiêu đề và lưới đi ngược chiều, rồi đảo l
 Facilities `left`/`right` → Projects `right`/`left` → Pillars `left`/`right` → Courses
 `right`/`left` → Activities `left`/`right` → Team `right`/`left` → Partners
 `left`/`right` → Testimonials `right`/`left`. Lần sắp lại này chỉ phải lật Partners và
-Testimonials — các section khác tình cờ giữ nguyên chẵn/lẻ. Trong Pillars, sau lưới trụ cột còn khối chia đôi
-Tầm nhìn `left` | Giá trị cốt lõi `right` (nền trắng, ngăn bằng đường kẻ — cố ý KHÔNG
-dùng nền navy, vì FinalCTA đã giữ bề mặt tối). StatsBar · FinalCTA · Footer · nút "Xem thêm" ·
+Testimonials — các section khác tình cờ giữ nguyên chẵn/lẻ. Trong Pillars: h3 Sứ mệnh `up`,
+lưới trụ cột `right`, rồi khối chia đôi Tầm nhìn `left` | Giá trị cốt lõi `right` (nền trắng,
+ngăn bằng đường kẻ — cố ý KHÔNG dùng nền navy, vì FinalCTA đã giữ bề mặt tối). StatsBar · FinalCTA · Footer · nút "Xem thêm" ·
 link tuyển dụng · chấm tròn dùng mặc định `up`.
 
 Courses và Activities đều có **hai khối** bên trong. Chiều của khối gán theo chỉ
@@ -374,6 +381,29 @@ giữ đúng tỷ lệ kẻo `object-cover` cắt mất chủ thể.
 
 Ảnh hero là ảnh trên màn hình đầu: để `fetchPriority="high"`, **không** lazy-load.
 Mọi ảnh khác lazy-load. Ảnh nào cũng phải có `width`/`height` thật.
+
+## Section Về chúng tôi (từ 2026-10-27)
+
+[Pillars.jsx](src/components/Pillars.jsx). h2 là "Về EIU FabLab" (tên mục trên trang gốc);
+bên dưới là **ba khối NGANG CẤP** Sứ mệnh / Tầm nhìn / Giá trị cốt lõi, mỗi khối một h3 dùng
+chung hằng `BLOCK_TITLE`. Trước đó Sứ mệnh là h2 cỡ display còn hai khối kia là nhãn caption —
+người dùng chỉ ra là lệch cấp. Tên trụ cột và tên giá trị là h4.
+
+- **Tầm nhìn**: thẻ `wash`, câu cỡ `subheading` chữ thường (bản cũ cỡ tiêu đề + dấu ngoặc
+  kép lớn bị chê "to và thô"), dưới là `visionHighlights` — tách từ chính câu tầm nhìn,
+  không thêm ý. Khoá này ở **cấp trên cùng**, không nằm trong `vision`: bản lịch sử cũ
+  (`vision` chỉ có title/body, schema strict) vẫn hợp lệ.
+- **Giá trị cốt lõi**: accordion WAI-ARIA, mở một mục mỗi lần, mục đầu mở sẵn. Mô tả rút gọn
+  từ khối "GIÁ TRỊ CỐT LÕI" trên `fablab.eiu.edu.vn/vi/` và "Core Values" trên `/en/` (đọc
+  nguyên văn bằng curl — công cụ đọc web chỉ trả bản diễn giải). `description` bắt buộc khi
+  ghi; mục thiếu (bản lịch sử cũ) thì component vẽ dòng chữ thường, không bấm được.
+- Transition mở/đóng (`grid-template-rows`) đặt trên div BÊN TRONG `<li>`, không trên `<li>`:
+  `<li>` là con của RevealGroup, transition shorthand của reveal sẽ đè (bẫy 2).
+- Vào database cũ qua migration 013: mỗi ngôn ngữ một câu UPDATE (`rev` +2), chốt bằng
+  `missionTitle IS NULL`, `title` chỉ đổi khi còn nguyên văn cũ, `values` dựng lại giữ thứ tự
+  và chỉ gắn mô tả cho id đã biết. Đã thử: admin sửa tiêu đề / tự thêm giá trị → giữ nguyên.
+- `check:admin` bỏ cả `video` (không chỉ `image`) khi so form: cả hai đến từ bảng binding.
+  Lỗi này chỉ lộ ra khi database có video thật đầu tiên.
 
 ## Section Dự án
 
@@ -875,6 +905,31 @@ Mọi nút "Đăng ký" (navbar, drawer, popup khóa học, FinalCTA) mở **m�
 [registrations.admin.js](server/routes/registrations.admin.js) và
 [stats.admin.js](server/routes/stats.admin.js). Hợp đồng đầy đủ ở
 [docs/API.md](docs/API.md#12-đăng-ký-khóa-học).
+
+### Hai loại đăng ký: Thành viên FabLab | Khóa học (từ 2026-10-27, API 12)
+
+Form có hai tab ([RegisterForm.jsx](src/components/register/RegisterForm.jsx), mẫu WAI-ARIA
+Tabs). Mở từ popup khóa học → tab Khóa học, chọn sẵn khóa; mở từ menu / cuối trang → tab đã
+chọn lần trước (lần đầu Khóa học). Mỗi tab một bản nháp riêng trong provider.
+
+- **Thành viên chỉ từ 16 tuổi**, tự điền và tự đồng ý — người dùng chọn vậy để khỏi phải
+  hỏi phụ huynh (dữ liệu trẻ em cần cha mẹ đồng ý, Nghị định 13/2023). Năm sinh kiểm ở cả
+  hai phía (`birthYearError`, chép hai nơi như `normalizePhone`). Email bắt buộc với thành
+  viên, không bắt buộc với khóa học.
+- **Cùng bảng `registration`, cột `kind`.** Migration 014 DỰNG LẠI bảng (SQLite không đổi
+  được `parent_name NOT NULL`); CHECK giữ luật "khóa học phải có phụ huynh". Quy ước:
+  thành viên dùng `student_name` = họ tên, `school` = trường / đơn vị. Đã thử trên bản
+  sao: dữ liệu cũ khớp mã băm trước/sau.
+- **Mọi chỗ đếm "theo khóa" phải lọc `kind = 'course'`** — thành viên có `course_id`
+  NULL, không lọc là cả nhóm dồn vào "chưa chọn — cần tư vấn". Đã chặn ở `byCourse` và
+  bộ lọc `course=-`; thống kê ở stats.admin.js vốn đã `course_id IS NOT NULL`.
+- **Id đối tượng / lĩnh vực cố định trong mã** (`MEMBER_ROLES` / `MEMBER_INTERESTS`, chép ở
+  `server/schema/registration.js` và `validate.js`), nhãn ở `register.memberRoles` /
+  `memberInterests`. Schema nội dung là `strictObject` đúng các khoá đó, và bảng nhãn trên
+  dashboard dùng `RecordEditor` với `fixed: true` (không nút thêm/xoá).
+- `kind` vắng = `course`: bundle cũ trong cache trình duyệt vẫn gửi được.
+- Bài thử gửi form bằng puppeteer: chữ trên nút đã qua `tieLastWords` nên có U+00A0 —
+  tìm nút bằng `/Đăng\s+ký/`, đừng so chuỗi có dấu cách thường.
 
 ### Thêm section vào database ĐÃ seed: migration có chốt, và chốt theo TỪNG ngôn ngữ
 
