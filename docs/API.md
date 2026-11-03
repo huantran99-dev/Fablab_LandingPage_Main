@@ -1,7 +1,7 @@
 # API — FabLab EIU
 
 Mô tả toàn bộ HTTP API của máy chủ Express trong [server/](../server/): đọc nội dung
-công khai, đăng nhập, sửa 15 section, thư viện ảnh, popup chi tiết khóa học, form đăng
+công khai, đăng nhập, sửa 17 section, thư viện ảnh, popup chi tiết khóa học, form đăng
 ký khóa học và thống kê truy cập. Viết cho lập trình viên bảo trì dashboard hoặc tích
 hợp thêm công cụ.
 
@@ -22,7 +22,7 @@ gọn chỗ dài bằng `…`). Deploy thì xem [DEPLOY.md](DEPLOY.md).
 4. [Route công khai](#4-route-công-khai)
 5. [Đăng nhập — `/api/auth`](#5-đăng-nhập--apiauth)
 6. [Nội dung section — `/api/admin`](#6-nội-dung-section--apiadmin)
-7. [Hình dạng 15 section](#7-hình-dạng-15-section)
+7. [Hình dạng 17 section](#7-hình-dạng-17-section)
 8. [Thư viện ảnh](#8-thư-viện-ảnh)
 9. [Popup chi tiết khóa học](#9-popup-chi-tiết-khóa-học)
 10. [Meta cho dashboard](#10-meta-cho-dashboard)
@@ -74,7 +74,7 @@ gọn chỗ dài bằng `…`). Deploy thì xem [DEPLOY.md](DEPLOY.md).
 - **Định dạng:** JSON UTF-8, trừ `POST /api/admin/media` nhận byte ảnh thô.
 - **Không có CORS.** API chỉ dùng được từ chính trang (same-origin). Đây là chủ đích:
   cookie đăng nhập và kiểm `Origin` dựa trên điều đó.
-- **Phiên bản:** `GET /api/health` trả `api` (hiện là `12`, hằng `API_VERSION` trong
+- **Phiên bản:** `GET /api/health` trả `api` (hiện là `16`, hằng `API_VERSION` trong
   [content.public.js](../server/routes/content.public.js)). Dashboard so với
   `EXPECTED_API` trong [src/admin/App.jsx](../src/admin/App.jsx) và hiện băng đỏ nếu máy
   chủ thấp hơn — dấu hiệu máy chủ chưa được khởi động lại sau khi cập nhật.
@@ -197,7 +197,7 @@ Không cần đăng nhập. Trang công khai chỉ gọi `GET /api/content`.
 Máy chủ còn sống không, đang ở bản nội dung nào, phiên bản API nào.
 
 ```json
-{"ok":true,"rev":88,"updatedAt":"2026-10-27T08:49:55.625Z","api":12}
+{"ok":true,"rev":184,"updatedAt":"2026-11-03T07:16:24.849Z","api":20}
 ```
 
 | Trường | Ý nghĩa |
@@ -377,9 +377,13 @@ Cặp hai ngôn ngữ của một section, kèm `rev` để gửi lại khi lưu
 | `rev` | Tổng `rev` của hai dòng VI + EN. **Mỗi lượt lưu tăng 2** |
 | `images` | `null` nếu section không mang ảnh. Ngược lại là map `idMục → ảnh`; `hero` dùng khoá `"hero"`. `note` là ghi chú nguồn (`~` ảnh gần đúng, `↺` ảnh dùng lại) |
 | `videos` | *(từ API 10)* Chỉ có ở `activities`: map `idMục → { mediaId, url, width, height, duration, note }` — video nền banner Cuộc thi. Section khác không có khoá này |
+| `decors` | *(từ API 13)* Chỉ có ở `seasonal`: map `idMục → { mediaId, url, width, height, note }` — ảnh trang trí góc khối Hero của sự kiện mùa |
 
-Section có ảnh: `hero`, `courses`, `facilities`, `equipment`, `projects`, `activities`, `partners`, `team`.
-Section có video: `activities`.
+Section có ảnh: `hero`, `courses`, `facilities`, `equipment`, `projects`, `activities`, `partners`, `team`, `seasonal` (ảnh popup), `motifs` (*từ API 17* — ảnh của `shapes[]`, scope `motif-shape`).
+Section có video: `activities`. Section có ảnh trang trí: `seasonal`.
+
+Ba khe media khai ở **một bảng** `MEDIA_SLOTS` trong [assemble.js](../server/content/assemble.js):
+mỗi khe một scope trong bảng `binding` (`seasonal` / `seasonal-decor` cho sự kiện mùa).
 
 Section không tồn tại: `404 {"error":"khong co section nay","section":"khong-co"}`.
 
@@ -394,28 +398,30 @@ Ghi **cả hai ngôn ngữ** của một section, tuỳ chọn thay ảnh, trong
   "rev": 10,
   "note": "sửa chức danh",
   "images": { "tuan": 60, "hien": null },
-  "videos": { "drone-soccer": 81 }
+  "videos": { "drone-soccer": 81 },
+  "decors": { "tet-2027": 84 }
 }
 ```
 
 | Trường | Bắt buộc | Ý nghĩa |
 |---|---|---|
-| `vi`, `en` | ✔ | Toàn bộ section (ghi đè, không phải vá từng phần). Hình dạng ở [mục 7](#7-hình-dạng-13-section) |
+| `vi`, `en` | ✔ | Toàn bộ section (ghi đè, không phải vá từng phần). Hình dạng ở [mục 7](#7-hình-dạng-17-section) |
 | `rev` | nên có | `rev` nhận từ `GET`. **Bỏ trống thì KHÔNG kiểm xung đột** — lượt lưu đè lên bất cứ thay đổi nào của người khác |
 | `note` | | Ghi chú lịch sử, cắt ở 200 ký tự |
 | `images` | | `{ idMục: idẢnh }` để gắn/thay, `{ idMục: null }` để gỡ. Mục không nhắc tới giữ nguyên ảnh. Chỉ dùng cho section có ảnh |
 | `videos` | | *(từ API 10)* Như `images`, cho video nền — chỉ `activities`. Media phải là **video** (`mime` `video/…`); khe ảnh cũng chỉ nhận ảnh |
+| `decors` | | *(từ API 13)* Như `images`, cho ảnh trang trí — chỉ `seasonal`. Media phải là ảnh |
 
 **Máy chủ xử lý theo đúng thứ tự**, dừng ở bước hỏng đầu tiên:
 
 1. Section có schema không → `400`
-2. `images` / `videos` là object → `400`
+2. `images` / `videos` / `decors` là object → `400`
 3. `vi` và `en` đúng schema → `422` dạng *schema*
 4. `vi` và `en` cùng cấu trúc khoá → `422` dạng *đối xứng*
-5. Gửi `images` cho section không mang ảnh, hay `videos` cho section không mang video → `400`
+5. Gửi một khe media cho section không có khe đó (`images`, `videos`, `decors`) → `400`
 6. `rev` khớp → `409`
 6. Chép bản hiện tại (kèm ảnh) sang lịch sử
-7. Ghi hai ngôn ngữ, áp `images` và `videos` → `422` nếu mục/media không tồn tại, hoặc
+7. Ghi hai ngôn ngữ, áp `images`, `videos`, `decors` → `422` nếu mục/media không tồn tại, hoặc
    gắn video vào khe ảnh (và ngược lại)
 8. **Mục vừa bị xoá trong lượt này** thì gỡ ảnh và video của nó (ảnh "mồ côi" có sẵn từ
    trước được giữ nguyên, có chủ đích)
@@ -511,7 +517,7 @@ video nào để quay về.
 
 ---
 
-## 7. Hình dạng 15 section
+## 7. Hình dạng 17 section
 
 Tóm tắt [server/schema/sections.js](../server/schema/sections.js). Luật chung:
 
@@ -524,6 +530,11 @@ Tóm tắt [server/schema/sections.js](../server/schema/sections.js). Luật chu
 - **`href`:** `#`, `#neo`, `http(s)://…`, `mailto:…`, hoặc `tel:…`. Neo phải có thật trên
   trang (kiểm ở bước ràng buộc).
 - Thứ tự phần tử mảng **là thứ tự hiển thị**.
+- **`hidden?: true`** ở cấp trên cùng của 11 khối `hero`, `stats`, `facilities`, `projects`,
+  `pillars`, `courses`, `activities`, `team`, `partners`, `testimonials`, `finalCta`
+  *(từ API 20)*: khối đang tắt trên trang công khai. Chỉ `true` hoặc vắng (vắng = hiện);
+  `vi` và `en` phải cùng trạng thái (lệch → `422` dạng ràng buộc). Link trỏ vào neo của khối
+  đang tắt **không** bị coi là lỗi — trang tự ẩn link đó.
 
 ### Trường dùng chung — phải bằng nhau giữa VI và EN
 
@@ -664,11 +675,14 @@ vòng xoay 3D *(từ API 8)* · `statuses`: record `id → chữ(40)` (nhãn tr�
 | `imageAlt` | chữ(200) |
 | `previous`, `next`, `goTo` | chữ(60) |
 | `pause`, `play` | chữ(60) — nút dừng/phát của banner tự chạy *(từ API 9)* |
+| `joinMember` | chữ(60), tuỳ chọn — nút "Trở thành thành viên FabLab ngay" trên từng slide của banner Cuộc thi và carousel Sự kiện (và trong popup cuộc thi), mở form ở tab Thành viên *(từ API 18, lên từng slide từ API 19; database đã seed nhận qua migration `021_events_member_cta.sql`; vắng thì trang không vẽ nút)* |
+| `viewDetails`, `detailLink`, `closeDetails` | chữ(60), tuỳ chọn — nút "Xem chi tiết" của banner Cuộc thi, link trang ngoài và nút đóng trong popup *(từ API 19; database đã seed nhận qua migration `022_activity_details.sql`; vắng `viewDetails` thì không có nút)* |
 | `kinds` | object `{ idLoai: chữ(40) }` — nhãn của từng loại |
 | `groups[]` (≥ 1) | `{ id, title: chữ(120), description: chữ(400), kinds: [idLoai], videoBanner?: boolean }` |
-| `items[]` | `{ id, title: chữ(200), description: chữ(600), date, kind }` |
+| `items[]` | `{ id, title: chữ(200), description: chữ(600), date, kind, details?: chuỗi ≤ 3000, link?: "https://…" }` |
 
 - `date`: chuỗi ≤ 60 ký tự, **được rỗng** (vài hoạt động thật không có ngày).
+- `details` (dịch) / `link` (dùng chung, chỉ http/https): nội dung popup "Xem chi tiết" của khối Cuộc thi *(từ API 19)*. Đoạn cách nhau bằng dòng trống. Bản seed không có — vắng thì popup chỉ hiện poster + mô tả. Tên `link` chứ không phải `href` vì `href` buộc trỏ neo có thật.
 - Khối chứa hoạt động suy từ `kind`: `kind` phải có nhãn trong `kinds` **và** phải nằm
   trong `kinds` của một khối nào đó.
 - `groups[].id` sinh ra neo (`#competitions`, `#events`) mà menu trỏ tới — xoá khối đang
@@ -737,6 +751,61 @@ Thành viên qua [015_register_member_content.sql](../server/db/migrations/015_r
 | `columns[]` | `{ id, title: chữ(60), links: [{ id, label: chữ(80), href }] }` |
 | `contact` | `{ title: chữ(60), address: chữ(200), email: chữ(120), phone: chữ(60) }` |
 | `social` | `{ title: chữ(60), items: [{ id, label: chữ(80), href }] }` |
+
+### seasonal *(từ API 13 — có ảnh popup và ảnh trang trí; họa tiết từ API 14)*
+
+Sự kiện mùa (Tết, Trung Thu, Noel…): popup quảng cáo + bảng màu của cả trang. Trang chọn
+mục **đầu tiên** có `enabled` và `start ≤ hôm nay ≤ end` (ngày giờ Việt Nam, gồm cả hai đầu),
+hoặc có `now` *(từ API 15)* thì chỉ cần chưa qua `end`;
+`/?season=<id>` ép một mục để xem thử. Database cũ nhận section qua
+[016_seasonal_section.sql](../server/db/migrations/016_seasonal_section.sql) (ba mục mẫu đang tắt);
+nhãn nút tắt hiệu ứng và họa tiết của ba mục mẫu qua
+[018_seasonal_motif.sql](../server/db/migrations/018_seasonal_motif.sql); mục mẫu Halloween
+(đang tắt) qua [019_seasonal_halloween.sql](../server/db/migrations/019_seasonal_halloween.sql).
+`"halloween"` của `motif` có từ API 16. Từ API 17 `motif` còn nhận id một họa tiết tự tạo trong section [`motifs`](#motifs-từ-api-17).
+
+| Trường | Kiểu |
+|---|---|
+| `close` | chữ(40) — nhãn nút × (trình đọc màn hình) |
+| `dismiss` | chữ(40) — nút phụ của popup |
+| `effectOff` / `effectOn` | chữ(40) — *(từ API 14)* nhãn nút tắt / bật hạt rơi (trình đọc màn hình) |
+| `items[]` | `{ id, name: chữ(80), enabled?: true, now?: true, popup?: true, start, end: "YYYY-MM-DD", title: chữ(120), body: chữ(500), ctaAction: "none" | "register" | "link", ctaLabel: chuỗi ≤40 (được rỗng), href, colorPrimary?, colorSurface?, colorDark?, colorAccent?: "#rrggbb", motif?: "snow" | "mai" | "dao" | "lantern" | "confetti" | "halloween", fall?: true }` — từ API 17 `motif?` là id (bộ có sẵn hoặc `motifs.items[].id`) |
+
+Dùng chung (bằng nhau giữa VI và EN): `enabled`, `now`, `popup`, `start`, `end`, `ctaAction`,
+`href`, bốn khoá màu, `motif`, `fall`. `motif` là bộ họa tiết vẽ sẵn (vật trang trí trên
+nút chính + hạt rơi); `fall` bật hạt rơi trên trang. Màu ghi đè biến CSS lúc chạy: `colorPrimary` → `--color-signal`,
+`colorSurface` → `--color-wash`, `colorDark` → `--color-navy`, `colorAccent` →
+`--color-ember`; vắng = giữ màu mặc định. Mã màu được chuẩn hoá về chữ thường.
+
+Ràng buộc (invariants): lỗi khi `start > end`, khi có nút mà `ctaLabel` rỗng, khi
+`ctaAction: "link"` mà `href` là `#` hoặc trỏ tới neo không có thật. Cảnh báo khi hai mục
+đang bật trùng ngày, khi tương phản dưới 4.5:1 (chữ trắng trên `colorDark`;
+`colorPrimary` trên `colorSurface`), khi mục đang bật có popup mà chưa có ảnh popup, khi bật `fall` mà chưa chọn `motif`. Lỗi
+*(từ API 17)* khi `motif` không phải bộ có sẵn và không có trong `motifs.items` — vì vậy
+xoá một họa tiết đang được sự kiện dùng bị chặn.
+
+### motifs *(từ API 17)*
+
+Thư viện họa tiết tự tạo cho sự kiện mùa. Không hiện thành khối nào trên trang; sự kiện trỏ
+tới một mục qua `seasonal.items[].motif`. Database cũ nhận section qua
+[020_motifs_section.sql](../server/db/migrations/020_motifs_section.sql) (một mẫu `tuyet-day`,
+không gắn vào sự kiện nào).
+
+| Trường | Kiểu |
+|---|---|
+| `shapes[]` | `{ id, name: chữ(60) }` — tối đa 40; ảnh (PNG nền trong suốt) đi qua `images` của lượt lưu, scope `motif-shape` |
+| `items[]` | `{ id, name: chữ(60), particles: [{ id, shape, weight: 1–100, sizeMin: 4–64, sizeMax: 4–64, flap?: true }] (1–6 dòng), direction: "down" \| "up", motion: "spin" \| "tilt" \| "flip" \| "drift", speedMin, speedMax: 2–200 (px/giây), sway: 0–80 (px), density: 10–300 (%), ornamentShape?, ornamentCorner: "left" \| "right" \| "both", ornamentSize: 12–32 }` — tối đa 40 |
+
+`shape` / `ornamentShape` là id hình có sẵn (`snowflake`, `snowdot`, `mai`, `maiPetal`, `dao`,
+`daoPetal`, `lantern`, `confettiRect`, `confettiDot`, `confettiCurl`, `bat`, `pumpkin`) hoặc
+`img:<id trong shapes>`. Mọi trường trừ `name` dùng chung giữa VI và EN.
+
+Ràng buộc (invariants): lỗi khi id họa tiết trùng id bộ có sẵn, khi `shape` tra hụt (hình có
+sẵn không có, hoặc `img:` không có trong `shapes`), khi `sizeMin > sizeMax` hoặc
+`speedMin > speedMax`. Cảnh báo khi ảnh `img:` chưa gắn file (loại hạt đó không rơi).
+
+`GET /api/admin/meta` trả thêm `motifs: { shapes, items }` (bản VI, có ảnh) cho ô chọn họa
+tiết và khung xem trước của section Sự kiện mùa.
 
 ### Ràng buộc toàn trang (bước 9)
 
@@ -975,8 +1044,8 @@ Số liệu trang Tổng quan và danh sách cho các ô chọn.
   "rev": 44,
   "updatedAt": "2026-09-15T04:33:25.986Z",
   "sections": [
-    {"key":"nav","updatedAt":"2026-09-10T17:19:01.625Z","counts":{"links":4},"hasImages":false},
-    {"key":"hero","updatedAt":"2026-09-10T17:19:01.625Z","counts":{"floatingBadges":2},"hasImages":true},
+    {"key":"nav","updatedAt":"2026-09-10T17:19:01.625Z","counts":{"links":4},"hasImages":false,"hidden":false},
+    {"key":"hero","updatedAt":"2026-09-10T17:19:01.625Z","counts":{"floatingBadges":2},"hasImages":true,"hidden":false},
     …
   ],
   "anchors": ["about","activities","competitions","contact", …],
@@ -1127,7 +1196,7 @@ gốc request vẫn áp: phải có `Origin` thuộc danh sách cho phép hoặc
 | `phone` | Bỏ khoảng trắng / `.` / `-` / `()`, đổi `+84`/`84` thành `0`, rồi phải khớp `^0\d{9,10}$` |
 | `consent` | Phải là `true` |
 | `locale` | `vi` \| `en` — chọn bản chữ đồng ý được lưu làm bằng chứng |
-| `source` | `course-modal` \| `final-cta` \| `nav` \| `nav-drawer` |
+| `source` | `course-modal` \| `final-cta` \| `nav` \| `nav-drawer` \| `seasonal-popup` *(từ API 13 — migration 017 dựng lại bảng để thêm giá trị này vào CHECK)* \| `events` *(từ API 18 — mọi nút thành viên trong section Hoạt động: thẻ Sự kiện, banner Cuộc thi, popup cuộc thi; migration 021 dựng lại bảng)* |
 | `website` | **Ô bẫy bot** — người thật để trống |
 | `elapsed` | Số ms từ lúc mở form tới lúc gửi |
 | `ref`, `width` | Chỉ phục vụ thống kê; `ref` chỉ giữ tên host |
@@ -1363,7 +1432,7 @@ Công khai; cùng chốt gốc request như form đăng ký. Trang gửi bằng
 | Trường | Ý nghĩa |
 |---|---|
 | `n` | `pageview` \| `course_open` \| `cta_click` \| `register_open`. `register_submit` **chỉ máy chủ ghi được** |
-| `t` | Đích, kiểm theo `n`: `course_open` → id khóa có thật; `cta_click` → `nav`, `nav-drawer`, `hero-primary`, `hero-secondary`, `final-primary`, `final-secondary`, `course-modal`; `register_open` → một `source` của form |
+| `t` | Đích, kiểm theo `n`: `course_open` → id khóa có thật; `cta_click` → `nav`, `nav-drawer`, `hero-primary`, `hero-secondary`, `final-primary`, `final-secondary`, `course-modal`, `seasonal-popup`, `events`, `competitions`, `competition-detail`, `competition-modal` *(ba id cuối từ API 19)*; `register_open` → một `source` của form |
 | `l` | Ngôn ngữ trang lúc gửi |
 | `w` | Bề rộng khung nhìn: < 768 điện thoại, < 1024 máy tính bảng, còn lại máy tính |
 | `r` | Chỉ với `pageview`: tên host trang giới thiệu, hoặc `utm:<nguồn>` |

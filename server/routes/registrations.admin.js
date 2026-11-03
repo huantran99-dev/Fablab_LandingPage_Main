@@ -175,7 +175,7 @@ const STATUS_LABELS = { new: 'Mới', contacted: 'Đã liên hệ', enrolled: '�
 // Cùng trạng thái `enrolled`, nhưng với thành viên nghĩa là đã kết nạp.
 const MEMBER_STATUS_LABELS = { ...STATUS_LABELS, enrolled: 'Đã kết nạp' }
 const KIND_LABELS = { course: 'Khóa học', member: 'Thành viên FabLab' }
-const SOURCE_LABELS = { 'course-modal': 'Popup khóa học', 'final-cta': 'Khối kêu gọi cuối trang', nav: 'Thanh menu', 'nav-drawer': 'Menu di động' }
+const SOURCE_LABELS = { 'course-modal': 'Popup khóa học', 'final-cta': 'Khối kêu gọi cuối trang', nav: 'Thanh menu', 'nav-drawer': 'Menu di động', 'seasonal-popup': 'Popup sự kiện', events: 'Section Hoạt động' }
 
 /** Giờ Việt Nam, dạng Excel đọc được: `2026-09-18 14:05`. */
 const vnTime = (iso) => (iso ? new Date(new Date(iso).getTime() + 7 * 3600_000).toISOString().slice(0, 16).replace('T', ' ') : '')

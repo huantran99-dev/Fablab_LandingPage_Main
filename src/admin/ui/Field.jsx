@@ -36,6 +36,23 @@ export function TextArea({ invalid = false, rows = 3, className = '', ...props }
   )
 }
 
+const renderOption = (option) => (
+  <option key={option.value} value={option.value}>
+    {option.label}
+  </option>
+)
+
+/** Lựa chọn có `group` gom thành `<optgroup>` theo thứ tự xuất hiện; không có thì đứng riêng. */
+function groupOptions(options) {
+  const groups = []
+  for (const option of options) {
+    const last = groups[groups.length - 1]
+    if (last && last[0] === (option.group ?? null)) last[1].push(option)
+    else groups.push([option.group ?? null, [option]])
+  }
+  return groups
+}
+
 export function Select({ invalid = false, options, placeholder, className = '', ...props }) {
   return (
     <div className={`relative ${className}`}>
@@ -45,11 +62,15 @@ export function Select({ invalid = false, options, placeholder, className = '', 
         {...props}
       >
         {placeholder && <option value="">{placeholder}</option>}
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
+        {groupOptions(options).map(([group, list]) =>
+          group ? (
+            <optgroup key={group} label={group}>
+              {list.map(renderOption)}
+            </optgroup>
+          ) : (
+            list.map(renderOption)
+          ),
+        )}
       </select>
       <Icon
         name="chevron-down"

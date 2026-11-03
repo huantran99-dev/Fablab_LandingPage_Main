@@ -10,14 +10,16 @@ ExpressJS + SQLite trong [server/](server/).
 ## Dashboard quản trị
 
 Giao diện theo phong cách TailAdmin (sidebar thu gọn, giao diện sáng/tối, tìm nhanh
-bằng `Ctrl K`). Sửa được **cả 15 section** của trang, mỗi section một màn hình:
+bằng `Ctrl K`). Sửa được **cả 16 section** của trang, mỗi section một màn hình:
 
 | Màn hình | Làm được gì |
 |---|---|
 | Tổng quan | Đăng ký mới, lượt xem 7 ngày, số khóa học, ảnh; đăng ký và lần lưu gần nhất |
 | Đăng ký khóa học | Danh sách người gửi form (lọc theo trạng thái, khóa, ngày, tìm kiếm); gọi điện, đổi trạng thái, ghi chú nội bộ, xoá theo yêu cầu; số đăng ký theo từng khóa; xuất CSV mở được bằng Excel. Badge đỏ trên sidebar khi có đăng ký mới |
 | Thống kê truy cập | Lượt xem, lượt khách, đăng ký theo ngày (7 / 30 / 90 ngày); nguồn truy cập, thiết bị, ngôn ngữ, nút được bấm; tỉ lệ mở popup → đăng ký của từng khóa |
-| 15 section | Sửa chữ VI + EN cạnh nhau; thêm / sửa / xoá / đổi thứ tự mục; gắn ảnh. Gồm cả chữ của form đăng ký, thông số từng máy và dự án |
+| 17 section | Sửa chữ VI + EN cạnh nhau; thêm / sửa / xoá / đổi thứ tự mục; gắn ảnh. Gồm cả chữ của form đăng ký, thông số từng máy và dự án |
+| Sự kiện mùa | Tết, Trung Thu, Noel…: đặt ngày bắt đầu / kết thúc, bật / tắt (tự hiện theo lịch, hoặc bật "Hiện ngay" để trang đổi luôn sau khi lưu); popup quảng cáo (ảnh, tiêu đề, nội dung, nút mở form đăng ký hoặc link) hiện **một lần** mỗi sự kiện cho mỗi người xem; bảng màu của cả trang (4 màu, có xem trước và cảnh báo tương phản); ảnh trang trí ở góc khối đầu trang; họa tiết vẽ sẵn (tuyết, hoa mai, hoa đào, đèn lồng, pháo giấy, dơi và bí ngô Halloween) đậu trên các nút chính và rơi nhẹ trên cả trang — người xem tắt được, máy bật giảm chuyển động thì không rơi. Nút "Xem thử trên trang" mở trang với sự kiện đó trước khi bật |
+| Họa tiết | Tự tạo họa tiết cho sự kiện mùa: tải ảnh PNG nền trong suốt, trộn với hình có sẵn theo tỉ lệ; chỉnh cỡ hạt, tốc độ, độ lắc, mật độ, rơi xuống hay bay lên, kiểu chuyển động (xoay, lắc, lật, chỉ trôi, vỗ cánh); chọn vật trang trí trên nút. "Bắt đầu từ" một bộ có sẵn để chỉnh bản sao. Khung xem trước chạy hạt rơi thật ngay trong form |
 | Khóa học › Popup chi tiết | Sửa nội dung popup theo từng ngôn ngữ; gỡ bản sửa là về bản gốc |
 | Thư viện ảnh | Tải lên, xem ảnh đang dùng ở đâu, ghi chú nguồn, xoá ảnh không dùng |
 | Tài khoản | Đổi mật khẩu (đăng xuất mọi nơi) |
@@ -117,23 +119,31 @@ mọi section đi qua `Section.jsx`.
 src/
 ├── index.css              # design tokens + base + utility
 ├── App.jsx                # ghép 11 section
+├── content/
+│   └── snapshot.json      # bản dự phòng đóng gói (sinh ra ở prebuild, CÓ commit)
+├── lib/
+│   ├── contentStore.js    # vẽ bằng snapshot, rồi thay nóng bằng /api/content
+│   ├── typography.js      # nối hai chữ cuối bằng U+00A0 lúc nạp nội dung
+│   └── motion.js · track.js · initials.js
 ├── i18n/
-│   ├── vi.js · en.js      # TOÀN BỘ nội dung trang nằm ở đây
+│   ├── vi.js · en.js      # CHỈ còn là hồ sơ nguồn gốc + dữ liệu cho `npm run seed`
 │   ├── context.js         # useLanguage() / useT()
 │   └── LanguageProvider.jsx
-├── components/            # mỗi section một file
-│   └── ui/                # Button · Pill · Section
-├── lib/                   # motion.js (cờ reduced-motion) · initials.js
+├── components/            # mỗi section một file, register/ là form đăng ký
+│   └── ui/                # Button · Pill · Section · Reveal · Field · RoundButton
+├── admin/                 # dashboard quản trị (entry Vite thứ hai, admin.html)
 ├── assets/
 │   ├── icons/             # SVG vẽ tay: 16 icon khóa học, icon giao diện
 │   │                      #   (Logo.jsx dùng ảnh logo thật, không còn vẽ tay)
-│   └── images/            # 60 ảnh thật + index.js ánh xạ id → ảnh
-└── hooks/                 # useInView · useActiveSection
+│   └── images/            # ảnh gốc + index.js ánh xạ id → ảnh (nguồn của seed)
+└── hooks/                 # useInView · useActiveSection · useSlideshow · useScrollLock…
+server/                    # ExpressJS + SQLite: API, ảnh, đăng ký, thống kê
 ```
 
-Component không hardcode chữ — muốn sửa nội dung thì sửa `vi.js` / `en.js`.
-Hai file phải luôn cùng cấu trúc khóa, và `id` / `group` / `level` của khóa học
-**không được dịch** vì dùng làm React key và khóa tra icon.
+Component không hardcode chữ — mọi chữ đi qua `useT()`, và **muốn sửa nội dung thì
+dùng dashboard** (nguồn sự thật là `data/fablab.db`). Hai ngôn ngữ luôn cùng cấu trúc
+khóa — dashboard ghi cả hai trong cùng một giao dịch — và `id` / `group` / `level` của
+khóa học **không được dịch** vì dùng làm React key và khóa tra icon.
 
 ## Hình ảnh
 
@@ -208,8 +218,9 @@ lần thêm một ảnh thật là bớt được một dấu `~` hoặc `↺`.
 
 **Dải đối tác** ([Partners.jsx](src/components/Partners.jsx)) chạy ngang liên tục
 bằng CSS thuần — track lặp danh sách hai lần rồi trượt `-50%` nên vòng lặp không
-có mối nối. Rê chuột vào thì dừng để đọc kịp; tắt hẳn nếu người dùng bật
-`prefers-reduced-motion`.
+có mối nối. Rê chuột vào thì dừng để đọc kịp. Người dùng bật `prefers-reduced-motion`
+thì dải đứng yên và chuyển sang cho cuộn ngang bằng tay (`marquee-viewport`), nên
+không logo nào bị khuất hẳn.
 
 Bốn tổ chức, đều có căn cứ trên site của trường, nhưng **chỉ 3 có logo** (EIU,
 Becamex, Becamex Business Incubator). Hệ thống trường Việt Anh chỉ có văn bản lễ
@@ -285,7 +296,7 @@ tách `lead`), thêm hay bớt người thì hai hàng tự cân lại.
 
 **Khi người dùng tắt chuyển động**, track đứng yên nên phần lớn thẻ nằm ngoài
 khung. Utility `marquee-viewport` vì thế chuyển sang cho **cuộn ngang bằng tay** —
-không ai bị mất nội dung. Dải đối tác hiện chưa có xử lý này.
+không ai bị mất nội dung. Dải đối tác dùng chung utility này.
 
 Link "Cơ hội làm việc tại EIU" đã bỏ theo yêu cầu.
 
@@ -342,8 +353,8 @@ Nhóm nằm ở `courses.groups` trong i18n — **thứ tự trong mảng là th
 trang**. Thêm nhóm thứ ba chỉ cần thêm một phần tử và gán `group` cho khóa học,
 không phải sửa [Courses.jsx](src/components/Courses.jsx).
 
-Khối nào quá 6 khóa thì cắt bớt và hiện nút "Xem thêm"; mỗi khối có trạng thái mở
-rộng và bộ lọc riêng.
+Khối nào quá 6 khóa (8 khóa từ màn `xl`, khi lưới lên 4 cột) thì cắt bớt và hiện nút
+"Xem thêm"; mỗi khối có trạng thái mở rộng và bộ lọc riêng.
 
 ### Hai nhóm dùng hai bộ trường khác nhau
 
@@ -409,19 +420,19 @@ học", còn popup của 4 khóa STEM hiện đủ năm mục.
 
 ## ⚠️ Nội dung cần thay bằng dữ liệu thật
 
-Website gốc không công bố những số liệu dưới đây, nên hiện tại là **giá trị giả
-định hợp lý** để trang có hình hài. Cần thay trước khi đưa lên production. Mỗi
-chỗ đều có comment `// TODO` ngay bên trên trong `vi.js` và `en.js`:
+Website gốc không công bố những thứ dưới đây, nên bản seed dùng **giá trị giả định**
+để trang có hình hài (mỗi chỗ có comment `// TODO` trong `vi.js` / `en.js`). Sửa bằng
+dashboard; cột "Hiện tại" là bản dự phòng đã commit (`snapshot.json`, rev 90):
 
-| Nội dung | Vị trí | Hiện tại |
+| Nội dung | Màn hình dashboard | Hiện tại |
 |---|---|---|
-| Số liệu thống kê | `stats.items` | 2.400 học viên · 40 thiết bị · 180 dự án |
-| 3 cảm nhận học viên | `testimonials.items` | Tên và nội dung **hư cấu hoàn toàn** |
-| Email · điện thoại · địa chỉ | `footer.contact` | Cần xác nhận lại |
-| Link mạng xã hội | `footer.social.items` | Đang để `#` |
+| Số liệu thống kê | Số liệu | 20.000+ · 30+ · 12.000+ · 20+ — xác nhận đã là số thật chưa |
+| 3 cảm nhận học viên | Cảm nhận | Tên và nội dung **vẫn hư cấu hoàn toàn** |
+| Email · điện thoại · địa chỉ | Chân trang › Liên hệ | Cần xác nhận lại |
+| Link mạng xã hội | Chân trang › Kênh mạng xã hội | Facebook đã có link; YouTube và Website EIU vẫn `#` |
 
-Ngoài ra các nút CTA hiện trỏ tới `#register` (khối CTA cuối trang) — cần nối
-vào form đăng ký hoặc trang đăng ký thật.
+Mọi nút "Đăng ký" (menu, popup khóa học, khối cuối trang) đã mở form đăng ký thật —
+xem mục [Form đăng ký và thống kê](#form-đăng-ký-và-thống-kê).
 
 ### Riêng dữ liệu khóa học
 
@@ -454,8 +465,10 @@ Về chúng tôi     FabLab ▾            StemLab ▾               Sự kiện
    #about           │                   │                     #events
                     ├─ Thiết bị         ├─ Khóa học STEM
                     │    #facilities    │    #courses-stem
-                    └─ Cuộc thi         └─ Khóa học trải nghiệm
-                         #competitions       #courses-experience
+                    ├─ Dự án            └─ Khóa học trải nghiệm
+                    │    #projects           #courses-experience
+                    └─ Cuộc thi
+                         #competitions
 ```
 
 "Cuộc thi" và "Sự kiện" cùng trỏ vào section Hoạt động nhưng khác khối — menu
@@ -472,6 +485,10 @@ lên menu.
 
 Trên desktop submenu là panel thả xuống (mở bằng chuột hoặc bàn phím, đóng bằng
 `Esc` / bấm ra ngoài / rời focus); trong drawer mobile nó là accordion mở tại chỗ.
+
+Drawer mobile là một `<dialog>` gốc mở bằng `showModal()`, giống các popup khác: trình
+duyệt giữ focus trong drawer, `Esc` đóng và trả focus về nút menu, nền phía sau bất
+hoạt, và khoá cuộn đặt trên `<html>`. Nới cửa sổ qua 1024px lúc đang mở thì drawer tự đóng.
 
 ## Ghi chú kỹ thuật
 

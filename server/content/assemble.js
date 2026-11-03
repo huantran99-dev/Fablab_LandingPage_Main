@@ -13,48 +13,84 @@ import { getDb } from '../db/index.js'
 export const DETAIL_PRECEDENCE = ['scraped', 'handwritten', 'overridden']
 
 /**
- * Ảnh gắn vào đâu: scope trong bảng `binding` -> đường tới mảng trong từ điển.
+ * Các "khe" media — MỘT bảng cho mọi chỗ đọc/ghi binding.
  *
- * Thêm một scope mới mà quên khai ở đây thì ảnh seed vào rồi vẫn không hiện —
+ * Mỗi khe: tên trong lượt lưu (`slot`), trường gắn lên mục (`field`), loại media được
+ * nhận (`mime`), và scope trong bảng `binding` -> đường tới mảng trong từ điển. Cùng
+ * bảng `binding`, mỗi khe một scope riêng: khoá `(scope, item_id)` giữ nguyên nghĩa "một
+ * mục một media cho mỗi khe", và đường ghi / lịch sử / dọn dẹp chỉ phải biết scope.
+ *
+ * Thêm một scope ảnh mà quên khai ở đây thì ảnh seed vào rồi vẫn không hiện —
  * `verify-seed` bắt được vì bản ráp ra sẽ thiếu trường `image`.
+ *
+ *   images  ảnh chính của mục (thẻ, logo, chân dung, ảnh popup sự kiện mùa)
+ *   videos  video nền banner Cuộc thi
+ *   decors  ảnh trang trí góc Hero của sự kiện mùa
  */
-const BINDING_TARGETS = {
-  course: ['courses', 'items'],
-  facility: ['facilities', 'items'],
-  equipment: ['equipment', 'items'],
-  project: ['projects', 'items'],
-  activity: ['activities', 'items'],
-  partner: ['partners', 'items'],
-  team: ['team', 'members'],
-}
+export const MEDIA_SLOTS = [
+  {
+    slot: 'images',
+    field: 'image',
+    mime: 'image/',
+    targets: {
+      course: ['courses', 'items'],
+      facility: ['facilities', 'items'],
+      equipment: ['equipment', 'items'],
+      project: ['projects', 'items'],
+      activity: ['activities', 'items'],
+      partner: ['partners', 'items'],
+      team: ['team', 'members'],
+      seasonal: ['seasonal', 'items'],
+      // Ảnh của thư viện họa tiết (PNG nền trong suốt) — làm hạt rơi / vật trang trí nút.
+      'motif-shape': ['motifs', 'shapes'],
+    },
+  },
+  { slot: 'videos', field: 'video', mime: 'video/', targets: { 'activity-video': ['activities', 'items'] } },
+  { slot: 'decors', field: 'decor', mime: 'image/', targets: { 'seasonal-decor': ['seasonal', 'items'] } },
+]
+
+const slotNamed = (name) => MEDIA_SLOTS.find((entry) => entry.slot === name)
+
+/** Chiều ngược của một khe: section -> `{ scope, arrayKey }`. */
+const bySection = (slot) =>
+  Object.fromEntries(
+    Object.entries(slot.targets).map(([scope, [section, arrayKey]]) => [section, { scope, arrayKey }]),
+  )
 
 /**
- * Video nền: cùng bảng `binding`, scope RIÊNG, gắn thành trường `video` (không phải
- * `image`). Scope riêng chứ không phải cột mới: khoá `(scope, item_id)` giữ nguyên nghĩa
- * "một mục một media cho mỗi khe", và mọi đường ghi/lịch sử/dọn dẹp đã viết cho scope.
- */
-const VIDEO_TARGETS = {
-  'activity-video': ['activities', 'items'],
-}
-
-/**
- * Chiều ngược của `BINDING_TARGETS`, cho đường ghi: lưu section nào thì được gắn
- * ảnh cho những mục nào.
+ * Lưu section nào thì được gắn ảnh cho những mục nào.
  *
  * `hero` là ngoại lệ vì scope `singleton` còn chứa `logo` (ảnh của Logo.jsx, không
  * thuộc section nào) — đường ghi chỉ được đụng đúng `hero`, nên liệt kê tường minh.
  */
 export const SECTION_IMAGES = {
-  ...Object.fromEntries(
-    Object.entries(BINDING_TARGETS).map(([scope, [section, arrayKey]]) => [section, { scope, arrayKey }]),
-  ),
+  ...bySection(slotNamed('images')),
   hero: { scope: 'singleton', arrayKey: null, itemIds: ['hero'] },
 }
 
-/** Như `SECTION_IMAGES`, cho video: lưu section nào thì được gắn video cho mục nào. */
-export const SECTION_VIDEOS = Object.fromEntries(
-  Object.entries(VIDEO_TARGETS).map(([scope, [section, arrayKey]]) => [section, { scope, arrayKey }]),
-)
+/** Như `SECTION_IMAGES`, cho video nền. */
+export const SECTION_VIDEOS = bySection(slotNamed('videos'))
+
+/** Như `SECTION_IMAGES`, cho ảnh trang trí của sự kiện mùa. */
+export const SECTION_DECORS = bySection(slotNamed('decors'))
+
+const SECTION_BY_SLOT = { images: SECTION_IMAGES, videos: SECTION_VIDEOS, decors: SECTION_DECORS }
+
+/**
+ * Các khe của một section, theo thứ tự `MEDIA_SLOTS`:
+ * `[{ name, field, mime, scope, arrayKey, itemIds? }]`. Rỗng = section không có media.
+ */
+export function sectionSlots(section) {
+  const out = []
+  for (const slot of MEDIA_SLOTS) {
+    const target = SECTION_BY_SLOT[slot.slot][section]
+    if (target) out.push({ name: slot.slot, field: slot.field, mime: slot.mime, ...target })
+  }
+  return out
+}
+
+/** Scope của video (chỉ video mang `duration`). */
+const VIDEO_SCOPES = new Set(Object.keys(slotNamed('videos').targets))
 
 export function mediaUrl(filename) {
   return `/media/${filename}`
@@ -94,7 +130,7 @@ function readBindings(db) {
     if (!byScope.has(row.scope)) byScope.set(row.scope, new Map())
     const media = { url: mediaUrl(row.filename), width: row.width, height: row.height }
     // Chỉ video mang `duration` — ảnh giữ nguyên hình dạng cũ (verify-seed so tuyệt đối).
-    if (row.scope in VIDEO_TARGETS && row.duration != null) media.duration = row.duration
+    if (VIDEO_SCOPES.has(row.scope) && row.duration != null) media.duration = row.duration
     byScope.get(row.scope).set(row.item_id, media)
   }
   return byScope
@@ -107,10 +143,9 @@ function readBindings(db) {
  * kiểm sẽ phải học cách bỏ qua chúng — thà giữ bộ kiểm ngu ngốc và nghiêm ngặt.
  */
 function attachImages(dict, byScope) {
-  const targets = [
-    ...Object.entries(BINDING_TARGETS).map(([scope, path]) => [scope, path, 'image']),
-    ...Object.entries(VIDEO_TARGETS).map(([scope, path]) => [scope, path, 'video']),
-  ]
+  const targets = MEDIA_SLOTS.flatMap((slot) =>
+    Object.entries(slot.targets).map(([scope, path]) => [scope, path, slot.field]),
+  )
   for (const [scope, [sectionKey, arrayKey], field] of targets) {
     const bound = byScope.get(scope)
     if (!bound) continue

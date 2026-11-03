@@ -25,9 +25,12 @@ import { SHARED_FIELDS } from '../content/invariants.js'
 register('./import-hook.mjs', import.meta.url)
 const srcUrl = (...parts) => pathToFileURL(join(ROOT, 'src', ...parts)).href
 
-const { SECTIONS } = await import(srcUrl('admin', 'sections', 'descriptors.js'))
+const { SECTIONS, GLYPH_LABELS, BUILTIN_MOTIF_LABELS } = await import(srcUrl('admin', 'sections', 'descriptors.js'))
+const { GLYPHS, MOTIFS } = await import(srcUrl('lib', 'motifs.js'))
 const { allFields, activeFields, toWorking, fromWorking } = await import(srcUrl('admin', 'editor', 'model.js'))
 const { getPath } = await import(srcUrl('admin', 'lib', 'paths.js'))
+const { PAGE_SECTIONS } = await import(srcUrl('lib', 'pageSections.js'))
+const { TOGGLEABLE_SECTIONS } = await import(pathToFileURL(join(ROOT, 'server', 'schema', 'sections.js')).href)
 
 /** Trường không dịch nhưng không phải khoá tra cứu: tên người (invariants kiểm riêng). */
 const SHARED_EXCEPTIONS = new Set(['team.members.name'])
@@ -36,8 +39,8 @@ const snapshot = JSON.parse(readFileSync(paths.snapshot, 'utf8'))
 const problems = []
 const fail = (message) => problems.push(message)
 
-// `image` và `video` đến từ bảng binding (khe ảnh / khe video), không đi qua form chữ.
-const BINDING_KEYS = new Set(['image', 'video'])
+// `image`, `video`, `decor` đến từ bảng binding (các khe media), không đi qua form chữ.
+const BINDING_KEYS = new Set(['image', 'video', 'decor'])
 const withoutImages = (value) =>
   Array.isArray(value)
     ? value.map(withoutImages)
@@ -81,6 +84,8 @@ for (const descriptor of SECTIONS) {
     ...descriptor.groups.flatMap((group) => group.fields.map((field) => field.key)),
     ...descriptor.lists.map((list) => list.path),
     ...(descriptor.records ?? []).map((record) => record.path),
+    // Công tắc hiện / ẩn (thẻ "Hiển thị") sửa khoá `hidden` cấp trên cùng.
+    ...(descriptor.toggleable ? ['hidden'] : []),
   ])
   const walk = (value, path) => {
     if (covered.has(path) || (descriptor.key === 'courses' && path === 'details')) return
@@ -124,6 +129,22 @@ for (const descriptor of SECTIONS) {
     }
   }
 }
+
+// Ba danh sách khối bật/tắt được phải trùng nhau: schema máy chủ, trang công khai (thứ tự +
+// neo + nhịp), descriptor có công tắc. Lệch là một khối có công tắc mà trang không ẩn, hoặc
+// ngược lại.
+const toggleable = SECTIONS.filter((descriptor) => descriptor.toggleable).map((descriptor) => descriptor.key)
+if (JSON.stringify(PAGE_SECTIONS) !== JSON.stringify(TOGGLEABLE_SECTIONS)) {
+  fail(`PAGE_SECTIONS (src/lib/pageSections.js) khac TOGGLEABLE_SECTIONS (server/schema/sections.js)`)
+}
+if (JSON.stringify([...toggleable].sort()) !== JSON.stringify([...TOGGLEABLE_SECTIONS].sort())) {
+  fail(`descriptor toggleable [${toggleable}] khac TOGGLEABLE_SECTIONS [${TOGGLEABLE_SECTIONS}]`)
+}
+
+// Ô chọn họa tiết / hình liệt kê theo bảng nhãn: thiếu nhãn là hình đó không chọn được.
+const sameKeys = (labels, ids) => JSON.stringify(Object.keys(labels).sort()) === JSON.stringify([...ids].sort())
+if (!sameKeys(GLYPH_LABELS, Object.keys(GLYPHS))) fail(`GLYPH_LABELS (descriptors.js) khong khop GLYPHS (src/lib/motifs.js)`)
+if (!sameKeys(BUILTIN_MOTIF_LABELS, MOTIFS)) fail(`BUILTIN_MOTIF_LABELS (descriptors.js) khong khop MOTIFS (src/lib/motifs.js)`)
 
 console.log(`  ${SECTIONS.length} section, ${items} muc (vi + en) di qua form`)
 console.log('')

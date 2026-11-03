@@ -51,6 +51,40 @@ export function TranslatedField({ field, id, values, onChange, errors = {} }) {
   )
 }
 
+const HEX = /^#[0-9a-fA-F]{6}$/
+
+/**
+ * Ô màu: bảng chọn màu của trình duyệt + ô gõ mã hex, cùng một giá trị. Để trống = giữ
+ * màu mặc định của trang (`fallback`, chỉ để hiện mẫu) — `fromWorking` bỏ hẳn khoá đó.
+ */
+function ColorInput({ id, value, fallback, onChange, invalid }) {
+  const valid = HEX.test(value)
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <input
+        type="color"
+        aria-label="Bảng chọn màu"
+        value={valid ? value.toLowerCase() : (fallback ?? '#000000')}
+        onChange={(event) => onChange(event.target.value)}
+        className="h-11 w-14 cursor-pointer rounded-lg border border-gray-300 bg-transparent p-1 dark:border-gray-700"
+      />
+      <Input
+        id={id}
+        value={value}
+        onChange={(event) => onChange(event.target.value.trim())}
+        placeholder={fallback ? `${fallback} (mặc định)` : '#rrggbb'}
+        invalid={invalid || (value !== '' && !valid)}
+        className="max-w-44 font-mono"
+      />
+      {value !== '' && (
+        <Button variant="ghost" size="xs" icon="refresh" onClick={() => onChange('')}>
+          Dùng màu mặc định
+        </Button>
+      )}
+    </div>
+  )
+}
+
 /**
  * Chọn đường dẫn: neo có thật trên trang (lấy từ máy chủ, cùng nguồn với bộ bất biến
  * chặn lượt lưu) hoặc link ngoài. Không có ô gõ tự do cho neo — gõ tay là cách chắc
@@ -171,7 +205,13 @@ function SubListEditor({ field, rows, onChange, errors, serverIssues, ctx, idPre
     <div>
       <div className="mb-2 flex items-center justify-between gap-2">
         <span className="text-sm font-medium text-gray-700 dark:text-gray-400">{field.label}</span>
-        <Button size="xs" variant="soft" icon="plus" onClick={() => onChange([...rows, toWorking(field.itemFields, null, null)])}>
+        <Button
+          size="xs"
+          variant="soft"
+          icon="plus"
+          // `rowDefaults`: dòng mới có sẵn giá trị hợp lệ (vd. loại hạt: số 0 là ngoài khoảng schema).
+          onClick={() => onChange([...rows, toWorking(field.itemFields, field.rowDefaults ?? null, field.rowDefaults ?? null)])}
+        >
           Thêm
         </Button>
       </div>
@@ -315,6 +355,21 @@ export function FieldControl({ field, working, onChange, errors = {}, serverIssu
       break
     case 'icon':
       control = <IconPicker value={value} onChange={setShared} invalid={Boolean(error)} />
+      break
+    case 'date':
+      control = (
+        <Input
+          id={inputId}
+          type="date"
+          value={value ?? ''}
+          onChange={(event) => setShared(event.target.value)}
+          invalid={Boolean(error)}
+          className="max-w-56"
+        />
+      )
+      break
+    case 'color':
+      control = <ColorInput id={inputId} value={value ?? ''} fallback={field.fallback} onChange={setShared} invalid={Boolean(error)} />
       break
     default:
       control = (

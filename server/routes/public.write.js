@@ -38,6 +38,12 @@ export const CTA_IDS = new Set([
   'final-primary',
   'final-secondary',
   'course-modal',
+  'seasonal-popup',
+  'events',
+  // Banner Cuộc thi: nút thành viên, nút "Xem chi tiết", nút đăng ký trong popup (API 19).
+  'competitions',
+  'competition-detail',
+  'competition-modal',
 ])
 
 function requirePublicOrigin(req, res, next) {

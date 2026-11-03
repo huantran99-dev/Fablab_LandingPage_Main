@@ -21,6 +21,11 @@ const CTA_LABELS = {
   'final-primary': 'Nút chính cuối trang',
   'final-secondary': 'Nút "Liên hệ" cuối trang',
   'course-modal': 'Nút đăng ký trong popup khóa học',
+  'seasonal-popup': 'Nút trong popup sự kiện mùa',
+  events: 'Nút thành viên trên carousel Sự kiện',
+  competitions: 'Nút thành viên trên banner Cuộc thi',
+  'competition-detail': 'Nút "Xem chi tiết" cuộc thi',
+  'competition-modal': 'Nút thành viên trong popup cuộc thi',
 }
 const DEVICE_LABELS = { mobile: 'Điện thoại', tablet: 'Máy tính bảng', desktop: 'Máy tính' }
 const LANGUAGE_LABELS = { vi: 'Tiếng Việt', en: 'Tiếng Anh' }

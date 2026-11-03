@@ -3,6 +3,7 @@ import { CheckIcon, PILLAR_ICON_IDS, PillarIcon, PlusIcon } from '../assets/icon
 import { useT } from '../i18n/context'
 import { Reveal, RevealGroup } from './ui/Reveal'
 import { Section, SectionHeading } from './ui/Section'
+import { opposite } from '../lib/pageSections'
 
 /**
  * Mỗi trụ cột một sắc pastel — cách style reference phân biệt khối nội dung.
@@ -93,7 +94,7 @@ function ValuesAccordion({ values }) {
                 <span
                   className={[
                     'inline-flex size-9 shrink-0 items-center justify-center rounded-pill border transition-all duration-300 ease-[var(--ease-out-soft)]',
-                    open ? 'rotate-45 border-signal bg-signal text-white' : 'border-ash text-ink group-hover:border-signal',
+                    open ? 'rotate-45 border-signal bg-signal text-on-signal' : 'border-ash text-ink group-hover:border-signal',
                   ].join(' ')}
                   aria-hidden="true"
                 >
@@ -123,7 +124,8 @@ function ValuesAccordion({ values }) {
   )
 }
 
-export function Pillars() {
+/** `side`: chiều trượt của tiêu đề, App tính theo các khối đang hiện (pageSections.js). */
+export function Pillars({ side = 'left' }) {
   const t = useT()
   const { missionTitle, vision, valuesTitle } = t.pillars
   const values = t.pillars.values ?? []
@@ -138,7 +140,7 @@ export function Pillars() {
         title={t.pillars.title}
         description={t.pillars.description}
         align="center"
-        from="left"
+        from={side}
       />
 
       {/* Bậc heading: h2 (section) → h3 (Sứ mệnh / Tầm nhìn / Giá trị cốt lõi, cùng
@@ -150,7 +152,7 @@ export function Pillars() {
             {missionTitle}
           </Reveal>
         )}
-        <RevealGroup from="right" className="grid gap-6 md:grid-cols-3">
+        <RevealGroup from={opposite(side)} className="grid gap-6 md:grid-cols-3">
           {t.pillars.items.map((pillar, index) => {
             const tone = TONES[pillar.id] ?? TONE_CYCLE[index % TONE_CYCLE.length]
             return (

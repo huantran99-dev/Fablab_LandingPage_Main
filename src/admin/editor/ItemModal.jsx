@@ -2,22 +2,26 @@ import { useEffect, useRef, useState } from 'react'
 
 import { getPath, slugify, uniqueId } from '../lib/paths'
 import { Badge } from '../ui/Badge'
-import { Button } from '../ui/Button'
-import { FieldError, FieldHelp, Input, Label } from '../ui/Field'
+import { Button, LinkButton } from '../ui/Button'
+import { FieldError, FieldHelp, Input, Label, Select } from '../ui/Field'
 import { Modal } from '../ui/Modal'
 import { CourseDetailPanel } from './CourseDetailPanel'
 import { FieldControl } from './FieldControl'
 import { ImageField } from './ImageField'
+import { MotifPreview } from './MotifPreview'
+import { SeasonPreview } from './SeasonPreview'
 import { activeFields, allFields, fillSubIds, toWorking, validateWorking } from './model'
 
-function ItemForm({ list, mode, itemId, draft, images, videos = {}, ctx, serverIssues, savedIds, onApply, onCancel, guardRef, initialShared }) {
+function ItemForm({ list, mode, itemId, draft, images, videos = {}, decors = {}, ctx, serverIssues, savedIds, onApply, onCancel, guardRef, initialShared }) {
   const fields = allFields(list)
   const titleField = fields.find((field) => field.key === list.titleField)
 
   const [initial] = useState(() => {
     const viItem = mode === 'edit' ? getPath(draft.vi, list.path).find((item) => item.id === itemId) : null
     const enItem = mode === 'edit' ? getPath(draft.en, list.path).find((item) => item.id === itemId) : null
-    const working = toWorking(fields, viItem, enItem)
+    // `createDefaults`: mục mới bắt đầu bằng thông số hợp lệ thay vì số 0 / chuỗi rỗng.
+    const seed = mode === 'create' && list.createDefaults ? list.createDefaults : null
+    const working = seed ? toWorking(fields, seed, seed) : toWorking(fields, viItem, enItem)
 
     if (mode === 'create') {
       // Ô chọn bắt buộc lấy sẵn lựa chọn đầu — form trống thì lượt Áp dụng đầu tiên
@@ -37,6 +41,7 @@ function ItemForm({ list, mode, itemId, draft, images, videos = {}, ctx, serverI
       variant: list.variants ? (viItem ? list.variants.detect(viItem) : list.variants.options[0].value) : null,
       image: list.image && viItem ? (images[viItem.id] ?? null) : null,
       video: list.video && viItem ? (videos[viItem.id] ?? null) : null,
+      decor: list.decor && viItem ? (decors[viItem.id] ?? null) : null,
     }
   })
 
@@ -44,7 +49,9 @@ function ItemForm({ list, mode, itemId, draft, images, videos = {}, ctx, serverI
   const [variant, setVariant] = useState(initial.variant)
   const [image, setImage] = useState(initial.image)
   const [video, setVideo] = useState(initial.video)
+  const [decor, setDecor] = useState(initial.decor)
   const [idTouched, setIdTouched] = useState(false)
+  const [preset, setPreset] = useState('')
   const [errors, setErrors] = useState({})
   const [tab, setTab] = useState('card')
 
@@ -54,13 +61,30 @@ function ItemForm({ list, mode, itemId, draft, images, videos = {}, ctx, serverI
   const suggestedFrom = titleField?.translated ? working.vi[list.titleField] : working.shared[list.titleField]
   const current = mode === 'create' && !idTouched ? { ...working, id: uniqueId(slugify(suggestedFrom), usedIds) } : working
 
-  const dirty = JSON.stringify({ working, variant, image, video }) !== JSON.stringify(initial)
+  const dirty = JSON.stringify({ working, variant, image, video, decor }) !== JSON.stringify(initial)
   useEffect(() => {
     guardRef.current = () => dirty
   })
 
   const active = activeFields(list, variant)
   const canEditDetails = list.courseDetails && mode === 'edit' && savedIds.has(itemId)
+
+  /**
+   * "Bắt đầu từ" (chỉ khi tạo mới): thay mọi trường dùng chung bằng bản sao của mẫu, giữ
+   * id và chữ đã gõ. Tên còn trống thì gợi ý theo mẫu.
+   */
+  function applyPreset(value) {
+    setPreset(value)
+    const option = list.presets.options.find((entry) => entry.value === value)
+    const source = option?.item ?? list.createDefaults ?? null
+    const next = toWorking(fields, source, source)
+    const name = list.titleField
+    const vi = { ...working.vi }
+    const en = { ...working.en }
+    if (option && name in vi && !String(vi[name]).trim()) vi[name] = `${option.label} (tùy chỉnh)`
+    if (option && name in en && !String(en[name]).trim()) en[name] = `${option.enLabel ?? option.label} (custom)`
+    setWorking({ ...working, vi, en, shared: next.shared })
+  }
 
   function apply() {
     const filled = fillSubIds(active, current)
@@ -74,6 +98,8 @@ function ItemForm({ list, mode, itemId, draft, images, videos = {}, ctx, serverI
       imageChanged: JSON.stringify(image) !== JSON.stringify(initial.image),
       video,
       videoChanged: JSON.stringify(video) !== JSON.stringify(initial.video),
+      decor,
+      decorChanged: JSON.stringify(decor) !== JSON.stringify(initial.decor),
     })
   }
 
@@ -169,6 +195,20 @@ function ItemForm({ list, mode, itemId, draft, images, videos = {}, ctx, serverI
             </fieldset>
           )}
 
+          {list.presets && mode === 'create' && (
+            <div>
+              <Label htmlFor="item-preset">{list.presets.label}</Label>
+              <Select
+                id="item-preset"
+                options={list.presets.options}
+                placeholder={list.presets.blank}
+                value={preset}
+                onChange={(event) => applyPreset(event.target.value)}
+              />
+              <FieldHelp>Chép thông số của bộ có sẵn vào form để sửa tiếp — bộ gốc không đổi.</FieldHelp>
+            </div>
+          )}
+
           {active.map((field) => (
             <FieldControl
               key={field.key}
@@ -188,6 +228,27 @@ function ItemForm({ list, mode, itemId, draft, images, videos = {}, ctx, serverI
 
           {list.video && (
             <ImageField kind="video" label={list.video.label} hint={list.video.hint} optional={list.video.optional} image={video} onChange={setVideo} />
+          )}
+
+          {list.decor && (
+            <ImageField label={list.decor.label} hint={list.decor.hint} optional={list.decor.optional} image={decor} onChange={setDecor} />
+          )}
+
+          {list.seasonPreview && <SeasonPreview working={current} ctx={ctx} />}
+
+          {list.motifPreview && <MotifPreview fields={active} working={current} ctx={ctx} images={images} />}
+
+          {list.previewHref && mode === 'edit' && (
+            <div className="flex flex-wrap items-center gap-3">
+              {savedIds.has(itemId) ? (
+                <LinkButton href={list.previewHref(itemId)} target="_blank" rel="noreferrer" iconRight="external">
+                  Xem thử trên trang
+                </LinkButton>
+              ) : null}
+              <span className="text-theme-xs text-gray-500 dark:text-gray-400">
+                Xem thử dùng bản ĐÃ LƯU — áp dụng và bấm Lưu trước để thấy thay đổi vừa sửa.
+              </span>
+            </div>
           )}
 
           <div className="sticky -bottom-5 -mx-5 -mb-5 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 bg-white px-5 py-4 sm:-mx-6 sm:px-6 dark:border-gray-800 dark:bg-gray-900">

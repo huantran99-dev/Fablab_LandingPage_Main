@@ -17,6 +17,7 @@
  */
 import { z } from 'zod'
 
+import { BUILTIN_MOTIFS, MOTIF_GLYPHS } from '../content/motifs.js'
 import { MEMBER_INTERESTS, MEMBER_ROLES } from './registration.js'
 
 // Thông báo mặc định của Zod hiện thẳng dưới ô nhập của dashboard, nên dùng bản
@@ -44,7 +45,28 @@ export const hrefSchema = z
 const link = z.strictObject({ id: idSchema, label: text(80), href: hrefSchema })
 const idLabel = (max = 80) => z.strictObject({ id: idSchema, label: text(max) })
 
+/**
+ * Các khối của trang bật/tắt được từ dashboard, theo đúng thứ tự trên trang. Mỗi khối mang
+ * khoá `hidden: true` ở cấp trên cùng khi đang tắt; vắng khoá = hiện, nên bản cũ (seed,
+ * snapshot, lịch sử) vẫn hợp lệ. Thanh menu, footer, form đăng ký không nằm trong danh sách.
+ */
+export const TOGGLEABLE_SECTIONS = [
+  'hero',
+  'stats',
+  'facilities',
+  'projects',
+  'pillars',
+  'courses',
+  'activities',
+  'team',
+  'partners',
+  'testimonials',
+  'finalCta',
+]
+const visibility = { hidden: z.literal(true, 'chi true hoac vang').optional() }
+
 export const heroSchema = z.strictObject({
+  ...visibility,
   eyebrow: text(80),
   title: text(120),
   description: text(400),
@@ -56,6 +78,7 @@ export const heroSchema = z.strictObject({
 })
 
 export const pillarsSchema = z.strictObject({
+  ...visibility,
   eyebrow: text(80),
   title: text(120),
   description: text(400),
@@ -77,6 +100,7 @@ export const pillarsSchema = z.strictObject({
 })
 
 export const statsSchema = z.strictObject({
+  ...visibility,
   items: z
     .array(
       z.strictObject({
@@ -105,6 +129,7 @@ const levelCourse = z.strictObject({ ...courseBase, level: idSchema, duration: t
 const stageCourse = z.strictObject({ ...courseBase, stage: idSchema, topic: idSchema, icon: idSchema })
 
 export const coursesSchema = z.strictObject({
+  ...visibility,
   eyebrow: text(80),
   title: text(120),
   description: text(400),
@@ -144,6 +169,7 @@ export const coursesSchema = z.strictObject({
 })
 
 export const facilitiesSchema = z.strictObject({
+  ...visibility,
   eyebrow: text(80),
   title: text(120),
   description: text(400),
@@ -187,6 +213,7 @@ export const equipmentSchema = z.strictObject({
  * card không hiện nhãn — đừng "sửa" thành bắt buộc.
  */
 export const projectsSchema = z.strictObject({
+  ...visibility,
   eyebrow: text(80),
   title: text(120),
   description: text(400),
@@ -209,6 +236,7 @@ export const projectsSchema = z.strictObject({
 })
 
 export const partnersSchema = z.strictObject({
+  ...visibility,
   eyebrow: text(80),
   title: text(120),
   description: text(400),
@@ -217,6 +245,7 @@ export const partnersSchema = z.strictObject({
 })
 
 export const activitiesSchema = z.strictObject({
+  ...visibility,
   eyebrow: text(80),
   title: text(120),
   description: text(400),
@@ -227,6 +256,14 @@ export const activitiesSchema = z.strictObject({
   // Nút dừng/phát của banner tự chạy (WCAG 2.2.2). Từ API 9.
   pause: text(60),
   play: text(60),
+  // Nút "Trở thành thành viên FabLab ngay" dưới carousel Sự kiện (từ API 18). Tuỳ chọn vì
+  // bản lịch sử cũ không có — vắng thì trang không vẽ nút.
+  joinMember: text(60).optional(),
+  // Popup chi tiết của banner Cuộc thi (từ API 19). Tuỳ chọn cùng lý do: vắng `viewDetails`
+  // thì không vẽ nút "Xem chi tiết", vắng `closeDetails` thì mượn nhãn đóng của popup khóa học.
+  viewDetails: text(60).optional(),
+  detailLink: text(60).optional(),
+  closeDetails: text(60).optional(),
   kinds: z.record(idSchema, text(40)),
   groups: z
     .array(
@@ -249,11 +286,17 @@ export const activitiesSchema = z.strictObject({
       // một ngày là sai sự thật. Component đã tự ẩn dòng ngày khi rỗng.
       date: z.string().trim().max(60, 'toi da 60 ky tu'),
       kind: idSchema,
+      // Popup "Xem chi tiết" (từ API 19). Cả hai tuỳ chọn và để trống ở bản seed: trang gốc
+      // không có nội dung dài cho cuộc thi — đừng bịa. `details` là chữ dịch, đoạn cách nhau
+      // bằng dòng trống; `link` dùng chung (KHÔNG tên `href` — `href` bị buộc trỏ neo có thật).
+      details: z.string().trim().max(3000, 'toi da 3000 ky tu').optional(),
+      link: z.url({ protocol: /^https?$/, error: 'phai la duong dan https://...' }).optional(),
     }),
   ),
 })
 
 export const teamSchema = z.strictObject({
+  ...visibility,
   eyebrow: text(80),
   title: text(120),
   description: text(400),
@@ -273,6 +316,7 @@ export const teamSchema = z.strictObject({
 })
 
 export const testimonialsSchema = z.strictObject({
+  ...visibility,
   eyebrow: text(80),
   title: text(200),
   previous: text(80),
@@ -284,6 +328,7 @@ export const testimonialsSchema = z.strictObject({
 })
 
 export const finalCtaSchema = z.strictObject({
+  ...visibility,
   title: text(120),
   description: text(400),
   primaryCta: text(40),
@@ -380,6 +425,134 @@ export const footerSchema = z.strictObject({
   social: z.strictObject({ title: text(60), items: z.array(link) }),
 })
 
+/** Ngày `YYYY-MM-DD` có thật (31/02 bị từ chối). */
+export const dateSchema = z
+  .string()
+  .trim()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'ngay phai dang YYYY-MM-DD')
+  .refine((value) => {
+    const date = new Date(`${value}T00:00:00Z`)
+    return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value
+  }, 'ngay khong ton tai')
+
+/** Màu `#rrggbb` — giá trị cho biến CSS, KHÔNG phải tên class (Tailwind không sinh CSS từ dữ liệu). */
+export const hexColorSchema = z
+  .string()
+  .trim()
+  .regex(/^#[0-9a-fA-F]{6}$/, 'mau phai dang #rrggbb')
+  .transform((value) => value.toLowerCase())
+
+/**
+ * Bộ họa tiết vẽ sẵn bằng mã (src/lib/motifs.js): hạt rơi + vật trang trí trên nút. Bản
+ * chép nằm ở server/content/motifs.js (check:content so với `MOTIFS`); ô chọn trong
+ * descriptors.js cũng liệt kê — thêm bộ là sửa cả ba.
+ */
+export const SEASON_MOTIFS = BUILTIN_MOTIFS
+
+/**
+ * Sự kiện mùa (Tết, Trung Thu, Noel…): popup quảng cáo + bảng màu của cả trang trong
+ * khoảng `start`–`end` (giờ Việt Nam, gồm cả hai đầu). Trang chọn mục ĐẦU TIÊN đang bật
+ * và đang trong khoảng ngày. Ảnh popup và ảnh trang trí đi qua bảng `binding` (khe
+ * `images` / `decors`), không nằm ở đây. Luật cắt ngang (start ≤ end, nhãn nút khi có
+ * nút, tương phản) ở invariants.js.
+ */
+export const seasonalSchema = z.strictObject({
+  close: text(40),
+  dismiss: text(40),
+  // Nhãn (aria-label) nút bật/tắt hạt rơi ở góc trang.
+  effectOff: text(40),
+  effectOn: text(40),
+  items: z.array(
+    z.strictObject({
+      id: idSchema,
+      name: text(80),
+      // Chỉ `true` hoặc vắng hẳn — như `lead` / `filterable`.
+      enabled: z.literal(true).optional(),
+      // "Hiện ngay, không chờ ngày bắt đầu": bật là trang chính đổi ngay, hết sau `end`.
+      now: z.literal(true).optional(),
+      popup: z.literal(true).optional(),
+      start: dateSchema,
+      end: dateSchema,
+      title: text(120),
+      body: text(500),
+      ctaAction: z.enum(['none', 'register', 'link'], 'chon mot hanh dong cho nut'),
+      // Được rỗng khi không có nút (`ctaAction: 'none'`) — invariants đòi có chữ khi có nút.
+      ctaLabel: z.string().trim().max(40, 'toi da 40 ky tu'),
+      href: hrefSchema,
+      colorPrimary: hexColorSchema.optional(),
+      colorSurface: hexColorSchema.optional(),
+      colorDark: hexColorSchema.optional(),
+      colorAccent: hexColorSchema.optional(),
+      // Vắng = không trang trí. `fall` tách riêng: trang trí nút mà không cho hạt rơi.
+      // Bộ có sẵn (SEASON_MOTIFS) HOẶC id một họa tiết tự tạo trong `motifs.items` (từ API
+      // 17) — luật tồn tại là luật cắt ngang section, nằm ở invariants.js.
+      motif: idSchema.optional(),
+      fall: z.literal(true).optional(),
+    }),
+  ),
+})
+
+const intIn = (min, max) =>
+  z.number('phai la so').int('phai la so nguyen').min(min, `toi thieu ${min}`).max(max, `toi da ${max}`)
+
+/** Hình của một loại hạt: id hình có sẵn (MOTIF_GLYPHS) hoặc `img:<id ảnh>` — tra cứu ở invariants. */
+const shapeRefSchema = z.string().regex(/^(img:[a-z0-9][a-z0-9-]*|[a-z][a-zA-Z0-9]*)$/, 'hinh khong hop le')
+
+export const MOTIF_DIRECTIONS = ['down', 'up']
+export const MOTIF_MOTIONS = ['spin', 'tilt', 'flip', 'drift']
+export const MOTIF_CORNERS = ['left', 'right', 'both']
+export { MOTIF_GLYPHS }
+
+/**
+ * Thư viện họa tiết tự tạo (từ API 17). Không hiện thành khối nào trên trang: sự kiện mùa
+ * trỏ tới một mục ở đây qua `motif`, và trang dựng hạt rơi + vật trang trí từ nó.
+ *
+ *   shapes  ảnh tải lên (PNG nền trong suốt) — ảnh qua bảng binding, scope `motif-shape`
+ *   items   họa tiết: 1–6 loại hạt trộn theo tỉ lệ, mỗi loại là hình có sẵn hoặc ảnh, cộng
+ *           cách rơi và vật trang trí trên nút
+ *
+ * Mọi trường trừ `name` là dùng chung (SHARED_FIELDS). `min ≤ max` và tham chiếu hình kiểm
+ * ở invariants.js.
+ */
+export const motifsSchema = z.strictObject({
+  shapes: z.array(z.strictObject({ id: idSchema, name: text(60) })).max(40, 'toi da 40 anh'),
+  items: z
+    .array(
+      z.strictObject({
+        id: idSchema,
+        name: text(60),
+        particles: z
+          .array(
+            z.strictObject({
+              id: idSchema,
+              shape: shapeRefSchema,
+              // Tỉ lệ tương đối giữa các loại hạt (không cần cộng lại thành 100).
+              weight: intIn(1, 100),
+              sizeMin: intIn(4, 64),
+              sizeMax: intIn(4, 64),
+              flap: z.literal(true).optional(),
+            }),
+          )
+          .min(1, 'can it nhat mot loai hat')
+          .max(6, 'toi da 6 loai hat'),
+        direction: z.enum(MOTIF_DIRECTIONS, 'chon huong roi'),
+        motion: z.enum(MOTIF_MOTIONS, 'chon kieu chuyen dong'),
+        // px / giây
+        speedMin: intIn(2, 200),
+        speedMax: intIn(2, 200),
+        // Biên độ lắc ngang, px.
+        sway: intIn(0, 80),
+        // % số hạt so với chuẩn (100 = như bộ có sẵn).
+        density: intIn(10, 300),
+        // Vắng = không có vật trang trí trên nút.
+        ornamentShape: shapeRefSchema.optional(),
+        ornamentCorner: z.enum(MOTIF_CORNERS, 'chon goc dat'),
+        ornamentSize: intIn(12, 32),
+      }),
+    )
+    .max(40, 'toi da 40 hoa tiet'),
+})
+
 /** Theo thứ tự xuất hiện trên trang — dashboard dùng thứ tự này cho sidebar. */
 export const SECTION_SCHEMAS = {
   nav: navSchema,
@@ -397,6 +570,10 @@ export const SECTION_SCHEMAS = {
   finalCta: finalCtaSchema,
   register: registerSchema,
   footer: footerSchema,
+  // Không phải một khối trên trang mà là lớp phủ toàn trang (popup + màu) — đứng cuối.
+  seasonal: seasonalSchema,
+  // Thư viện họa tiết của sự kiện mùa — không hiện thành khối nào, đứng sau cùng.
+  motifs: motifsSchema,
 }
 
 export function schemaFor(section) {

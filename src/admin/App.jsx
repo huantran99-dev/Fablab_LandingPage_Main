@@ -30,7 +30,7 @@ import { useToast } from './ui/toastContext'
  * thì KHÔNG: quên khởi động lại là dashboard mới nói chuyện với máy chủ cũ, và mọi
  * lỗi (không tải được ảnh, không lưu được) trông như lỗi của dashboard.
  */
-const EXPECTED_API = 12
+const EXPECTED_API = 20
 
 /** Nạp lại số liệu nền (badge đăng ký mới) theo chu kỳ khi tab đang hiện. */
 const META_POLL_MS = 120_000
@@ -195,6 +195,9 @@ export default function App() {
     )
   }
 
+  // Section đang tắt trên trang công khai → nhãn "Ẩn" ở thanh bên. Meta tự nạp lại sau mỗi lượt Lưu.
+  const hiddenSections = new Set((meta?.sections ?? []).filter((section) => section.hidden).map((section) => section.key))
+
   return (
     <AppLayout
       route={route}
@@ -203,6 +206,7 @@ export default function App() {
       onToggleTheme={toggleTheme}
       onLogout={logout}
       newRegistrations={meta?.registrations?.new ?? 0}
+      hiddenSections={hiddenSections}
     >
       {serverApi < EXPECTED_API && (
         <div className="mb-6">

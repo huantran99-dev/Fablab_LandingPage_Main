@@ -12,7 +12,8 @@
  */
 import { z } from 'zod'
 
-export const REGISTRATION_SOURCES = ['course-modal', 'final-cta', 'nav', 'nav-drawer']
+// Thêm nguồn là phải dựng lại bảng `registration` (CHECK trên cột `source`) — xem migration 017.
+export const REGISTRATION_SOURCES = ['course-modal', 'final-cta', 'nav', 'nav-drawer', 'seasonal-popup', 'events']
 export const REGISTRATION_STATUSES = ['new', 'contacted', 'enrolled', 'cancelled']
 export const REGISTRATION_KINDS = ['course', 'member']
 

@@ -31,6 +31,27 @@ const SKIP_KEYS = new Set([
   'kinds',
   'facility',
   'status',
+  // Sự kiện mùa: ngày, công tắc, hành động nút và mã màu — giá trị máy đọc, không phải chữ.
+  'start',
+  'end',
+  'enabled',
+  'now',
+  'popup',
+  'ctaAction',
+  'colorPrimary',
+  'colorSurface',
+  'colorDark',
+  'colorAccent',
+  'motif',
+  'fall',
+  // Thư viện họa tiết: tham chiếu hình (`img:<id>`), hướng, kiểu chuyển động, góc đặt.
+  'shape',
+  'ornamentShape',
+  'ornamentCorner',
+  'direction',
+  'motion',
+  // Link trang ngoài của hoạt động (popup Cuộc thi).
+  'link',
 ])
 
 const MAX_TIE = 24

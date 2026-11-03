@@ -38,7 +38,7 @@ function Thumb({ list, item, image }) {
  * Thêm, sửa, xoá, đổi thứ tự đều đi qua `mapBoth` — cùng một phép biến đổi trên cả
  * hai ngôn ngữ. Tất cả chỉ đổi BẢN NHÁP; trang thật đổi khi bấm Lưu.
  */
-export function ItemList({ list, draft, onChangeDraft, images, onChangeImages, videos = {}, onChangeVideos, issues, ctx, savedIds }) {
+export function ItemList({ list, draft, onChangeDraft, images, onChangeImages, videos = {}, onChangeVideos, decors = {}, onChangeDecors, issues, ctx, savedIds }) {
   const items = getPath(draft.vi, list.path) ?? []
   const [filter, setFilter] = useState('')
   const [modal, setModal] = useState(null)
@@ -70,7 +70,7 @@ export function ItemList({ list, draft, onChangeDraft, images, onChangeImages, v
     setPendingDelete(null)
   }
 
-  function handleApply({ working, fields, image, imageChanged, video, videoChanged }) {
+  function handleApply({ working, fields, image, imageChanged, video, videoChanged, decor, decorChanged }) {
     const built = { vi: fromWorking(fields, working, 'vi'), en: fromWorking(fields, working, 'en') }
     const exclusive = fields.filter((field) => field.type === 'exclusive' && built.vi[field.key])
 
@@ -87,6 +87,7 @@ export function ItemList({ list, draft, onChangeDraft, images, onChangeImages, v
     )
     if (list.image && imageChanged) onChangeImages({ ...images, [working.id]: image })
     if (list.video && videoChanged) onChangeVideos({ ...videos, [working.id]: video })
+    if (list.decor && decorChanged) onChangeDecors({ ...decors, [working.id]: decor })
     setModal(null)
   }
 
@@ -244,6 +245,7 @@ export function ItemList({ list, draft, onChangeDraft, images, onChangeImages, v
           draft={draft}
           images={images}
           videos={videos}
+          decors={decors}
           ctx={ctx}
           savedIds={savedIds}
           serverIssues={editingIndex >= 0 ? issuesUnder(issues, `${list.path}.${editingIndex}`) : {}}
@@ -265,7 +267,7 @@ export function ItemList({ list, draft, onChangeDraft, images, onChangeImages, v
               </p>
               {list.image && (
                 <p className="mt-2">
-                  {list.video ? 'Ảnh và video' : 'Ảnh'} gắn với mục này cũng được gỡ khi lưu (file vẫn còn trong thư viện).
+                  {list.video ? 'Ảnh và video' : list.decor ? 'Ảnh popup và ảnh trang trí' : 'Ảnh'} gắn với mục này cũng được gỡ khi lưu (file vẫn còn trong thư viện).
                 </p>
               )}
               {list.courseDetails && <p className="mt-2">Nội dung popup gốc của khóa học vẫn được giữ trong database.</p>}

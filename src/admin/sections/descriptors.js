@@ -13,6 +13,7 @@
  * biết, nên một khoá thiếu mô tả sẽ bị rơi mất ở lượt lưu kế tiếp (và schema strict
  * của máy chủ sẽ báo nếu thiếu khoá bắt buộc).
  */
+import { PARTICLES } from '../../lib/motifs'
 
 const text = (key, label, extra = {}) => ({ key, label, type: 'text', translated: true, ...extra })
 const area = (key, label, extra = {}) => ({ key, label, type: 'textarea', translated: true, ...extra })
@@ -27,6 +28,123 @@ const courseGroupOptions = (ctx) => (ctx.vi?.groups ?? []).map((group) => ({ val
 /** Ô của section Thiết bị — section khác nên phải lấy qua `/meta`, không qua `ctx.vi`. */
 const facilityOptions = (ctx) => (ctx.meta?.facilities ?? []).map((facility) => ({ value: facility.id, label: facility.title }))
 const statusOptions = (ctx) => Object.entries(ctx.vi?.statuses ?? {}).map(([id, label]) => ({ value: id, label }))
+
+/**
+ * Sự kiện mùa. Ngày theo giờ Việt Nam, cùng cách tính với trang (`src/lib/season.js`) —
+ * không import file đó vì `check:admin` nạp descriptor bằng Node thuần.
+ */
+const vnToday = () => new Date(Date.now() + 7 * 3600_000).toISOString().slice(0, 10)
+const viDate = (iso) => (iso ? iso.split('-').reverse().join('/') : '—')
+/** Trạng thái THẬT trên trang chính — cùng luật `pickSeason` (src/lib/season.js). */
+function seasonStatus(item) {
+  if (!item.enabled) return 'Đang tắt'
+  const today = vnToday()
+  if (today > item.end) return 'Đã qua ngày kết thúc'
+  if (!item.now && today < item.start) return `Tự hiện từ ${viDate(item.start)}`
+  return 'Đang hiện trên trang'
+}
+/** Màu mặc định của trang (`@theme` trong src/index.css) — chỉ để hiện mẫu khi ô màu trống. */
+export const DEFAULT_SEASON_COLORS = {
+  colorPrimary: '#1868db',
+  colorSurface: '#e9f2fe',
+  colorDark: '#123263',
+  colorAccent: '#ff613d',
+}
+const colorField = (key, label, help) => ({ key, label, type: 'color', optional: true, fallback: DEFAULT_SEASON_COLORS[key], help })
+
+/**
+ * Họa tiết. Id bộ có sẵn chép ở MOTIFS (src/lib/motifs.js) và server/content/motifs.js —
+ * `check:content` so hai bản kia; danh sách này là nhãn tiếng Việt cho ô chọn.
+ */
+export const BUILTIN_MOTIF_LABELS = {
+  snow: 'Tuyết',
+  mai: 'Hoa mai vàng',
+  dao: 'Hoa đào hồng',
+  lantern: 'Đèn lồng (bay lên)',
+  confetti: 'Pháo giấy',
+  halloween: 'Halloween (dơi, bí ngô)',
+}
+/** Tên tiếng Anh gợi ý cho bản sao (ô tên EN) khi tạo họa tiết "Bắt đầu từ" bộ có sẵn. */
+const BUILTIN_MOTIF_EN = {
+  snow: 'Snow',
+  mai: 'Apricot blossom',
+  dao: 'Peach blossom',
+  lantern: 'Lanterns',
+  confetti: 'Confetti',
+  halloween: 'Halloween',
+}
+/** Nhãn cho từng hình có sẵn (khoá của `GLYPHS`). */
+export const GLYPH_LABELS = {
+  snowflake: 'Bông tuyết',
+  snowdot: 'Hạt tuyết tròn',
+  mai: 'Hoa mai',
+  maiPetal: 'Cánh hoa mai',
+  dao: 'Hoa đào',
+  daoPetal: 'Cánh hoa đào',
+  lantern: 'Đèn lồng',
+  confettiRect: 'Pháo giấy — mảnh dài (màu phụ)',
+  confettiDot: 'Pháo giấy — chấm tròn (màu phụ)',
+  confettiCurl: 'Pháo giấy — sợi xoăn (màu phụ)',
+  bat: 'Con dơi',
+  pumpkin: 'Bí ngô',
+}
+/** Ô chọn họa tiết của sự kiện: 6 bộ có sẵn + mục của thư viện (qua `/meta` — section khác). */
+const seasonMotifOptions = (ctx) => [
+  ...Object.entries(BUILTIN_MOTIF_LABELS).map(([value, label]) => ({ value, label, group: 'Có sẵn' })),
+  ...(ctx.meta?.motifs?.items ?? []).map((item) => ({ value: item.id, label: item.name, group: 'Tự tạo (mục "Họa tiết")' })),
+]
+/** Ô chọn hình của loại hạt / vật trang trí: hình có sẵn + ảnh trong CHÍNH bản nháp (cả ảnh chưa lưu). */
+const shapeOptions = (ctx) => [
+  ...Object.entries(GLYPH_LABELS).map(([value, label]) => ({ value, label, group: 'Hình có sẵn' })),
+  ...(ctx.vi?.shapes ?? []).map((shape) => ({ value: `img:${shape.id}`, label: shape.name || shape.id, group: 'Ảnh của bạn (danh sách "Ảnh họa tiết")' })),
+]
+const usesShape = (motif, id) =>
+  (motif.particles ?? []).some((particle) => particle.shape === `img:${id}`) || motif.ornamentShape === `img:${id}`
+const number = (key, label, help) => ({ key, label, type: 'number', help })
+
+/** Thông số mặc định của họa tiết mới — trong khoảng schema cho phép, chưa có loại hạt nào. */
+const MOTIF_DEFAULTS = {
+  particles: [],
+  direction: 'down',
+  motion: 'spin',
+  speedMin: 20,
+  speedMax: 40,
+  sway: 20,
+  density: 100,
+  ornamentCorner: 'right',
+  ornamentSize: 18,
+}
+
+/**
+ * Bản sao của một bộ có sẵn ở dạng mục thư viện — "Bắt đầu từ" khi tạo họa tiết mới. Đây là
+ * cách "chỉnh bộ có sẵn": 6 bộ gốc không đổi, admin sửa bản sao. Đổi số đo lấy từ
+ * `PARTICLES` (tỉ lệ 0–1 → 1–100, mật độ 0–1 → %).
+ */
+function presetFromBuiltin(id) {
+  const config = PARTICLES[id]
+  const motion = config.flip ? 'flip' : config.tilt ? 'tilt' : config.spin ? 'spin' : 'drift'
+  const lead = config.kinds.find((kind) => kind.toggle) ?? config.kinds[0]
+  return {
+    particles: config.kinds.map((kind) => ({
+      id: slugifyId(kind.glyph),
+      shape: kind.glyph,
+      weight: Math.max(1, Math.round(kind.weight * 100)),
+      sizeMin: kind.size[0],
+      sizeMax: kind.size[1],
+      ...(kind.flap ? { flap: true } : {}),
+    })),
+    direction: config.direction < 0 ? 'up' : 'down',
+    motion,
+    speedMin: config.speed[0],
+    speedMax: config.speed[1],
+    sway: config.sway[1],
+    density: Math.round(config.density * 100),
+    ornamentShape: lead.glyph,
+    ornamentCorner: 'right',
+    ornamentSize: 18,
+  }
+}
+const slugifyId = (glyph) => glyph.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
 const kindOptions = (ctx) => Object.entries(ctx.vi?.kinds ?? {}).map(([id, label]) => ({ value: id, label }))
 
 export const SECTIONS = [
@@ -80,6 +198,8 @@ export const SECTIONS = [
   },
   {
     key: 'hero',
+    // Công tắc hiện / ẩn khối trên trang (thẻ "Hiển thị" — SectionVisibility).
+    toggleable: true,
     label: 'Hero',
     icon: 'hero',
     description: 'Khối đầu tiên người xem nhìn thấy.',
@@ -115,6 +235,8 @@ export const SECTIONS = [
   },
   {
     key: 'stats',
+    // Công tắc hiện / ẩn khối trên trang (thẻ "Hiển thị" — SectionVisibility).
+    toggleable: true,
     label: 'Số liệu',
     icon: 'stats',
     description: 'Các con số tự đếm lên khi cuộn tới.',
@@ -137,6 +259,8 @@ export const SECTIONS = [
   },
   {
     key: 'facilities',
+    // Công tắc hiện / ẩn khối trên trang (thẻ "Hiển thị" — SectionVisibility).
+    toggleable: true,
     label: 'Thiết bị',
     icon: 'facilities',
     description: 'Lưới thiết bị của xưởng.',
@@ -220,6 +344,8 @@ export const SECTIONS = [
   },
   {
     key: 'projects',
+    // Công tắc hiện / ẩn khối trên trang (thẻ "Hiển thị" — SectionVisibility).
+    toggleable: true,
     label: 'Dự án',
     icon: 'grid',
     description: 'Lưới dự án làm ra từ xưởng, ngay sau section Thiết bị.',
@@ -267,6 +393,8 @@ export const SECTIONS = [
   },
   {
     key: 'pillars',
+    // Công tắc hiện / ẩn khối trên trang (thẻ "Hiển thị" — SectionVisibility).
+    toggleable: true,
     label: 'Trụ cột',
     icon: 'pillars',
     description: 'Section Về chúng tôi: ba khối ngang cấp Sứ mệnh (3 trụ cột), Tầm nhìn và Giá trị cốt lõi.',
@@ -321,6 +449,8 @@ export const SECTIONS = [
   },
   {
     key: 'courses',
+    // Công tắc hiện / ẩn khối trên trang (thẻ "Hiển thị" — SectionVisibility).
+    toggleable: true,
     label: 'Khóa học',
     icon: 'courses',
     description: 'Hai nhóm khóa học, bộ lọc và nội dung popup chi tiết.',
@@ -465,6 +595,8 @@ export const SECTIONS = [
   },
   {
     key: 'activities',
+    // Công tắc hiện / ẩn khối trên trang (thẻ "Hiển thị" — SectionVisibility).
+    toggleable: true,
     label: 'Hoạt động',
     icon: 'activities',
     description: 'Cuộc thi (banner video tràn màn hình) và sự kiện, hội thảo (banner ảnh) — tự chạy.',
@@ -480,6 +612,12 @@ export const SECTIONS = [
           text('goTo', 'Nhãn vạch tiến trình'),
           text('pause', 'Nút tạm dừng'),
           text('play', 'Nút phát'),
+          text('joinMember', 'Nút đăng ký thành viên (trên banner Cuộc thi và Sự kiện)', {
+            help: 'Hiện trên từng slide của hai banner và trong popup cuộc thi. Bấm vào mở form đăng ký ở tab Thành viên FabLab.',
+          }),
+          text('viewDetails', 'Nút "Xem chi tiết" (banner Cuộc thi)', { help: 'Bấm vào mở popup chi tiết của cuộc thi đang hiện.' }),
+          text('detailLink', 'Link trang ngoài trong popup cuộc thi', { help: 'Chỉ hiện khi cuộc thi có "Link trang cuộc thi".' }),
+          text('closeDetails', 'Nút đóng popup cuộc thi'),
           area('imageAlt', 'Mô tả ảnh (alt)', { rows: 2, help: altHelp('{title}', 'tên hoạt động') }),
         ],
       },
@@ -506,6 +644,21 @@ export const SECTIONS = [
           text('title', 'Tên hoạt động'),
           text('date', 'Ngày', { optional: true, placeholder: '6/6/2026', help: 'Để trống nếu nguồn không ghi ngày — đừng đoán.' }),
           area('description', 'Mô tả'),
+          area('details', 'Nội dung chi tiết (popup "Xem chi tiết")', {
+            optional: true,
+            omitEmpty: true,
+            rows: 6,
+            help: 'Chỉ hiện ở khối Cuộc thi. Mỗi đoạn cách nhau một dòng trống. Để trống nếu chưa có — đừng đoán; popup vẫn hiện poster và mô tả.',
+          }),
+          {
+            key: 'link',
+            label: 'Link trang cuộc thi',
+            type: 'text',
+            optional: true,
+            omitEmpty: true,
+            placeholder: 'https://…',
+            help: 'Bài đăng hoặc form đăng ký cuộc thi. Một link cho cả hai ngôn ngữ, mở ở tab mới.',
+          },
         ],
       },
       {
@@ -536,6 +689,8 @@ export const SECTIONS = [
   },
   {
     key: 'team',
+    // Công tắc hiện / ẩn khối trên trang (thẻ "Hiển thị" — SectionVisibility).
+    toggleable: true,
     label: 'Đội ngũ',
     icon: 'team',
     description: 'Thẻ giám đốc và hai dải thành viên chạy ngang.',
@@ -572,6 +727,8 @@ export const SECTIONS = [
   },
   {
     key: 'partners',
+    // Công tắc hiện / ẩn khối trên trang (thẻ "Hiển thị" — SectionVisibility).
+    toggleable: true,
     label: 'Đối tác',
     icon: 'partners',
     description: 'Dải logo đối tác chạy ngang.',
@@ -597,6 +754,8 @@ export const SECTIONS = [
   },
   {
     key: 'testimonials',
+    // Công tắc hiện / ẩn khối trên trang (thẻ "Hiển thị" — SectionVisibility).
+    toggleable: true,
     label: 'Cảm nhận',
     icon: 'testimonials',
     description: 'Carousel trích dẫn.',
@@ -620,6 +779,8 @@ export const SECTIONS = [
   },
   {
     key: 'finalCta',
+    // Công tắc hiện / ẩn khối trên trang (thẻ "Hiển thị" — SectionVisibility).
+    toggleable: true,
     label: 'Kêu gọi cuối trang',
     icon: 'finalCta',
     description: 'Khối kêu gọi đăng ký phía trên chân trang.',
@@ -777,6 +938,212 @@ export const SECTIONS = [
         titleField: 'label',
         columns: [{ label: 'Đường dẫn', value: (item) => item.href }],
         fields: [text('label', 'Tên kênh'), href],
+      },
+    ],
+  },
+  {
+    key: 'seasonal',
+    label: 'Sự kiện mùa',
+    icon: 'sparkles',
+    description: 'Tết, Trung Thu, Noel…: popup quảng cáo khi vào trang và bảng màu của cả trang trong khoảng ngày diễn ra.',
+    notes: [
+      'Trang chính dùng sự kiện ĐẦU TIÊN trong danh sách đang bật và đang trong khoảng ngày (giờ Việt Nam, gồm cả ngày bắt đầu và ngày kết thúc). Muốn trang đổi NGAY mà không chờ tới ngày bắt đầu, bật thêm "Hiện ngay" — sự kiện vẫn tự hết sau ngày kết thúc. Hai sự kiện cùng đang hiện thì mục đứng trước thắng — đổi thứ tự bằng mũi tên.',
+      'Popup hiện MỘT LẦN cho mỗi sự kiện trên một trình duyệt. Sửa tiêu đề, nội dung, nút hoặc ảnh popup thì người đã xem sẽ thấy lại một lần.',
+      'Nút "Xem thử trên trang" (trong form sửa, sau khi đã Lưu) mở trang với sự kiện đó — kể cả khi đang tắt hoặc chưa tới ngày — để kiểm tra trước khi bật. Đó chỉ là bản xem thử: trang chính chỉ đổi khi cột trạng thái ghi "Đang hiện trên trang".',
+      'Họa tiết (tuyết, hoa mai, hoa đào, đèn lồng, pháo giấy, dơi và bí ngô Halloween — hoặc họa tiết bạn tự tạo ở mục "Họa tiết") vừa đậu trên các nút chính của trang, vừa là hạt rơi nếu bật "Hạt rơi trên trang". Người xem tắt được hạt rơi bằng nút tròn ở góc dưới-trái; máy bật giảm chuyển động thì không có hạt rơi.',
+      'Ô màu để trống là giữ màu mặc định. Chữ trên nút tự chọn trắng hoặc đen cho đủ tương phản; dashboard và máy chủ cảnh báo khi màu nền nhạt hoặc khối tối làm chữ khó đọc.',
+    ],
+    groups: [
+      {
+        title: 'Chữ chung của popup',
+        fields: [text('dismiss', 'Nút phụ (đóng popup)', { help: 'Ví dụ "Để sau".' }), text('close', 'Nhãn nút × (trình đọc màn hình)'),
+          text('effectOff', 'Nhãn nút tắt hạt rơi (trình đọc màn hình)', { help: 'Ví dụ "Tắt hiệu ứng".' }),
+          text('effectOn', 'Nhãn nút bật lại hạt rơi (trình đọc màn hình)', { help: 'Ví dụ "Bật hiệu ứng".' }),
+        ],
+      },
+    ],
+    lists: [
+      {
+        path: 'items',
+        title: 'Sự kiện',
+        itemName: 'sự kiện',
+        titleField: 'name',
+        image: {
+          label: 'Ảnh popup',
+          optional: true,
+          hint: 'Poster hoặc ảnh chúc mừng, hiện trọn khung (không cắt). Không có ảnh thì popup chỉ có chữ.',
+        },
+        decor: {
+          label: 'Ảnh trang trí (góc khối Hero)',
+          optional: true,
+          hint: 'PNG nền trong suốt (cành mai, đèn lồng, cây thông…), đặt đè lên góc trên-phải ảnh đầu trang. Vuông hoặc gần vuông, cạnh ≥ 360px.',
+        },
+        seasonPreview: true,
+        previewHref: (id) => `/?season=${encodeURIComponent(id)}`,
+        idHint: 'Đặt kèm năm, vd. tet-2028 — popup nhớ "đã xem" theo id.',
+        columns: [
+          { label: 'Thời gian', value: (item) => `${viDate(item.start)} → ${viDate(item.end)}` },
+          { label: '', value: seasonStatus, badge: true },
+        ],
+        fields: [
+          text('name', 'Tên sự kiện', { help: 'Hiện thành nhãn nhỏ trên popup, vd. "Tết Nguyên Đán".' }),
+          { key: 'enabled', label: 'Bật sự kiện', type: 'switch', description: 'Tắt thì trang không đổi màu và không hiện popup, kể cả khi đang trong khoảng ngày.' },
+          {
+            key: 'now',
+            label: 'Hiện ngay, không chờ ngày bắt đầu',
+            type: 'switch',
+            description: 'Trang chính đổi ngay sau khi Lưu (cần bật sự kiện); tự hết sau ngày kết thúc. Tắt thì sự kiện tự hiện từ ngày bắt đầu.',
+          },
+          { key: 'start', label: 'Ngày bắt đầu', type: 'date' },
+          { key: 'end', label: 'Ngày kết thúc', type: 'date', help: 'Gồm cả ngày này.' },
+          { key: 'popup', label: 'Hiện popup quảng cáo', type: 'switch', description: 'Tắt thì chỉ đổi màu trang.' },
+          text('title', 'Tiêu đề popup'),
+          area('body', 'Nội dung popup', { rows: 3 }),
+          {
+            key: 'ctaAction',
+            label: 'Nút chính của popup',
+            type: 'select',
+            options: () => [
+              { value: 'register', label: 'Mở form đăng ký' },
+              { value: 'link', label: 'Mở đường dẫn' },
+              { value: 'none', label: 'Không có nút chính' },
+            ],
+          },
+          text('ctaLabel', 'Chữ trên nút chính', { optional: true, help: 'Để trống khi không có nút chính.' }),
+          { ...href, help: 'Chỉ dùng khi nút chính là "Mở đường dẫn".' },
+          colorField('colorPrimary', 'Màu chủ đạo', 'Nút, link, nhãn, mục menu đang chọn.'),
+          colorField('colorSurface', 'Màu nền nhạt', 'Nền pastel của nhãn và các thẻ.'),
+          colorField('colorDark', 'Màu khối tối', 'Khối kêu gọi cuối trang — chữ trên đó luôn trắng.'),
+          colorField('colorAccent', 'Màu phụ', 'Một số biểu tượng và điểm nhấn; cũng là một màu của pháo giấy.'),
+          {
+            key: 'motif',
+            label: 'Họa tiết',
+            type: 'select',
+            optional: true,
+            placeholder: '— Không trang trí —',
+            options: seasonMotifOptions,
+            help: 'Đậu trên các nút chính của trang (nút cỡ nhỏ như chip lọc thì không). Muốn hình riêng (ảnh PNG của bạn) hay chỉnh mật độ, tốc độ: tạo ở mục "Họa tiết" rồi chọn ở đây.',
+          },
+          { key: 'fall', label: 'Hạt rơi trên trang', type: 'switch', description: 'Họa tiết rơi nhẹ trên cả trang (đèn lồng thì bay lên). Cần chọn họa tiết.' },
+        ],
+      },
+    ],
+  },
+  {
+    key: 'motifs',
+    label: 'Họa tiết',
+    icon: 'image',
+    description: 'Tự tạo họa tiết cho sự kiện mùa: ảnh PNG của bạn và hình có sẵn rơi trên trang, kèm vật trang trí trên nút.',
+    notes: [
+      'Bước 1: tải ảnh PNG nền trong suốt vào "Ảnh họa tiết" (bông hoa, ngôi sao, logo…). Bước 2: tạo họa tiết, chọn các loại hạt — trộn được ảnh của bạn với hình có sẵn, mỗi loại một tỉ lệ. Bước 3: ở mục "Sự kiện mùa", chọn họa tiết đó trong ô "Họa tiết".',
+      'Muốn chỉnh một bộ có sẵn (ví dụ tuyết rơi dày hơn): tạo họa tiết mới, chọn "Bắt đầu từ: Tuyết" rồi sửa. Bộ gốc không bị đổi.',
+      'Không xoá được họa tiết hay ảnh đang được dùng — đổi họa tiết của sự kiện trước.',
+    ],
+    groups: [],
+    lists: [
+      {
+        path: 'shapes',
+        title: 'Ảnh họa tiết',
+        itemName: 'ảnh',
+        titleField: 'name',
+        image: {
+          label: 'Ảnh',
+          hint: 'PNG nền trong suốt, vuông hoặc gần vuông, cạnh ≥ 128px. Ảnh JPG có nền sẽ rơi thành ô vuông.',
+        },
+        columns: [
+          {
+            label: 'Dùng trong',
+            value: (item, ctx) => {
+              const count = (ctx.vi?.items ?? []).filter((motif) => usesShape(motif, item.id)).length
+              return count > 0 ? `${count} họa tiết` : 'Chưa dùng'
+            },
+          },
+        ],
+        fields: [text('name', 'Tên ảnh', { help: 'Để bạn nhận ra trong ô chọn, vd. "Sao vàng".' })],
+      },
+      {
+        path: 'items',
+        title: 'Họa tiết tự tạo',
+        itemName: 'họa tiết',
+        titleField: 'name',
+        idHint: 'Id hiện trong ô chọn của sự kiện; không trùng tên bộ có sẵn (snow, mai…).',
+        motifPreview: true,
+        createDefaults: MOTIF_DEFAULTS,
+        presets: {
+          label: 'Bắt đầu từ',
+          blank: 'Trống — tự chọn từng loại hạt',
+          options: Object.entries(BUILTIN_MOTIF_LABELS).map(([value, label]) => ({
+            value,
+            label,
+            enLabel: BUILTIN_MOTIF_EN[value],
+            item: presetFromBuiltin(value),
+          })),
+        },
+        columns: [
+          { label: 'Loại hạt', value: (item) => `${item.particles?.length ?? 0} loại` },
+          { label: 'Hướng', value: (item) => (item.direction === 'up' ? 'Bay lên' : 'Rơi xuống') },
+        ],
+        fields: [
+          text('name', 'Tên họa tiết', { help: 'Hiện trong ô chọn của sự kiện mùa.' }),
+          {
+            key: 'particles',
+            label: 'Loại hạt (trộn theo tỉ lệ)',
+            type: 'sublist',
+            minItems: 1,
+            idFrom: 'shape',
+            rowDefaults: { shape: 'snowflake', weight: 50, sizeMin: 10, sizeMax: 18 },
+            itemFields: [
+              { key: 'shape', label: 'Hình', type: 'select', options: shapeOptions },
+              number('weight', 'Tỉ lệ', '1–100, so với các loại khác. Hai loại 50 và 50 = mỗi loại một nửa.'),
+              number('sizeMin', 'Cỡ nhỏ nhất (px)', '4–64.'),
+              number('sizeMax', 'Cỡ lớn nhất (px)', '4–64, không nhỏ hơn cỡ nhỏ nhất.'),
+              { key: 'flap', label: 'Vỗ cánh', type: 'switch', description: 'Co giãn theo chiều dọc như dơi, bướm.' },
+            ],
+          },
+          {
+            key: 'direction',
+            label: 'Hướng',
+            type: 'select',
+            options: () => [
+              { value: 'down', label: 'Rơi xuống' },
+              { value: 'up', label: 'Bay lên (như đèn lồng, bong bóng)' },
+            ],
+          },
+          {
+            key: 'motion',
+            label: 'Kiểu chuyển động',
+            type: 'select',
+            options: () => [
+              { value: 'spin', label: 'Xoay tròn chậm' },
+              { value: 'tilt', label: 'Lắc nghiêng qua lại' },
+              { value: 'flip', label: 'Lật như mảnh giấy' },
+              { value: 'drift', label: 'Chỉ trôi, đứng thẳng' },
+            ],
+          },
+          number('speedMin', 'Tốc độ chậm nhất (px/giây)', '2–200. Tuyết có sẵn: 18.'),
+          number('speedMax', 'Tốc độ nhanh nhất (px/giây)', '2–200, không nhỏ hơn tốc độ chậm nhất. Tuyết có sẵn: 40.'),
+          number('sway', 'Độ lắc ngang (px)', '0–80. 0 = rơi thẳng.'),
+          number('density', 'Mật độ (%)', '10–300. 100 = như bộ có sẵn, 200 = dày gấp đôi.'),
+          {
+            key: 'ornamentShape',
+            label: 'Vật trang trí trên nút',
+            type: 'select',
+            optional: true,
+            placeholder: '— Không trang trí nút —',
+            options: shapeOptions,
+          },
+          {
+            key: 'ornamentCorner',
+            label: 'Góc đặt trên nút',
+            type: 'select',
+            options: () => [
+              { value: 'right', label: 'Góc trên-phải' },
+              { value: 'left', label: 'Góc trên-trái' },
+              { value: 'both', label: 'Cả hai góc' },
+            ],
+          },
+          number('ornamentSize', 'Cỡ vật trang trí (px)', '12–32.'),
+        ],
       },
     ],
   },

@@ -35,6 +35,8 @@ export const SOURCE_LABELS = {
   'final-cta': 'Khối kêu gọi cuối trang',
   nav: 'Nút trên thanh menu',
   'nav-drawer': 'Nút trong menu điện thoại',
+  'seasonal-popup': 'Popup sự kiện mùa',
+  events: 'Section Hoạt động (nút thành viên)',
 }
 
 /** 0912345678 → 0912 345 678 (dễ đọc khi gọi điện). */

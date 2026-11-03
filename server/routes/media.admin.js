@@ -18,7 +18,7 @@ import { join } from 'node:path'
 
 import { requireCsrf, requireSameOrigin, requireSession } from '../auth/middleware.js'
 import { paths } from '../config.js'
-import { SECTION_IMAGES, SECTION_VIDEOS, mediaUrl } from '../content/assemble.js'
+import { SECTION_DECORS, SECTION_IMAGES, SECTION_VIDEOS, mediaUrl } from '../content/assemble.js'
 import { getContent } from '../content/cache.js'
 import { getDb } from '../db/index.js'
 import { ACCEPTED_TYPES, MediaError, processImage, storeImage } from '../media/process.js'
@@ -33,12 +33,12 @@ mediaRouter.use(requireSameOrigin, requireSession)
 
 /** scope trong bảng binding -> section. `singleton` tách theo item: hero là section, logo thì không. */
 const SECTION_OF_SCOPE = Object.fromEntries(
-  [...Object.entries(SECTION_IMAGES), ...Object.entries(SECTION_VIDEOS)]
+  [...Object.entries(SECTION_IMAGES), ...Object.entries(SECTION_VIDEOS), ...Object.entries(SECTION_DECORS)]
     .filter(([, target]) => !target.itemIds)
     .map(([section, target]) => [target.scope, section]),
 )
 const ARRAY_OF_SCOPE = Object.fromEntries(
-  [...Object.values(SECTION_IMAGES), ...Object.values(SECTION_VIDEOS)].map((target) => [target.scope, target.arrayKey]),
+  [...Object.values(SECTION_IMAGES), ...Object.values(SECTION_VIDEOS), ...Object.values(SECTION_DECORS)].map((target) => [target.scope, target.arrayKey]),
 )
 
 function describeUsage(row, dict) {

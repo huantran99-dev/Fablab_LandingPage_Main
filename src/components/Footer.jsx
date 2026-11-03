@@ -1,10 +1,16 @@
 import { Logo } from '../assets/icons/Logo'
+import { useLiveHref } from '../hooks/useLiveHref'
 import { useT } from '../i18n/context'
 import { RevealGroup } from './ui/Reveal'
 
 export function Footer() {
   const t = useT()
   const year = new Date().getFullYear()
+  // Link trỏ vào khối admin đã tắt thì bỏ; cột không còn link nào thì không vẽ.
+  const isLive = useLiveHref()
+  const columns = t.footer.columns
+    .map((column) => ({ ...column, links: column.links.filter((link) => isLive(link.href)) }))
+    .filter((column) => column.links.length > 0)
 
   return (
     <footer id="contact" className="border-t border-ash/60 bg-white pt-16 pb-10">
@@ -27,7 +33,7 @@ export function Footer() {
             </div>
           </div>
 
-          {t.footer.columns.map((column) => (
+          {columns.map((column) => (
             <nav key={column.id} className="flex flex-col gap-4">
               <h3 className="font-display text-body-sm font-bold text-ink">{column.title}</h3>
               <ul className="flex flex-col gap-3">

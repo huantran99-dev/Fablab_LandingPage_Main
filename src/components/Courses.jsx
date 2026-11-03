@@ -9,6 +9,7 @@ import { Button } from './ui/Button'
 import { Pill } from './ui/Pill'
 import { Reveal, RevealGroup } from './ui/Reveal'
 import { Section, SectionHeading } from './ui/Section'
+import { opposite } from '../lib/pageSections'
 
 /**
  * Số card hiện trước khi bấm "Xem thêm", tính theo nhóm.
@@ -50,7 +51,7 @@ function FilterRow({ label, options, value, onChange, countOf, allLabel }) {
             className={count === 0 && !active ? 'cursor-not-allowed opacity-40' : ''}
           >
             {choice.label}
-            <span className={active ? 'text-white/70' : 'text-steel'}>{count}</span>
+            <span className={active ? 'text-on-signal/70' : 'text-steel'}>{count}</span>
           </Button>
         )
       })}
@@ -157,7 +158,8 @@ function CourseGroup({ group, courses, from, onOpen }) {
   )
 }
 
-export function Courses() {
+/** `side`: chiều trượt của tiêu đề, App tính theo các khối đang hiện (pageSections.js). */
+export function Courses({ side = 'right' }) {
   const t = useT()
 
   // Giữ `id` chứ không giữ nguyên object khóa học: đổi ngôn ngữ lúc popup đang
@@ -192,7 +194,7 @@ export function Courses() {
         eyebrow={t.courses.eyebrow}
         title={t.courses.title}
         description={t.courses.description}
-        from="right"
+        from={side}
       />
 
       {/* Hai nhóm trượt vào ngược chiều nhau để mắt tách được ranh giới giữa
@@ -203,7 +205,7 @@ export function Courses() {
             key={group.id}
             group={group}
             courses={byGroup.get(group.id) ?? []}
-            from={index % 2 === 0 ? 'left' : 'right'}
+            from={index % 2 === 0 ? opposite(side) : side}
             onOpen={openCourseModal}
           />
         ))}

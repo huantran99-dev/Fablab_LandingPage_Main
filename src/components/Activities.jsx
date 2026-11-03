@@ -2,12 +2,16 @@ import { useMemo } from 'react'
 import { ArrowLeftIcon, ArrowRightIcon, PauseIcon, PlayIcon } from '../assets/icons/Icons'
 import { useSlideshow } from '../hooks/useSlideshow'
 import { useT } from '../i18n/context'
+import { track } from '../lib/track'
 import { ActivityVideoBanner } from './ActivityVideoBanner'
+import { useRegister } from './register/RegisterContext'
 import { SlideProgress } from './SlideProgress'
+import { Button } from './ui/Button'
 import { Pill } from './ui/Pill'
 import { Reveal } from './ui/Reveal'
 import { RoundButton } from './ui/RoundButton'
 import { Section, SectionHeading } from './ui/Section'
+import { opposite } from '../lib/pageSections'
 
 /** Mỗi loại hoạt động một sắc nhãn, để lướt qua là phân biệt được ngay. */
 const KIND_TONES = {
@@ -70,6 +74,7 @@ function groupActivities(groups, items) {
  */
 function ActivityCarousel({ group, items, from }) {
   const t = useT()
+  const { openRegister } = useRegister()
   const labels = t.activities
   const total = items.length
   const show = useSlideshow(total, { pauseOnHover: true })
@@ -156,6 +161,22 @@ function ActivityCarousel({ group, items, from }) {
                   </div>
                   <h4 className="text-heading-sm md:text-heading-lg text-ink">{item.title}</h4>
                   <p className="text-body-sm text-graphite">{item.description}</p>
+                  {/* Lời mời làm thành viên trên từng slide: mở form ở tab Thành viên. Thiếu
+                      nhãn (database chưa áp migration 021) thì không vẽ — không mượn chữ khác
+                      cho một nút mang nghĩa riêng. `wrap`: cột chữ ở màn 320px chỉ ~240px. */}
+                  {labels.joinMember && (
+                    <Button
+                      type="button"
+                      wrap
+                      className="mt-2 self-start"
+                      onClick={() => {
+                        track('cta_click', 'events')
+                        openRegister(null, 'events', 'member')
+                      }}
+                    >
+                      {labels.joinMember}
+                    </Button>
+                  )}
                 </div>
               </article>
             )
@@ -205,7 +226,8 @@ function ActivityCarousel({ group, items, from }) {
   )
 }
 
-export function Activities() {
+/** `side`: chiều trượt của tiêu đề, App tính theo các khối đang hiện (pageSections.js). */
+export function Activities({ side = 'left' }) {
   const t = useT()
 
   // Gom hoạt động về đúng khối một lần, thay vì lọc lại ở mỗi lần render khối.
@@ -224,7 +246,7 @@ export function Activities() {
           title={t.activities.title}
           description={t.activities.description}
           align="center"
-          from="left"
+          from={side}
         />
       </div>
 
@@ -234,7 +256,7 @@ export function Activities() {
           const props = {
             group,
             items: byGroup.get(group.id) ?? [],
-            from: index % 2 === 0 ? 'right' : 'left',
+            from: index % 2 === 0 ? opposite(side) : side,
           }
           return group.videoBanner ? (
             <ActivityVideoBanner key={group.id} {...props} />

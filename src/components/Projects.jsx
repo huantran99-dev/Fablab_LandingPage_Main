@@ -7,6 +7,7 @@ import { Pill } from './ui/Pill'
 import { Reveal } from './ui/Reveal'
 import { RoundButton } from './ui/RoundButton'
 import { Section, SectionHeading } from './ui/Section'
+import { opposite } from '../lib/pageSections'
 
 /** Sắc nhãn theo trạng thái. Trạng thái mới thêm từ dashboard rơi về `outline`. */
 const STATUS_TONES = {
@@ -255,7 +256,8 @@ function ProjectStrip({ projects }) {
 }
 
 /** Dự án của FabLab — vòng xoay 3D trên màn rộng, hàng trượt ngang trên màn hẹp. */
-export function Projects() {
+/** `side`: chiều trượt của tiêu đề, App tính theo các khối đang hiện (pageSections.js). */
+export function Projects({ side = 'right' }) {
   const t = useT()
   const projects = t.projects
   const wide = useMediaQuery('(min-width: 768px)')
@@ -273,10 +275,10 @@ export function Projects() {
         title={projects.title}
         description={projects.description}
         align="center"
-        from="right"
+        from={side}
       />
 
-      <Reveal from="left" className="mt-14">
+      <Reveal from={opposite(side)} className="mt-14">
         {ring ? <ProjectRing projects={projects} /> : <ProjectStrip projects={projects} />}
       </Reveal>
     </Section>

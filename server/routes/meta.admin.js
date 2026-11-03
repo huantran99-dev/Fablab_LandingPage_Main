@@ -48,11 +48,19 @@ metaRouter.get('/meta', (_req, res) => {
       updatedAt: updated.get(key) ?? null,
       counts: countLists(content.vi[key]),
       hasImages: Boolean(SECTION_IMAGES[key]),
+      // Badge "Ẩn" ở thanh bên dashboard.
+      hidden: Boolean(content.vi[key]?.hidden),
     })),
     anchors: anchors ? [...anchors].sort() : null,
     // Ô của section Thiết bị, cho ô chọn `facility` ở section Thông số thiết bị: bộ
     // soạn của một section chỉ thấy chính nó, không thấy section khác.
     facilities: (content.vi.facilities?.items ?? []).map((item) => ({ id: item.id, title: item.title })),
+    // Thư viện họa tiết, cho ô chọn `motif` + khung xem trước của section Sự kiện mùa. Gửi
+    // nguyên mục (thông số + ảnh đã gắn) để dashboard vẽ bằng ĐÚNG bộ giải của trang.
+    motifs: {
+      shapes: content.vi.motifs?.shapes ?? [],
+      items: content.vi.motifs?.items ?? [],
+    },
     icons: {
       course: lookups.courseIcons ?? [],
       pillar: lookups.pillarIcons ?? [],

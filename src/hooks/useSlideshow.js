@@ -30,11 +30,13 @@ const mod = (value, total) => ((value % total) + total) % total
  * nhấp nháy. Khi giảm chuyển động: KHÔNG tự chuyển slide, và `playing` mặc định là tắt.
  *
  * @param {number} total số slide
- * @param {{ playByDefault?: boolean, pauseOnHover?: boolean }} [options]
+ * @param {{ playByDefault?: boolean, pauseOnHover?: boolean, hold?: boolean }} [options]
  *   `playByDefault: false` để mặc định dừng ngay cả khi không giảm chuyển động (vd. người
  *   xem bật tiết kiệm dữ liệu — đừng tự tải video).
+ *   `hold: true` giữ nguyên slide trong lúc có popup mở từ chính banner: đóng popup thì
+ *   focus trả về nút đã bấm, mà nút đó phải còn trên slide đang hiện (slide khác là `inert`).
  */
-export function useSlideshow(total, { playByDefault = true, pauseOnHover = false } = {}) {
+export function useSlideshow(total, { playByDefault = true, pauseOnHover = false, hold = false } = {}) {
   const [state, setState] = useState({ index: 0, cycle: 0, stamps: {} })
   const current = state.index < total ? state.index : 0
 
@@ -61,7 +63,7 @@ export function useSlideshow(total, { playByDefault = true, pauseOnHover = false
   // Tự CHUYỂN slide thì không bao giờ khi giảm chuyển động, kể cả khi người dùng bấm phát
   // (phát lúc đó chỉ là cho video chạy).
   const autoplay = !reduced && total > 1
-  const running = autoplay && playing && !(pauseOnHover && hovered) && !keyboardFocus && inView
+  const running = autoplay && playing && !(pauseOnHover && hovered) && !keyboardFocus && inView && !hold
 
   // Kéo / vuốt: không pointer capture (để cú bấm vẫn rơi đúng nút bên trong), kéo xong
   // thì nuốt click đi kèm.
