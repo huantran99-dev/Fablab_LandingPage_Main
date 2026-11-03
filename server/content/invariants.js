@@ -16,8 +16,14 @@
  *
  * Nguyên tắc: **so hai bản với nhau, không so với hằng số.** Con số tổng chỉ in ra.
  */
+import { WHITE, contrast } from './color.js'
+import { BUILTIN_MOTIFS, IMAGE_SHAPE_PREFIX, MOTIF_GLYPHS } from './motifs.js'
 import { assertParity } from './parity.js'
 import { renderedAnchors } from './lookups.js'
+import { TOGGLEABLE_SECTIONS } from '../schema/sections.js'
+
+/** Màu mặc định của trang (`@theme` trong src/index.css) — dùng khi sự kiện để trống ô màu. */
+const DEFAULT_COLORS = { primary: '#1868db', surface: '#e9f2fe', dark: '#123263' }
 
 /**
  * Trường KHÔNG dịch: phải bằng nhau giữa VI và EN.
@@ -42,6 +48,37 @@ export const SHARED_FIELDS = new Set([
   'videoBanner',
   'facility',
   'status',
+  // Sự kiện mùa: lịch, công tắc, hành động của nút và bảng màu là một cho cả hai bản.
+  'enabled',
+  'now',
+  'popup',
+  'start',
+  'end',
+  'ctaAction',
+  'colorPrimary',
+  'colorSurface',
+  'colorDark',
+  'colorAccent',
+  'motif',
+  'fall',
+  // Thư viện họa tiết (`motifs`): mọi thứ trừ tên là thông số máy đọc.
+  'particles',
+  'shape',
+  'weight',
+  'sizeMin',
+  'sizeMax',
+  'flap',
+  'direction',
+  'motion',
+  'speedMin',
+  'speedMax',
+  'sway',
+  'density',
+  'ornamentShape',
+  'ornamentCorner',
+  'ornamentSize',
+  // Link trang ngoài của hoạt động (popup Cuộc thi) — một URL cho cả hai bản.
+  'link',
 ])
 
 const isObject = (value) => typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -214,6 +251,120 @@ export function checkInvariants({ vi, en }, lookups, { imageMaps = null } = {}) 
     }
   }
 
+  // --- 3d. Sự kiện mùa --------------------------------------------------------
+  //
+  // Lỗi: những gì làm popup / nút hỏng thật. Cảnh báo: những gì vẫn chạy nhưng nên xem
+  // lại — trùng lịch (mục đứng trước thắng), chữ khó đọc, popup không có ảnh.
+  // Trường dùng chung (ngày, màu, hành động) bằng nhau giữa hai bản nhờ luật số 1, nên
+  // kiểm trên bản VI là đủ; chỉ nhãn nút (dịch) phải kiểm cả hai.
+
+  const seasons = vi.seasonal?.items ?? []
+  for (const [lang, dict] of Object.entries(dicts)) {
+    for (const season of dict.seasonal?.items ?? []) {
+      if (season.ctaAction && season.ctaAction !== 'none' && !String(season.ctaLabel ?? '').trim()) {
+        fail(`${lang} seasonal.items[${season.id}]: co nut nhung chua co chu tren nut (ctaLabel)`)
+      }
+    }
+  }
+  for (const season of seasons) {
+    const at = `seasonal.items[${season.id}]`
+    if (season.start && season.end && season.start > season.end) {
+      fail(`${at}: ngay bat dau ${season.start} sau ngay ket thuc ${season.end}`)
+    }
+    if (season.ctaAction === 'link' && (!season.href || season.href === '#')) {
+      fail(`${at}: nut dang la "mo link" nhung chua co duong dan`)
+    }
+    // Chỉ sự kiện đang bật: mục mẫu đang tắt chưa có ảnh là bình thường, báo mãi thành nhiễu.
+    if (season.enabled && season.popup && !season.image?.url && !imageMaps) {
+      warn(`${at}: bat popup nhung chua co anh popup -> popup chi co chu`)
+    }
+    if (season.fall && !season.motif) {
+      warn(`${at}: bat hat roi nhung chua chon bo hoa tiet -> khong co gi roi`)
+    }
+    const dark = season.colorDark ?? DEFAULT_COLORS.dark
+    const onDark = contrast(WHITE, dark)
+    if (onDark !== null && onDark < 4.5) {
+      warn(`${at}: chu trang tren mau toi ${dark} chi dat ${onDark.toFixed(1)}:1 (can 4.5:1) -> khoi keu goi cuoi trang kho doc`)
+    }
+    if (season.colorPrimary || season.colorSurface) {
+      const primary = season.colorPrimary ?? DEFAULT_COLORS.primary
+      const surface = season.colorSurface ?? DEFAULT_COLORS.surface
+      const ratio = contrast(primary, surface)
+      if (ratio !== null && ratio < 4.5) {
+        warn(`${at}: mau chu dao ${primary} tren nen ${surface} chi dat ${ratio.toFixed(1)}:1 (can 4.5:1) -> nhan nho kho doc`)
+      }
+    }
+  }
+  // Mục "hiện ngay" (`now`) chạy từ bây giờ tới `end` — coi như bắt đầu từ đầu thời gian,
+  // để vẫn báo khi nó che một mục khác đang bật.
+  const enabled = seasons.filter((season) => season.enabled && season.end && (season.start || season.now))
+  const startOf = (season) => (season.now ? '0000-01-01' : season.start)
+  for (let i = 0; i < enabled.length; i++) {
+    for (let j = i + 1; j < enabled.length; j++) {
+      const [a, b] = [enabled[i], enabled[j]]
+      if (startOf(a) <= b.end && startOf(b) <= a.end) {
+        warn(`seasonal: '${a.id}' va '${b.id}' cung bat va trung ngay -> trang dung '${a.id}' (dung truoc trong danh sach)`)
+      }
+    }
+  }
+
+  // --- 3e. Thư viện họa tiết -------------------------------------------------------
+  //
+  // Cắt ngang hai section như luật `facility`: sự kiện trỏ tới họa tiết không có thật thì
+  // trang lặng lẽ mất trang trí — và chiều ngược lại, xoá họa tiết đang được dùng bị chặn.
+  // Trường dùng chung bằng nhau giữa hai bản (luật số 1), nên kiểm trên bản VI là đủ.
+
+  const library = vi.motifs
+  const builtin = new Set(BUILTIN_MOTIFS)
+  const glyphs = new Set(MOTIF_GLYPHS)
+  const customIds = new Set((library?.items ?? []).map((item) => item.id))
+  const shapeImages = new Map((library?.shapes ?? []).map((shape) => [shape.id, shape]))
+
+  for (const season of seasons) {
+    if (season.motif && !builtin.has(season.motif) && !customIds.has(season.motif)) {
+      fail(`seasonal.items[${season.id}]: hoa tiet '${season.motif}' khong co (bo co san hoac motifs.items) -> nut va hat roi mat trang tri`)
+    }
+  }
+
+  /** `null` = hợp lệ; còn lại là câu báo lỗi. */
+  const shapeProblem = (ref) => {
+    if (ref.startsWith(IMAGE_SHAPE_PREFIX)) {
+      return shapeImages.has(ref.slice(IMAGE_SHAPE_PREFIX.length)) ? null : `anh '${ref}' khong co trong motifs.shapes`
+    }
+    return glyphs.has(ref) ? null : `hinh co san '${ref}' khong ton tai`
+  }
+  const missingImage = (ref) =>
+    ref.startsWith(IMAGE_SHAPE_PREFIX) && !imageMaps && !shapeImages.get(ref.slice(IMAGE_SHAPE_PREFIX.length))?.image?.url
+
+  for (const motif of library?.items ?? []) {
+    const at = `motifs.items[${motif.id}]`
+    if (builtin.has(motif.id)) fail(`${at}: id trung voi bo co san '${motif.id}' -> dat id khac`)
+    if (motif.speedMin > motif.speedMax) fail(`${at}: toc do nho nhat ${motif.speedMin} lon hon lon nhat ${motif.speedMax}`)
+    for (const particle of motif.particles ?? []) {
+      const where = `${at}.particles[${particle.id}]`
+      const problem = shapeProblem(particle.shape)
+      if (problem) fail(`${where}: ${problem}`)
+      else if (missingImage(particle.shape)) warn(`${where}: anh '${particle.shape}' chua gan file -> loai hat nay khong roi`)
+      if (particle.sizeMin > particle.sizeMax) fail(`${where}: co nho nhat ${particle.sizeMin} lon hon lon nhat ${particle.sizeMax}`)
+    }
+    if (motif.ornamentShape) {
+      const problem = shapeProblem(motif.ornamentShape)
+      if (problem) fail(`${at}.ornamentShape: ${problem}`)
+      else if (missingImage(motif.ornamentShape)) warn(`${at}: anh trang tri nut '${motif.ornamentShape}' chua gan file -> nut khong co trang tri`)
+    }
+  }
+
+  // --- 3f. Bật/tắt section: hai bản phải cùng trạng thái ------------------------
+  //
+  // Dashboard luôn ghi `hidden` cho CẢ HAI bản nên lệch chỉ có thể do sửa tay database —
+  // khi đó khối hiện ở tiếng Việt mà mất ở tiếng Anh (hoặc ngược lại). `hidden` ở cấp trên
+  // cùng của section nên luật số 1 (chỉ so trên phần tử có `id`) không bắt được.
+  for (const key of TOGGLEABLE_SECTIONS) {
+    if (Boolean(vi[key]?.hidden) !== Boolean(en[key]?.hidden)) {
+      fail(`${key}.hidden: vi=${Boolean(vi[key]?.hidden)} en=${Boolean(en[key]?.hidden)} -> hai ban phai cung bat hoac cung tat`)
+    }
+  }
+
   // --- 4. Trụ cột và thiết bị: có đường lui, chỉ ghi chú ----------------------
 
   const TOLERANT = [
@@ -309,6 +460,10 @@ export function checkInvariants({ vi, en }, lookups, { imageMaps = null } = {}) 
         for (const link of column.links ?? []) {
           checkHref(`${lang} footer.columns[${column.id}].links[${link.id}]`, link.href)
         }
+      }
+      // Nút của popup sự kiện: chỉ kiểm khi nút thật sự là link.
+      for (const season of dict.seasonal?.items ?? []) {
+        if (season.ctaAction === 'link') checkHref(`${lang} seasonal.items[${season.id}]`, season.href)
       }
     }
   }

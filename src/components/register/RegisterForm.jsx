@@ -73,7 +73,7 @@ function KindTabs({ kind, labels, onChange }) {
             className={[
               // Dưới 360px thanh tab chỉ còn ~228px: chữ một nấc nhỏ hơn để hai nhãn nằm một dòng.
               'flex-auto cursor-pointer rounded-pill px-2 py-2.5 text-caption min-[360px]:text-body-sm leading-tight font-medium transition-colors duration-200 ease-[var(--ease-out-soft)] sm:px-5',
-              selected ? 'bg-signal text-white' : 'text-ink hover:bg-white/70',
+              selected ? 'bg-signal text-on-signal' : 'text-ink hover:bg-white/70',
             ].join(' ')}
           >
             {labels[id]}

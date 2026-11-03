@@ -1,8 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { ArrowLeftIcon, ArrowRightIcon, PauseIcon, PlayIcon } from '../assets/icons/Icons'
+import { useMediaQuery } from '../hooks/useMediaQuery'
 import { useSlideshow } from '../hooks/useSlideshow'
 import { useT } from '../i18n/context'
+import { track } from '../lib/track'
+import { ActivityModal } from './ActivityModal'
+import { useRegister } from './register/RegisterContext'
 import { SlideProgress } from './SlideProgress'
+import { Button } from './ui/Button'
 import { Pill } from './ui/Pill'
 import { Reveal } from './ui/Reveal'
 import { RoundButton } from './ui/RoundButton'
@@ -94,10 +99,22 @@ export function ActivityVideoBanner({ group, items, from }) {
   const t = useT()
   const labels = t.activities
   const total = items.length
-  const show = useSlideshow(total, { playByDefault: !SAVE_DATA })
+  // Giữ `id` chứ không giữ object (như Courses): đổi ngôn ngữ lúc popup mở thì nội dung dịch theo.
+  const [openId, setOpenId] = useState(null)
+  // `hold`: popup đang mở thì banner đứng yên (focus phải trả về đúng nút đã bấm).
+  const show = useSlideshow(total, { playByDefault: !SAVE_DATA, hold: openId !== null })
   const { current, cycle, stamps, go, goTo, autoplay, playing, running, playState, inView, regionProps } = show
+  const { openRegister } = useRegister()
+  // Cỡ lớn từ 640px; dưới đó cỡ vừa để hai nút xếp được trên màn 320px.
+  const roomy = useMediaQuery('(min-width: 640px)')
 
   if (total === 0) return null
+
+  const openItem = openId ? (items.find((item) => item.id === openId) ?? null) : null
+  const joinMember = (cta) => {
+    track('cta_click', cta)
+    openRegister(null, 'events', 'member')
+  }
 
   const label = (key) => labels[key] ?? labels.title
   const hasVideo = items.some((item) => item.video?.url)
@@ -147,7 +164,7 @@ export function ActivityVideoBanner({ group, items, from }) {
                     />
                   </div>
                 )}
-                {item.video?.url && <BannerVideo video={item.video} play={isActive && playing && inView} />}
+                {item.video?.url && <BannerVideo video={item.video} play={isActive && playing && inView && !openItem} />}
               </div>
             )
           })}
@@ -188,6 +205,31 @@ export function ActivityVideoBanner({ group, items, from }) {
                       </div>
                       <h4 className="text-heading-lg md:text-display text-white">{item.title}</h4>
                       <p className="text-body-sm md:text-subheading text-white/85">{item.description}</p>
+                      {/* Nút theo từng slide. Slide ẩn đã `inert` nên nút của nó không nhận Tab.
+                          Thiếu nhãn (database chưa áp migration 021 / 022) thì không vẽ nút đó. */}
+                      {(labels.joinMember || labels.viewDetails) && (
+                        <div className="mt-2 flex flex-wrap items-center gap-3">
+                          {labels.joinMember && (
+                            <Button type="button" size={roomy ? 'lg' : 'md'} wrap onClick={() => joinMember('competitions')}>
+                              {labels.joinMember}
+                            </Button>
+                          )}
+                          {labels.viewDetails && (
+                            <Button
+                              type="button"
+                              variant="invertedOutline"
+                              size={roomy ? 'lg' : 'md'}
+                              aria-haspopup="dialog"
+                              onClick={() => {
+                                track('cta_click', 'competition-detail')
+                                setOpenId(item.id)
+                              }}
+                            >
+                              {labels.viewDetails}
+                            </Button>
+                          )}
+                        </div>
+                      )}
                     </div>
                     {/* Không còn poster bên phải (người dùng yêu cầu ẩn, 2026-10-23). Poster
                         chỉ còn làm nền mờ khi cuộc thi chưa có video. */}
@@ -235,6 +277,16 @@ export function ActivityVideoBanner({ group, items, from }) {
           </div>
         </div>
       </Reveal>
+
+      <ActivityModal
+        item={openItem}
+        onClose={() => setOpenId(null)}
+        onRegister={() => {
+          // Đóng popup rồi mở form trong cùng một lượt — cùng đường với popup khóa học.
+          setOpenId(null)
+          joinMember('competition-modal')
+        }}
+      />
 
       {/* Đọc slide mới khi người dùng tự chuyển; đang tự chạy thì im (mẫu carousel
           WAI-ARIA) — đọc mỗi lần tự chuyển là quấy rầy. */}

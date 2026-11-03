@@ -62,12 +62,17 @@ export function toWorking(fields, vi, en) {
   return working
 }
 
+const isBlank = (values) => values.every((value) => !String(value ?? '').trim())
+
 export function fromWorking(fields, working, locale) {
   const out = { id: working.id }
   for (const field of fields) {
     const value = working.shared[field.key]
     if (field.type === 'sublist') {
       out[field.key] = (value ?? []).map((row) => fromWorking(field.itemFields, row, locale))
+    } else if (field.omitEmpty && isBlank(field.translated ? [working.vi[field.key], working.en[field.key]] : [value])) {
+      // `omitEmpty`: ô tuỳ chọn để trống = khoá VẮNG (bản seed vốn không có khoá đó). Trường
+      // dịch chỉ bỏ khi CẢ HAI bản trống — bỏ một bên là hai bản lệch cấu trúc.
     } else if (field.translated) {
       out[field.key] = working[locale][field.key] ?? ''
     } else if (field.type === 'switch' || field.type === 'exclusive') {
@@ -75,9 +80,10 @@ export function fromWorking(fields, working, locale) {
       if (value) out[field.key] = true
     } else if (field.type === 'number') {
       out[field.key] = Number(value)
-    } else if (field.type === 'select' && field.optional && (value === '' || value == null)) {
-      // Ô chọn tuỳ chọn để trống = khoá VẮNG, không phải chuỗi rỗng: schema từ chối
-      // `''`, và bản seed vốn không có khoá đó (vd. `projects.items[].status`).
+    } else if ((field.type === 'select' || field.type === 'color') && field.optional && (value === '' || value == null)) {
+      // Ô chọn / ô màu tuỳ chọn để trống = khoá VẮNG, không phải chuỗi rỗng: schema từ
+      // chối `''`, và bản seed vốn không có khoá đó (vd. `projects.items[].status`; màu
+      // để trống của sự kiện mùa = giữ màu mặc định của trang).
     } else {
       out[field.key] = value
     }
@@ -93,7 +99,9 @@ export function fillSubIds(fields, working) {
     const used = new Set((shared[field.key] ?? []).map((row) => row.id).filter(Boolean))
     shared[field.key] = (shared[field.key] ?? []).map((row) => {
       if (row.id) return row
-      const id = uniqueId(slugify(row.vi.label ?? row.vi.title ?? ''), used)
+      // `idFrom`: dòng không có nhãn dịch (vd. loại hạt của họa tiết) lấy id từ một trường chung.
+      const source = field.idFrom ? row.shared[field.idFrom] : (row.vi.label ?? row.vi.title)
+      const id = uniqueId(slugify(source ?? ''), used)
       used.add(id)
       return { ...row, id }
     })
@@ -104,6 +112,13 @@ export function fillSubIds(fields, working) {
 /** Kiểm nhanh phía trình duyệt. Máy chủ vẫn là nơi quyết định; đây chỉ đỡ một vòng lưu hỏng. */
 export function validateWorking(fields, working, { checkId = false, usedIds } = {}) {
   const errors = {}
+  for (const field of fields) {
+    // Ô màu tuỳ chọn: trống thì được, có chữ thì phải đúng `#rrggbb` (schema máy chủ).
+    const value = working.shared?.[field.key]
+    if (field.type === 'color' && value && !/^#[0-9a-fA-F]{6}$/.test(value)) {
+      errors[`shared.${field.key}`] = 'Màu phải dạng #rrggbb, ví dụ #c8102e.'
+    }
+  }
   if (checkId) {
     if (!ID_PATTERN.test(working.id)) errors.id = 'Id chỉ gồm chữ thường không dấu, số và dấu gạch ngang.'
     else if (usedIds?.has(working.id)) errors.id = 'Id này đã có trong danh sách.'
@@ -134,7 +149,7 @@ export function validateWorking(fields, working, { checkId = false, usedIds } = 
       if (value === '' || !Number.isInteger(Number(value)) || Number(value) < 0) {
         errors[`shared.${field.key}`] = 'Phải là số nguyên không âm.'
       }
-    } else if (['text', 'select', 'href', 'icon'].includes(field.type) && !String(value ?? '').trim()) {
+    } else if (['text', 'select', 'href', 'icon', 'date'].includes(field.type) && !String(value ?? '').trim()) {
       errors[`shared.${field.key}`] = 'Không được để trống.'
     }
   }

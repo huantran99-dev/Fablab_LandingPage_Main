@@ -5,6 +5,7 @@ import { EquipmentModal } from './EquipmentModal'
 import { Button } from './ui/Button'
 import { RevealGroup } from './ui/Reveal'
 import { Section, SectionHeading } from './ui/Section'
+import { opposite } from '../lib/pageSections'
 
 /**
  * Lưới bento không đều: hai ô rộng và hai ô hẹp đặt so le nhau, để khối thiết
@@ -27,7 +28,8 @@ const LAYOUT = {
   'electronics-lab': LAYOUT_CYCLE[0],
 }
 
-export function Facilities() {
+/** `side`: chiều trượt của tiêu đề, App tính theo các khối đang hiện (pageSections.js). */
+export function Facilities({ side = 'left' }) {
   const t = useT()
 
   // Giữ `id` chứ không giữ object máy: đổi ngôn ngữ lúc popup đang mở thì nội dung
@@ -56,10 +58,10 @@ export function Facilities() {
         title={t.facilities.title}
         description={t.facilities.description}
         align="center"
-        from="left"
+        from={side}
       />
 
-      <RevealGroup from="right" className="mt-14 grid gap-6 md:grid-cols-6">
+      <RevealGroup from={opposite(side)} className="mt-14 grid gap-6 md:grid-cols-6">
         {t.facilities.items.map((item, index) => {
           const layout = LAYOUT[item.id] ?? LAYOUT_CYCLE[index % LAYOUT_CYCLE.length]
           const image = item.image

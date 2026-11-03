@@ -31,6 +31,13 @@
 @theme {
   /* --- Brand ------------------------------------------------------------ */
   --color-signal: #1868db; /* màu nhấn chính: nav pill, link, primary button */
+  /* Sự kiện mùa ghi đè `--color-signal` (và wash / navy / ember) lên <html> lúc chạy
+     (SeasonTheme.jsx). Hai sắc hover/active SUY từ signal nên tự đổi theo — trước đây là
+     hai mã viết cứng trong Button.jsx. Chữ trên nền signal đi qua `on-signal`, KHÔNG
+     dùng `text-white`: màu chủ đạo sáng (vàng Tết) thì chữ trắng không đọc được. */
+  --color-signal-hover: color-mix(in oklab, var(--color-signal) 85%, black);
+  --color-signal-active: color-mix(in oklab, var(--color-signal) 75%, black);
+  --color-on-signal: #ffffff;
   --color-plum: #48245d;
   --color-orchid: #bf63f3;
   --color-ember: #ff613d;
@@ -320,6 +327,31 @@
 @media (prefers-reduced-motion: reduce) {
   .animate-sync {
     animation-name: none !important;
+  }
+}
+
+/* Vật trang trí của sự kiện mùa trên nút chính (src/lib/motifs.js) rung nhẹ khi rê
+   chuột lên nút — gắn qua biến thể hover của nhóm `btn` trong Button.jsx. Lặp vô hạn
+   nên tắt chuyển động phải tắt bằng `animation-name` (cùng bẫy với marquee); media
+   query đặt BÊN TRONG utility để đi theo cả biến thể hover. */
+@keyframes ornament-sway {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-9deg);
+  }
+  75% {
+    transform: rotate(7deg);
+  }
+}
+
+@utility animate-ornament-sway {
+  animation: ornament-sway 0.9s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation-name: none;
   }
 }
 

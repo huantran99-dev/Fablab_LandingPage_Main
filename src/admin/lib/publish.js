@@ -27,7 +27,7 @@ async function fetchPublic() {
  * tự gửi lên) và bỏ `image` / `video` (bản công khai gắn media lên từng mục, bản quản
  * trị để media riêng — so riêng bên dưới).
  */
-const MEDIA_KEYS = new Set(['image', 'video'])
+const MEDIA_KEYS = new Set(['image', 'video', 'decor'])
 
 function canonical(value) {
   if (Array.isArray(value)) return value.map(canonical)
@@ -93,7 +93,8 @@ export function sectionMatches(content, sectionKey, truth) {
     )
   return (
     same(publicMedia(content.vi[sectionKey], sectionKey, 'image'), expected(truth.images)) &&
-    same(publicMedia(content.vi[sectionKey], sectionKey, 'video'), expected(truth.videos))
+    same(publicMedia(content.vi[sectionKey], sectionKey, 'video'), expected(truth.videos)) &&
+    same(publicMedia(content.vi[sectionKey], sectionKey, 'decor'), expected(truth.decors))
   )
 }
 

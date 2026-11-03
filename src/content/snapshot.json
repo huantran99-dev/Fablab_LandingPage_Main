@@ -1,7 +1,9 @@
 {
   "en": {
     "activities": {
+      "closeDetails": "Close",
       "description": "Competitions, seminars and workshops run by FabLab EIU for students, pupils and the wider community.",
+      "detailLink": "Visit the competition page",
       "eyebrow": "Events",
       "goTo": "Go to activity",
       "groups": [
@@ -208,6 +210,7 @@
           "title": "3D design with SolidWorks"
         }
       ],
+      "joinMember": "Become a FabLab member today",
       "kinds": {
         "competition": "Competition",
         "partnership": "Partnership",
@@ -218,7 +221,8 @@
       "pause": "Pause slideshow",
       "play": "Play slideshow",
       "previous": "Previous activity",
-      "title": "Annual activities & competitions"
+      "title": "Annual activities & competitions",
+      "viewDetails": "View details"
     },
     "courses": {
       "ageLabel": "Ages",
@@ -1847,6 +1851,40 @@
       "secondaryCta": "Visit the lab",
       "title": "Proudly Serving the Community"
     },
+    "motifs": {
+      "items": [
+        {
+          "density": 200,
+          "direction": "down",
+          "id": "tuyet-day",
+          "motion": "spin",
+          "name": "Heavy snow (sample)",
+          "ornamentCorner": "right",
+          "ornamentShape": "snowflake",
+          "ornamentSize": 16,
+          "particles": [
+            {
+              "id": "snowflake",
+              "shape": "snowflake",
+              "sizeMax": 18,
+              "sizeMin": 11,
+              "weight": 45
+            },
+            {
+              "id": "snowdot",
+              "shape": "snowdot",
+              "sizeMax": 9,
+              "sizeMin": 5,
+              "weight": 55
+            }
+          ],
+          "speedMax": 40,
+          "speedMin": 18,
+          "sway": 26
+        }
+      ],
+      "shapes": []
+    },
     "nav": {
       "brandTagline": "Digital fabrication lab",
       "closeMenu": "Close menu",
@@ -2230,6 +2268,108 @@
       },
       "title": "Register"
     },
+    "seasonal": {
+      "close": "Close",
+      "dismiss": "Maybe later",
+      "effectOff": "Turn off effects",
+      "effectOn": "Turn on effects",
+      "items": [
+        {
+          "body": "EIU FabLab wishes you and your family a peaceful new year full of fresh ideas. Start the year with a creative course at FabLab.",
+          "colorAccent": "#e8a317",
+          "colorDark": "#7a0c1e",
+          "colorPrimary": "#c8102e",
+          "colorSurface": "#fff3d6",
+          "ctaAction": "register",
+          "ctaLabel": "Register for a course",
+          "decor": {
+            "height": 636,
+            "url": "/media/activity-machine-learning.c6a02acf.jpg",
+            "width": 900
+          },
+          "enabled": true,
+          "end": "2027-02-14",
+          "fall": true,
+          "href": "#",
+          "id": "tet-2027",
+          "image": {
+            "height": 68,
+            "url": "/media/partner-becamex.cd3a7dc3.png",
+            "width": 320
+          },
+          "motif": "mai",
+          "name": "Lunar New Year",
+          "now": true,
+          "popup": true,
+          "start": "2027-01-28",
+          "title": "Happy Lunar New Year 2027"
+        },
+        {
+          "body": "Wishing every child a happy moon festival. Explore our hands-on STEM programmes for school students.",
+          "colorAccent": "#f2b134",
+          "colorDark": "#3b2a5c",
+          "colorPrimary": "#b34700",
+          "colorSurface": "#fff1dc",
+          "ctaAction": "link",
+          "ctaLabel": "See programmes",
+          "end": "2027-09-16",
+          "fall": true,
+          "href": "#courses-experience",
+          "id": "trung-thu-2027",
+          "motif": "lantern",
+          "name": "Mid-Autumn Festival",
+          "popup": true,
+          "start": "2027-09-08",
+          "title": "A joyful Mid-Autumn Festival with EIU FabLab"
+        },
+        {
+          "body": "EIU FabLab wishes you a warm Christmas season. Take a look at the projects made in our workshop.",
+          "colorAccent": "#c0392b",
+          "colorDark": "#7f1d1d",
+          "colorPrimary": "#1f7a4d",
+          "colorSurface": "#eef7f0",
+          "ctaAction": "link",
+          "ctaLabel": "See projects",
+          "decor": {
+            "height": 240,
+            "url": "/media/team-tuan.086e9dc4.jpg",
+            "width": 240
+          },
+          "end": "2026-12-26",
+          "fall": true,
+          "href": "#projects",
+          "id": "noel-2026",
+          "image": {
+            "height": 640,
+            "url": "/media/activity-drone-soccer.6f7220b8.jpg",
+            "width": 453
+          },
+          "motif": "snow",
+          "name": "Christmas",
+          "popup": true,
+          "start": "2026-12-15",
+          "title": "Merry Christmas"
+        },
+        {
+          "body": "EIU FabLab wishes you a fun Halloween. Explore our hands-on STEM programmes and make something of your very own.",
+          "colorAccent": "#7c3aed",
+          "colorDark": "#3b0764",
+          "colorPrimary": "#c2410c",
+          "colorSurface": "#fff7ed",
+          "ctaAction": "link",
+          "ctaLabel": "See programmes",
+          "end": "2026-11-01",
+          "fall": true,
+          "href": "#courses-experience",
+          "id": "halloween-2026",
+          "motif": "halloween",
+          "name": "Halloween",
+          "popup": true,
+          "start": "2026-10-25",
+          "title": "A creative Halloween with EIU FabLab"
+        }
+      ]
+    },
     "stats": {
       "items": [
         {
@@ -2471,11 +2611,13 @@
       "title": "What learners say about FabLab EIU"
     }
   },
-  "rev": 90,
-  "updatedAt": "2026-10-27T09:33:00.621Z",
+  "rev": 168,
+  "updatedAt": "2026-11-03T06:37:22.809Z",
   "vi": {
     "activities": {
+      "closeDetails": "Đóng",
       "description": "Sân chơi, hội thảo và workshop do EIU FabLab tổ chức cho sinh viên, học sinh và cộng đồng.",
+      "detailLink": "Xem trang cuộc thi",
       "eyebrow": "Sự kiện",
       "goTo": "Xem hoạt động số",
       "groups": [
@@ -2682,6 +2824,7 @@
           "title": "Thiết kế 3D với SolidWorks"
         }
       ],
+      "joinMember": "Trở thành thành viên FabLab ngay",
       "kinds": {
         "competition": "Cuộc thi",
         "partnership": "Hợp tác",
@@ -2692,7 +2835,8 @@
       "pause": "Tạm dừng trình chiếu",
       "play": "Phát trình chiếu",
       "previous": "Hoạt động trước",
-      "title": "Hoạt động & cuộc thi thường niên"
+      "title": "Hoạt động & cuộc thi thường niên",
+      "viewDetails": "Xem chi tiết"
     },
     "courses": {
       "ageLabel": "Độ tuổi",
@@ -4488,6 +4632,40 @@
       "secondaryCta": "Tham quan FabLab",
       "title": "Tự Hào Phục Vụ Cộng Đồng"
     },
+    "motifs": {
+      "items": [
+        {
+          "density": 200,
+          "direction": "down",
+          "id": "tuyet-day",
+          "motion": "spin",
+          "name": "Tuyết dày (mẫu)",
+          "ornamentCorner": "right",
+          "ornamentShape": "snowflake",
+          "ornamentSize": 16,
+          "particles": [
+            {
+              "id": "snowflake",
+              "shape": "snowflake",
+              "sizeMax": 18,
+              "sizeMin": 11,
+              "weight": 45
+            },
+            {
+              "id": "snowdot",
+              "shape": "snowdot",
+              "sizeMax": 9,
+              "sizeMin": 5,
+              "weight": 55
+            }
+          ],
+          "speedMax": 40,
+          "speedMin": 18,
+          "sway": 26
+        }
+      ],
+      "shapes": []
+    },
     "nav": {
       "brandTagline": "Xưởng chế tạo số",
       "closeMenu": "Đóng menu",
@@ -4870,6 +5048,108 @@
         "member": "Thành viên FabLab"
       },
       "title": "Đăng ký"
+    },
+    "seasonal": {
+      "close": "Đóng",
+      "dismiss": "Để sau",
+      "effectOff": "Tắt hiệu ứng",
+      "effectOn": "Bật hiệu ứng",
+      "items": [
+        {
+          "body": "EIU FabLab chúc bạn và gia đình một năm mới an khang, nhiều ý tưởng mới. Bắt đầu năm mới bằng một khóa học sáng tạo cùng FabLab.",
+          "colorAccent": "#e8a317",
+          "colorDark": "#7a0c1e",
+          "colorPrimary": "#c8102e",
+          "colorSurface": "#fff3d6",
+          "ctaAction": "register",
+          "ctaLabel": "Đăng ký khóa học",
+          "decor": {
+            "height": 636,
+            "url": "/media/activity-machine-learning.c6a02acf.jpg",
+            "width": 900
+          },
+          "enabled": true,
+          "end": "2027-02-14",
+          "fall": true,
+          "href": "#",
+          "id": "tet-2027",
+          "image": {
+            "height": 68,
+            "url": "/media/partner-becamex.cd3a7dc3.png",
+            "width": 320
+          },
+          "motif": "mai",
+          "name": "Tết Nguyên Đán",
+          "now": true,
+          "popup": true,
+          "start": "2027-01-28",
+          "title": "Chào Xuân Đinh Mùi 2027"
+        },
+        {
+          "body": "Chúc các bạn nhỏ một mùa trăng thật vui. Cùng xem các chương trình trải nghiệm STEM dành cho học sinh.",
+          "colorAccent": "#f2b134",
+          "colorDark": "#3b2a5c",
+          "colorPrimary": "#b34700",
+          "colorSurface": "#fff1dc",
+          "ctaAction": "link",
+          "ctaLabel": "Xem chương trình",
+          "end": "2027-09-16",
+          "fall": true,
+          "href": "#courses-experience",
+          "id": "trung-thu-2027",
+          "motif": "lantern",
+          "name": "Tết Trung Thu",
+          "popup": true,
+          "start": "2027-09-08",
+          "title": "Trung Thu vui tươi cùng EIU FabLab"
+        },
+        {
+          "body": "EIU FabLab chúc bạn một mùa Giáng sinh ấm áp. Ghé xem những dự án được làm ra từ xưởng.",
+          "colorAccent": "#c0392b",
+          "colorDark": "#7f1d1d",
+          "colorPrimary": "#1f7a4d",
+          "colorSurface": "#eef7f0",
+          "ctaAction": "link",
+          "ctaLabel": "Xem dự án",
+          "decor": {
+            "height": 240,
+            "url": "/media/team-tuan.086e9dc4.jpg",
+            "width": 240
+          },
+          "end": "2026-12-26",
+          "fall": true,
+          "href": "#projects",
+          "id": "noel-2026",
+          "image": {
+            "height": 640,
+            "url": "/media/activity-drone-soccer.6f7220b8.jpg",
+            "width": 453
+          },
+          "motif": "snow",
+          "name": "Giáng sinh",
+          "popup": true,
+          "start": "2026-12-15",
+          "title": "Giáng sinh an lành"
+        },
+        {
+          "body": "EIU FabLab chúc bạn một mùa Halloween thật vui. Cùng khám phá các chương trình trải nghiệm STEM và tự tay làm ra sản phẩm của riêng mình.",
+          "colorAccent": "#7c3aed",
+          "colorDark": "#3b0764",
+          "colorPrimary": "#c2410c",
+          "colorSurface": "#fff7ed",
+          "ctaAction": "link",
+          "ctaLabel": "Xem chương trình",
+          "end": "2026-11-01",
+          "fall": true,
+          "href": "#courses-experience",
+          "id": "halloween-2026",
+          "motif": "halloween",
+          "name": "Halloween",
+          "popup": true,
+          "start": "2026-10-25",
+          "title": "Halloween sáng tạo cùng EIU FabLab"
+        }
+      ]
     },
     "stats": {
       "items": [

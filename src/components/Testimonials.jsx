@@ -5,10 +5,12 @@ import { initialsOf } from '../lib/initials'
 import { Reveal } from './ui/Reveal'
 import { RoundButton } from './ui/RoundButton'
 import { Section, SectionHeading } from './ui/Section'
+import { opposite } from '../lib/pageSections'
 
 const AVATAR_TONES = ['bg-signal', 'bg-ember', 'bg-leaf']
 
-export function Testimonials() {
+/** `side`: chiều trượt của tiêu đề, App tính theo các khối đang hiện (pageSections.js). */
+export function Testimonials({ side = 'right' }) {
   const t = useT()
   const items = t.testimonials.items
   const { current, go, goTo } = useCarousel(items.length)
@@ -20,10 +22,10 @@ export function Testimonials() {
         eyebrow={t.testimonials.eyebrow}
         title={t.testimonials.title}
         align="center"
-        from="right"
+        from={side}
       />
 
-      <Reveal from="left" className="mt-14 flex items-center gap-5">
+      <Reveal from={opposite(side)} className="mt-14 flex items-center gap-5">
         <div className="hidden md:block">
           <RoundButton label={t.testimonials.previous} onClick={() => go(-1)}>
             <ArrowLeftIcon />

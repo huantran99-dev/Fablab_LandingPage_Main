@@ -132,27 +132,61 @@ miễn phí" — nó không đúng.
 Thứ tự trang (từ 2026-10-20, xưởng và thiết bị lên đầu): Hero → StatsBar → **Facilities →
 Projects** → Pillars → Courses → Activities → Team → Partners → Testimonials → FinalCTA.
 
-Trong cùng section tiêu đề và lưới đi ngược chiều, rồi đảo lại ở section kế tiếp:
+**Chiều không còn viết cứng trong component** (từ 2026-11-03, cùng lúc có công tắc bật/tắt
+section). [App.jsx](src/App.jsx) dựng các khối từ `PAGE_SECTIONS`, bỏ khối đang tắt, rồi
+đưa prop `side` cho 8 khối thuộc `RHYTHM` ([pageSections.js](src/lib/pageSections.js)) theo
+thứ tự trong số khối ĐANG HIỆN: khối nhịp thứ 0 `left`, thứ 1 `right`… Tiêu đề trượt theo
+`side`, nội dung theo `opposite(side)`. Không tắt khối nào thì ra đúng chiều cũ:
 Facilities `left`/`right` → Projects `right`/`left` → Pillars `left`/`right` → Courses
 `right`/`left` → Activities `left`/`right` → Team `right`/`left` → Partners
-`left`/`right` → Testimonials `right`/`left`. Lần sắp lại này chỉ phải lật Partners và
-Testimonials — các section khác tình cờ giữ nguyên chẵn/lẻ. Trong Pillars: h3 Sứ mệnh `up`,
-lưới trụ cột `right`, rồi khối chia đôi Tầm nhìn `left` | Giá trị cốt lõi `right` (nền trắng,
-ngăn bằng đường kẻ — cố ý KHÔNG dùng nền navy, vì FinalCTA đã giữ bề mặt tối). StatsBar · FinalCTA · Footer · nút "Xem thêm" ·
+`left`/`right` → Testimonials `right`/`left` (đã đo: trước và sau một vòng tắt/bật khớp
+tuyệt đối). Trong Pillars: h3 Sứ mệnh `up`,
+lưới trụ cột `opposite(side)`, rồi khối chia đôi Tầm nhìn `left` | Giá trị cốt lõi `right` (nền trắng,
+ngăn bằng đường kẻ — cố ý KHÔNG dùng nền navy, vì FinalCTA đã giữ bề mặt tối). Hai chiều của
+khối chia đôi là chiều THEO VỊ TRÍ trên màn hình, nên giữ cố định, không đi theo `side`. StatsBar · FinalCTA · Footer · nút "Xem thêm" ·
 link tuyển dụng · chấm tròn dùng mặc định `up`.
 
 Courses và Activities đều có **hai khối** bên trong. Chiều của khối gán theo chỉ
-số chứ không viết cứng, và luôn bắt đầu ngược chiều tiêu đề section: Courses tiêu
-đề `right` → khối `left`/`right`; Activities tiêu đề `left` → khối `right`/`left`.
+số chứ không viết cứng, và luôn bắt đầu ngược chiều tiêu đề section (`opposite(side)`,
+rồi `side`): mặc định Courses tiêu đề `right` → khối `left`/`right`; Activities tiêu đề
+`left` → khối `right`/`left`.
 Thêm khối thứ ba là nó tự xen kẽ tiếp. Tiêu đề phụ của khối để `up`, không trượt
 ngang, kẻo section thành quá ồn.
 
 Chia một section làm hai khối **không** ảnh hưởng nhịp giữa các section — tiêu đề
 section giữ nguyên chiều cũ nên không phải lật những section phía sau.
 
-**Thêm hay bỏ section ở giữa là phải đảo chiều mọi section phía sau** để giữ nhịp
-xen kẽ. Thêm Team đã kéo theo việc lật Testimonials; thay Process bằng
-Partners + Activities lại kéo theo lật cả Team lẫn Testimonials lần nữa.
+Tắt / bật một khối ở giữa **không phải lật tay gì cả** — nhịp tự tính lại. (Trước đây thêm
+Team đã kéo theo lật Testimonials, thay Process bằng Partners + Activities lại kéo theo lật
+cả Team lẫn Testimonials.) **Thêm section mới vào trang** thì: thêm khoá vào `PAGE_SECTIONS`
+(+ `TOGGLEABLE_SECTIONS` ở schema máy chủ, `toggleable: true` ở descriptor — `check:admin` so
+ba danh sách), component vào `COMPONENTS` trong App.jsx, vào `RHYTHM` nếu nó đi nhịp (nhận
+prop `side`), và neo của nó vào `sectionAnchors`.
+
+## Bật/tắt section (từ 2026-11-03, API 20)
+
+Cả 11 khối của trang (Hero → FinalCTA) có công tắc "Hiện section này trên trang công khai"
+ở đầu trang soạn của chính nó ([SectionVisibility.jsx](src/admin/editor/SectionVisibility.jsx)).
+Thanh menu, footer, form đăng ký không tắt được. Thanh bên dashboard gắn nhãn "Ẩn" (đọc
+`meta.sections[].hidden`).
+
+- **Dữ liệu: `hidden: true` ở cấp trên cùng của section**, vắng = hiện — không cần migration,
+  bản cũ vẫn hợp lệ. Công tắc ghi vào CẢ HAI bản của bản nháp, chỉ áp khi Lưu ("Bỏ thay đổi"
+  huỷ được). Invariants mục 3f chặn hai bản lệch nhau (chỉ xảy ra khi sửa tay database).
+- **Khôi phục một bản lịch sử cũ là khôi phục luôn trạng thái ẩn/hiện của bản đó** — bản
+  trước ngày có công tắc không có khoá, nên khối HIỆN lại. Đúng ý (khôi phục = trở về y như
+  lúc đó) nhưng dễ bất ngờ.
+- **Link tự ẩn khi đích tắt** qua [useLiveHref](src/hooks/useLiveHref.js): menu (nhánh hết
+  mục con thì bỏ hẳn, cả drawer), footer (cột rỗng thì bỏ), nút Hero `#courses` /
+  `#facilities`, nút link của popup sự kiện mùa. Neo của mỗi khối ở `sectionAnchors`; neo
+  theo nhóm (`courses-stem`, `events`…) vẫn suy từ dữ liệu. **Hero không bao giờ làm mất
+  `#top`** — logo navbar trỏ vào đó.
+- Máy chủ KHÔNG coi link trỏ vào khối đang tắt là lỗi: `renderedAnchors` tính neo từ mã
+  nguồn, không theo trạng thái. Nhờ vậy tắt một khối không khoá lượt lưu menu / footer.
+- Đã thử trên bản sao: tắt Dự án → menu FabLab mất `#projects`, footer mất link, nhịp phía
+  sau đảo; tắt thêm Khóa học → nhánh StemLab biến mất (cả drawer 390px), nút chính của Hero
+  ẩn; tắt thêm Hero → trang bắt đầu từ Số liệu, navbar vẫn dính; 320/390/1280 không tràn
+  ngang, không lỗi console. Menu FabLab mở khi RÊ CHUỘT — bài thử bấm vào nó là đóng lại.
 
 ## Menu hai cấp và bảng neo
 
@@ -184,7 +218,7 @@ một mục con**.
 vẫn trỏ vào — đừng xoá.
 
 **Đừng chép tay danh sách id vào Navbar.** `sectionIds` làm phẳng qua `children`
-của `nav.links`; đây là lần thứ hai chỗ này gây lỗi (lần trước là hardcode
+của `nav.links` SAU KHI đã lọc link chết (`liveNavLinks` — khối đang tắt); đây là lần thứ hai chỗ này gây lỗi (lần trước là hardcode
 `'process'` sau khi xoá section).
 
 Mở/đóng theo mẫu **Disclosure Navigation** của WAI-ARIA: nút bật/tắt panel, Tab đi
@@ -192,6 +226,25 @@ xuyên qua bình thường, không cần roving tabindex. Panel đệm bằng kh
 panel chứ không bằng lề — có lề là có khe chết, chuột đi từ nút xuống panel sẽ làm
 menu đóng giữa chừng. Drawer mobile dùng chung state `openBranch` với thanh
 desktop (hai thứ không bao giờ cùng hiện) nhưng render dạng accordion.
+
+### Drawer mobile là `<dialog>` ở top layer (từ 2026-10-28)
+
+Bản trước là một div `fixed inset-0` nằm TRONG `<header>`, khoá cuộn bằng
+`body.style.overflow`. Ba lỗi, đều đã đo bằng puppeteer ở 390px:
+
+- **Mở sau khi cuộn thì drawer chỉ cao 76px** (màn 844px). Khi đã cuộn, header có
+  `backdrop-blur`, mà `backdrop-filter` (cũng như `transform`, `filter`) biến phần tử thành
+  khung chứa của con `position: fixed` — `inset-0` tính theo header chứ không theo màn
+  hình. `<dialog>` + `showModal()` nằm ở top layer nên thoát khỏi mọi khung chứa của tổ
+  tiên. **Đừng đưa drawer về lại dạng div `fixed` trong header.**
+- Tab thoát khỏi drawer xuống nội dung bị che phía sau. Dialog modal lo bẫy focus. (Sau
+  phần tử cuối, Chrome cho Tab ghé `BODY` / thanh trình duyệt một nhịp rồi quay về đầu
+  dialog — đó là hành vi gốc, ba popup kia cũng vậy, không phải focus lọt ra trang.)
+- Khoá cuộn trên `<body>` trái luật ở trên; giờ dùng `useScrollLock` có bộ đếm.
+
+`drawerOpen = menuOpen && !isDesktop` (`useMediaQuery` 1024px): dialog modal mà bị ẩn bởi
+breakpoint thì cả trang thành `inert`, nên nới cửa sổ qua `lg` là phải đóng. Sự kiện
+`close` của dialog gọi `closeDrawer`, nên `Esc` và lần đóng do breakpoint đều đi một đường.
 
 ### `useActiveSection` chọn theo thứ tự tài liệu
 
@@ -229,8 +282,9 @@ dung biến mất với đúng nhóm người dùng cần được phục vụ t
 Đặt `overflow: hidden` cả hai trục chứ không chỉ `overflow-x`: một trục `hidden` mà
 trục kia `visible` thì CSS tự nâng trục kia thành `auto` và sinh thanh cuộn dọc.
 
-**Partners hiện CHƯA có `marquee-viewport`** — vẫn còn lỗi mất nội dung đó. Sửa thì
-đổi `overflow-hidden` thành `marquee-viewport` là xong.
+Cả Team lẫn Partners đều bọc track bằng `marquee-viewport` (Partners được thêm ngày
+2026-10-28 — trước đó nó còn `overflow-hidden` và mất logo khi giảm chuyển động). Thêm
+dải chạy thứ ba thì dùng đúng utility đó, đừng tự đặt `overflow-hidden`.
 
 ## Marquee đối tác
 
@@ -405,6 +459,130 @@ người dùng chỉ ra là lệch cấp. Tên trụ cột và tên giá trị l
 - `check:admin` bỏ cả `video` (không chỉ `image`) khi so form: cả hai đến từ bảng binding.
   Lỗi này chỉ lộ ra khi database có video thật đầu tiên.
 
+## Sự kiện mùa: popup, màu, họa tiết (từ 2026-10-28, API 13 → 17)
+
+Tết, Trung Thu, Noel…: admin tạo sự kiện ở section `seasonal` (dashboard "Sự kiện mùa");
+trong khoảng ngày đó trang hiện popup quảng cáo và đổi màu. Đã chốt với người dùng: thiết
+kế do admin thêm = **bảng màu + ảnh tải lên** (ảnh popup, ảnh trang trí góc Hero); popup
+**một lần mỗi sự kiện**. Lượt hai (API 14) người dùng muốn "thêm đồ họa, không chỉ đổi màu":
+**họa tiết vẽ sẵn bằng mã** (admin chọn, không tải ảnh) vừa **đậu trên nút chính** vừa **rơi
+thưa trên cả trang** có nút tắt. Nút vẫn pill, không shadow, không đổi bo góc.
+
+| Mảnh | File |
+|---|---|
+| Chọn sự kiện (`pickSeason`, `?season=`, ngày VN) | [src/lib/season.js](src/lib/season.js) |
+| Ghi biến màu lên `<html>` | [SeasonTheme.jsx](src/components/SeasonTheme.jsx) |
+| Popup | [SeasonalPopup.jsx](src/components/SeasonalPopup.jsx) |
+| Ảnh trang trí | [Hero.jsx](src/components/Hero.jsx) |
+| Hình họa tiết (dữ liệu path) · vẽ SVG | [src/lib/motifs.js](src/lib/motifs.js) · [MotifArt.jsx](src/lib/MotifArt.jsx) |
+| Hạt rơi + nút tắt (canvas, `lazy`) | [SeasonFall.jsx](src/components/SeasonFall.jsx) |
+| Bộ máy hạt rơi (dùng chung với dashboard) | [src/lib/fallEngine.js](src/lib/fallEngine.js) |
+| Thư viện họa tiết tự tạo · xem trước sống | section `motifs` · [MotifPreview.jsx](src/admin/editor/MotifPreview.jsx) |
+| Bản chép id họa tiết phía máy chủ | [server/content/motifs.js](server/content/motifs.js) |
+| Tương phản WCAG (CHÉP hai nơi) | [src/lib/color.js](src/lib/color.js) · [server/content/color.js](server/content/color.js) |
+| Schema · luật | `seasonalSchema` · mục 3d trong [invariants.js](server/content/invariants.js) |
+
+- **Chọn ở trình duyệt, không ở máy chủ**: mục ĐẦU TIÊN có `enabled` và `start ≤ hôm nay ≤ end`
+  (giờ VN, cùng cách tính `dayKey`) — hoặc có `now` ("Hiện ngay, không chờ ngày bắt đầu",
+  API 15) thì chỉ cần chưa qua `end`. `now` có vì người dùng bật Tết 2027 rồi thấy trang chính
+  không đổi (đúng lịch: chưa tới ngày) trong khi `?season=` thì đổi — tưởng là hỏng. Cột trạng
+  thái của dashboard dùng CÙNG luật (`seasonStatus`): "Đang hiện trên trang" / "Tự hiện từ …"
+  — sửa luật ở `pickSeason` thì sửa luôn ở đó. Trang vẽ bằng snapshot nên phải đổi đúng ngày cả khi API
+  chết. Hệ quả: sự kiện bật SAU lần build gần nhất thì lúc tải trang vẽ màu mặc định trước
+  rồi mới đổi khi `/api/content` về — chạy `npm run build` sau khi bật để snapshot mang sẵn.
+  `?season=<id>` ép một mục bất kể ngày / công tắc (nút "Xem thử trên trang" của dashboard).
+- **Màu đi qua biến CSS, không qua class.** CSS đã build dùng `var(--color-signal)` cho mọi
+  utility, nên `SeasonTheme` chỉ `setProperty` lên `<html>` (useLayoutEffect — trước lần vẽ,
+  không nháy). `colorPrimary`→`--color-signal`, `colorSurface`→`--color-wash`,
+  `colorDark`→`--color-navy`, `colorAccent`→`--color-ember`.
+- **Chữ trên nền signal dùng token `on-signal`, KHÔNG dùng chữ trắng cố định.** Màu chủ đạo
+  sáng (vàng Tết) thì chữ trắng không đọc được; `readableOn()` chọn trắng hoặc màu mực và
+  ghi `--color-on-signal`. Đã đổi ở Button (`filled`), Pill (`signal`), Navbar, Pillars,
+  RegisterForm, Courses. **Thêm phần tử nền signal có chữ thì dùng token đó.** Hover/active
+  của nút là `--color-signal-hover` / `--color-signal-active` (`color-mix` từ signal trong
+  `@theme`) — đừng viết lại mã hex vào Button.
+- **Khe media thứ ba `decors`** (scope `seasonal-decor`, trường `decor`). Các khe giờ khai ở MỘT
+  bảng `MEDIA_SLOTS` trong [assemble.js](server/content/assemble.js); `SECTION_IMAGES` /
+  `SECTION_VIDEOS` / `SECTION_DECORS` suy từ đó, `sectionSlots()` cho đường ghi. Thêm khe thứ
+  tư: thêm vào bảng, rồi nối ở route PUT, SectionPage / ItemList / ItemModal, `publish.js`,
+  `BINDING_KEYS` của check-admin.
+- **Popup "một lần"**: `localStorage['fablab-season-seen'] = { id: phiênBản }`, phiên bản = băm
+  chữ HAI ngôn ngữ + url ảnh → admin sửa popup là hiện lại một lần, đổi ngôn ngữ thì không.
+  Đánh dấu ngay lúc HIỆN. Mở sau 1,2 giây, chờ nếu tab ẩn hoặc đang có dialog khác. Mount
+  TRƯỚC `<RegisterDialog />` (nút đăng ký đóng popup rồi mở form, cùng lý do popup khóa học).
+  Thử bằng puppeteer: đè `Date` qua `evaluateOnNewDocument`, dùng `userDataDir` để giữ
+  localStorage giữa các lần chạy. Đã thử: hiện → tải lại không hiện → sửa tiêu đề → hiện lại
+  một lần → tải lại không hiện.
+- Nguồn đăng ký `seasonal-popup` cần **migration 017 dựng lại bảng `registration`** (CHECK trên
+  `source`, cùng cách 014). Thêm nguồn nữa là lại phải dựng lại. Đã thử trên bản sao: số dòng
+  và mã băm nội dung trước/sau khớp.
+- Migration 016 chèn section với ba mục MẪU đang tắt (Tết 2027, Trung Thu 2027, Noel 2026);
+  bảng màu mẫu đã kiểm ≥ 4.5:1. Cảnh báo "popup chưa có ảnh" chỉ cho mục ĐANG BẬT — mục mẫu
+  chưa có ảnh là bình thường, báo mãi thành nhiễu.
+- **Họa tiết: MỘT nguồn hình cho ba nơi.** `motif` (`snow | mai | dao | lantern | confetti |
+  halloween`, vắng = không; `halloween` = dơi + bí ngô, thêm ở API 16) + `fall` (true/vắng — tách riêng để chỉ trang trí nút). Mỗi hình là path SVG
+  trong hộp 24×24 ở motifs.js; nút và dashboard vẽ bằng SVG (MotifArt.jsx), canvas vẽ lại
+  CÙNG path bằng `Path2D`. Id bộ (`MOTIFS`) và id hình (`GLYPHS`) chép ở
+  [server/content/motifs.js](server/content/motifs.js) — `check:content` so hai bản, lệch là
+  HỎNG — và nhãn ở ô chọn trong descriptors.js. Tách motifs.js / MotifArt.jsx vì oxlint
+  (`only-export-components`) không cho trộn hằng với component.
+- **Thư viện họa tiết tự tạo (API 17)**: section `motifs` (dashboard "Họa tiết"). Người dùng
+  muốn tự tạo mà vẫn giữ 6 bộ có sẵn; đã chốt: hình mới = **ảnh PNG tải lên**, lưu ở **thư
+  viện riêng** dùng lại cho nhiều sự kiện, **trộn được** ảnh với hình có sẵn.
+  - `shapes[]` = ảnh (scope binding `motif-shape`); `items[]` = họa tiết: 1–6 `particles`
+    (`shape` = id hình có sẵn hoặc `img:<id ảnh>`, `weight` tương đối, `sizeMin/Max`,
+    `flap`), `direction`, `motion` (`spin | tilt | flip | drift`), `speedMin/Max`, `sway`,
+    `density` (%), `ornamentShape` / `ornamentCorner` / `ornamentSize`. Mọi trường trừ `name`
+    là dùng chung. Tên `particles` chứ KHÔNG phải `kinds` — `kinds` đã là trường dùng chung
+    nghĩa khác (`activities.groups[].kinds`).
+  - `seasonal.items[].motif` giờ là `idSchema`: bộ có sẵn HOẶC id trong `motifs.items`. Luật
+    tồn tại ở invariants (mục 3e, như luật `facility`) → xoá họa tiết đang dùng bị chặn; id
+    tự tạo trùng id bộ có sẵn là lỗi; ảnh `img:` chưa gắn file chỉ là cảnh báo.
+  - **Mọi nơi vẽ đi qua `resolveMotif(id, t.motifs, accent)`** (motifs.js) → `{ particles,
+    ornament }` cùng một dạng cho bộ có sẵn lẫn tự tạo; nút dùng `useSeasonMotif()`
+    (season.js). Bộ có sẵn trả nguyên `PARTICLES` / `ornamentPieces` nên hình không đổi.
+  - Bộ máy canvas tách ra [fallEngine.js](src/lib/fallEngine.js): SeasonFall đo cửa sổ, khung
+    xem trước của dashboard đo ô 224px (`ResizeObserver`). Ảnh nạp bằng `Image` rồi vẽ
+    "contain" vào sprite vuông; ảnh lỗi thì bỏ loại hạt đó. Ảnh trên nút là `<img>` đặt
+    bằng `style`.
+  - "Chỉnh bộ có sẵn" = tạo họa tiết "Bắt đầu từ: Tuyết…" (`presets` của list, suy từ
+    `PARTICLES`) rồi sửa bản sao — bộ gốc trong mã không đổi.
+  - Bộ soạn có thêm: `createDefaults` (mục mới có thông số hợp lệ), sublist `rowDefaults` /
+    `idFrom` (dòng không có nhãn dịch lấy id từ trường chung), `Select` gom `optgroup` theo
+    `group`. Ô chọn hình đọc `ctx.vi.shapes` (thấy cả ảnh chưa lưu); ô chọn họa tiết của sự
+    kiện đọc `/meta` → `motifs` (dashboard nạp lại meta sau mỗi lượt Lưu).
+  - Migration 020 chèn section (chốt theo từng ngôn ngữ như 004), mẫu `tuyet-day` không gắn
+    vào sự kiện nào. Đã thử trên bản sao database thật: `rev` +2, chạy lại không chèn trùng.
+- **Vật trang trí trên nút**: chỉ biến thể `filled` / `inverted` và KHÔNG ở cỡ `sm` (chip lọc
+  khóa học dùng `filled` cỡ `sm` — đeo vào thì cả hàng rối). Button thêm `relative
+  group/btn` (nhóm CÓ TÊN, kẻo dính hover của thẻ cha). Vị trí đặt bằng `style` để dashboard
+  dùng được (admin.css không quét src/components/). Nhô ra ngoài nút tối đa ~15px.
+  Hai bẫy đã gặp: (1) SVG là phần tử thay thế — đặt cả `left` lẫn `right` thì nó vẫn giữ bề
+  rộng tự nhiên theo viewBox, lớp tuyết chỉ phủ nửa nút; phải ghi `width` rõ. (2) Tuyết
+  TRẮNG TINH trên nền trắng của trang là vô hình — tuyết dùng xanh xám nhạt có viền.
+  Rung khi rê chuột: utility `animate-ornament-sway`, media giảm chuyển động đặt BÊN TRONG
+  utility để đi theo biến thể hover (lặp vô hạn → tắt bằng `animation-name`, bẫy marquee).
+- **Hạt rơi**: `lazy()` trong App.jsx, chỉ nạp khi sự kiện có `motif` + `fall` (ngày thường
+  không tải gói ~3,8 KB). Một canvas `fixed z-40 pointer-events-none` (dưới navbar z-50,
+  dialog ở top layer nên luôn trên), 10–34 hạt theo diện tích, sprite vẽ sẵn một lần.
+  Dừng khi tab ẩn; KHÔNG chạy khi giảm chuyển động (đọc sống qua `useMediaQuery`) hay
+  `saveData` — lúc đó nút tắt cũng ẩn. Nút tắt góc dưới-trái, đứng SAU Footer trong cây để là
+  điểm dừng Tab cuối; lựa chọn ở `localStorage['fablab-season-fall']`. Đã đo: 60 khung/giây,
+  bấm xuyên canvas vẫn trúng nút, không tràn ngang ở 390/1280px.
+- Dơi Halloween vỗ cánh bằng cờ `flap` trên LOẠI hạt (không phải cả bộ): co giãn chiều dọc,
+  không bao giờ dẹt hẳn. Dơi tím than có viền tím sáng — đen tuyền thì chìm hẳn trên khối
+  tím đêm của FinalCTA.
+- Migration 019 thêm mục mẫu `halloween-2026` (25/10 → 01/11/2026, ĐANG TẮT) vào CUỐI danh sách
+  bằng `json_insert('$.items[#]')`, chốt theo từng ngôn ngữ bằng id. Bảng màu cam #c2410c /
+  nền #fff7ed / tím đêm #3b0764 đã đo ≥ 4.5:1.
+- Migration 018 thêm nhãn `effectOff`/`effectOn` và gắn họa tiết cho ba mục mẫu (chỉ khi còn
+  đúng id và chưa có `motif`). **Không sửa 016** — database thật đã chạy nó.
+- Bài thử puppeteer đổi nội dung bằng cách chặn `/api/content` thì phải TĂNG `rev` trong
+  phản hồi: contentStore bỏ qua bản cùng `rev` với snapshot, trang giữ nội dung cũ.
+- Dashboard: ô `date` và `color` mới trong FieldControl; `color` để trống = bỏ khoá (giống
+  `select` tuỳ chọn). [SeasonPreview.jsx](src/admin/editor/SeasonPreview.jsx) vẽ mẫu màu bằng
+  `style` (màu là dữ liệu) và cảnh báo tương phản đúng các cặp máy chủ cảnh báo.
+
 ## Section Dự án
 
 [Projects.jsx](src/components/Projects.jsx), ngay sau Thiết bị. 8 dự án lấy từ
@@ -539,9 +717,6 @@ là chip trống hoặc huy hiệu rỗng, **không có cảnh báo lúc build**
 **Bậc heading trong section này: h2 (section) → h3 (nhóm) → h4 (tên card).** Thêm
 nhóm hay đổi bố cục thì giữ nguyên thứ bậc, đừng để hai h3 ngang hàng với tên card.
 
-**Bậc heading trong section này: h2 (section) → h3 (nhóm) → h4 (tên card).** Thêm
-nhóm hay đổi bố cục thì giữ nguyên thứ bậc, đừng để hai h3 ngang hàng với tên card.
-
 ### Hai file nội dung popup, hai luật ngược nhau
 
 `courses.details` trộn hai nguồn: `{ ...courseDetails*, ...experienceDetails* }`.
@@ -660,6 +835,44 @@ kết luận "tự chạy hỏng", kiểm luôn Windows có tắt hiệu ứng c
   database cũ qua migration 010; thiếu thì rơi về `activities.title`.
 - Ken Burns (`stamps[i]` làm `key` lớp zoom) giờ chỉ còn ở nền mờ của banner Cuộc thi khi
   chưa có video.
+- **Nút "Trở thành thành viên FabLab ngay"** nằm TRÊN TỪNG SLIDE của cả hai banner (từ API
+  19; ở API 18 nó đứng một mình dưới hàng chấm Sự kiện — người dùng đổi ý). Thẻ Sự kiện: cột
+  chữ, dưới mô tả. Banner Cuộc thi: hàng [Trở thành thành viên] [Xem chi tiết] dưới mô tả.
+  Mở form ở tab Thành viên qua tham số thứ ba của `openRegister(courseId, source, kind)`
+  (thắng cả "có khóa → tab Khóa học" lẫn "tab lần trước"). Chữ ở `activities.joinMember`
+  (tuỳ chọn — vắng thì KHÔNG vẽ nút, không mượn chữ khác).
+- **Nút chữ dài trong ô hẹp dùng prop `wrap` của Button** (bỏ `whitespace-nowrap`, căn giữa):
+  cột chữ của thẻ Sự kiện ở 320px chỉ ~240px, nút một dòng rộng ~280px. Đừng truyền
+  `whitespace-normal` qua `className` — cùng bẫy thứ tự CSS với `hidden`/`inline-flex`.
+- Mọi nút thành viên trong section Hoạt động ghi CÙNG nguồn đăng ký `events` (dashboard gọi
+  là "Section Hoạt động") — cố ý, để khỏi dựng lại bảng `registration` lần nữa. Phân biệt
+  từng nút bằng `cta_click`: `events` (thẻ Sự kiện), `competitions` (banner Cuộc thi),
+  `competition-detail` (nút Xem chi tiết), `competition-modal` (nút trong popup). Cột
+  `target` của bảng `event` không có CHECK nên thêm id nút chỉ cần `CTA_IDS` + nhãn ở
+  StatsPage. **Migration 021 dựng lại bảng `registration`** như 017 để thêm `events` vào
+  CHECK. Nguồn đăng ký liệt kê ở NĂM chỗ: `REGISTRATION_SOURCES`, `CTA_IDS`, `SOURCE_LABELS`
+  (dashboard và máy chủ), nhãn của StatsPage.
+- **Popup "Xem chi tiết" của Cuộc thi** ([ActivityModal.jsx](src/components/ActivityModal.jsx),
+  khung chép CourseModal): poster `object-contain`, nhãn + ngày, mô tả, rồi hai trường tuỳ
+  chọn của mục: `details` (chữ dịch, đoạn cách nhau bằng dòng trống) và `link` (dùng chung,
+  https). **Bản seed cố ý không có cả hai** — trang gốc không có nội dung dài, đừng bịa.
+  - Tên `link`, KHÔNG phải `href`: luật `href` buộc trỏ neo có thật.
+  - contentStore chỉ nối hai chữ cuối của CẢ chuỗi, nên popup gọi `tieLastWords` cho TỪNG
+    đoạn lúc render (không chèn U+00A0 vào database).
+  - Banner giữ `openId` (đổi ngôn ngữ thì popup dịch theo) và truyền `hold` cho
+    `useSlideshow`: popup mở thì slide đứng yên, nếu không thì đóng popup focus trả về một nút
+    đã nằm trên slide `inert` và rơi xuống `BODY` (đã đo: giữ nguyên slide sau 12 giây, Esc
+    trả focus về đúng nút).
+  - Ô `details` / `link` của dashboard mang cờ `omitEmpty` ([model.js](src/admin/editor/model.js)):
+    trống thì bỏ hẳn khoá; trường dịch chỉ bỏ khi CẢ HAI bản trống, kẻo hai bản lệch cấu trúc.
+  - Nhãn `viewDetails` / `detailLink` / `closeDetails` vào database cũ qua migration 022
+    (chốt `viewDetails IS NULL` theo từng ngôn ngữ, `rev` +2). Vắng `viewDetails` thì không có
+    nút; vắng `closeDetails` thì mượn `courses.modal.close`.
+  - Tìm nút "Xem chi tiết" trong bài thử bằng `/Xem\s+chi\s+tiết/`: ba chữ nên đã bị nối U+00A0.
+  - Popup sự kiện mùa tự mở sau 1,2 giây — bài thử phải chờ rồi đóng nó trước, kẻo
+    `dialog[open]` bắt nhầm popup Tết.
+- Bài thử gửi form bằng puppeteer phải đặt user agent thường và chờ > 3 giây trước khi gửi:
+  máy chủ coi trình duyệt headless / điền dưới `MIN_FILL_MS` là bot, trả 201 mà KHÔNG lưu.
 
 ## Bẫy khi sửa i18n bằng regex
 
@@ -759,7 +972,7 @@ bẫy `!important` + layer như marquee).
    lệch cấu trúc" là trạng thái **không thao tác ra được**, chứ không phải một lỗi
    trông chờ bộ kiểm bắt lại sau khi đã ghi.
 2. **Không có schema thì không ghi được.** `PUT` vào section chưa khai trong
-   [schema/sections.js](server/schema/sections.js) trả 400. Cả 15 section đã có
+   [schema/sections.js](server/schema/sections.js) trả 400. Cả 17 section đã có
    schema strict. Thêm section mới vào trang là phải thêm schema, không phải nới
    lỏng chốt chặn. `activities.items[].date` **được để trống** — 4 hoạt động thật
    không có ngày; đừng "sửa" schema thành bắt buộc.
@@ -771,7 +984,7 @@ Lịch sử chép bản cũ **trước** khi ghi đè, và khôi phục luôn l�
 cùng một thời điểm — khôi phục một nửa là đúng cái lệch cấu trúc vừa nói. Lịch sử lưu
 kèm ảnh (`bindings_json`), nên khôi phục trả lại cả ảnh.
 
-### 15 section, một bộ soạn thảo
+### 17 section, một bộ soạn thảo
 
 Không có editor viết tay cho từng section. [descriptors.js](src/admin/sections/descriptors.js)
 mô tả mỗi section bằng dữ liệu; `SectionPage` + `ItemList` + `ItemModal` dựng mọi thứ.

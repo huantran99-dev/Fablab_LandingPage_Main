@@ -4,6 +4,7 @@ import { ImageField } from '../editor/ImageField'
 import { ItemList } from '../editor/ItemList'
 import { RecordEditor } from '../editor/RecordEditor'
 import { SectionFields } from '../editor/SectionFields'
+import { SectionVisibility } from '../editor/SectionVisibility'
 import { describePath } from '../editor/model'
 import { usePublishCheck } from '../hooks/usePublishCheck'
 import { PageHeader } from '../layout/PageHeader'
@@ -29,6 +30,12 @@ function imageItemIds(descriptor, vi) {
 /** Id các mục được phép mang video nền (hiện chỉ Hoạt động). */
 function videoItemIds(descriptor, vi) {
   const list = descriptor.lists.find((entry) => entry.video)
+  return list ? (getPath(vi, list.path) ?? []).map((item) => item.id) : []
+}
+
+/** Id các mục được phép mang ảnh trang trí (hiện chỉ Sự kiện mùa). */
+function decorItemIds(descriptor, vi) {
+  const list = descriptor.lists.find((entry) => entry.decor)
   return list ? (getPath(vi, list.path) ?? []).map((item) => item.id) : []
 }
 
@@ -60,6 +67,7 @@ export function SectionPage({ descriptor, meta, onDirtyChange, onSaved }) {
   const [draft, setDraft] = useState(null)
   const [images, setImages] = useState({})
   const [videos, setVideos] = useState({})
+  const [decors, setDecors] = useState({})
   const [history, setHistory] = useState([])
   const [loadError, setLoadError] = useState(null)
   const [reloadToken, setReloadToken] = useState(0)
@@ -102,6 +110,7 @@ export function SectionPage({ descriptor, meta, onDirtyChange, onSaved }) {
         setDraft({ vi: pair.vi, en: pair.en })
         setImages(pair.images ?? {})
         setVideos(pair.videos ?? {})
+        setDecors(pair.decors ?? {})
         setHistory(log.entries.filter((entry) => entry.locale === 'vi'))
         setIssues(null)
         setInvariants([])
@@ -124,14 +133,19 @@ export function SectionPage({ descriptor, meta, onDirtyChange, onSaved }) {
     () => (loaded && draft ? mediaDiff(videoItemIds(descriptor, draft.vi), loaded.videos, videos) : {}),
     [loaded, draft, videos, descriptor],
   )
+  const decorDiff = useMemo(
+    () => (loaded && draft ? mediaDiff(decorItemIds(descriptor, draft.vi), loaded.decors, decors) : {}),
+    [loaded, draft, decors, descriptor],
+  )
 
   const dirty = useMemo(
     () =>
       Boolean(loaded && draft) &&
       (JSON.stringify(draft) !== JSON.stringify({ vi: loaded.vi, en: loaded.en }) ||
         Object.keys(imageDiff).length > 0 ||
-        Object.keys(videoDiff).length > 0),
-    [loaded, draft, imageDiff, videoDiff],
+        Object.keys(videoDiff).length > 0 ||
+        Object.keys(decorDiff).length > 0),
+    [loaded, draft, imageDiff, videoDiff, decorDiff],
   )
 
   useEffect(() => {
@@ -139,12 +153,13 @@ export function SectionPage({ descriptor, meta, onDirtyChange, onSaved }) {
   }, [dirty, onDirtyChange])
   useEffect(() => () => onDirtyChange(false), [onDirtyChange])
 
-  // Khóa học đã có trên máy chủ mới sửa được popup (route từ chối id chưa lưu).
+  // Mục đã có trên máy chủ: mới sửa được popup khóa học (route từ chối id chưa lưu) và
+  // mới "Xem thử trên trang" được (trang chỉ biết mục đã lưu).
   const savedIds = useMemo(
     () =>
       new Set(
         descriptor.lists
-          .filter((list) => list.courseDetails)
+          .filter((list) => list.courseDetails || list.previewHref)
           .flatMap((list) => (getPath(loaded?.vi, list.path) ?? []).map((item) => item.id)),
       ),
     [descriptor, loaded],
@@ -159,6 +174,7 @@ export function SectionPage({ descriptor, meta, onDirtyChange, onSaved }) {
       const body = { vi: draft.vi, en: draft.en, rev: loaded.rev }
       if (Object.keys(imageDiff).length > 0) body.images = imageDiff
       if (Object.keys(videoDiff).length > 0) body.videos = videoDiff
+      if (Object.keys(decorDiff).length > 0) body.decors = decorDiff
       const result = await api.writeSection(key, body)
 
       if (result.warnings?.length > 0) {
@@ -264,6 +280,7 @@ export function SectionPage({ descriptor, meta, onDirtyChange, onSaved }) {
     setDraft({ vi: loaded.vi, en: loaded.en })
     setImages(loaded.images ?? {})
     setVideos(loaded.videos ?? {})
+    setDecors(loaded.decors ?? {})
     setIssues(null)
     setInvariants([])
     setDiscardOpen(false)
@@ -352,6 +369,8 @@ export function SectionPage({ descriptor, meta, onDirtyChange, onSaved }) {
           </Alert>
         )}
 
+        {descriptor.toggleable && <SectionVisibility sectionKey={key} draft={draft} onChangeDraft={setDraft} />}
+
         {descriptor.notes?.map((note) => (
           <Alert key={note} tone="info">
             {note}
@@ -383,6 +402,8 @@ export function SectionPage({ descriptor, meta, onDirtyChange, onSaved }) {
             onChangeImages={setImages}
             videos={videos}
             onChangeVideos={setVideos}
+            decors={decors}
+            onChangeDecors={setDecors}
             issues={issues}
             ctx={ctx}
             savedIds={savedIds}

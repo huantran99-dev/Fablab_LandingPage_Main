@@ -1,6 +1,7 @@
 import { useT } from '../i18n/context'
 import { Reveal } from './ui/Reveal'
 import { Section, SectionHeading } from './ui/Section'
+import { opposite } from '../lib/pageSections'
 
 /**
  * Một mục trên dải: logo nếu có, còn không thì tên viết chữ.
@@ -34,7 +35,8 @@ function PartnerItem({ partner, logoAlt }) {
   )
 }
 
-export function Partners() {
+/** `side`: chiều trượt của tiêu đề, App tính theo các khối đang hiện (pageSections.js). */
+export function Partners({ side = 'left' }) {
   const t = useT()
   const items = t.partners.items
 
@@ -45,14 +47,16 @@ export function Partners() {
         title={t.partners.title}
         description={t.partners.description}
         align="center"
-        from="left"
+        from={side}
       />
 
-      <Reveal from="right" className="mt-14">
-        {/* `overflow-hidden` cắt phần track thò ra hai bên; mặt nạ gradient làm
-            hai mép mờ dần để dải trông như chạy vô tận thay vì bị cắt cụt. */}
+      <Reveal from={opposite(side)} className="mt-14">
+        {/* `marquee-viewport` cắt phần track thò ra hai bên — và khi người xem tắt
+            chuyển động (track đứng yên, phần lớn logo nằm ngoài khung) thì chuyển sang
+            cho cuộn ngang bằng tay, như dải Đội ngũ. Mặt nạ gradient làm hai mép mờ dần
+            để dải trông như chạy vô tận thay vì bị cắt cụt. */}
         <div
-          className="relative overflow-hidden"
+          className="marquee-viewport relative"
           style={{
             maskImage: 'linear-gradient(to right, transparent, black 8%, black 92%, transparent)',
             WebkitMaskImage:

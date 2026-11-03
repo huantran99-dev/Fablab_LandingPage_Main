@@ -20,11 +20,12 @@ export function RegisterProvider({ children }) {
   /**
    * `courseId` có giá trị (nút trong popup khóa học) → tab Khóa học, chọn sẵn khóa đó.
    * `null` (navbar, cuối trang) → giữ tab đã chọn lần trước (lần đầu là Khóa học).
+   * `kind` truyền vào (nút "Trở thành thành viên" dưới carousel Sự kiện) thắng cả hai.
    */
-  const openRegister = useCallback((courseId, source) => {
+  const openRegister = useCallback((courseId, source, kind = null) => {
     track('register_open', source)
     if (courseId) setDrafts((current) => ({ ...current, course: { ...current.course, course: courseId } }))
-    setState((current) => ({ open: true, source, kind: courseId ? 'course' : current.kind }))
+    setState((current) => ({ open: true, source, kind: kind ?? (courseId ? 'course' : current.kind) }))
   }, [])
 
   const closeRegister = useCallback(() => {

@@ -10,7 +10,7 @@ const TONES = {
   wash: 'bg-wash text-signal',
   white: 'bg-white text-ink',
   ink: 'bg-ink text-white',
-  signal: 'bg-signal text-white',
+  signal: 'bg-signal text-on-signal',
   outline: 'bg-white text-graphite border border-ash',
 }
 

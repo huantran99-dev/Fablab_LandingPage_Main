@@ -1,11 +1,16 @@
 import { ArrowRightIcon } from '../assets/icons/Icons'
 import { useT } from '../i18n/context'
+import { useActiveSeason } from '../lib/season'
 import { track } from '../lib/track'
 import { Button } from './ui/Button'
 import { Pill } from './ui/Pill'
+import { useLiveHref } from '../hooks/useLiveHref'
 
 export function Hero() {
   const t = useT()
+  const isLive = useLiveHref()
+  // Ảnh trang trí của sự kiện mùa đang chạy (cành mai, đèn lồng…), do admin tải lên.
+  const decor = useActiveSeason()?.decor
 
   return (
     <section id="top" className="pt-10 pb-16 md:pt-16 md:pb-24 lg:pb-28">
@@ -20,18 +25,23 @@ export function Hero() {
           </p>
 
           <div className="flex flex-wrap items-center gap-3 pt-2">
-            <Button href="#courses" size="lg" onClick={() => track('cta_click', 'hero-primary')}>
-              {t.hero.primaryCta}
-              <ArrowRightIcon />
-            </Button>
-            <Button
-              href="#facilities"
-              variant="outlined"
-              size="lg"
-              onClick={() => track('cta_click', 'hero-secondary')}
-            >
-              {t.hero.secondaryCta}
-            </Button>
+            {/* Khối đích admin đã tắt thì nút trỏ vào nó cũng ẩn (useLiveHref). */}
+            {isLive('#courses') && (
+              <Button href="#courses" size="lg" onClick={() => track('cta_click', 'hero-primary')}>
+                {t.hero.primaryCta}
+                <ArrowRightIcon />
+              </Button>
+            )}
+            {isLive('#facilities') && (
+              <Button
+                href="#facilities"
+                variant="outlined"
+                size="lg"
+                onClick={() => track('cta_click', 'hero-secondary')}
+              >
+                {t.hero.secondaryCta}
+              </Button>
+            )}
           </div>
         </div>
 
@@ -54,6 +64,23 @@ export function Hero() {
               />
             )}
           </div>
+
+          {/* Trang trí sự kiện mùa: đè lên góc trên-phải khung ảnh. Định vị bằng top/right
+              (không dùng translate — đừng tranh thuộc tính biến hình với animation của khối).
+              Lệch ra ngoài khung ít hơn lề trong của container-page (16px / 32px), nên
+              không bao giờ đẩy trang tràn ngang trên điện thoại. Trang trí thuần nên
+              `alt=""` + `aria-hidden`; nằm trên màn hình đầu nên không lazy-load. */}
+          {decor && (
+            <img
+              src={decor.url}
+              width={decor.width}
+              height={decor.height}
+              alt=""
+              aria-hidden="true"
+              decoding="async"
+              className="pointer-events-none absolute -top-8 -right-3 z-10 h-auto w-28 object-contain md:-top-12 md:-right-6 md:w-44"
+            />
+          )}
 
           {/* Badge nổi trên khung hình */}
           <div className="absolute -bottom-4 left-4 md:left-8 flex flex-wrap gap-2">

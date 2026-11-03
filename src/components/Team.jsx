@@ -3,6 +3,7 @@ import { initialsOf } from '../lib/initials'
 import { Pill } from './ui/Pill'
 import { Reveal } from './ui/Reveal'
 import { Section, SectionHeading } from './ui/Section'
+import { opposite } from '../lib/pageSections'
 
 /** Sắc nền luân phiên cho avatar chữ cái, để các ô không ảnh không bị đơn điệu. */
 const INITIAL_TONES = ['bg-signal', 'bg-ember', 'bg-leaf']
@@ -135,7 +136,8 @@ function MarqueeRow({ members, reverse, photoAlt, offset }) {
   )
 }
 
-export function Team() {
+/** `side`: chiều trượt của tiêu đề, App tính theo các khối đang hiện (pageSections.js). */
+export function Team({ side = 'right' }) {
   const t = useT()
 
   // Người được đánh dấu `lead` tách ra thẻ riêng; phần còn lại mới lên dải chạy.
@@ -156,7 +158,7 @@ export function Team() {
         title={t.team.title}
         description={t.team.description}
         align="center"
-        from="right"
+        from={side}
       />
 
       {lead && (
@@ -167,7 +169,7 @@ export function Team() {
 
       {/* Hai hàng chạy ngược chiều nhau: mắt bắt được ngay đây là hai dải riêng
           biệt chứ không phải một khối trôi đều. */}
-      <Reveal from="left" className="mt-12 flex flex-col gap-6">
+      <Reveal from={opposite(side)} className="mt-12 flex flex-col gap-6">
         {rows.map((row, index) => (
           <MarqueeRow
             key={index}

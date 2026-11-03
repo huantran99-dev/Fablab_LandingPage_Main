@@ -2,7 +2,11 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { ChevronDownIcon, CloseIcon, MenuIcon } from '../assets/icons/Icons'
 import { Logo } from '../assets/icons/Logo'
 import { useActiveSection } from '../hooks/useActiveSection'
+import { useLiveHref } from '../hooks/useLiveHref'
+import { useMediaQuery } from '../hooks/useMediaQuery'
+import { useScrollLock } from '../hooks/useScrollLock'
 import { LANGUAGES, useLanguage } from '../i18n/context'
+import { liveNavLinks } from '../lib/pageSections'
 import { track } from '../lib/track'
 import { useRegister } from './register/RegisterContext'
 import { Button } from './ui/Button'
@@ -13,7 +17,7 @@ import { Button } from './ui/Button'
  */
 const NAV_ITEM =
   'inline-flex items-center gap-1.5 rounded-pill px-4 py-2 text-body-sm font-medium cursor-pointer transition-colors duration-200 ease-[var(--ease-out-soft)]'
-const NAV_ITEM_ON = 'bg-signal text-white'
+const NAV_ITEM_ON = 'bg-signal text-on-signal'
 const NAV_ITEM_OFF = 'text-graphite hover:bg-wash hover:text-signal'
 
 function LanguageToggle({ className = '' }) {
@@ -37,7 +41,7 @@ function LanguageToggle({ className = '' }) {
             className={[
               'rounded-pill px-3 py-1 text-caption font-medium cursor-pointer',
               'transition-colors duration-200 ease-[var(--ease-out-soft)]',
-              isActive ? 'bg-signal text-white' : 'text-graphite hover:text-ink',
+              isActive ? 'bg-signal text-on-signal' : 'text-graphite hover:text-ink',
             ].join(' ')}
           >
             {item.label}
@@ -195,6 +199,19 @@ export function Navbar() {
   // cùng hiện, và giữ một chỗ thì mở nhánh này tự đóng nhánh kia.
   const [openBranch, setOpenBranch] = useState(null)
   const navRef = useRef(null)
+  const drawerRef = useRef(null)
+
+  // Drawer chỉ tồn tại dưới `lg`. Nới cửa sổ qua `lg` lúc đang mở thì drawer phải đóng:
+  // nó là dialog MODAL, để mở mà bị ẩn thì cả trang phía sau thành `inert`, không bấm
+  // được gì. Suy lúc render chứ không setState trong effect (luật lint); `close` của
+  // dialog sau đó gọi `closeDrawer` nên `menuOpen` cũng về false.
+  const isDesktop = useMediaQuery('(min-width: 1024px)')
+  const drawerOpen = menuOpen && !isDesktop
+
+  // Mục trỏ vào khối admin đã tắt thì bỏ khỏi menu; nhánh không còn mục con nào thì bỏ
+  // hẳn (thanh desktop lẫn drawer). `useMemo` theo chuỗi href giữ tham chiếu ổn định.
+  const isLive = useLiveHref()
+  const links = useMemo(() => liveNavLinks(t.nav.links, isLive), [t.nav.links, isLive])
 
   // Suy ra thẳng từ `nav.links` thay vì chép tay danh sách id: bỏ một section mà
   // quên sửa ở đây thì observer đi theo dõi một id không còn tồn tại. Menu hai
@@ -202,7 +219,7 @@ export function Navbar() {
   //
   // `href` là định danh không dịch nên mảng này giống hệt nhau ở mọi ngôn ngữ —
   // `useMemo` giữ tham chiếu ổn định để đổi ngôn ngữ không dựng lại observer.
-  const hrefs = t.nav.links
+  const hrefs = links
     .flatMap((link) => link.children?.map((child) => child.href) ?? [link.href])
     .join(',')
   const sectionIds = useMemo(() => hrefs.split(',').map((href) => href.slice(1)), [hrefs])
@@ -230,22 +247,23 @@ export function Navbar() {
     return () => document.removeEventListener('pointerdown', onPointerDown)
   }, [openBranch, menuOpen])
 
-  // Khóa cuộn nền và cho phép đóng drawer bằng phím Esc.
+  // Drawer là `<dialog>` gốc, cùng mẫu với ba popup kia: trình duyệt lo bẫy focus, phím
+  // Esc (qua sự kiện `close`), trả focus về nút menu và `inert` cho nền.
+  //
+  // Phải là dialog ở TOP LAYER, không được là một div `fixed` trong header: khi đã cuộn,
+  // header có `backdrop-blur`, mà `backdrop-filter` biến header thành khung chứa của
+  // con `position: fixed` — drawer cũ mở sau khi cuộn chỉ cao bằng header (đo được 76px
+  // trên màn 844px). Top layer thoát khỏi mọi khung chứa của tổ tiên.
   useEffect(() => {
-    if (!menuOpen) return
+    const dialog = drawerRef.current
+    if (!dialog) return
+    if (drawerOpen && !dialog.open) dialog.showModal()
+    else if (!drawerOpen && dialog.open) dialog.close()
+  }, [drawerOpen])
 
-    const onKeyDown = (event) => {
-      if (event.key === 'Escape') setMenuOpen(false)
-    }
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    window.addEventListener('keydown', onKeyDown)
-
-    return () => {
-      document.body.style.overflow = previousOverflow
-      window.removeEventListener('keydown', onKeyDown)
-    }
-  }, [menuOpen])
+  // Khoá cuộn trên <html>, dùng chung bộ đếm với các popup — KHÔNG đặt trên <body>
+  // (body có `overflow-x: clip`; ghi đè `overflow` là làm chết navbar sticky).
+  useScrollLock(drawerOpen)
 
   const closeDrawer = () => {
     setMenuOpen(false)
@@ -274,7 +292,7 @@ export function Navbar() {
 
         {/* Link điều hướng — chỉ hiện từ breakpoint lg trở lên */}
         <ul className="hidden lg:flex items-center gap-1">
-          {t.nav.links.map((link) =>
+          {links.map((link) =>
             link.children ? (
               <NavBranch
                 key={link.id}
@@ -322,7 +340,7 @@ export function Navbar() {
             type="button"
             onClick={() => setMenuOpen(true)}
             aria-label={t.nav.openMenu}
-            aria-expanded={menuOpen}
+            aria-expanded={drawerOpen}
             className="lg:hidden inline-flex items-center justify-center size-11 rounded-pill border border-ash text-ink cursor-pointer hover:border-ink transition-colors"
           >
             <MenuIcon />
@@ -330,58 +348,69 @@ export function Navbar() {
         </div>
       </nav>
 
-      {/* Drawer mobile */}
-      {menuOpen && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-white lg:hidden animate-rise">
-          <div className="container-page flex items-center justify-between py-4">
-            <Logo tagline={t.nav.brandTagline} />
-            <button
-              type="button"
-              onClick={closeDrawer}
-              aria-label={t.nav.closeMenu}
-              className="inline-flex items-center justify-center size-11 rounded-pill border border-ash text-ink cursor-pointer hover:border-ink transition-colors"
-            >
-              <CloseIcon />
-            </button>
-          </div>
+      {/* Drawer mobile — `<dialog>` luôn mount, ruột chỉ dựng khi mở (như CourseModal).
+          Class ghi đè style `dialog` chung ở `@layer base` (lề auto, bề rộng tối đa 720px)
+          để phủ kín màn hình. */}
+      <dialog
+        ref={drawerRef}
+        onClose={closeDrawer}
+        aria-label="FabLab EIU"
+        className="m-0 h-dvh max-h-none w-full max-w-none overflow-y-auto bg-white animate-rise"
+      >
+        {drawerOpen && (
+          <>
+            <div className="container-page flex items-center justify-between py-4">
+              <Logo tagline={t.nav.brandTagline} />
+              <button
+                type="button"
+                onClick={closeDrawer}
+                aria-label={t.nav.closeMenu}
+                className="inline-flex items-center justify-center size-11 rounded-pill border border-ash text-ink cursor-pointer hover:border-ink transition-colors"
+              >
+                <CloseIcon />
+              </button>
+            </div>
 
-          <div className="container-page flex flex-col gap-2 pt-6 pb-10">
-            {t.nav.links.map((link) =>
-              link.children ? (
-                <DrawerBranch
-                  key={link.id}
-                  link={link}
-                  open={openBranch === link.id}
-                  onToggle={toggleBranch}
-                  onNavigate={closeDrawer}
-                />
-              ) : (
-                <a
-                  key={link.id}
-                  href={link.href}
-                  onClick={closeDrawer}
-                  className="rounded-pill px-5 py-3.5 text-heading-sm font-display font-bold text-ink hover:bg-wash transition-colors"
-                >
-                  {link.label}
-                </a>
-              ),
-            )}
-            <Button
-              type="button"
-              size="lg"
-              className="mt-6 w-full"
-              onClick={() => {
-                // Đóng drawer trước: nó khoá cuộn trên body và phủ kín màn hình.
-                closeDrawer()
-                track('cta_click', 'nav-drawer')
-                openRegister(null, 'nav-drawer')
-              }}
-            >
-              {t.nav.cta}
-            </Button>
-          </div>
-        </div>
-      )}
+            <div className="container-page flex flex-col gap-2 pt-6 pb-10">
+              {links.map((link) =>
+                link.children ? (
+                  <DrawerBranch
+                    key={link.id}
+                    link={link}
+                    open={openBranch === link.id}
+                    onToggle={toggleBranch}
+                    onNavigate={closeDrawer}
+                  />
+                ) : (
+                  <a
+                    key={link.id}
+                    href={link.href}
+                    onClick={closeDrawer}
+                    className="rounded-pill px-5 py-3.5 text-heading-sm font-display font-bold text-ink hover:bg-wash transition-colors"
+                  >
+                    {link.label}
+                  </a>
+                ),
+              )}
+              <Button
+                type="button"
+                size="lg"
+                className="mt-6 w-full"
+                onClick={() => {
+                  // Đóng drawer rồi mở form trong CÙNG một lượt: Navbar đứng trước
+                  // RegisterDialog trong cây, nên drawer `close()` (trả focus về nút
+                  // menu) trước khi form `showModal()` — như popup khóa học → form.
+                  closeDrawer()
+                  track('cta_click', 'nav-drawer')
+                  openRegister(null, 'nav-drawer')
+                }}
+              >
+                {t.nav.cta}
+              </Button>
+            </div>
+          </>
+        )}
+      </dialog>
     </header>
   )
 }

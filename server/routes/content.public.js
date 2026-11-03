@@ -2,8 +2,10 @@
  * Đường đọc nội dung — công khai, không cần đăng nhập.
  *
  * Đây là API mà trang gọi sau khi đã vẽ xong bằng bản dự phòng đóng gói sẵn. Vì
- * vậy nó phải nhanh và phải cache được; nhưng thời gian cache để NGẮN (60 giây),
- * vì admin sửa xong thì muốn thấy đổi ngay chứ không đợi hết hạn cache.
+ * vậy nó phải nhanh và rẻ khi nội dung không đổi — nhưng KHÔNG được để trình duyệt
+ * dùng bản cũ mà không hỏi: admin sửa xong thì muốn thấy đổi ngay. Cách làm:
+ * `Cache-Control: no-cache` + ETag theo `rev` → mỗi lần đều hỏi lại, không đổi thì chỉ
+ * tốn một 304 rỗng (xem `CACHE_HEADER` bên dưới).
  */
 import { Router } from 'express'
 
@@ -66,7 +68,7 @@ contentRouter.get('/content/:locale', (req, res) => {
  * dashboard mới, còn `npm run server` thì KHÔNG tự nạp lại, nên dashboard mới nói
  * chuyện với máy chủ cũ và mọi lỗi đều trông như lỗi của dashboard.
  */
-export const API_VERSION = 12
+export const API_VERSION = 20
 
 contentRouter.get('/health', (_req, res) => {
   const { rev, updatedAt } = getContent()

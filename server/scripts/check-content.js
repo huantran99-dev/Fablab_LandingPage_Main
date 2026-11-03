@@ -82,6 +82,25 @@ if (!useSnapshot) {
   }
 }
 
+// --- Bản chép id họa tiết: máy chủ ↔ src/lib/motifs.js --------------------------
+//
+// Máy chủ không import mã giao diện nên giữ một BẢN CHÉP (server/content/motifs.js). Lệch
+// là lỗi im lặng: thêm hình mới vào GLYPHS mà quên chép thì dashboard gợi ý một hình máy
+// chủ từ chối; bớt một bộ thì sự kiện đang dùng nó mất trang trí mà không ai báo.
+{
+  const motifsUrl = srcUrl('lib', 'motifs.js')
+  const { MOTIFS, GLYPHS, IMAGE_PREFIX } = await import(motifsUrl)
+  const server = await import('../content/motifs.js')
+  const sameList = (a, b) => JSON.stringify([...a].sort()) === JSON.stringify([...b].sort())
+  if (!sameList(MOTIFS, server.BUILTIN_MOTIFS)) {
+    errors.push(`bo hoa tiet lech: src/lib/motifs.js ${JSON.stringify(MOTIFS)} / server/content/motifs.js ${JSON.stringify(server.BUILTIN_MOTIFS)}`)
+  }
+  if (!sameList(Object.keys(GLYPHS), server.MOTIF_GLYPHS)) {
+    errors.push(`hinh co san lech: GLYPHS ${JSON.stringify(Object.keys(GLYPHS))} / MOTIF_GLYPHS ${JSON.stringify(server.MOTIF_GLYPHS)}`)
+  }
+  if (IMAGE_PREFIX !== server.IMAGE_SHAPE_PREFIX) errors.push(`tien to anh hoa tiet lech: '${IMAGE_PREFIX}' / '${server.IMAGE_SHAPE_PREFIX}'`)
+}
+
 // --- Báo cáo ----------------------------------------------------------------
 
 for (const line of notes) console.log(`  ${line}`)

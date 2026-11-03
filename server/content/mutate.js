@@ -17,7 +17,7 @@
  * thấy điều đó. better-sqlite3 đồng bộ nên `assemble()` trong giao dịch đọc được
  * chính những dòng vừa ghi.
  */
-import { SECTION_IMAGES, SECTION_VIDEOS, assemble, mediaUrl } from './assemble.js'
+import { assemble, mediaUrl, sectionSlots } from './assemble.js'
 import { invalidate } from './cache.js'
 import { checkInvariants } from './invariants.js'
 import { getLookups } from './lookups.js'
@@ -33,16 +33,15 @@ export class WriteError extends Error {
 }
 
 /**
- * Các "khe" media của một section: ảnh (`images`) và, với Hoạt động, video nền
- * (`videos`). Mỗi khe là một scope trong bảng `binding`; lượt lưu gửi thay đổi của từng
- * khe trong trường cùng tên, lịch sử chụp lại mọi khe.
+ * Các "khe" media của một section — ảnh (`images`), video nền của Hoạt động (`videos`),
+ * ảnh trang trí của Sự kiện mùa (`decors`). Bảng khe nằm ở `MEDIA_SLOTS` (assemble.js);
+ * mỗi khe là một scope trong bảng `binding`; lượt lưu gửi thay đổi của từng khe trong
+ * trường cùng tên, lịch sử chụp lại mọi khe.
  */
-function slotsOf(section) {
-  const slots = []
-  if (SECTION_IMAGES[section]) slots.push({ name: 'images', mime: 'image/', ...SECTION_IMAGES[section] })
-  if (SECTION_VIDEOS[section]) slots.push({ name: 'videos', mime: 'video/', ...SECTION_VIDEOS[section] })
-  return slots
-}
+const slotsOf = sectionSlots
+
+/** Chữ trong thông báo lỗi / cảnh báo cho từng khe. */
+const SLOT_WORDS = { images: 'anh', videos: 'video', decors: 'anh trang tri' }
 
 /** Media hiện gắn vào một khe (chỉ những mục thuộc về section). */
 function readSlotBindings(db, slot) {
@@ -115,7 +114,8 @@ export function readSectionPair(section) {
  * @param {object} args
  * @param {Record<string, number|null>} [args.images] thay ảnh từng mục; `null` = gỡ ảnh
  * @param {Record<string, number|null>} [args.videos] như trên, cho video nền
- * @param {{ images?: Array<{item_id, media_id, note}>, videos?: Array }} [args.bindings]
+ * @param {Record<string, number|null>} [args.decors] như trên, cho ảnh trang trí
+ * @param {{ images?: Array<{item_id, media_id, note}>, videos?: Array, decors?: Array }} [args.bindings]
  *   THAY TOÀN BỘ media của những khe có mặt — chỉ dùng khi khôi phục lịch sử. Khe vắng
  *   (lịch sử có từ trước khi khe đó tồn tại) giữ nguyên.
  * @returns {{ rev: number, warnings: string[] }}
@@ -123,7 +123,7 @@ export function readSectionPair(section) {
  * `expectedRev` là chốt chặn ghi đè: hai tab cùng mở, tab cũ bấm lưu sau sẽ nhận
  * 409 thay vì lặng lẽ xoá mất việc của tab kia.
  */
-export function writeSectionPair({ section, vi, en, expectedRev, note = null, images, videos, bindings }) {
+export function writeSectionPair({ section, vi, en, expectedRev, note = null, images, videos, decors, bindings }) {
   const db = getDb()
 
   const parity = assertParity({ [section]: vi }, { [section]: en })
@@ -136,9 +136,12 @@ export function writeSectionPair({ section, vi, en, expectedRev, note = null, im
   }
 
   const slots = slotsOf(section)
-  const changesBySlot = { images, videos }
-  if (images && !SECTION_IMAGES[section]) throw new WriteError(400, { error: 'section nay khong co anh', section })
-  if (videos && !SECTION_VIDEOS[section]) throw new WriteError(400, { error: 'section nay khong co video', section })
+  const changesBySlot = { images, videos, decors }
+  for (const [name, changes] of Object.entries(changesBySlot)) {
+    if (changes && !slots.some((slot) => slot.name === name)) {
+      throw new WriteError(400, { error: `section nay khong co ${SLOT_WORDS[name]}`, section })
+    }
+  }
   if (bindings && slots.length === 0) throw new WriteError(400, { error: 'section nay khong co anh', section })
 
   const run = db.transaction(() => {
@@ -202,7 +205,7 @@ export function writeSectionPair({ section, vi, en, expectedRev, note = null, im
     for (const slot of slots) {
       const allowed = slotItemIds(slot, vi)
       const previousIds = previousDict ? slotItemIds(slot, previousDict) : new Set()
-      const what = slot.name === 'videos' ? 'video' : 'anh'
+      const what = SLOT_WORDS[slot.name] ?? 'anh'
 
       const restored = bindings?.[slot.name]
       if (restored) {

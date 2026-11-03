@@ -303,6 +303,13 @@ const ICONS = {
   phone: (
     <path d="M6.5 3.5h3l1.5 4.5-2 1.5a11 11 0 0 0 5.5 5.5l1.5-2 4.5 1.5v3a2 2 0 0 1-2 2A16 16 0 0 1 4.5 5.5a2 2 0 0 1 2-2z" />
   ),
+  // Sự kiện mùa: ngôi sao lấp lánh lớn + nhỏ.
+  sparkles: (
+    <>
+      <path d="M10 3.5l1.6 4.4 4.4 1.6-4.4 1.6L10 15.5l-1.6-4.4L4 9.5l4.4-1.6z" />
+      <path d="M17.5 14l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z" />
+    </>
+  ),
 }
 
 export function Icon({ name, size = 20, className = '', strokeWidth = 1.7 }) {

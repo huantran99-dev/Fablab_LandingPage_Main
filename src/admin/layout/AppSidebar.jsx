@@ -16,7 +16,8 @@ const ENROLLMENT_LINKS = [
  * `badge`: số việc đang chờ (đăng ký mới). Sidebar thu gọn thì chỉ còn một chấm —
  * con số vẫn đọc được qua `aria-label` và `title`.
  */
-function NavItem({ href, label, icon, active, collapsed, onNavigate, badge = 0 }) {
+/** `tag`: nhãn xám cạnh tên (vd. "Ẩn" cho section đang tắt trên trang). */
+function NavItem({ href, label, icon, active, collapsed, onNavigate, badge = 0, tag = null }) {
   const badgeText = badge > 99 ? '99+' : String(badge)
   return (
     <li>
@@ -24,8 +25,8 @@ function NavItem({ href, label, icon, active, collapsed, onNavigate, badge = 0 }
         href={href}
         onClick={onNavigate}
         aria-current={active ? 'page' : undefined}
-        aria-label={badge > 0 ? `${label}, ${badge} mới` : undefined}
-        title={collapsed ? (badge > 0 ? `${label} (${badge} mới)` : label) : undefined}
+        aria-label={badge > 0 ? `${label}, ${badge} mới` : tag ? `${label}, ${tag.toLowerCase()}` : undefined}
+        title={collapsed ? (badge > 0 ? `${label} (${badge} mới)` : tag ? `${label} (${tag})` : label) : undefined}
         className={`group relative flex items-center gap-3 rounded-lg px-3 py-2 text-theme-sm font-medium transition-colors ${
           collapsed ? 'lg:justify-center lg:px-0' : ''
         } ${
@@ -44,6 +45,14 @@ function NavItem({ href, label, icon, active, collapsed, onNavigate, badge = 0 }
           }
         />
         <span className={collapsed ? 'lg:hidden' : ''}>{label}</span>
+        {tag && badge === 0 && (
+          <span
+            aria-hidden="true"
+            className={`ml-auto rounded-full bg-gray-100 px-2 py-0.5 text-theme-xs font-medium text-gray-500 dark:bg-white/5 dark:text-gray-400 ${collapsed ? 'lg:hidden' : ''}`}
+          >
+            {tag}
+          </span>
+        )}
         {badge > 0 && (
           <>
             <span
@@ -79,7 +88,7 @@ function GroupTitle({ collapsed, children }) {
  * Sidebar kiểu TailAdmin: 290px, thu gọn còn 90px chỉ icon trên màn hình lớn, trượt
  * vào kèm lớp phủ trên điện thoại. Thứ tự section trong menu = thứ tự trên trang.
  */
-export function AppSidebar({ route, collapsed, mobileOpen, onNavigate, newRegistrations = 0 }) {
+export function AppSidebar({ route, collapsed, mobileOpen, onNavigate, newRegistrations = 0, hiddenSections = null }) {
   const isActive = (name, param) => route.name === name && (param === undefined || route.param === param)
 
   return (
@@ -127,6 +136,7 @@ export function AppSidebar({ route, collapsed, mobileOpen, onNavigate, newRegist
               label={section.label}
               icon={section.icon}
               active={isActive('sections', section.key)}
+              tag={hiddenSections?.has(section.key) ? 'Ẩn' : null}
               collapsed={collapsed}
               onNavigate={onNavigate}
             />
