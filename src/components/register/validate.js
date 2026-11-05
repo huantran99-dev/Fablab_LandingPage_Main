@@ -1,12 +1,14 @@
 /**
- * Kiểm form đăng ký phía trình duyệt — hai loại: `course` (phụ huynh đăng ký khóa học)
- * và `member` (người từ 16 tuổi đăng ký thành viên FabLab). Máy chủ kiểm lại toàn bộ
+ * Kiểm form đăng ký phía trình duyệt — ba loại: `course` (phụ huynh đăng ký khóa học),
+ * `member` (người từ 16 tuổi đăng ký thành viên FabLab) và `event` (đăng ký một cuộc thi /
+ * workshop / hội thảo — mọi tuổi, dưới 16 thì có tên phụ huynh). Máy chủ kiểm lại toàn bộ
  * (`server/schema/registration.js`) — phía này chỉ để báo lỗi sớm, bằng đúng ngôn ngữ
  * người dùng đang xem.
  *
  * Mã lỗi trùng với mã máy chủ trả về, nên cả hai đường cùng tra `register.errors.*`.
  */
 
+/** Hai TAB của form. `event` không phải tab: form sự kiện chỉ mở từ nút trên từng slide. */
 export const KINDS = ['member', 'course']
 
 /**
@@ -42,6 +44,17 @@ export const EMPTY_DRAFTS = {
     note: '',
     consent: false,
   },
+  event: {
+    event: '',
+    fullName: '',
+    birthYear: '',
+    parentName: '',
+    phone: '',
+    email: '',
+    organization: '',
+    note: '',
+    consent: false,
+  },
 }
 
 /** Giới hạn độ dài — khớp schema máy chủ. */
@@ -63,12 +76,23 @@ export const LIMITS = {
     organization: 160,
     note: 1000,
   },
+  event: {
+    fullName: 120,
+    birthYear: 4,
+    parentName: 120,
+    phone: 20,
+    email: 160,
+    organization: 160,
+    note: 1000,
+  },
 }
 
 /** Thứ tự trường trên form — cũng là thứ tự trong hộp tóm tắt lỗi. */
 export const FIELD_ORDER = {
   course: ['course', 'studentName', 'studentGrade', 'school', 'parentName', 'phone', 'email', 'note', 'consent'],
   member: ['fullName', 'birthYear', 'phone', 'email', 'role', 'organization', 'interests', 'note', 'consent'],
+  // `event` đứng đầu: máy chủ báo sự kiện đã đóng đăng ký bằng đường này.
+  event: ['event', 'fullName', 'birthYear', 'parentName', 'phone', 'email', 'organization', 'note', 'consent'],
 }
 
 /**
@@ -91,6 +115,25 @@ export function birthYearError(value, now = new Date()) {
   if (year < 1900 || year > now.getFullYear()) return 'birthYear'
   if (now.getFullYear() - year < MEMBER_MIN_AGE) return 'age'
   return null
+}
+
+/**
+ * Năm sinh của người tham gia sự kiện: năm hợp lệ, KHÔNG chặn tuổi. Cùng luật với
+ * `eventBirthYearError` ở máy chủ.
+ */
+export function eventBirthYearError(value, now = new Date()) {
+  const text = String(value ?? '').trim()
+  if (!text) return 'required'
+  if (!/^\d{4}$/.test(text)) return 'birthYear'
+  const year = Number(text)
+  if (year < 1900 || year > now.getFullYear()) return 'birthYear'
+  return null
+}
+
+/** Người tham gia dưới 16 tuổi (tính theo năm) → form đòi tên phụ huynh. Năm chưa hợp lệ = chưa biết. */
+export function needsParent(birthYear, now = new Date()) {
+  if (eventBirthYearError(birthYear, now)) return false
+  return now.getFullYear() - Number(String(birthYear).trim()) < MEMBER_MIN_AGE
 }
 
 const PHONE = /^0\d{9,10}$/
@@ -121,6 +164,16 @@ export function validate(kind, draft) {
     else if (!EMAIL.test(email)) errors.email = 'email'
     if (!MEMBER_ROLES.includes(draft.role)) errors.role = 'role'
     checkLimits(draft, LIMITS.member, errors)
+  } else if (kind === 'event') {
+    if (!draft.event) errors.event = 'event'
+    if (!draft.fullName.trim()) errors.fullName = 'required'
+    const year = eventBirthYearError(draft.birthYear)
+    if (year) errors.birthYear = year
+    if (needsParent(draft.birthYear) && !draft.parentName.trim()) errors.parentName = 'required'
+    checkPhone(draft, errors)
+    const email = draft.email.trim()
+    if (email && !EMAIL.test(email)) errors.email = 'email'
+    checkLimits(draft, LIMITS.event, errors)
   } else {
     if (!draft.studentName.trim()) errors.studentName = 'required'
     if (!draft.parentName.trim()) errors.parentName = 'required'

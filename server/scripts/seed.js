@@ -37,6 +37,8 @@ async function main() {
   const { courseDetailsEn } = await import(srcUrl('i18n', 'courseDetails.en.js'))
   const { experienceDetailsVi } = await import(srcUrl('i18n', 'experienceDetails.vi.js'))
   const { experienceDetailsEn } = await import(srcUrl('i18n', 'experienceDetails.en.js'))
+  const { intensiveDetailsVi } = await import(srcUrl('i18n', 'intensiveDetails.vi.js'))
+  const { intensiveDetailsEn } = await import(srcUrl('i18n', 'intensiveDetails.en.js'))
   const images = await import(srcUrl('assets', 'images', 'index.js'))
 
   const notes = readImageNotes()
@@ -141,6 +143,9 @@ async function main() {
       ['en', 'scraped', courseDetailsEn],
       ['vi', 'handwritten', experienceDetailsVi],
       ['en', 'handwritten', experienceDetailsEn],
+      // Khóa học chuyên sâu (slide "Giới thiệu STEMLab") — cũng viết tay, cùng nguồn `handwritten`.
+      ['vi', 'handwritten', intensiveDetailsVi],
+      ['en', 'handwritten', intensiveDetailsEn],
     ]
     let detailCount = 0
     for (const [locale, source, map] of detailSources) {

@@ -210,7 +210,6 @@
           "title": "3D design with SolidWorks"
         }
       ],
-      "joinMember": "Become a FabLab member today",
       "kinds": {
         "competition": "Competition",
         "partnership": "Partnership",
@@ -221,14 +220,33 @@
       "pause": "Pause slideshow",
       "play": "Play slideshow",
       "previous": "Previous activity",
+      "registerCta": {
+        "competition": "Register for the competition",
+        "seminar": "Register for the seminar",
+        "workshop": "Register for the workshop"
+      },
       "title": "Annual activities & competitions",
       "viewDetails": "View details"
     },
     "courses": {
       "ageLabel": "Ages",
       "cardCta": "Learn more",
+      "comingSoon": "Coming soon",
       "description": "From your first lines of code to operating industrial machines — every course begins by getting your hands on the work.",
       "details": {
+        "ai-khoa-hoc-du-lieu": {
+          "audience": "upper secondary students",
+          "curriculum": [
+            "Session 1 – Introduction to artificial intelligence",
+            "Session 2 – Teaching computers to think",
+            "Session 3 – How computers store data",
+            "Session 4 – Putting Python to work",
+            "Session 5 – Object detection with YOLO",
+            "Session 6 – Teaching AI to see your way",
+            "Session 7 – Training and evaluating AI models",
+            "Session 8 – Building an object-detection AI app"
+          ]
+        },
         "am-thanh": {
           "curriculum": [
             "Learn about sound sources and the vibrations that create sound.",
@@ -409,6 +427,19 @@
             "Explore where AI shows up in everyday life.",
             "Simulate how an AI learns from data.",
             "Take on the \"What did the AI learn?\" game challenge."
+          ]
+        },
+        "lap-trinh-ai": {
+          "audience": "primary and lower secondary students",
+          "curriculum": [
+            "Session 1 – Getting started with Pictoblox",
+            "Session 2 – A drawing app",
+            "Session 3 – Coding a simple game",
+            "Session 4 – Basic AI programming",
+            "Session 5 – Controlling characters with AI",
+            "Session 6 – AI and human emotions",
+            "Session 7 – Building a virtual assistant",
+            "Session 8 – Self-driving car"
           ]
         },
         "mechanics": {
@@ -659,12 +690,46 @@
           "sourceUrl": "https://fablab.eiu.edu.vn/courses/phan-tich-ky-thuat-va-ung-suat/",
           "viOnly": true
         },
+        "the-gioi-3d": {
+          "audience": "primary and lower secondary students",
+          "curriculum": [
+            "Session 1 – Conquering the 3D world",
+            "Session 2 – Little architects",
+            "Session 3 – Interior design",
+            "Session 4 – Creative design",
+            "Session 5 – Getting started with SimLab",
+            "Session 6 – Designing a Newton's cradle",
+            "Session 7 – Animating 3D characters",
+            "Session 8 – Final project"
+          ]
+        },
         "the-gioi-ao": {
           "curriculum": [
             "Learn what programming does in robot control.",
             "Explore the programming software and its basic command blocks.",
             "Program a robot to move around a simulated field.",
             "Apply what you have learned in the \"Master farm engineer\" project."
+          ]
+        },
+        "the-gioi-dien-tu": {
+          "audience": "upper secondary students",
+          "curriculum": [
+            "Module: Mini Drone",
+            "Module: Mini Robot",
+            "Module: IoT smart kit"
+          ]
+        },
+        "the-gioi-robot": {
+          "audience": "primary and lower secondary students",
+          "curriculum": [
+            "Session 1 – Exploring the world of robots",
+            "Session 2 – Humanoid robots",
+            "Session 3 – Mobile robots 1",
+            "Session 4 – Mobile robots 2",
+            "Session 5 – Robotic arms in manufacturing 1",
+            "Session 6 – Robotic arms in manufacturing 2",
+            "Session 7 – Project ideas",
+            "Session 8 – Final project"
           ]
         },
         "thi-giac-may-tinh": {
@@ -711,6 +776,19 @@
           "sourceUrl": "https://fablab.eiu.edu.vn/courses/cong-nghe-moi-truong-nuoc/",
           "viOnly": true
         },
+        "website-chuyen-sau": {
+          "audience": "upper secondary students",
+          "curriculum": [
+            "Session 1 – Guiding the eye with Gestalt in Figma",
+            "Session 2 – Mastering layout with grid systems",
+            "Session 3 – Colour wizardry",
+            "Session 4 – Mastering typography",
+            "Session 5 – Systems thinking with components",
+            "Session 6 – Flexible layouts with AutoLayout",
+            "Session 7 – Lively designs with prototypes",
+            "Session 8 – Designing a professional landing page"
+          ]
+        },
         "xac-suat-hoc-may": {
           "curriculum": [
             "Learn about the Naïve Bayes theorem.",
@@ -726,6 +804,19 @@
             "Drive the robot car around a track and over obstacles.",
             "Take on the \"Robot race track\" challenge."
           ]
+        },
+        "xe-robot-chuyen-sau": {
+          "audience": "primary and lower secondary students",
+          "curriculum": [
+            "Session 1 – Getting started with mBlock",
+            "Session 2 – Coding with Panda",
+            "Session 3 – Conditions and sensors",
+            "Session 4 – A world of colours",
+            "Session 5 – Sound and everyday life",
+            "Session 6 – Robots in motion",
+            "Session 7 – Multi-purpose robots",
+            "Session 8 – Final project"
+          ]
         }
       },
       "emptyState": "No courses in this track yet.",
@@ -738,7 +829,7 @@
       },
       "groups": [
         {
-          "description": "Full programmes of 5–10 weeks, carrying one project from first sketch through to a finished build.",
+          "description": "Eight-session courses that go deep into one robotics or AIoT topic, for primary, lower and upper secondary students.",
           "id": "stem",
           "title": "STEM Courses"
         },
@@ -758,7 +849,7 @@
           "id": "thien-nhien",
           "image": {
             "height": 320,
-            "url": "/media/course-energy.3d52d547.jpg",
+            "url": "/media/stemlab-thien-nhien.f2e6945a.jpg",
             "width": 760
           },
           "stage": "th",
@@ -772,7 +863,7 @@
           "id": "nang-luong-cuoc-song",
           "image": {
             "height": 320,
-            "url": "/media/course-energy.3d52d547.jpg",
+            "url": "/media/stemlab-nang-luong-cuoc-song.fcf8d200.jpg",
             "width": 760
           },
           "stage": "thcs",
@@ -785,9 +876,9 @@
           "icon": "electronics",
           "id": "am-thanh",
           "image": {
-            "height": 600,
-            "url": "/media/lab-workbenches.c235eaa8.jpg",
-            "width": 1000
+            "height": 320,
+            "url": "/media/stemlab-am-thanh.b387761e.jpg",
+            "width": 760
           },
           "stage": "thcs",
           "title": "The secrets of sound",
@@ -800,7 +891,7 @@
           "id": "nam-cham",
           "image": {
             "height": 320,
-            "url": "/media/course-electrical.e1dd35f9.jpg",
+            "url": "/media/stemlab-nam-cham.ba7bc7fa.jpg",
             "width": 760
           },
           "stage": "thcs",
@@ -813,9 +904,9 @@
           "icon": "photonics",
           "id": "cap-quang",
           "image": {
-            "height": 500,
-            "url": "/media/lab-laser-cutter.1ae81723.jpg",
-            "width": 679
+            "height": 320,
+            "url": "/media/stemlab-cap-quang.26545b90.jpg",
+            "width": 760
           },
           "stage": "thcs",
           "title": "Fiber optics and lasers",
@@ -828,7 +919,7 @@
           "id": "polymer",
           "image": {
             "height": 320,
-            "url": "/media/course-plastics.df191647.jpg",
+            "url": "/media/stemlab-polymer.9ee1a508.jpg",
             "width": 760
           },
           "stage": "thcs",
@@ -842,7 +933,7 @@
           "id": "nang-luong-tai-tao",
           "image": {
             "height": 320,
-            "url": "/media/course-energy.3d52d547.jpg",
+            "url": "/media/stemlab-nang-luong-tai-tao.06eb7367.jpg",
             "width": 760
           },
           "stage": "thpt",
@@ -856,7 +947,7 @@
           "id": "moi-truong-nuoc",
           "image": {
             "height": 320,
-            "url": "/media/course-water.9e0a5a8d.jpg",
+            "url": "/media/stemlab-moi-truong-nuoc.3dbed04b.jpg",
             "width": 760
           },
           "stage": "thpt",
@@ -870,7 +961,7 @@
           "id": "nganh-nhua",
           "image": {
             "height": 320,
-            "url": "/media/course-plastics.df191647.jpg",
+            "url": "/media/stemlab-nganh-nhua.aaa3600f.jpg",
             "width": 760
           },
           "stage": "thpt",
@@ -884,7 +975,7 @@
           "id": "xe-robot",
           "image": {
             "height": 320,
-            "url": "/media/course-robot-car.7e823afe.jpg",
+            "url": "/media/stemlab-xe-robot.188c89bc.jpg",
             "width": 760
           },
           "stage": "th",
@@ -898,7 +989,7 @@
           "id": "drone",
           "image": {
             "height": 320,
-            "url": "/media/course-mechanics.9a142d33.jpg",
+            "url": "/media/stemlab-drone.d29f6898.jpg",
             "width": 760
           },
           "stage": "thcs",
@@ -912,7 +1003,7 @@
           "id": "canh-tay-robot",
           "image": {
             "height": 320,
-            "url": "/media/course-robotic-arm.81c09dc3.jpg",
+            "url": "/media/stemlab-canh-tay-robot.94a1981c.jpg",
             "width": 760
           },
           "stage": "thcs",
@@ -926,7 +1017,7 @@
           "id": "robot-sinh-hoc",
           "image": {
             "height": 320,
-            "url": "/media/course-humanoid.bf6451ba.jpg",
+            "url": "/media/stemlab-robot-sinh-hoc.02bd60e3.jpg",
             "width": 760
           },
           "stage": "thcs",
@@ -940,7 +1031,7 @@
           "id": "kham-pha-dien",
           "image": {
             "height": 320,
-            "url": "/media/course-electronics.39d13333.jpg",
+            "url": "/media/stemlab-kham-pha-dien.779b0c84.jpg",
             "width": 760
           },
           "stage": "thcs",
@@ -953,8 +1044,8 @@
           "icon": "mechanics",
           "id": "thiet-ke-co-khi",
           "image": {
-            "height": 560,
-            "url": "/media/lab-machine-shop.48f34a61.jpg",
+            "height": 320,
+            "url": "/media/stemlab-thiet-ke-co-khi.0d747503.jpg",
             "width": 760
           },
           "stage": "thpt",
@@ -968,7 +1059,7 @@
           "id": "co-dien-tu",
           "image": {
             "height": 320,
-            "url": "/media/course-mechatronics.9dc5e07a.jpg",
+            "url": "/media/stemlab-co-dien-tu.de2d1f7d.jpg",
             "width": 760
           },
           "stage": "thpt",
@@ -982,7 +1073,7 @@
           "id": "co-hoc-sang-tao",
           "image": {
             "height": 320,
-            "url": "/media/course-stress.18597909.jpg",
+            "url": "/media/stemlab-co-hoc-sang-tao.a4db1050.jpg",
             "width": 760
           },
           "stage": "thpt",
@@ -996,7 +1087,7 @@
           "id": "cnc",
           "image": {
             "height": 320,
-            "url": "/media/course-cnc.cb68e7b0.jpg",
+            "url": "/media/stemlab-cnc.eb243d71.jpg",
             "width": 760
           },
           "stage": "thpt",
@@ -1009,9 +1100,9 @@
           "icon": "process",
           "id": "in-3d",
           "image": {
-            "height": 600,
-            "url": "/media/lab-3d-printers.6fb93aa4.jpg",
-            "width": 1000
+            "height": 320,
+            "url": "/media/stemlab-in-3d.6fc6337f.jpg",
+            "width": 760
           },
           "stage": "thpt",
           "title": "3D printing technology",
@@ -1024,7 +1115,7 @@
           "id": "muc-nuoc-thong-minh",
           "image": {
             "height": 320,
-            "url": "/media/course-water.9e0a5a8d.jpg",
+            "url": "/media/stemlab-muc-nuoc-thong-minh.f1240d66.jpg",
             "width": 760
           },
           "stage": "thpt",
@@ -1038,7 +1129,7 @@
           "id": "lam-quen-ai",
           "image": {
             "height": 320,
-            "url": "/media/course-scratch.ea6415e6.jpg",
+            "url": "/media/stemlab-lam-quen-ai.e77bf7b1.jpg",
             "width": 760
           },
           "stage": "th",
@@ -1052,7 +1143,7 @@
           "id": "the-gioi-ao",
           "image": {
             "height": 320,
-            "url": "/media/course-scratch.ea6415e6.jpg",
+            "url": "/media/stemlab-the-gioi-ao.53441f9f.jpg",
             "width": 760
           },
           "stage": "thcs",
@@ -1066,7 +1157,7 @@
           "id": "noi-dung-so",
           "image": {
             "height": 320,
-            "url": "/media/course-photonics.5532dfa5.jpg",
+            "url": "/media/stemlab-noi-dung-so.749099ba.jpg",
             "width": 760
           },
           "stage": "thcs",
@@ -1079,9 +1170,9 @@
           "icon": "electronics",
           "id": "cau-truc-may-tinh",
           "image": {
-            "height": 600,
-            "url": "/media/lab-workbenches.c235eaa8.jpg",
-            "width": 1000
+            "height": 320,
+            "url": "/media/stemlab-cau-truc-may-tinh.dcb87b22.jpg",
+            "width": 760
           },
           "stage": "thpt",
           "title": "Computer architecture",
@@ -1093,9 +1184,9 @@
           "icon": "process",
           "id": "thiet-ke-3d",
           "image": {
-            "height": 600,
-            "url": "/media/lab-3d-printers.6fb93aa4.jpg",
-            "width": 1000
+            "height": 320,
+            "url": "/media/stemlab-thiet-ke-3d.aadcca7f.jpg",
+            "width": 760
           },
           "stage": "thpt",
           "title": "3D design",
@@ -1108,7 +1199,7 @@
           "id": "blockchain",
           "image": {
             "height": 320,
-            "url": "/media/course-photonics.5532dfa5.jpg",
+            "url": "/media/stemlab-blockchain.8fda998c.jpg",
             "width": 760
           },
           "stage": "thpt",
@@ -1122,7 +1213,7 @@
           "id": "iot",
           "image": {
             "height": 320,
-            "url": "/media/course-automation.8c53cbef.jpg",
+            "url": "/media/stemlab-iot.4af3f10c.jpg",
             "width": 760
           },
           "stage": "thpt",
@@ -1136,7 +1227,7 @@
           "id": "thi-giac-may-tinh",
           "image": {
             "height": 320,
-            "url": "/media/course-process.2cc0a003.jpg",
+            "url": "/media/stemlab-thi-giac-may-tinh.6e66029c.jpg",
             "width": 760
           },
           "stage": "thpt",
@@ -1150,7 +1241,7 @@
           "id": "xac-suat-hoc-may",
           "image": {
             "height": 320,
-            "url": "/media/course-process.2cc0a003.jpg",
+            "url": "/media/stemlab-xac-suat-hoc-may.ab09234e.jpg",
             "width": 760
           },
           "stage": "thpt",
@@ -1163,68 +1254,111 @@
           "icon": "scratch",
           "id": "thiet-ke-website",
           "image": {
-            "height": 600,
-            "url": "/media/lab-workbenches.c235eaa8.jpg",
-            "width": 1000
+            "height": 320,
+            "url": "/media/stemlab-thiet-ke-website.dd043b59.jpg",
+            "width": 760
           },
           "stage": "thpt",
           "title": "Website design",
           "topic": "aiot"
         },
         {
-          "description": "Assemble and program a robotic arm to carry out a full pick-and-place routine.",
-          "group": "stem",
-          "icon": "robotic-arm",
-          "id": "robotic-arm",
-          "image": {
-            "height": 320,
-            "url": "/media/course-robotic-arm.81c09dc3.jpg",
-            "width": 760
-          },
-          "stage": "thcs",
-          "title": "Robotic Arms",
-          "topic": "robotics"
-        },
-        {
-          "description": "Discover how robots keep their balance, walk, and interact with the people around them.",
+          "description": "Eight sessions from humanoid robots and mobile robots to robotic arms in manufacturing, wrapped up with a final project.",
           "group": "stem",
           "icon": "humanoid",
-          "id": "humanoid",
+          "id": "the-gioi-robot",
           "image": {
             "height": 320,
-            "url": "/media/course-humanoid.bf6451ba.jpg",
+            "url": "/media/stemlab-the-gioi-robot.9f681e51.jpg",
             "width": 760
           },
-          "stage": "th",
-          "title": "Humanoid Robots",
+          "stage": "th-thcs",
+          "title": "World of Robots",
           "topic": "robotics"
         },
         {
-          "description": "A first step into coding with visual blocks — telling stories, building games and animations.",
+          "description": "Program a robot car in mBlock through sensors, colours, sound and motion, wrapped up with a final project.",
           "group": "stem",
-          "icon": "scratch",
-          "id": "scratch",
+          "icon": "robot-car",
+          "id": "xe-robot-chuyen-sau",
           "image": {
             "height": 320,
-            "url": "/media/course-scratch.ea6415e6.jpg",
+            "url": "/media/stemlab-xe-robot-chuyen-sau.dfeeb01e.jpg",
             "width": 760
           },
-          "stage": "th",
-          "title": "Scratch Programming",
+          "stage": "th-thcs",
+          "title": "Robot Car Discovery",
+          "topic": "robotics"
+        },
+        {
+          "description": "Get started with Pictoblox, code games and basic AI, then control characters, build a virtual assistant and a self-driving car.",
+          "group": "stem",
+          "icon": "scratch",
+          "id": "lap-trinh-ai",
+          "image": {
+            "height": 320,
+            "url": "/media/stemlab-lap-trinh-ai.b34d3ac9.jpg",
+            "width": 760
+          },
+          "stage": "th-thcs",
+          "title": "Coding with AI",
           "topic": "aiot"
         },
         {
-          "description": "Build a self-driving car that follows lines, avoids obstacles and responds to your phone.",
+          "description": "3D design from architecture and interiors to a Newton's cradle and animated characters in SimLab, wrapped up with a final project.",
           "group": "stem",
-          "icon": "robot-car",
-          "id": "robot-car",
+          "icon": "process",
+          "id": "the-gioi-3d",
           "image": {
             "height": 320,
-            "url": "/media/course-robot-car.7e823afe.jpg",
+            "url": "/media/stemlab-the-gioi-3d.4da0f398.jpg",
             "width": 760
           },
-          "stage": "th",
-          "title": "Robot Vehicles",
+          "stage": "th-thcs",
+          "title": "Conquering the 3D World",
+          "topic": "aiot"
+        },
+        {
+          "description": "Interface design in Figma with Gestalt, grids, colour, typography, components, AutoLayout and prototypes, finishing with a landing page.",
+          "group": "stem",
+          "icon": "scratch",
+          "id": "website-chuyen-sau",
+          "image": {
+            "height": 320,
+            "url": "/media/stemlab-website-chuyen-sau.378fdfb9.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "Website Design",
+          "topic": "aiot"
+        },
+        {
+          "description": "From artificial intelligence and Python to object detection with YOLO: training and evaluating models and building an AI app.",
+          "group": "stem",
+          "icon": "photonics",
+          "id": "ai-khoa-hoc-du-lieu",
+          "image": {
+            "height": 320,
+            "url": "/media/stemlab-ai-khoa-hoc-du-lieu.d32f2e79.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "AI and Data Science",
+          "topic": "aiot"
+        },
+        {
+          "comingSoon": true,
+          "description": "Three modules: Mini Drone, Mini Robot and IoT smart kit.",
+          "group": "stem",
+          "icon": "electronics",
+          "id": "the-gioi-dien-tu",
+          "image": {
+            "height": 320,
+            "url": "/media/stemlab-the-gioi-dien-tu.9dbe5065.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "World of Electronics",
           "topic": "robotics"
         }
       ],
@@ -1262,6 +1396,11 @@
           "id": "thpt",
           "label": "Upper secondary school",
           "short": "High school"
+        },
+        {
+          "id": "th-thcs",
+          "label": "Primary & lower secondary",
+          "short": "Primary/Secondary"
         }
       ],
       "title": "Find the path that fits you",
@@ -2203,6 +2342,7 @@
         "birthYear": "Year of birth looks wrong (e.g. 2004).",
         "consent": "We need your consent to contact you.",
         "email": "Email address looks wrong.",
+        "event": "This event is not taking online registrations right now. Please reload the page or contact FabLab.",
         "network": "Could not send. Please try again or call {phone}.",
         "paused": "Online registration is paused. Please call {phone}.",
         "phone": "Phone number looks wrong (e.g. 0912 345 678).",
@@ -2210,6 +2350,20 @@
         "required": "Please fill in this field.",
         "role": "Please choose one.",
         "tooLong": "This is too long."
+      },
+      "event": {
+        "birthYear": "Year of birth",
+        "birthYearHint": "E.g. 2008",
+        "consent": "I am the participant and aged 16 or over, or the parent / guardian of the participant, and I agree that EIU FabLab may process the information above to contact me about the event.",
+        "description": "Leave your details and EIU FabLab will contact you to confirm your place.",
+        "eventLabel": "Registering for",
+        "fullName": "Participant full name",
+        "heading": "Participant",
+        "notePlaceholder": "Questions for FabLab, support you need…",
+        "organization": "School or organisation",
+        "parentName": "Parent or guardian full name",
+        "parentNote": "Participants under 16: a parent or guardian fills in their own name and phone number and gives consent on their behalf.",
+        "privacy": "Your information is used only for contacting you and running the event, is managed by EIU FabLab (Eastern International University) and kept for at most 12 months. You can withdraw consent or ask for deletion at {email} (Decree 13/2023/ND-CP)."
       },
       "member": {
         "ageNote": "For people aged 16 and over. Younger students, please ask a parent to register for a course.",
@@ -2287,7 +2441,6 @@
             "url": "/media/activity-machine-learning.c6a02acf.jpg",
             "width": 900
           },
-          "enabled": true,
           "end": "2027-02-14",
           "fall": true,
           "href": "#",
@@ -2299,7 +2452,6 @@
           },
           "motif": "mai",
           "name": "Lunar New Year",
-          "now": true,
           "popup": true,
           "start": "2027-01-28",
           "title": "Happy Lunar New Year 2027"
@@ -2335,6 +2487,7 @@
             "url": "/media/team-tuan.086e9dc4.jpg",
             "width": 240
           },
+          "enabled": true,
           "end": "2026-12-26",
           "fall": true,
           "href": "#projects",
@@ -2346,6 +2499,7 @@
           },
           "motif": "snow",
           "name": "Christmas",
+          "now": true,
           "popup": true,
           "start": "2026-12-15",
           "title": "Merry Christmas"
@@ -2611,8 +2765,8 @@
       "title": "What learners say about FabLab EIU"
     }
   },
-  "rev": 168,
-  "updatedAt": "2026-11-03T06:37:22.809Z",
+  "rev": 190,
+  "updatedAt": "2026-11-05T04:00:45.428Z",
   "vi": {
     "activities": {
       "closeDetails": "Đóng",
@@ -2824,7 +2978,6 @@
           "title": "Thiết kế 3D với SolidWorks"
         }
       ],
-      "joinMember": "Trở thành thành viên FabLab ngay",
       "kinds": {
         "competition": "Cuộc thi",
         "partnership": "Hợp tác",
@@ -2835,14 +2988,33 @@
       "pause": "Tạm dừng trình chiếu",
       "play": "Phát trình chiếu",
       "previous": "Hoạt động trước",
+      "registerCta": {
+        "competition": "Đăng ký cuộc thi",
+        "seminar": "Đăng ký hội thảo",
+        "workshop": "Đăng ký Workshop"
+      },
       "title": "Hoạt động & cuộc thi thường niên",
       "viewDetails": "Xem chi tiết"
     },
     "courses": {
       "ageLabel": "Độ tuổi",
       "cardCta": "Tìm hiểu thêm",
+      "comingSoon": "Sắp ra mắt",
       "description": "Từ những bước lập trình đầu tiên đến kỹ năng vận hành máy công nghiệp — mỗi khóa học đều bắt đầu bằng việc bắt tay vào làm.",
       "details": {
+        "ai-khoa-hoc-du-lieu": {
+          "audience": "học sinh THPT",
+          "curriculum": [
+            "Buổi 1 – Làm quen với trí tuệ nhân tạo AI",
+            "Buổi 2 – Lập trình tư duy cho máy tính",
+            "Buổi 3 – Cách máy tính ghi nhớ dữ liệu",
+            "Buổi 4 – Vận dụng Python",
+            "Buổi 5 – Nhận diện vật thể với YOLO",
+            "Buổi 6 – Dạy AI nhìn theo cách của bạn",
+            "Buổi 7 – Huấn luyện và đánh giá mô hình AI",
+            "Buổi 8 – Xây dựng ứng dụng AI nhận diện vật thể"
+          ]
+        },
         "am-thanh": {
           "curriculum": [
             "Tìm hiểu nguồn âm và sự dao động tạo ra âm thanh.",
@@ -3077,6 +3249,19 @@
             "Khám phá các ứng dụng của AI trong đời sống.",
             "Thực hành mô phỏng quá trình AI học dữ liệu.",
             "Tham gia thử thách trò chơi \"AI đã học gì?\"."
+          ]
+        },
+        "lap-trinh-ai": {
+          "audience": "học sinh tiểu học và THCS",
+          "curriculum": [
+            "Buổi 1 – Làm quen với Pictoblox",
+            "Buổi 2 – Ứng dụng vẽ hình",
+            "Buổi 3 – Lập trình trò chơi đơn giản",
+            "Buổi 4 – Lập trình AI cơ bản",
+            "Buổi 5 – Điều khiển nhân vật với AI",
+            "Buổi 6 – AI và cảm xúc con người",
+            "Buổi 7 – Tạo lập trợ lý ảo",
+            "Buổi 8 – Xe tự hành"
           ]
         },
         "mechanics": {
@@ -3411,12 +3596,46 @@
           ],
           "sourceUrl": "https://fablab.eiu.edu.vn/courses/phan-tich-ky-thuat-va-ung-suat/"
         },
+        "the-gioi-3d": {
+          "audience": "học sinh tiểu học và THCS",
+          "curriculum": [
+            "Buổi 1 – Chinh phục thế giới 3D",
+            "Buổi 2 – Kiến trúc sư nhí",
+            "Buổi 3 – Thiết kế nội thất",
+            "Buổi 4 – Thiết kế sáng tạo",
+            "Buổi 5 – Làm quen cùng SimLab",
+            "Buổi 6 – Thiết kế mô hình con lắc Newton",
+            "Buổi 7 – Chuyển động cùng nhân vật 3D",
+            "Buổi 8 – Dự án cuối khóa"
+          ]
+        },
         "the-gioi-ao": {
           "curriculum": [
             "Tìm hiểu về vai trò của lập trình trong điều khiển robot.",
             "Khám phá phần mềm lập trình và các khối lệnh cơ bản.",
             "Thực hành lập trình robot di chuyển trong sa bàn mô phỏng.",
             "Vận dụng kiến thức lập trình để thực hiện dự án \"Kỹ sư nông trại tài ba\"."
+          ]
+        },
+        "the-gioi-dien-tu": {
+          "audience": "học sinh THPT",
+          "curriculum": [
+            "Module: Mini Drone",
+            "Module: Mini Robot",
+            "Module: IoT smart kit"
+          ]
+        },
+        "the-gioi-robot": {
+          "audience": "học sinh tiểu học và THCS",
+          "curriculum": [
+            "Buổi 1 – Khám phá thế giới robot",
+            "Buổi 2 – Robot hình người",
+            "Buổi 3 – Mobile robot 1",
+            "Buổi 4 – Mobile robot 2",
+            "Buổi 5 – Cánh tay robot trong sản xuất 1",
+            "Buổi 6 – Cánh tay robot trong sản xuất 2",
+            "Buổi 7 – Ý tưởng dự án",
+            "Buổi 8 – Dự án cuối khóa"
           ]
         },
         "thi-giac-may-tinh": {
@@ -3492,6 +3711,19 @@
           ],
           "sourceUrl": "https://fablab.eiu.edu.vn/courses/cong-nghe-moi-truong-nuoc/"
         },
+        "website-chuyen-sau": {
+          "audience": "học sinh THPT",
+          "curriculum": [
+            "Buổi 1 – Hack ánh nhìn với Gestalt trong Figma",
+            "Buổi 2 – Làm chủ bố cục với hệ thống Grid",
+            "Buổi 3 – Phù thủy màu sắc",
+            "Buổi 4 – Làm chủ Typography",
+            "Buổi 5 – Tư duy hệ thống với Component",
+            "Buổi 6 – Biến hóa linh hoạt với AutoLayout",
+            "Buổi 7 – Thiết kế sống động với Prototype",
+            "Buổi 8 – Thiết kế Landing Page chuyên nghiệp"
+          ]
+        },
         "xac-suat-hoc-may": {
           "curriculum": [
             "Tìm hiểu định lý Naïve Bayes.",
@@ -3507,6 +3739,19 @@
             "Thực hành điều khiển xe robot trên đường đua và vượt chướng ngại vật.",
             "Tham gia thử thách \"Đường đua robot\"."
           ]
+        },
+        "xe-robot-chuyen-sau": {
+          "audience": "học sinh tiểu học và THCS",
+          "curriculum": [
+            "Buổi 1 – Làm quen lập trình mBlock",
+            "Buổi 2 – Lập trình cùng Panda",
+            "Buổi 3 – Điều kiện và cảm biến",
+            "Buổi 4 – Thế giới sắc màu",
+            "Buổi 5 – Âm thanh và cuộc sống",
+            "Buổi 6 – Robot chuyển động",
+            "Buổi 7 – Robot đa năng",
+            "Buổi 8 – Dự án cuối khóa"
+          ]
         }
       },
       "emptyState": "Chưa có khóa học nào trong nhóm này.",
@@ -3519,7 +3764,7 @@
       },
       "groups": [
         {
-          "description": "Chương trình đầy đủ 5–10 tuần, theo một dự án từ bản phác đầu tiên đến sản phẩm hoàn thiện.",
+          "description": "Khóa học 8 buổi đi sâu một chủ đề robot hoặc AIoT, cho học sinh tiểu học – THCS và THPT.",
           "id": "stem",
           "title": "Khóa học STEM"
         },
@@ -3539,7 +3784,7 @@
           "id": "thien-nhien",
           "image": {
             "height": 320,
-            "url": "/media/course-energy.3d52d547.jpg",
+            "url": "/media/stemlab-thien-nhien.f2e6945a.jpg",
             "width": 760
           },
           "stage": "th",
@@ -3553,7 +3798,7 @@
           "id": "nang-luong-cuoc-song",
           "image": {
             "height": 320,
-            "url": "/media/course-energy.3d52d547.jpg",
+            "url": "/media/stemlab-nang-luong-cuoc-song.fcf8d200.jpg",
             "width": 760
           },
           "stage": "thcs",
@@ -3566,9 +3811,9 @@
           "icon": "electronics",
           "id": "am-thanh",
           "image": {
-            "height": 600,
-            "url": "/media/lab-workbenches.c235eaa8.jpg",
-            "width": 1000
+            "height": 320,
+            "url": "/media/stemlab-am-thanh.b387761e.jpg",
+            "width": 760
           },
           "stage": "thcs",
           "title": "Bí mật âm thanh",
@@ -3581,7 +3826,7 @@
           "id": "nam-cham",
           "image": {
             "height": 320,
-            "url": "/media/course-electrical.e1dd35f9.jpg",
+            "url": "/media/stemlab-nam-cham.ba7bc7fa.jpg",
             "width": 760
           },
           "stage": "thcs",
@@ -3594,9 +3839,9 @@
           "icon": "photonics",
           "id": "cap-quang",
           "image": {
-            "height": 500,
-            "url": "/media/lab-laser-cutter.1ae81723.jpg",
-            "width": 679
+            "height": 320,
+            "url": "/media/stemlab-cap-quang.26545b90.jpg",
+            "width": 760
           },
           "stage": "thcs",
           "title": "Cáp quang và Laser",
@@ -3609,7 +3854,7 @@
           "id": "polymer",
           "image": {
             "height": 320,
-            "url": "/media/course-plastics.df191647.jpg",
+            "url": "/media/stemlab-polymer.9ee1a508.jpg",
             "width": 760
           },
           "stage": "thcs",
@@ -3623,7 +3868,7 @@
           "id": "nang-luong-tai-tao",
           "image": {
             "height": 320,
-            "url": "/media/course-energy.3d52d547.jpg",
+            "url": "/media/stemlab-nang-luong-tai-tao.06eb7367.jpg",
             "width": 760
           },
           "stage": "thpt",
@@ -3637,7 +3882,7 @@
           "id": "moi-truong-nuoc",
           "image": {
             "height": 320,
-            "url": "/media/course-water.9e0a5a8d.jpg",
+            "url": "/media/stemlab-moi-truong-nuoc.3dbed04b.jpg",
             "width": 760
           },
           "stage": "thpt",
@@ -3651,7 +3896,7 @@
           "id": "nganh-nhua",
           "image": {
             "height": 320,
-            "url": "/media/course-plastics.df191647.jpg",
+            "url": "/media/stemlab-nganh-nhua.aaa3600f.jpg",
             "width": 760
           },
           "stage": "thpt",
@@ -3665,7 +3910,7 @@
           "id": "xe-robot",
           "image": {
             "height": 320,
-            "url": "/media/course-robot-car.7e823afe.jpg",
+            "url": "/media/stemlab-xe-robot.188c89bc.jpg",
             "width": 760
           },
           "stage": "th",
@@ -3679,7 +3924,7 @@
           "id": "drone",
           "image": {
             "height": 320,
-            "url": "/media/course-mechanics.9a142d33.jpg",
+            "url": "/media/stemlab-drone.d29f6898.jpg",
             "width": 760
           },
           "stage": "thcs",
@@ -3693,7 +3938,7 @@
           "id": "canh-tay-robot",
           "image": {
             "height": 320,
-            "url": "/media/course-robotic-arm.81c09dc3.jpg",
+            "url": "/media/stemlab-canh-tay-robot.94a1981c.jpg",
             "width": 760
           },
           "stage": "thcs",
@@ -3707,7 +3952,7 @@
           "id": "robot-sinh-hoc",
           "image": {
             "height": 320,
-            "url": "/media/course-humanoid.bf6451ba.jpg",
+            "url": "/media/stemlab-robot-sinh-hoc.02bd60e3.jpg",
             "width": 760
           },
           "stage": "thcs",
@@ -3721,7 +3966,7 @@
           "id": "kham-pha-dien",
           "image": {
             "height": 320,
-            "url": "/media/course-electronics.39d13333.jpg",
+            "url": "/media/stemlab-kham-pha-dien.779b0c84.jpg",
             "width": 760
           },
           "stage": "thcs",
@@ -3734,8 +3979,8 @@
           "icon": "mechanics",
           "id": "thiet-ke-co-khi",
           "image": {
-            "height": 560,
-            "url": "/media/lab-machine-shop.48f34a61.jpg",
+            "height": 320,
+            "url": "/media/stemlab-thiet-ke-co-khi.0d747503.jpg",
             "width": 760
           },
           "stage": "thpt",
@@ -3749,7 +3994,7 @@
           "id": "co-dien-tu",
           "image": {
             "height": 320,
-            "url": "/media/course-mechatronics.9dc5e07a.jpg",
+            "url": "/media/stemlab-co-dien-tu.de2d1f7d.jpg",
             "width": 760
           },
           "stage": "thpt",
@@ -3763,7 +4008,7 @@
           "id": "co-hoc-sang-tao",
           "image": {
             "height": 320,
-            "url": "/media/course-stress.18597909.jpg",
+            "url": "/media/stemlab-co-hoc-sang-tao.a4db1050.jpg",
             "width": 760
           },
           "stage": "thpt",
@@ -3777,7 +4022,7 @@
           "id": "cnc",
           "image": {
             "height": 320,
-            "url": "/media/course-cnc.cb68e7b0.jpg",
+            "url": "/media/stemlab-cnc.eb243d71.jpg",
             "width": 760
           },
           "stage": "thpt",
@@ -3790,9 +4035,9 @@
           "icon": "process",
           "id": "in-3d",
           "image": {
-            "height": 600,
-            "url": "/media/lab-3d-printers.6fb93aa4.jpg",
-            "width": 1000
+            "height": 320,
+            "url": "/media/stemlab-in-3d.6fc6337f.jpg",
+            "width": 760
           },
           "stage": "thpt",
           "title": "Công nghệ gia công bồi đắp in 3D",
@@ -3805,7 +4050,7 @@
           "id": "muc-nuoc-thong-minh",
           "image": {
             "height": 320,
-            "url": "/media/course-water.9e0a5a8d.jpg",
+            "url": "/media/stemlab-muc-nuoc-thong-minh.f1240d66.jpg",
             "width": 760
           },
           "stage": "thpt",
@@ -3819,7 +4064,7 @@
           "id": "lam-quen-ai",
           "image": {
             "height": 320,
-            "url": "/media/course-scratch.ea6415e6.jpg",
+            "url": "/media/stemlab-lam-quen-ai.e77bf7b1.jpg",
             "width": 760
           },
           "stage": "th",
@@ -3833,7 +4078,7 @@
           "id": "the-gioi-ao",
           "image": {
             "height": 320,
-            "url": "/media/course-scratch.ea6415e6.jpg",
+            "url": "/media/stemlab-the-gioi-ao.53441f9f.jpg",
             "width": 760
           },
           "stage": "thcs",
@@ -3847,7 +4092,7 @@
           "id": "noi-dung-so",
           "image": {
             "height": 320,
-            "url": "/media/course-photonics.5532dfa5.jpg",
+            "url": "/media/stemlab-noi-dung-so.749099ba.jpg",
             "width": 760
           },
           "stage": "thcs",
@@ -3860,9 +4105,9 @@
           "icon": "electronics",
           "id": "cau-truc-may-tinh",
           "image": {
-            "height": 600,
-            "url": "/media/lab-workbenches.c235eaa8.jpg",
-            "width": 1000
+            "height": 320,
+            "url": "/media/stemlab-cau-truc-may-tinh.dcb87b22.jpg",
+            "width": 760
           },
           "stage": "thpt",
           "title": "Cấu trúc máy tính",
@@ -3874,9 +4119,9 @@
           "icon": "process",
           "id": "thiet-ke-3d",
           "image": {
-            "height": 600,
-            "url": "/media/lab-3d-printers.6fb93aa4.jpg",
-            "width": 1000
+            "height": 320,
+            "url": "/media/stemlab-thiet-ke-3d.aadcca7f.jpg",
+            "width": 760
           },
           "stage": "thpt",
           "title": "Thiết kế 3D",
@@ -3889,7 +4134,7 @@
           "id": "blockchain",
           "image": {
             "height": 320,
-            "url": "/media/course-photonics.5532dfa5.jpg",
+            "url": "/media/stemlab-blockchain.8fda998c.jpg",
             "width": 760
           },
           "stage": "thpt",
@@ -3903,7 +4148,7 @@
           "id": "iot",
           "image": {
             "height": 320,
-            "url": "/media/course-automation.8c53cbef.jpg",
+            "url": "/media/stemlab-iot.4af3f10c.jpg",
             "width": 760
           },
           "stage": "thpt",
@@ -3917,7 +4162,7 @@
           "id": "thi-giac-may-tinh",
           "image": {
             "height": 320,
-            "url": "/media/course-process.2cc0a003.jpg",
+            "url": "/media/stemlab-thi-giac-may-tinh.6e66029c.jpg",
             "width": 760
           },
           "stage": "thpt",
@@ -3931,7 +4176,7 @@
           "id": "xac-suat-hoc-may",
           "image": {
             "height": 320,
-            "url": "/media/course-process.2cc0a003.jpg",
+            "url": "/media/stemlab-xac-suat-hoc-may.ab09234e.jpg",
             "width": 760
           },
           "stage": "thpt",
@@ -3944,68 +4189,111 @@
           "icon": "scratch",
           "id": "thiet-ke-website",
           "image": {
-            "height": 600,
-            "url": "/media/lab-workbenches.c235eaa8.jpg",
-            "width": 1000
+            "height": 320,
+            "url": "/media/stemlab-thiet-ke-website.dd043b59.jpg",
+            "width": 760
           },
           "stage": "thpt",
           "title": "Thiết kế website",
           "topic": "aiot"
         },
         {
-          "description": "Tự tay lắp ráp và lập trình cánh tay robot thực hiện chuỗi thao tác gắp — thả.",
-          "group": "stem",
-          "icon": "robotic-arm",
-          "id": "robotic-arm",
-          "image": {
-            "height": 320,
-            "url": "/media/course-robotic-arm.81c09dc3.jpg",
-            "width": 760
-          },
-          "stage": "thcs",
-          "title": "Cánh tay Robot",
-          "topic": "robotics"
-        },
-        {
-          "description": "Khám phá cách robot giữ thăng bằng, di chuyển và tương tác với con người.",
+          "description": "Tám buổi đi từ robot hình người, mobile robot đến cánh tay robot trong sản xuất, khép lại bằng dự án cuối khóa.",
           "group": "stem",
           "icon": "humanoid",
-          "id": "humanoid",
+          "id": "the-gioi-robot",
           "image": {
             "height": 320,
-            "url": "/media/course-humanoid.bf6451ba.jpg",
+            "url": "/media/stemlab-the-gioi-robot.9f681e51.jpg",
             "width": 760
           },
-          "stage": "th",
-          "title": "Robot Hình người",
+          "stage": "th-thcs",
+          "title": "Thế giới robot",
           "topic": "robotics"
         },
         {
-          "description": "Bước đầu tiên vào lập trình bằng khối lệnh trực quan — kể chuyện, làm game và hoạt hình.",
+          "description": "Lập trình xe robot với mBlock qua cảm biến, màu sắc, âm thanh và chuyển động, khép lại bằng dự án cuối khóa.",
           "group": "stem",
-          "icon": "scratch",
-          "id": "scratch",
+          "icon": "robot-car",
+          "id": "xe-robot-chuyen-sau",
           "image": {
             "height": 320,
-            "url": "/media/course-scratch.ea6415e6.jpg",
+            "url": "/media/stemlab-xe-robot-chuyen-sau.dfeeb01e.jpg",
             "width": 760
           },
-          "stage": "th",
-          "title": "Lập trình Scratch",
+          "stage": "th-thcs",
+          "title": "Khám phá xe robot",
+          "topic": "robotics"
+        },
+        {
+          "description": "Làm quen Pictoblox, lập trình trò chơi và AI cơ bản, rồi điều khiển nhân vật, tạo trợ lý ảo và xe tự hành.",
+          "group": "stem",
+          "icon": "scratch",
+          "id": "lap-trinh-ai",
+          "image": {
+            "height": 320,
+            "url": "/media/stemlab-lap-trinh-ai.b34d3ac9.jpg",
+            "width": 760
+          },
+          "stage": "th-thcs",
+          "title": "Lập trình cùng AI",
           "topic": "aiot"
         },
         {
-          "description": "Chế tạo xe tự hành biết dò đường, tránh vật cản và điều khiển từ điện thoại.",
+          "description": "Thiết kế 3D từ kiến trúc, nội thất đến con lắc Newton và nhân vật chuyển động với SimLab, khép lại bằng dự án cuối khóa.",
           "group": "stem",
-          "icon": "robot-car",
-          "id": "robot-car",
+          "icon": "process",
+          "id": "the-gioi-3d",
           "image": {
             "height": 320,
-            "url": "/media/course-robot-car.7e823afe.jpg",
+            "url": "/media/stemlab-the-gioi-3d.4da0f398.jpg",
             "width": 760
           },
-          "stage": "th",
-          "title": "Xe Robot",
+          "stage": "th-thcs",
+          "title": "Chinh phục thế giới 3D",
+          "topic": "aiot"
+        },
+        {
+          "description": "Thiết kế giao diện trong Figma với Gestalt, Grid, màu sắc, Typography, Component, AutoLayout và Prototype, hoàn thiện một Landing Page.",
+          "group": "stem",
+          "icon": "scratch",
+          "id": "website-chuyen-sau",
+          "image": {
+            "height": 320,
+            "url": "/media/stemlab-website-chuyen-sau.378fdfb9.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "Thiết kế website",
+          "topic": "aiot"
+        },
+        {
+          "description": "Từ trí tuệ nhân tạo và Python đến nhận diện vật thể với YOLO: huấn luyện, đánh giá mô hình và xây dựng ứng dụng AI.",
+          "group": "stem",
+          "icon": "photonics",
+          "id": "ai-khoa-hoc-du-lieu",
+          "image": {
+            "height": 320,
+            "url": "/media/stemlab-ai-khoa-hoc-du-lieu.d32f2e79.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "AI và khoa học dữ liệu",
+          "topic": "aiot"
+        },
+        {
+          "comingSoon": true,
+          "description": "Ba module Mini Drone, Mini Robot và IoT smart kit.",
+          "group": "stem",
+          "icon": "electronics",
+          "id": "the-gioi-dien-tu",
+          "image": {
+            "height": 320,
+            "url": "/media/stemlab-the-gioi-dien-tu.9dbe5065.jpg",
+            "width": 760
+          },
+          "stage": "thpt",
+          "title": "Thế giới điện tử",
           "topic": "robotics"
         }
       ],
@@ -4043,6 +4331,11 @@
           "id": "thpt",
           "label": "Trung học phổ thông",
           "short": "THPT"
+        },
+        {
+          "id": "th-thcs",
+          "label": "Tiểu học – THCS",
+          "short": "TH/THCS"
         }
       ],
       "title": "Chọn hành trình phù hợp với bạn",
@@ -4984,6 +5277,7 @@
         "birthYear": "Năm sinh chưa đúng (ví dụ 2004).",
         "consent": "Cần đồng ý để FabLab có thể liên hệ với bạn.",
         "email": "Email chưa đúng định dạng.",
+        "event": "Sự kiện này hiện không nhận đăng ký trực tuyến. Vui lòng tải lại trang hoặc liên hệ FabLab.",
         "network": "Chưa gửi được. Vui lòng thử lại hoặc gọi {phone}.",
         "paused": "Hệ thống tạm ngưng nhận đăng ký trực tuyến. Vui lòng gọi {phone}.",
         "phone": "Số điện thoại chưa đúng (ví dụ 0912 345 678).",
@@ -4991,6 +5285,20 @@
         "required": "Vui lòng điền mục này.",
         "role": "Vui lòng chọn một mục.",
         "tooLong": "Nội dung quá dài."
+      },
+      "event": {
+        "birthYear": "Năm sinh",
+        "birthYearHint": "Ví dụ: 2008",
+        "consent": "Tôi là người tham gia từ 16 tuổi trở lên, hoặc là cha mẹ / người giám hộ của người tham gia, và đồng ý để EIU FabLab xử lý các thông tin trên nhằm liên hệ về sự kiện.",
+        "description": "Để lại thông tin, EIU FabLab sẽ liên hệ xác nhận việc tham gia.",
+        "eventLabel": "Sự kiện đăng ký",
+        "fullName": "Họ và tên người tham gia",
+        "heading": "Thông tin người tham gia",
+        "notePlaceholder": "Câu hỏi cho FabLab, nhu cầu hỗ trợ…",
+        "organization": "Trường hoặc đơn vị",
+        "parentName": "Họ và tên phụ huynh",
+        "parentNote": "Người tham gia dưới 16 tuổi: phụ huynh hoặc người giám hộ điền họ tên, số điện thoại liên hệ của mình và đồng ý thay.",
+        "privacy": "Thông tin chỉ dùng để liên hệ và tổ chức sự kiện, do EIU FabLab (Đại học Quốc tế Miền Đông) quản lý và lưu tối đa 12 tháng. Bạn có thể rút lại đồng ý hoặc yêu cầu xoá dữ liệu qua {email} (Nghị định 13/2023/NĐ-CP)."
       },
       "member": {
         "ageNote": "Dành cho người từ 16 tuổi trở lên. Học sinh nhỏ hơn vui lòng để phụ huynh đăng ký khóa học.",
@@ -5068,7 +5376,6 @@
             "url": "/media/activity-machine-learning.c6a02acf.jpg",
             "width": 900
           },
-          "enabled": true,
           "end": "2027-02-14",
           "fall": true,
           "href": "#",
@@ -5080,7 +5387,6 @@
           },
           "motif": "mai",
           "name": "Tết Nguyên Đán",
-          "now": true,
           "popup": true,
           "start": "2027-01-28",
           "title": "Chào Xuân Đinh Mùi 2027"
@@ -5116,6 +5422,7 @@
             "url": "/media/team-tuan.086e9dc4.jpg",
             "width": 240
           },
+          "enabled": true,
           "end": "2026-12-26",
           "fall": true,
           "href": "#projects",
@@ -5127,6 +5434,7 @@
           },
           "motif": "snow",
           "name": "Giáng sinh",
+          "now": true,
           "popup": true,
           "start": "2026-12-15",
           "title": "Giáng sinh an lành"

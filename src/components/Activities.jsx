@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { ArrowLeftIcon, ArrowRightIcon, PauseIcon, PlayIcon } from '../assets/icons/Icons'
 import { useSlideshow } from '../hooks/useSlideshow'
 import { useT } from '../i18n/context'
+import { eventRegisterLabel } from '../lib/activities'
 import { track } from '../lib/track'
 import { ActivityVideoBanner } from './ActivityVideoBanner'
 import { useRegister } from './register/RegisterContext'
@@ -74,7 +75,7 @@ function groupActivities(groups, items) {
  */
 function ActivityCarousel({ group, items, from }) {
   const t = useT()
-  const { openRegister } = useRegister()
+  const { openEventRegister } = useRegister()
   const labels = t.activities
   const total = items.length
   const show = useSlideshow(total, { pauseOnHover: true })
@@ -124,6 +125,7 @@ function ActivityCarousel({ group, items, from }) {
         >
           {items.map((item, index) => {
             const active = index === current
+            const registerLabel = eventRegisterLabel(t, item)
             return (
               <article
                 key={item.id}
@@ -161,20 +163,22 @@ function ActivityCarousel({ group, items, from }) {
                   </div>
                   <h4 className="text-heading-sm md:text-heading-lg text-ink">{item.title}</h4>
                   <p className="text-body-sm text-graphite">{item.description}</p>
-                  {/* Lời mời làm thành viên trên từng slide: mở form ở tab Thành viên. Thiếu
-                      nhãn (database chưa áp migration 021) thì không vẽ — không mượn chữ khác
-                      cho một nút mang nghĩa riêng. `wrap`: cột chữ ở màn 320px chỉ ~240px. */}
-                  {labels.joinMember && (
+                  {/* Nút đăng ký theo loại ("Đăng ký Workshop / hội thảo"): mở form sự kiện,
+                      chọn sẵn hoạt động này. Không vẽ khi loại không có nhãn (lễ hợp tác) hoặc
+                      admin bật "Đóng đăng ký" — luật ở eventRegisterLabel. `wrap`: cột chữ ở
+                      màn 320px chỉ ~240px. */}
+                  {registerLabel && (
                     <Button
                       type="button"
                       wrap
                       className="mt-2 self-start"
+                      aria-haspopup="dialog"
                       onClick={() => {
                         track('cta_click', 'events')
-                        openRegister(null, 'events', 'member')
+                        openEventRegister(item.id, 'events')
                       }}
                     >
-                      {labels.joinMember}
+                      {registerLabel}
                     </Button>
                   )}
                 </div>

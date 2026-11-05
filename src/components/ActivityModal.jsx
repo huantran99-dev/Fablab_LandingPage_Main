@@ -19,8 +19,11 @@ const TITLE_ID = 'activity-modal-title'
  * `details` là chữ admin viết, đoạn cách nhau bằng dòng trống. contentStore chỉ nối hai chữ
  * cuối của CẢ chuỗi bằng U+00A0, nên mỗi đoạn được nối lại ở đây. Chưa có `details` thì
  * popup chỉ có poster + mô tả ngắn — không bịa thêm.
+ *
+ * `registerLabel` ("Đăng ký cuộc thi") do banner tính bằng `eventRegisterLabel` — `null` thì
+ * chân popup không có nút (cuộc thi đã đóng đăng ký).
  */
-export function ActivityModal({ item, onClose, onRegister }) {
+export function ActivityModal({ item, onClose, onRegister, registerLabel }) {
   const ref = useRef(null)
   const open = Boolean(item)
 
@@ -105,10 +108,10 @@ export function ActivityModal({ item, onClose, onRegister }) {
             )}
           </div>
 
-          {labels.joinMember && (
+          {registerLabel && (
             <div className="shrink-0 border-t border-ash/60 px-6 py-4 md:px-8">
               <Button type="button" size="lg" wrap className="w-full" onClick={onRegister}>
-                {labels.joinMember}
+                {registerLabel}
                 <ArrowRightIcon />
               </Button>
             </div>

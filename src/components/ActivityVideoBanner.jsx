@@ -3,6 +3,7 @@ import { ArrowLeftIcon, ArrowRightIcon, PauseIcon, PlayIcon } from '../assets/ic
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { useSlideshow } from '../hooks/useSlideshow'
 import { useT } from '../i18n/context'
+import { eventRegisterLabel } from '../lib/activities'
 import { track } from '../lib/track'
 import { ActivityModal } from './ActivityModal'
 import { useRegister } from './register/RegisterContext'
@@ -104,16 +105,18 @@ export function ActivityVideoBanner({ group, items, from }) {
   // `hold`: popup đang mở thì banner đứng yên (focus phải trả về đúng nút đã bấm).
   const show = useSlideshow(total, { playByDefault: !SAVE_DATA, hold: openId !== null })
   const { current, cycle, stamps, go, goTo, autoplay, playing, running, playState, inView, regionProps } = show
-  const { openRegister } = useRegister()
+  const { openEventRegister } = useRegister()
   // Cỡ lớn từ 640px; dưới đó cỡ vừa để hai nút xếp được trên màn 320px.
   const roomy = useMediaQuery('(min-width: 640px)')
 
   if (total === 0) return null
 
   const openItem = openId ? (items.find((item) => item.id === openId) ?? null) : null
-  const joinMember = (cta) => {
+  // Nút "Đăng ký cuộc thi": mở form sự kiện chọn sẵn cuộc thi đó. Nguồn đăng ký vẫn là
+  // `events`; `cta` phân biệt nút trên banner với nút trong popup.
+  const registerFor = (id, cta) => {
     track('cta_click', cta)
-    openRegister(null, 'events', 'member')
+    openEventRegister(id, 'events')
   }
 
   const label = (key) => labels[key] ?? labels.title
@@ -185,6 +188,7 @@ export function ActivityVideoBanner({ group, items, from }) {
             <div className="grid">
               {items.map((item, index) => {
                 const isActive = index === current
+                const registerLabel = eventRegisterLabel(t, item)
                 return (
                   <div
                     key={item.id}
@@ -206,12 +210,19 @@ export function ActivityVideoBanner({ group, items, from }) {
                       <h4 className="text-heading-lg md:text-display text-white">{item.title}</h4>
                       <p className="text-body-sm md:text-subheading text-white/85">{item.description}</p>
                       {/* Nút theo từng slide. Slide ẩn đã `inert` nên nút của nó không nhận Tab.
-                          Thiếu nhãn (database chưa áp migration 021 / 022) thì không vẽ nút đó. */}
-                      {(labels.joinMember || labels.viewDetails) && (
+                          Thiếu nhãn (database chưa áp migration 022 / 024) hay cuộc thi đã "Đóng
+                          đăng ký" thì không vẽ nút đó. */}
+                      {(registerLabel || labels.viewDetails) && (
                         <div className="mt-2 flex flex-wrap items-center gap-3">
-                          {labels.joinMember && (
-                            <Button type="button" size={roomy ? 'lg' : 'md'} wrap onClick={() => joinMember('competitions')}>
-                              {labels.joinMember}
+                          {registerLabel && (
+                            <Button
+                              type="button"
+                              size={roomy ? 'lg' : 'md'}
+                              wrap
+                              aria-haspopup="dialog"
+                              onClick={() => registerFor(item.id, 'competitions')}
+                            >
+                              {registerLabel}
                             </Button>
                           )}
                           {labels.viewDetails && (
@@ -281,10 +292,12 @@ export function ActivityVideoBanner({ group, items, from }) {
       <ActivityModal
         item={openItem}
         onClose={() => setOpenId(null)}
+        registerLabel={eventRegisterLabel(t, openItem)}
         onRegister={() => {
           // Đóng popup rồi mở form trong cùng một lượt — cùng đường với popup khóa học.
+          const id = openItem?.id
           setOpenId(null)
-          joinMember('competition-modal')
+          if (id) registerFor(id, 'competition-modal')
         }}
       />
 

@@ -462,6 +462,7 @@ export const SECTIONS = [
           title,
           description,
           text('cardCta', 'Nút trên thẻ'),
+          text('comingSoon', 'Nhãn "Sắp ra mắt"', { help: 'Hiện trên thẻ và popup của khóa bật "Sắp ra mắt".' }),
           text('ageLabel', 'Nhãn độ tuổi'),
           text('showMore', 'Nút xem thêm'),
           text('showLess', 'Nút thu gọn'),
@@ -541,6 +542,12 @@ export const SECTIONS = [
                   options: (ctx) => (ctx.vi?.topics ?? []).map((topic) => ({ value: topic.id, label: topic.label })),
                 },
                 { key: 'icon', label: 'Icon', type: 'icon' },
+                {
+                  key: 'comingSoon',
+                  label: 'Sắp ra mắt',
+                  type: 'switch',
+                  description: 'Khóa đã công bố nhưng chưa mở lớp: thẻ và popup có nhãn "Sắp ra mắt". Vẫn nhận đăng ký.',
+                },
               ],
             },
             {
@@ -612,9 +619,6 @@ export const SECTIONS = [
           text('goTo', 'Nhãn vạch tiến trình'),
           text('pause', 'Nút tạm dừng'),
           text('play', 'Nút phát'),
-          text('joinMember', 'Nút đăng ký thành viên (trên banner Cuộc thi và Sự kiện)', {
-            help: 'Hiện trên từng slide của hai banner và trong popup cuộc thi. Bấm vào mở form đăng ký ở tab Thành viên FabLab.',
-          }),
           text('viewDetails', 'Nút "Xem chi tiết" (banner Cuộc thi)', { help: 'Bấm vào mở popup chi tiết của cuộc thi đang hiện.' }),
           text('detailLink', 'Link trang ngoài trong popup cuộc thi', { help: 'Chỉ hiện khi cuộc thi có "Link trang cuộc thi".' }),
           text('closeDetails', 'Nút đóng popup cuộc thi'),
@@ -638,6 +642,10 @@ export const SECTIONS = [
         columns: [
           { label: 'Loại', value: (item, ctx) => ctx.vi?.kinds?.[item.kind] ?? item.kind },
           { label: 'Ngày', value: (item) => item.date || '—' },
+          {
+            label: 'Đăng ký',
+            value: (item, ctx) => (!ctx.vi?.registerCta?.[item.kind] ? '—' : item.registerClosed ? 'Đóng' : 'Mở'),
+          },
         ],
         fields: [
           { key: 'kind', label: 'Loại', type: 'select', options: kindOptions, help: 'Hoạt động hiện ở khối nào là do loại quyết định.' },
@@ -658,6 +666,13 @@ export const SECTIONS = [
             omitEmpty: true,
             placeholder: 'https://…',
             help: 'Bài đăng hoặc form đăng ký cuộc thi. Một link cho cả hai ngôn ngữ, mở ở tab mới.',
+          },
+          {
+            key: 'registerClosed',
+            label: 'Đóng đăng ký',
+            type: 'switch',
+            description:
+              'Bật khi sự kiện đã qua hoặc đã đủ người: ẩn nút "Đăng ký…" trên slide và trong popup, máy chủ từ chối lượt gửi. Tắt (mặc định) = đang nhận đăng ký.',
           },
         ],
       },
@@ -685,7 +700,17 @@ export const SECTIONS = [
         ],
       },
     ],
-    records: [{ path: 'kinds', title: 'Loại hoạt động', description: 'Nhãn chip trên từng hoạt động.', itemName: 'loại' }],
+    records: [
+      { path: 'kinds', title: 'Loại hoạt động', description: 'Nhãn chip trên từng hoạt động.', itemName: 'loại' },
+      {
+        path: 'registerCta',
+        title: 'Nút đăng ký theo loại',
+        description:
+          'Khoá là id loại hoạt động (competition, workshop, seminar…), chữ là nhãn nút trên từng slide — cũng là tiêu đề form đăng ký. Loại không có dòng ở đây thì không có nút (lễ hợp tác cố ý không có).',
+        itemName: 'nút',
+        deleteHelp: 'Xoá một dòng là ẩn nút đăng ký của mọi hoạt động thuộc loại đó (form không còn mở được cho loại này).',
+      },
+    ],
   },
   {
     key: 'team',
@@ -796,12 +821,14 @@ export const SECTIONS = [
     key: 'register',
     label: 'Form đăng ký',
     icon: 'register',
-    description: 'Chữ của form đăng ký (popup mở từ nút "Đăng ký"): hai tab Thành viên FabLab và Khóa học.',
+    description:
+      'Chữ của form đăng ký (popup mở từ nút "Đăng ký"): hai tab Thành viên FabLab và Khóa học, cộng form sự kiện mở từ nút "Đăng ký cuộc thi / Workshop / hội thảo".',
     notes: [
       '{email} và {phone} được thay bằng email / số điện thoại ở mục Liên hệ của Chân trang; {count} là số mục còn lỗi. Giữ nguyên các dấu ngoặc nhọn.',
       'Đoạn "Thông báo quyền riêng tư" là thông báo xử lý dữ liệu cá nhân theo Nghị định 13/2023 — nêu mục đích, bên quản lý, thời hạn lưu, quyền yêu cầu xoá. Thời hạn ghi ở đây phải khớp REGISTRATION_RETENTION_DAYS trên máy chủ (mặc định 365 ngày).',
       'Chữ đồng ý người gửi nhìn thấy được lưu nguyên văn vào từng lượt đăng ký, làm bằng chứng — sửa câu chữ không làm đổi các lượt đã gửi.',
       'Tab Thành viên dành cho người từ 16 tuổi (máy chủ kiểm năm sinh). Hai bảng "Đối tượng" và "Lĩnh vực quan tâm" chỉ sửa được nhãn — lựa chọn cố định trong mã.',
+      'Form sự kiện nhận mọi lứa tuổi: người tham gia dưới 16 tuổi thì form hiện thêm ô "Họ tên phụ huynh" (bắt buộc) — phụ huynh điền và đồng ý thay. Tiêu đề form là nhãn nút ở section Hoạt động.',
     ],
     groups: [
       {
@@ -863,6 +890,26 @@ export const SECTIONS = [
         ],
       },
       {
+        title: 'Form sự kiện (cuộc thi, workshop, hội thảo)',
+        fields: [
+          area('event.description', 'Mô tả ngắn', { rows: 2 }),
+          text('event.eventLabel', 'Nhãn trên ô tên sự kiện'),
+          text('event.heading', 'Tiêu đề nhóm thông tin'),
+          text('event.fullName', 'Nhãn: họ tên người tham gia'),
+          text('event.birthYear', 'Nhãn: năm sinh'),
+          text('event.birthYearHint', 'Gợi ý dưới ô năm sinh'),
+          text('event.organization', 'Nhãn: trường / đơn vị'),
+          text('event.parentName', 'Nhãn: họ tên phụ huynh (dưới 16 tuổi)'),
+          area('event.parentNote', 'Ghi chú cho phụ huynh (dưới 16 tuổi)', { rows: 2 }),
+          text('event.notePlaceholder', 'Chữ mờ trong ô ghi chú'),
+          area('event.consent', 'Câu đồng ý (cạnh ô tích)', {
+            rows: 3,
+            help: 'Một câu cho cả người tự đăng ký lẫn phụ huynh đăng ký thay — câu này được lưu nguyên văn làm bằng chứng.',
+          }),
+          area('event.privacy', 'Thông báo quyền riêng tư', { rows: 4, help: altHelp('{email}', 'email liên hệ') }),
+        ],
+      },
+      {
         title: 'Nút và nhãn chung',
         fields: [
           text('submit', 'Nút gửi'),
@@ -888,6 +935,7 @@ export const SECTIONS = [
           text('errors.age', 'Thành viên chưa đủ 16 tuổi'),
           text('errors.birthYear', 'Năm sinh sai'),
           text('errors.role', 'Chưa chọn đối tượng'),
+          text('errors.event', 'Sự kiện đã đóng đăng ký'),
         ],
       },
       {

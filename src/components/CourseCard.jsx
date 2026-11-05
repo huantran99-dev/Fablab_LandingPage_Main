@@ -74,6 +74,13 @@ export function CourseCard({ course, index, onOpen }) {
           </Pill>
         )}
 
+        {/* Khóa đã công bố nhưng chưa mở lớp. Thiếu nhãn (bản lịch sử cũ) thì không vẽ. */}
+        {course.comingSoon && t.courses.comingSoon && (
+          <Pill tone="signal" className="absolute top-3 left-3">
+            {t.courses.comingSoon}
+          </Pill>
+        )}
+
         {hasIcon && (
           <span
             className={`absolute bottom-3 left-3 inline-flex size-11 items-center justify-center rounded-pill bg-white shadow-ambient ${tone}`}

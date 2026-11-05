@@ -1,7 +1,9 @@
 /**
- * Hợp lệ hoá form đăng ký — hai loại, phân biệt bằng `kind`:
+ * Hợp lệ hoá form đăng ký — ba loại, phân biệt bằng `kind`:
  *   - `course`: phụ huynh đăng ký khóa học cho con (học viên + phụ huynh);
- *   - `member`: người từ 16 tuổi tự đăng ký thành viên FabLab.
+ *   - `member`: người từ 16 tuổi tự đăng ký thành viên FabLab;
+ *   - `event`: đăng ký một cuộc thi / workshop / hội thảo (từ API 22). Mọi lứa tuổi, nhưng
+ *     người tham gia dưới 16 tuổi thì BẮT BUỘC có tên phụ huynh (phụ huynh điền và đồng ý).
  *
  * Thông báo lỗi là MÃ (`required`, `phone`…) chứ không phải câu chữ: người gửi đọc
  * lỗi bằng ngôn ngữ họ đang xem, và chữ đó nằm ở `register.errors.*` trong nội
@@ -15,7 +17,8 @@ import { z } from 'zod'
 // Thêm nguồn là phải dựng lại bảng `registration` (CHECK trên cột `source`) — xem migration 017.
 export const REGISTRATION_SOURCES = ['course-modal', 'final-cta', 'nav', 'nav-drawer', 'seasonal-popup', 'events']
 export const REGISTRATION_STATUSES = ['new', 'contacted', 'enrolled', 'cancelled']
-export const REGISTRATION_KINDS = ['course', 'member']
+// Thêm loại là phải dựng lại bảng `registration` (CHECK trên cột `kind`) — xem migration 024.
+export const REGISTRATION_KINDS = ['course', 'member', 'event']
 
 /**
  * Id cố định trong mã (cùng kiểu với trạng thái): nhãn nằm ở `register.memberRoles` /
@@ -29,7 +32,7 @@ export const MEMBER_INTERESTS = ['3d-printing', 'laser', 'cnc', 'electronics', '
 /** Thành viên tự đăng ký và tự đồng ý — dưới tuổi này phải để phụ huynh đăng ký khóa học. */
 export const MEMBER_MIN_AGE = 16
 
-const ERROR_CODES = new Set(['required', 'tooLong', 'phone', 'email', 'consent', 'course', 'age', 'birthYear', 'role', 'interests'])
+const ERROR_CODES = new Set(['required', 'tooLong', 'phone', 'email', 'consent', 'course', 'age', 'birthYear', 'role', 'interests', 'event'])
 
 /**
  * Chuẩn hoá số điện thoại Việt Nam về dạng `0xxxxxxxxx`.
@@ -125,13 +128,58 @@ const memberSchema = z.strictObject({
   ...common,
 })
 
+/** Tuổi tính theo năm (form chỉ hỏi năm), hoặc `null` khi năm sinh không hợp lệ. */
+export function ageFromYear(value, now = new Date()) {
+  const text = String(value ?? '').trim()
+  if (!/^\d{4}$/.test(text)) return null
+  return now.getFullYear() - Number(text)
+}
+
+/**
+ * Năm sinh của người tham gia sự kiện: cùng luật năm hợp lệ với thành viên nhưng KHÔNG chặn
+ * tuổi — dưới 16 tuổi thì đòi tên phụ huynh thay vì từ chối. Cùng luật với
+ * `eventBirthYearError` ở phía form.
+ */
+export function eventBirthYearError(value, now = new Date()) {
+  const text = String(value ?? '').trim()
+  if (!text) return 'required'
+  if (!/^\d{4}$/.test(text)) return 'birthYear'
+  const year = Number(text)
+  if (year < 1900 || year > now.getFullYear()) return 'birthYear'
+  return null
+}
+
+const eventSchema = z
+  .strictObject({
+    kind: z.literal('event'),
+    // Id hoạt động. Có thật, đang mở đăng ký hay không do route tra trong nội dung.
+    event: z.string({ error: 'event' }).min(1, 'event').max(80, 'event').regex(/^[a-z0-9][a-z0-9-]*$/, 'event'),
+    fullName: required(120),
+    birthYear: z.preprocess(squash, z.string({ error: 'required' })).superRefine((value, ctx) => {
+      const code = eventBirthYearError(value)
+      if (code) ctx.addIssue({ code: 'custom', message: code })
+    }),
+    // Chỉ bắt buộc khi dưới 16 tuổi — kiểm ở superRefine bên dưới.
+    parentName: optional(120),
+    phone: phoneSchema,
+    email: z.preprocess(blankToUndefined, z.email({ error: 'email' }).max(160, 'tooLong').optional()),
+    organization: optional(160),
+    ...common,
+  })
+  .superRefine((data, ctx) => {
+    const age = ageFromYear(data.birthYear)
+    if (age !== null && age < MEMBER_MIN_AGE && !data.parentName) {
+      ctx.addIssue({ code: 'custom', path: ['parentName'], message: 'required' })
+    }
+  })
+
 /**
  * `kind` vắng = `course`: bundle cũ còn trong cache trình duyệt (trước ngày có loại thành
  * viên) gửi thân không có `kind`, và lượt đăng ký đó vẫn phải vào được.
  */
 export const registrationSchema = z.preprocess(
   (value) => (value && typeof value === 'object' && !Array.isArray(value) && value.kind === undefined ? { ...value, kind: 'course' } : value),
-  z.discriminatedUnion('kind', [courseSchema, memberSchema], { error: 'required' }),
+  z.discriminatedUnion('kind', [courseSchema, memberSchema, eventSchema], { error: 'required' }),
 )
 
 /** Lỗi Zod → `[{ path, code }]`. Mã lạ (khoá thừa, sai kiểu) gom thành `invalid`. */

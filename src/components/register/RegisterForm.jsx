@@ -4,8 +4,9 @@ import { useLanguage } from '../../i18n/context'
 import { registrationReferrer } from '../../lib/track'
 import { Button } from '../ui/Button'
 import { Checkbox, SelectField, TextArea, TextField } from '../ui/Field'
+import { Pill } from '../ui/Pill'
 import { useRegister } from './RegisterContext'
-import { FIELD_ORDER, KINDS, LIMITS, MEMBER_INTERESTS, MEMBER_ROLES, validate } from './validate'
+import { FIELD_ORDER, KINDS, LIMITS, MEMBER_INTERESTS, MEMBER_ROLES, needsParent, validate } from './validate'
 
 export const REGISTER_TITLE_ID = 'register-title'
 
@@ -97,12 +98,23 @@ export function RegisterForm({ onClose }) {
   const r = t.register
   const { kind: chosenKind, drafts, setDraft, setKind, source, resetDraft } = useRegister()
 
-  // Bản lịch sử cũ khôi phục lại (trước ngày có tab Thành viên) thiếu các khoá này: chỉ
-  // còn tab Khóa học, form không sập.
+  // Bản lịch sử cũ khôi phục lại (trước ngày có tab Thành viên / form sự kiện) thiếu các
+  // khoá này: rơi về tab Khóa học, form không sập. (Nút sự kiện cũng không vẽ khi thiếu.)
   const hasMember = Boolean(r.tabs && r.member && r.memberRoles && r.memberInterests)
-  const kind = hasMember ? chosenKind : 'course'
+  const kind =
+    chosenKind === 'event' ? (r.event ? 'event' : 'course') : hasMember ? chosenKind : 'course'
   const draft = drafts[kind]
   const m = r.member ?? {}
+  const ev = r.event ?? {}
+
+  // Form sự kiện: hoạt động đang đăng ký tra theo id trong nội dung ĐANG XEM (đổi ngôn ngữ
+  // thì tên dịch theo). Không còn trên trang / đã đóng đăng ký → lỗi `event` ngay ở đây,
+  // máy chủ cũng chặn y như vậy.
+  const activities = t.activities ?? {}
+  const activity = kind === 'event' ? (activities.items ?? []).find((item) => item.id === draft.event) : null
+  const eventCta = activity ? activities.registerCta?.[activity.kind] : null
+  const eventOpen = Boolean(activity && eventCta && !activity.registerClosed)
+  const parentNeeded = kind === 'event' && needsParent(draft.birthYear)
 
   const [openedAt] = useState(() => Date.now())
   const [touched, setTouched] = useState({})
@@ -136,6 +148,7 @@ export function RegisterForm({ onClose }) {
 
   const order = FIELD_ORDER[kind]
   const clientErrors = validate(kind, draft)
+  if (kind === 'event' && !eventOpen) clientErrors.event = 'event'
   const errorCode = (field) => clientErrors[field] ?? serverIssues[field]
   const visibleError = (field) => {
     const code = errorCode(field)
@@ -145,7 +158,19 @@ export function RegisterForm({ onClose }) {
   const summary = attempted ? order.filter((field) => errorCode(field)) : []
 
   const labelOf =
-    kind === 'member'
+    kind === 'event'
+      ? {
+          event: ev.eventLabel,
+          fullName: ev.fullName,
+          birthYear: ev.birthYear,
+          parentName: ev.parentName,
+          phone: r.phone,
+          email: r.email,
+          organization: ev.organization,
+          note: r.note,
+          consent: ev.consent,
+        }
+      : kind === 'member'
       ? {
           fullName: m.fullName,
           birthYear: m.birthYear,
@@ -212,6 +237,19 @@ export function RegisterForm({ onClose }) {
       ref: registrationReferrer(),
       width: window.innerWidth,
     }
+    if (kind === 'event') {
+      return {
+        ...base,
+        event: draft.event,
+        fullName: draft.fullName,
+        birthYear: draft.birthYear,
+        // Tên phụ huynh còn sót trong nháp (gõ năm 2015 rồi sửa lại) thì không gửi.
+        parentName: parentNeeded ? draft.parentName : '',
+        phone: draft.phone,
+        email: draft.email,
+        organization: draft.organization,
+      }
+    }
     if (kind === 'member') {
       return {
         ...base,
@@ -241,7 +279,7 @@ export function RegisterForm({ onClose }) {
     if (status === 'sending') return
     setAttempted(true)
     setServerError(null)
-    if (Object.keys(validate(kind, draft)).length > 0) {
+    if (Object.keys(clientErrors).length > 0) {
       setSummaryTick((tick) => tick + 1)
       return
     }
@@ -320,7 +358,7 @@ export function RegisterForm({ onClose }) {
     <Checkbox
       id="reg-consent"
       label={labelOf.consent}
-      description={fill(kind === 'member' ? m.privacy : r.privacy, contactValues)}
+      description={fill(kind === 'event' ? ev.privacy : kind === 'member' ? m.privacy : r.privacy, contactValues)}
       checked={draft.consent}
       onChange={update('consent')}
       onBlur={blur('consent')}
@@ -332,13 +370,16 @@ export function RegisterForm({ onClose }) {
     <div className="flex max-h-[calc(100dvh-48px)] flex-col overflow-hidden rounded-card-sm bg-white shadow-ambient-lift">
       <header className="flex shrink-0 flex-col gap-4 border-b border-ash/60 px-6 pt-6 pb-5 md:px-8">
         <div className="flex items-start justify-between gap-4">
+          {/* Form sự kiện: tiêu đề là chính nhãn nút đã bấm ("Đăng ký Workshop"). */}
           <h2 id={REGISTER_TITLE_ID} className="text-heading-lg text-ink">
-            {r.title}
+            {kind === 'event' ? (eventCta ?? r.title) : r.title}
           </h2>
           {closeButton}
         </div>
-        {hasMember && <KindTabs kind={kind} labels={r.tabs} onChange={switchKind} />}
-        <p className="text-body-sm text-graphite">{kind === 'member' ? m.description : r.description}</p>
+        {hasMember && kind !== 'event' && <KindTabs kind={kind} labels={r.tabs} onChange={switchKind} />}
+        <p className="text-body-sm text-graphite">
+          {kind === 'event' ? ev.description : kind === 'member' ? m.description : r.description}
+        </p>
       </header>
 
       {/* noValidate: tự kiểm để thông báo lỗi theo đúng ngôn ngữ đang xem, thay vì
@@ -346,8 +387,8 @@ export function RegisterForm({ onClose }) {
       <form noValidate onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
         <div
           id="reg-panel"
-          role={hasMember ? 'tabpanel' : undefined}
-          aria-labelledby={hasMember ? `reg-tab-${kind}` : undefined}
+          role={hasMember && kind !== 'event' ? 'tabpanel' : undefined}
+          aria-labelledby={hasMember && kind !== 'event' ? `reg-tab-${kind}` : undefined}
           className="relative flex flex-col gap-7 overflow-y-auto px-6 py-6 md:px-8"
         >
           {summary.length > 0 && (
@@ -374,7 +415,55 @@ export function RegisterForm({ onClose }) {
             </div>
           )}
 
-          {kind === 'member' ? (
+          {kind === 'event' ? (
+            <>
+              {/* Sự kiện chọn sẵn, không đổi được trong form. `tabIndex -1`: link "Sự kiện đăng
+                  ký" trong hộp tóm tắt lỗi focus được vào đây khi sự kiện đã đóng. */}
+              <div id="reg-event" tabIndex={-1} className="flex flex-col gap-2 rounded-image-sm bg-wash px-5 py-4 outline-none">
+                <p className="text-caption font-medium text-graphite">{ev.eventLabel}</p>
+                {activity && (
+                  <>
+                    <p className="text-heading-sm text-ink">{activity.title}</p>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Pill tone="signal">{activities.kinds?.[activity.kind] ?? activity.kind}</Pill>
+                      {activity.date && <Pill tone="outline">{activity.date}</Pill>}
+                    </div>
+                  </>
+                )}
+                {visibleError('event') && <p className="text-caption font-medium text-alert">{visibleError('event')}</p>}
+              </div>
+
+              <fieldset className="flex flex-col gap-5">
+                <legend className="mb-4 text-heading-sm text-ink">{ev.heading}</legend>
+                {/* autoComplete off: phụ huynh điền cho con thì trình duyệt hay điền tên phụ huynh. */}
+                <TextField {...common('fullName')} required autoComplete="off" />
+                <div className="grid gap-5 md:grid-cols-2">
+                  <TextField
+                    {...common('birthYear')}
+                    required
+                    hint={ev.birthYearHint}
+                    inputMode="numeric"
+                    autoComplete="off"
+                  />
+                  <TextField {...common('organization')} autoComplete="off" />
+                </div>
+                {/* Dưới 16 tuổi (theo năm sinh vừa nhập): phụ huynh điền tên và đồng ý thay. */}
+                {parentNeeded && (
+                  <div className="flex flex-col gap-4 rounded-image-sm border border-ash/60 px-5 py-4">
+                    <p className="text-body-sm text-graphite">{ev.parentNote}</p>
+                    <TextField {...common('parentName')} required autoComplete="name" />
+                  </div>
+                )}
+                <div className="grid gap-5 md:grid-cols-2">
+                  <TextField {...common('phone')} required type="tel" inputMode="tel" autoComplete="tel" />
+                  <TextField {...common('email')} type="email" inputMode="email" autoComplete="email" />
+                </div>
+              </fieldset>
+
+              <TextArea {...common('note')} placeholder={ev.notePlaceholder} rows={3} />
+              {consentField}
+            </>
+          ) : kind === 'member' ? (
             <>
               <p className="rounded-image-sm bg-wash px-5 py-3 text-body-sm text-graphite">{m.ageNote}</p>
 

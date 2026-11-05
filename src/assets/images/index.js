@@ -15,21 +15,7 @@ import labLaserCutter from './lab-laser-cutter.jpg'
 import labMachineShop from './lab-machine-shop.jpg'
 import labWorkbenches from './lab-workbenches.jpg'
 
-import courseAutomation from './course-automation.jpg'
-import courseCnc from './course-cnc.jpg'
-import courseElectrical from './course-electrical.jpg'
 import courseElectronics from './course-electronics.jpg'
-import courseEnergy from './course-energy.jpg'
-import courseHumanoid from './course-humanoid.jpg'
-import courseMechanics from './course-mechanics.jpg'
-import courseMechatronics from './course-mechatronics.jpg'
-import coursePhotonics from './course-photonics.jpg'
-import coursePlastics from './course-plastics.jpg'
-import courseProcess from './course-process.jpg'
-import courseRobotCar from './course-robot-car.jpg'
-import courseRoboticArm from './course-robotic-arm.jpg'
-import courseScratch from './course-scratch.jpg'
-import courseStress from './course-stress.jpg'
 import courseWater from './course-water.jpg'
 
 import partnerBbi from './partner-bbi.png'
@@ -89,6 +75,44 @@ import projectSmartLight from './project-smart-light.jpg'
 import projectRefractionModel from './project-refraction-model.jpg'
 import projectMcrRacingCar from './project-mcr-racing-car.jpg'
 import projectHydroponicGarden from './project-hydroponic-garden.jpg'
+// Ảnh thẻ khóa học — cắt từ bộ slide chính thức "Giới thiệu STEMLab" (xem COURSE_IMAGES).
+import stemlabThienNhien from './stemlab-thien-nhien.jpg'
+import stemlabNangLuongCuocSong from './stemlab-nang-luong-cuoc-song.jpg'
+import stemlabAmThanh from './stemlab-am-thanh.jpg'
+import stemlabNamCham from './stemlab-nam-cham.jpg'
+import stemlabCapQuang from './stemlab-cap-quang.jpg'
+import stemlabPolymer from './stemlab-polymer.jpg'
+import stemlabNangLuongTaiTao from './stemlab-nang-luong-tai-tao.jpg'
+import stemlabMoiTruongNuoc from './stemlab-moi-truong-nuoc.jpg'
+import stemlabNganhNhua from './stemlab-nganh-nhua.jpg'
+import stemlabXeRobot from './stemlab-xe-robot.jpg'
+import stemlabDrone from './stemlab-drone.jpg'
+import stemlabCanhTayRobot from './stemlab-canh-tay-robot.jpg'
+import stemlabRobotSinhHoc from './stemlab-robot-sinh-hoc.jpg'
+import stemlabKhamPhaDien from './stemlab-kham-pha-dien.jpg'
+import stemlabThietKeCoKhi from './stemlab-thiet-ke-co-khi.jpg'
+import stemlabCoDienTu from './stemlab-co-dien-tu.jpg'
+import stemlabCoHocSangTao from './stemlab-co-hoc-sang-tao.jpg'
+import stemlabCnc from './stemlab-cnc.jpg'
+import stemlabIn3d from './stemlab-in-3d.jpg'
+import stemlabMucNuocThongMinh from './stemlab-muc-nuoc-thong-minh.jpg'
+import stemlabLamQuenAi from './stemlab-lam-quen-ai.jpg'
+import stemlabTheGioiAo from './stemlab-the-gioi-ao.jpg'
+import stemlabNoiDungSo from './stemlab-noi-dung-so.jpg'
+import stemlabCauTrucMayTinh from './stemlab-cau-truc-may-tinh.jpg'
+import stemlabThietKe3d from './stemlab-thiet-ke-3d.jpg'
+import stemlabBlockchain from './stemlab-blockchain.jpg'
+import stemlabIot from './stemlab-iot.jpg'
+import stemlabThiGiacMayTinh from './stemlab-thi-giac-may-tinh.jpg'
+import stemlabXacSuatHocMay from './stemlab-xac-suat-hoc-may.jpg'
+import stemlabThietKeWebsite from './stemlab-thiet-ke-website.jpg'
+import stemlabTheGioiRobot from './stemlab-the-gioi-robot.jpg'
+import stemlabXeRobotChuyenSau from './stemlab-xe-robot-chuyen-sau.jpg'
+import stemlabLapTrinhAi from './stemlab-lap-trinh-ai.jpg'
+import stemlabTheGioi3d from './stemlab-the-gioi-3d.jpg'
+import stemlabWebsiteChuyenSau from './stemlab-website-chuyen-sau.jpg'
+import stemlabAiKhoaHocDuLieu from './stemlab-ai-khoa-hoc-du-lieu.jpg'
+import stemlabTheGioiDienTu from './stemlab-the-gioi-dien-tu.jpg'
 
 export const HERO_IMAGE = { src: heroStemWorkshop, width: 1200, height: 900 }
 
@@ -161,53 +185,57 @@ export const PROJECT_IMAGES = {
  * **Thiếu một id là card hiện ảnh vỡ** — không có ảnh mặc định, cũng không có
  * cảnh báo lúc build. Thêm chương trình thì phải thêm ở đây.
  *
- * Kho ảnh phong cảnh dùng được cho card chỉ có 20 tấm, trong khi có 34 khóa. Nên:
- * - `// ~` đánh dấu ảnh thật của FabLab nhưng **chụp hoạt động khác**;
- * - `// ↺` đánh dấu ảnh **dùng lại** của một card khác trong cùng trang.
- * Cả hai đều là ảnh thật, không có ảnh stock. README liệt kê đầy đủ để thay dần.
+ * Từ 2026-11-05 mỗi khóa một ảnh RIÊNG, cắt từ chính slide của khóa đó trong bộ slide
+ * chính thức "Giới thiệu STEMLab" (số slide ghi ở comment; ghi chú này cũng thành ghi chú
+ * nguồn của binding). Chọn bằng mắt — ưu tiên ảnh chụp thật buổi học — rồi cắt về 760×320;
+ * quy trình ở CLAUDE.md, mục "Hình ảnh". Ảnh cũ (`course-*.jpg`) còn trong thư mục cho các
+ * section khác, không còn khóa nào dùng.
  */
 export const COURSE_IMAGES = {
-  // --- Khoa học tự nhiên và Sự sống ---------------------------------------
-  'thien-nhien': courseEnergy, // ~ ảnh năng lượng, không phải thời tiết/thiên tai
-  'nang-luong-cuoc-song': courseEnergy, // ↺
-  'am-thanh': labWorkbenches, // ~ ảnh xưởng chung
-  'nam-cham': courseElectrical, // ~ phòng STEM trống
-  'cap-quang': labLaserCutter,
-  polymer: coursePlastics,
-  'nang-luong-tai-tao': courseEnergy, // ↺
-  'moi-truong-nuoc': courseWater, // ~ giảng viên đứng lớp
-  'nganh-nhua': coursePlastics, // ↺
+  // --- Khoa học tự nhiên và Sự sống ------------------------------------------
+  'thien-nhien': stemlabThienNhien, // slide 5
+  'nang-luong-cuoc-song': stemlabNangLuongCuocSong, // slide 8
+  'am-thanh': stemlabAmThanh, // slide 9
+  'nam-cham': stemlabNamCham, // slide 10
+  'cap-quang': stemlabCapQuang, // slide 11
+  polymer: stemlabPolymer, // slide 12
+  'nang-luong-tai-tao': stemlabNangLuongTaiTao, // slide 19
+  'moi-truong-nuoc': stemlabMoiTruongNuoc, // slide 20
+  'nganh-nhua': stemlabNganhNhua, // slide 21
 
-  // --- Kỹ thuật và công nghệ Robot ----------------------------------------
-  'xe-robot': courseRobotCar,
-  drone: courseMechanics, // ~ sân thi robot, không phải drone
-  'canh-tay-robot': courseRoboticArm,
-  'robot-sinh-hoc': courseHumanoid,
-  'kham-pha-dien': courseElectronics,
-  'thiet-ke-co-khi': labMachineShop,
-  'co-dien-tu': courseMechatronics,
-  'co-hoc-sang-tao': courseStress,
-  cnc: courseCnc, // ~ ảnh tập thể trong xưởng
-  'in-3d': lab3dPrinters,
-  'muc-nuoc-thong-minh': courseWater, // ↺ ~
+  // --- Kỹ thuật và công nghệ Robot -------------------------------------------
+  'xe-robot': stemlabXeRobot, // slide 6
+  drone: stemlabDrone, // slide 13
+  'canh-tay-robot': stemlabCanhTayRobot, // slide 14
+  'robot-sinh-hoc': stemlabRobotSinhHoc, // slide 15
+  'kham-pha-dien': stemlabKhamPhaDien, // slide 16
+  'thiet-ke-co-khi': stemlabThietKeCoKhi, // slide 22
+  'co-dien-tu': stemlabCoDienTu, // slide 23
+  'co-hoc-sang-tao': stemlabCoHocSangTao, // slide 24
+  cnc: stemlabCnc, // slide 25
+  'in-3d': stemlabIn3d, // slide 26
+  'muc-nuoc-thong-minh': stemlabMucNuocThongMinh, // slide 27
 
-  // --- AIoT & Công nghệ số -------------------------------------------------
-  'lam-quen-ai': courseScratch, // ~ ảnh lớp lập trình
-  'the-gioi-ao': courseScratch, // ↺
-  'noi-dung-so': coursePhotonics, // ~ sinh viên làm việc trên máy tính
-  'cau-truc-may-tinh': labWorkbenches, // ↺ ~
-  'thiet-ke-3d': lab3dPrinters, // ↺
-  blockchain: coursePhotonics, // ↺ ~
-  iot: courseAutomation, // ~ ảnh hệ thống tự động
-  'thi-giac-may-tinh': courseProcess, // ~ ảnh kỹ thuật quá trình
-  'xac-suat-hoc-may': courseProcess, // ↺ ~
-  'thiet-ke-website': labWorkbenches, // ↺ ~
+  // --- AIoT & Công nghệ số ---------------------------------------------------
+  'lam-quen-ai': stemlabLamQuenAi, // slide 7
+  'the-gioi-ao': stemlabTheGioiAo, // slide 17
+  'noi-dung-so': stemlabNoiDungSo, // slide 18
+  'cau-truc-may-tinh': stemlabCauTrucMayTinh, // slide 28
+  'thiet-ke-3d': stemlabThietKe3d, // slide 29
+  blockchain: stemlabBlockchain, // slide 30
+  iot: stemlabIot, // slide 31
+  'thi-giac-may-tinh': stemlabThiGiacMayTinh, // slide 32
+  'xac-suat-hoc-may': stemlabXacSuatHocMay, // slide 33
+  'thiet-ke-website': stemlabThietKeWebsite, // slide 34
 
-  // --- Khóa học STEM -------------------------------------------------------
-  'robotic-arm': courseRoboticArm, // ↺ dùng chung với chương trình trải nghiệm
-  humanoid: courseHumanoid, // ↺
-  scratch: courseScratch, // ↺
-  'robot-car': courseRobotCar, // ↺
+  // --- Khóa học chuyên sâu (nhóm STEM) ---------------------------------------
+  'the-gioi-robot': stemlabTheGioiRobot, // slide 36
+  'xe-robot-chuyen-sau': stemlabXeRobotChuyenSau, // slide 37
+  'lap-trinh-ai': stemlabLapTrinhAi, // slide 38
+  'the-gioi-3d': stemlabTheGioi3d, // slide 39
+  'website-chuyen-sau': stemlabWebsiteChuyenSau, // slide 40
+  'ai-khoa-hoc-du-lieu': stemlabAiKhoaHocDuLieu, // slide 41
+  'the-gioi-dien-tu': stemlabTheGioiDienTu, // slide 42
 }
 
 export const COURSE_IMAGE_SIZE = { width: 760, height: 320 }

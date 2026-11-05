@@ -197,7 +197,7 @@ Không cần đăng nhập. Trang công khai chỉ gọi `GET /api/content`.
 Máy chủ còn sống không, đang ở bản nội dung nào, phiên bản API nào.
 
 ```json
-{"ok":true,"rev":184,"updatedAt":"2026-11-03T07:16:24.849Z","api":20}
+{"ok":true,"rev":190,"updatedAt":"2026-11-05T03:52:00.755Z","api":22}
 ```
 
 | Trường | Ý nghĩa |
@@ -596,6 +596,7 @@ sử cũ khôi phục lại bỏ qua schema): thiếu thì bỏ hẳn khối, kh
 | `description` | chữ(400) |
 | `imageAlt` | chữ(200) |
 | `cardCta`, `ageLabel`, `showMore`, `showLess` | chữ(40) |
+| `comingSoon` | chữ(40), tuỳ chọn — nhãn "Sắp ra mắt" của khóa có cờ `comingSoon` *(từ API 21; database đã seed nhận qua migration `023_intensive_courses.sql`; vắng thì không vẽ nhãn)* |
 | `emptyState` | chữ(200) |
 | `filters` | `{ all: chữ(40), empty: chữ(200), stage: chữ(40), topic: chữ(40) }` |
 | `modal` | `{ overview, knowledge, skills, curriculum, audience, register: chữ(60); source: chữ(80); close: chữ(40); empty, viOnly: chữ(200) }` |
@@ -607,8 +608,8 @@ sử cũ khôi phục lại bỏ qua schema): thiếu thì bỏ hẳn khối, kh
 
 | Kiểu thẻ | Trường |
 |---|---|
-| Cấp độ (nhóm `stem`) | `id`, `group`, `title: chữ(200)`, `description: chữ(600)`, `level`, `duration: chữ(80)`, `age: chữ(40)` |
-| Cấp học (nhóm `experience`) | `id`, `group`, `title: chữ(200)`, `description: chữ(600)`, `stage`, `topic`, `icon` |
+| Cấp độ | `id`, `group`, `title: chữ(200)`, `description: chữ(600)`, `level`, `duration: chữ(80)`, `age: chữ(40)` |
+| Cấp học (cả hai nhóm, từ migration 023) | `id`, `group`, `title: chữ(200)`, `description: chữ(600)`, `stage`, `topic`, `icon`, `comingSoon?: true` *(từ API 21; trường dùng chung)* |
 
 Không trộn trường của hai kiểu. `courses.details` **không** ghi qua route này — dùng
 [mục 9](#9-popup-chi-tiết-khóa-học).
@@ -675,13 +676,15 @@ vòng xoay 3D *(từ API 8)* · `statuses`: record `id → chữ(40)` (nhãn tr�
 | `imageAlt` | chữ(200) |
 | `previous`, `next`, `goTo` | chữ(60) |
 | `pause`, `play` | chữ(60) — nút dừng/phát của banner tự chạy *(từ API 9)* |
-| `joinMember` | chữ(60), tuỳ chọn — nút "Trở thành thành viên FabLab ngay" trên từng slide của banner Cuộc thi và carousel Sự kiện (và trong popup cuộc thi), mở form ở tab Thành viên *(từ API 18, lên từng slide từ API 19; database đã seed nhận qua migration `021_events_member_cta.sql`; vắng thì trang không vẽ nút)* |
+| `registerCta` | object `{ idLoai: chữ(60) }`, tuỳ chọn — nhãn nút đăng ký trên từng slide theo `kind` ("Đăng ký cuộc thi / Workshop / hội thảo"), cũng là tiêu đề form sự kiện. Loại không có nhãn thì không có nút (`partnership` cố ý không có) *(từ API 22; database đã seed nhận qua migration `024_event_registration.sql`)* |
+| `joinMember` | chữ(60), tuỳ chọn — **không còn dùng từ API 22** (nút "Trở thành thành viên FabLab ngay" của API 18–21, migration 024 xoá khỏi database). Giữ trong schema để khôi phục bản lịch sử cũ vẫn hợp lệ |
 | `viewDetails`, `detailLink`, `closeDetails` | chữ(60), tuỳ chọn — nút "Xem chi tiết" của banner Cuộc thi, link trang ngoài và nút đóng trong popup *(từ API 19; database đã seed nhận qua migration `022_activity_details.sql`; vắng `viewDetails` thì không có nút)* |
 | `kinds` | object `{ idLoai: chữ(40) }` — nhãn của từng loại |
 | `groups[]` (≥ 1) | `{ id, title: chữ(120), description: chữ(400), kinds: [idLoai], videoBanner?: boolean }` |
-| `items[]` | `{ id, title: chữ(200), description: chữ(600), date, kind, details?: chuỗi ≤ 3000, link?: "https://…" }` |
+| `items[]` | `{ id, title: chữ(200), description: chữ(600), date, kind, details?: chuỗi ≤ 3000, link?: "https://…", registerClosed?: true }` |
 
 - `date`: chuỗi ≤ 60 ký tự, **được rỗng** (vài hoạt động thật không có ngày).
+- `registerClosed` *(từ API 22, trường dùng chung)*: `true` = "Đóng đăng ký" — trang ẩn nút đăng ký của mục đó và `POST /api/registrations` từ chối (`422 event`). Vắng = đang nhận đăng ký.
 - `details` (dịch) / `link` (dùng chung, chỉ http/https): nội dung popup "Xem chi tiết" của khối Cuộc thi *(từ API 19)*. Đoạn cách nhau bằng dòng trống. Bản seed không có — vắng thì popup chỉ hiện poster + mô tả. Tên `link` chứ không phải `href` vì `href` buộc trỏ neo có thật.
 - Khối chứa hoạt động suy từ `kind`: `kind` phải có nhãn trong `kinds` **và** phải nằm
   trong `kinds` của một khối nào đó.
@@ -734,6 +737,7 @@ thuộc tab **Khóa học**; tab **Thành viên FabLab** nằm ở `member` *(t�
 | `member` | `{ description: chữ(300), ageNote: chữ(200), heading, fullName, birthYear, role, roleNone, organization, interests: chữ(60), birthYearHint: chữ(80), notePlaceholder: chữ(120), consent: chữ(300), privacy: chữ(800) }` *(từ API 12)* |
 | `memberRoles` | Object **đúng 5 khoá cố định** `eiu-student`, `eiu-staff`, `student`, `worker`, `other` → chữ(60) *(từ API 12)* |
 | `memberInterests` | Object **đúng 6 khoá cố định** `3d-printing`, `laser`, `cnc`, `electronics`, `robotics`, `other` → chữ(60) *(từ API 12)* |
+| `event` | Tuỳ chọn — `{ description: chữ(300), eventLabel, heading, fullName, birthYear, organization, parentName: chữ(60), birthYearHint: chữ(80), parentNote: chữ(300), notePlaceholder: chữ(120), consent: chữ(400), privacy: chữ(800) }`: form đăng ký sự kiện (không tab; tiêu đề là `activities.registerCta[kind]`). Vắng thì trang không vẽ nút đăng ký sự kiện *(từ API 22, migration 024; kèm `errors.event: chữ(200)` tuỳ chọn)* |
 
 Token `{email}` / `{phone}` được thay bằng `footer.contact.*`, `{count}` bằng số mục lỗi.
 Section này được thêm sau ngày seed, nên database cũ nhận nó qua migration
@@ -1150,12 +1154,13 @@ curl -s -b $JAR -H "$O" -X POST $D/api/auth/logout
 
 ---
 
-## 12. Đăng ký (khóa học và thành viên FabLab)
+## 12. Đăng ký (khóa học, thành viên FabLab, sự kiện)
 
 Form đăng ký trên trang công khai gửi vào `POST /api/registrations`; dashboard đọc và
-xử lý qua `/api/admin/registrations`. Từ API 12 có **hai loại**, phân biệt bằng `kind`:
-`course` (phụ huynh đăng ký khóa học cho con) và `member` (người từ 16 tuổi tự đăng ký
-thành viên FabLab). Đây là **dữ liệu cá nhân** (có trẻ em) — đọc mục
+xử lý qua `/api/admin/registrations`. Có **ba loại**, phân biệt bằng `kind`:
+`course` (phụ huynh đăng ký khóa học cho con), `member` (người từ 16 tuổi tự đăng ký
+thành viên FabLab, từ API 12) và `event` (đăng ký một cuộc thi / workshop / hội thảo, từ
+API 22). Đây là **dữ liệu cá nhân** (có trẻ em) — đọc mục
 [Dữ liệu cá nhân](#dữ-liệu-cá-nhân) trước khi làm thêm gì với nó.
 
 > **Không route nào ở đây đổi `rev` nội dung.** Đăng ký nằm ở bảng `registration`,
@@ -1200,7 +1205,7 @@ gốc request vẫn áp: phải có `Origin` thuộc danh sách cho phép hoặc
 | `website` | **Ô bẫy bot** — người thật để trống |
 | `elapsed` | Số ms từ lúc mở form tới lúc gửi |
 | `ref`, `width` | Chỉ phục vụ thống kê; `ref` chỉ giữ tên host |
-| `kind` | `course` (mặc định khi vắng — bundle cũ trong cache vẫn gửi được) \| `member` *(từ API 12)* |
+| `kind` | `course` (mặc định khi vắng — bundle cũ trong cache vẫn gửi được) \| `member` *(từ API 12)* \| `event` *(từ API 22)* |
 
 **Thân của `kind: "member"`** *(từ API 12)* — không có `course` / `studentName` /
 `studentGrade` / `school` / `parentName`; gửi kèm là `422 invalid`:
@@ -1240,6 +1245,51 @@ tên, `school` = trường / đơn vị, `parent_name` / `course_id` = NULL, c�
 `register.member.consent` + `register.member.privacy`. Sự kiện `register_submit` mang
 `target = "member"`.
 
+**Thân của `kind: "event"`** *(từ API 22)* — mở từ nút "Đăng ký cuộc thi / Workshop /
+hội thảo" trên từng slide của section Hoạt động (nguồn `events`):
+
+```json
+{
+  "kind": "event",
+  "event": "drone-soccer",
+  "fullName": "Nguyen Be Na",
+  "birthYear": "2015",
+  "parentName": "Nguyen Van Me",
+  "phone": "0987654321",
+  "email": "",
+  "organization": "",
+  "note": "",
+  "consent": true, "locale": "vi", "source": "events", "website": "", "elapsed": 9000
+}
+```
+
+| Trường | Luật |
+|---|---|
+| `event` | Bắt buộc — id trong `activities.items`. Không có trên trang, đã bật `registerClosed`, hoặc loại của nó không có nhãn trong `activities.registerCta` → `422` `{"path":"event","code":"event"}` (máy chủ tra bản VI hiện hành, không tin client) |
+| `fullName` | Bắt buộc, ≤ 120 — họ tên **người tham gia** |
+| `birthYear` | Bắt buộc, 4 chữ số, 1900 → năm nay (mã `birthYear`). **Không chặn tuổi** |
+| `parentName` | ≤ 120. **Bắt buộc khi người tham gia dưới 16 tuổi** (tính theo năm) — mã `required` ở đường dẫn `parentName` |
+| `phone` | Như trên (dưới 16 tuổi: số của phụ huynh) |
+| `email` | Không bắt buộc, ≤ 160 |
+| `organization` | Không bắt buộc, ≤ 160 |
+
+Lưu vào bảng `registration` với `kind = 'event'`: `event_id` + `event_title` (tên bản VI
+chụp lúc gửi), `student_name` = họ tên người tham gia, `school` = đơn vị, `parent_name`
+(chỉ khi dưới 16), `birth_year`. Câu đồng ý lấy từ `register.event.consent` + `privacy` —
+**một câu** phủ cả người tự đăng ký lẫn phụ huynh đăng ký thay. Chống trùng thêm cả họ tên
+(anh chị em cùng số điện thoại phụ huynh vẫn đăng ký được). `register_submit` mang
+`target = "event"`. Phản hồi thật trên bản sao database:
+
+```
+POST {kind:"event", event:"stm32"}       (đang mở)             → 201 {"ok":true}
+POST {kind:"event", event:"stm32"}       (sau khi đóng đăng ký) → 422 {"error":"su kien khong nhan dang ky","issues":[{"path":"event","code":"event"}]}
+POST {kind:"event", event:"viet-anh"}    (loại hợp tác)         → 422 {"error":"su kien khong nhan dang ky","issues":[{"path":"event","code":"event"}]}
+POST {kind:"event", birthYear:"2016"}    (thiếu phụ huynh)      → 422 {"error":"du lieu khong hop le","issues":[{"path":"parentName","code":"required"}]}
+```
+
+Bảng cần **migration 024** (dựng lại như 017 / 021): CHECK của `kind` thêm `event`, hai cột
+`event_id` / `event_title`, luật phụ huynh đổi thành "khóa học phải có phụ huynh".
+
 Máy chủ **tự tra** tên khóa và nguyên văn câu đồng ý kèm thông báo quyền riêng tư (đã
 thay `{email}`) từ nội dung hiện hành — không nhận hai thứ đó từ client.
 
@@ -1254,8 +1304,8 @@ ratelimit-policy: 20;w=86400
 
 **Sai dữ liệu — `422`.** `code` là mã, không phải câu chữ: trang tự dịch bằng
 `register.errors.<code>`. Mã có thể gặp: `required`, `tooLong`, `phone`, `email`,
-`consent`, `course`, `age`, `birthYear`, `role`, `interests` và `invalid` (khoá thừa,
-sai kiểu).
+`consent`, `course`, `age`, `birthYear`, `role`, `interests`, `event` *(từ API 22)* và
+`invalid` (khoá thừa, sai kiểu).
 
 ```json
 {"error":"du lieu khong hop le","issues":[{"path":"studentName","code":"required"},{"path":"phone","code":"phone"},{"path":"consent","code":"consent"}]}
@@ -1278,7 +1328,7 @@ sau ghi đè header của bộ trước.
 | `website` khác rỗng | Ô bẫy bị điền |
 | `elapsed` < 3000 | Nhanh hơn người thật. Form của trang tự chờ cho đủ trước khi gửi |
 | User-Agent rỗng hoặc giống bot (`bot`, `curl`, `python`, `headless`…) | |
-| Trùng `phone` + `kind` + `course` trong 10 phút | Bấm đúp / gửi lại sau lỗi mạng — giữ một dòng |
+| Trùng `phone` + `kind` + `course` (sự kiện: + `event` + họ tên) trong 10 phút | Bấm đúp / gửi lại sau lỗi mạng — giữ một dòng |
 
 Lượt lưu thật cũng ghi sự kiện thống kê `register_submit` trong cùng giao dịch (trừ khi
 trình duyệt gửi `DNT: 1` hoặc `Sec-GPC: 1`).
@@ -1289,8 +1339,9 @@ Danh sách có lọc, **phân trang ở máy chủ**, mới nhất trước.
 
 | Tham số | Ý nghĩa |
 |---|---|
-| `status` | `new` \| `contacted` \| `enrolled` \| `cancelled` (với thành viên, `enrolled` hiển thị là "Đã kết nạp") |
-| `kind` | `course` \| `member` *(từ API 12)* |
+| `status` | `new` \| `contacted` \| `enrolled` \| `cancelled` (với thành viên, `enrolled` hiển thị là "Đã kết nạp"; với sự kiện là "Đã xác nhận") |
+| `kind` | `course` \| `member` *(từ API 12)* \| `event` *(từ API 22)* |
+| `event` | Id hoạt động — chỉ đăng ký sự kiện của hoạt động đó *(từ API 22)* |
 | `course` | Id khóa học; `-` = đăng ký **khóa học** chưa chọn khóa (không gồm thành viên) |
 | `from`, `to` | `YYYY-MM-DD` theo **ngày Việt Nam** (UTC+7), gồm cả hai đầu |
 | `q` | Tìm trong tên học viên, tên phụ huynh, điện thoại, email, trường. Gõ `0912 345` vẫn khớp số liền |
@@ -1334,7 +1385,7 @@ Danh sách có lọc, **phân trang ở máy chủ**, mới nhất trước.
   "counts": {
     "byStatus": {"new":1,"contacted":0,"enrolled":0,"cancelled":0,"all":1},
     "byCourse": [{"courseId":"robotic-arm","title":"Cánh tay Robot","total":1,"new":1}],
-    "byKind": {"course":1,"member":0}
+    "byKind": {"course":1,"member":0,"event":0}
   }
 }
 ```
@@ -1348,6 +1399,7 @@ Danh sách có lọc, **phân trang ở máy chủ**, mới nhất trước.
 | `counts.byKind` | Số theo loại trên toàn bộ đăng ký *(từ API 12)* |
 | `kind`, `birthYear`, `memberRole`, `interests` | *(từ API 12)* Ba trường sau chỉ có giá trị với `kind: "member"`; `interests` luôn là mảng |
 | `memberRoleLabel`, `interestLabels` | Nhãn tiếng Việt hiện tại của đối tượng / lĩnh vực; id lạ thì trả chính id |
+| `eventId`, `eventTitle`, `eventOnPage` | *(từ API 22)* Chỉ có giá trị với `kind: "event"`. `eventTitle` là tên **hiện tại** trên trang, hoạt động đã bị xoá thì là tên chụp lúc gửi; `eventOnPage: false` = hoạt động không còn trên trang |
 
 ### `GET /api/admin/registrations/export`
 
@@ -1357,12 +1409,13 @@ Cùng tham số lọc như danh sách (bỏ `page`/`pageSize`), trả **CSV** đ
 content-type: text/csv; charset=utf-8
 content-disposition: attachment; filename="dang-ky-20260918.csv"
 
-Mã,Thời gian gửi,Loại,Trạng thái,Khóa học,Mã khóa,Họ tên,Năm sinh / lớp,Trường / đơn vị,Phụ huynh,Đối tượng,Lĩnh vực quan tâm,Điện thoại,Email,Ghi chú,Ghi chú quản trị,Nguồn,Ngôn ngữ,Đồng ý lúc
-1,2026-09-18 11:47,Khóa học,Đã liên hệ,Cánh tay Robot,robotic-arm,Nguyễn Minh An,lớp 7,THCS Mẫu,Nguyễn Văn Bình,,,="0912345678",binh@example.com,Muốn học cuối tuần,"Đã gọi, hẹn học thử thứ 7",Popup khóa học,vi,2026-09-18 11:47
-3,2026-10-27 16:25,Thành viên FabLab,Mới,,,Trần Thị Cúc,2003,EIU,,Sinh viên EIU,In 3D; Cắt khắc laser,="0911222333",cuc@example.com,,,Thanh menu,vi,2026-10-27 16:25
+Mã,Thời gian gửi,Loại,Trạng thái,Khóa học,Mã khóa,Sự kiện,Mã sự kiện,Họ tên,Năm sinh / lớp,Trường / đơn vị,Phụ huynh,Đối tượng,Lĩnh vực quan tâm,Điện thoại,Email,Ghi chú,Ghi chú quản trị,Nguồn,Ngôn ngữ,Đồng ý lúc
+1,2026-09-18 11:47,Khóa học,Đã liên hệ,Cánh tay Robot,robotic-arm,,,Nguyễn Minh An,lớp 7,THCS Mẫu,Nguyễn Văn Bình,,,="0912345678",binh@example.com,Muốn học cuối tuần,"Đã gọi, hẹn học thử thứ 7",Popup khóa học,vi,2026-09-18 11:47
+3,2026-10-27 16:25,Thành viên FabLab,Mới,,,,,Trần Thị Cúc,2003,EIU,,Sinh viên EIU,In 3D; Cắt khắc laser,="0911222333",cuc@example.com,,,Thanh menu,vi,2026-10-27 16:25
+4,2026-11-05 10:54,Sự kiện,Mới,,,EIU Drone Soccer Championship 2026,drone-soccer,Nguyen Be Na,2015,,Nguyen Van Me,,,="0987654321",,,,Section Hoạt động,vi,2026-11-05 10:54
 ```
 
-- Cột "Năm sinh / lớp" là năm sinh với thành viên, năm sinh hoặc lớp với học viên.
+- Cột "Năm sinh / lớp" là năm sinh với thành viên và người tham gia sự kiện, năm sinh hoặc lớp với học viên.
 - Bắt đầu bằng **BOM UTF-8** (`EF BB BF`) — thiếu nó Excel đọc tiếng Việt thành ký tự rác.
 - Giờ là giờ Việt Nam. Xuống dòng CRLF, trích dẫn theo RFC 4180.
 - Số điện thoại bọc `="…"` để Excel không cắt số 0 đầu. An toàn vì máy chủ đã chuẩn hoá

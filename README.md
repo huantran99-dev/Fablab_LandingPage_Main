@@ -192,27 +192,23 @@ trang.
 > đã đồng ý cho đăng. Ảnh đang công khai trên website của trường không đương
 > nhiên có nghĩa là được phép dùng lại ở nơi khác.
 
-### ⚠️ 34 card, 20 ảnh — nhiều card đang dùng ảnh tạm
+### Ảnh thẻ khóa học: lấy từ bộ slide "Giới thiệu STEMLab"
 
-Kho ảnh phong cảnh dùng được cho card 760×320 chỉ có **20 tấm** (16 `course-*` +
-4 `lab-*`), trong khi section khóa học có **34 card**. Ảnh hoạt động là poster dọc
-nên không dùng được ở đây.
+Từ 2026-11-05 **mỗi khóa (37) có ảnh riêng**, cắt từ chính slide của khóa đó trong bộ slide
+chính thức của FabLab (Google Slides, slide 5–34 cho chương trình trải nghiệm, 36–42 cho khóa
+chuyên sâu). File ở `src/assets/images/stemlab-<id>.jpg`, 760×320; comment `// slide N` trong
+`COURSE_IMAGES` ghi slide nguồn. Không còn ảnh dùng lại / gần đúng (`~`, `↺`) cho khóa học.
 
-Dự án **không có ảnh mặc định** — thiếu ảnh là card hiện ảnh vỡ, không cảnh báo lúc
-build. Nên cả 34 card đều được gán ảnh thật của FabLab, với hai loại đánh dấu trong
-[index.js](src/assets/images/index.js):
+- Ảnh chọn bằng mắt, ưu tiên ảnh chụp thật buổi học. Slide chỉ có ảnh minh họa / ảnh sản
+  phẩm / ảnh chụp phần mềm thì dùng ảnh đó (vd. Thiết kế website, Blockchain, các khóa chuyên
+  sâu). "Thế giới điện tử" là ba ảnh module ghép trên nền trắng.
+- Ảnh nhỏ hơn khung thì được phóng (tối đa ~1,3×): Khám phá xe robot, Làm quen trí tuệ nhân tạo,
+  Lập trình Drone (tấm giữa của ảnh ghép 3 tấm), Thế giới robot, Thế giới điện tử.
+- Database đang chạy nhận ảnh bằng `npm run images:replace -- course` (đường lưu của dashboard,
+  có lịch sử — khôi phục được ảnh cũ). Database mới thì `npm run seed` tự gắn.
 
-| Dấu | Nghĩa | Số card |
-|---|---|---|
-| `// ~` | ảnh thật của FabLab nhưng **chụp hoạt động khác** | 14 |
-| `// ↺` | **dùng lại** ảnh của một card khác trong cùng trang | 14 |
-
-Sáu chương trình không có ảnh nào hợp lý trong kho (Bí mật âm thanh, Cấu trúc máy
-tính, Thiết kế website, Nhà sáng tạo nội dung số, Blockchain, Xác suất trong học
-máy) đang dùng ảnh xưởng chung hoặc ảnh sinh viên làm việc trên máy tính.
-
-**Không lấp bằng ảnh stock.** Cần ảnh đúng thì chụp bổ sung rồi thay vào map — mỗi
-lần thêm một ảnh thật là bớt được một dấu `~` hoặc `↺`.
+**Không lấp bằng ảnh stock.** Cần ảnh khác thì thay file rồi chạy lại `images:replace`, hoặc
+tải lên qua dashboard.
 
 ## Đối tác & hoạt động
 
@@ -346,7 +342,7 @@ cả hai loại hình:
 
 | Nhóm (`group`) | Tiêu đề hiển thị | Số khóa | Bộ lọc |
 |---|---|---|---|
-| `stem` | Khóa học STEM | 4 | không |
+| `stem` | Khóa học STEM (khóa học chuyên sâu 8 buổi) | 7 | không |
 | `experience` | Chương trình trải nghiệm STEM | 30 | có |
 
 Nhóm nằm ở `courses.groups` trong i18n — **thứ tự trong mảng là thứ tự trên
@@ -358,19 +354,22 @@ Khối nào quá 6 khóa (8 khóa từ màn `xl`, khi lưới lên 4 cột) thì
 
 ### Hai nhóm dùng hai bộ trường khác nhau
 
-| | `stem` (4 khóa) | `experience` (30 chương trình) |
+| | `stem` (7 khóa) | `experience` (30 chương trình) |
 |---|---|---|
-| Trường phân loại | `level` | `stage` + `topic` |
-| Chip trên ảnh | cấp độ (Cơ bản/Trung cấp/Nâng cao) | cấp học (TH/THCS/THPT) |
-| Dòng chân card | `5 tuần · Độ tuổi 12–18` | chip nhóm chủ đề |
-| Nguồn nội dung popup | `courseDetails.*.js` (**sinh ra** từ scraper) | `experienceDetails.*.js` (**viết tay**) |
+| Trường phân loại | `stage` + `topic` (+ `comingSoon`) | `stage` + `topic` |
+| Chip trên ảnh | cấp học (TH/THCS, THPT) + "Sắp ra mắt" | cấp học (TH/THCS/THPT) |
+| Dòng chân card | chip nhóm chủ đề | chip nhóm chủ đề |
+| Nguồn nội dung popup | `intensiveDetails.*.js` (**viết tay**) | `experienceDetails.*.js` (**viết tay**) |
+
+Kiểu thẻ cấp độ (`level` + `duration` + `age`) vẫn còn trong schema và dashboard nhưng hiện
+không khóa nào dùng.
 
 [CourseCard.jsx](src/components/CourseCard.jsx) render theo trường nào **có mặt**,
 không nhận thêm prop kiểu.
 
-Bốn khóa `stem` giữ nguyên phân loại cũ lấy từ breadcrumb
-`fablab.eiu.edu.vn/courses/<slug>/`, kèm `duration` và `age` là số thật từ trang
-khóa học.
+Bảy khóa `stem` lấy từ bộ slide chính thức "Giới thiệu STEMLab" (slide 35–42): sáu khóa
+8 buổi và "Thế giới điện tử" (sắp ra mắt, 3 module). Bốn khóa cũ của website trước (Cánh
+tay Robot, Robot Hình người, Lập trình Scratch, Xe Robot) đã bỏ.
 
 ### Bộ lọc của nhóm trải nghiệm
 
@@ -403,7 +402,8 @@ Nội dung popup đến từ **hai nguồn khác hẳn nhau**, trộn lại ở 
 
 | File | Cho | Nguồn | Sửa tay? |
 |---|---|---|---|
-| `courseDetails.*.js` | 4 khóa STEM | **sinh ra** từ scraper các trang LearnPress | ❌ mất khi chạy lại |
+| `courseDetails.*.js` | 4 khóa STEM cũ (đã bỏ khỏi trang) | **sinh ra** từ scraper các trang LearnPress | ❌ mất khi chạy lại |
+| `intensiveDetails.*.js` | 7 khóa học chuyên sâu | **viết tay** từ slide "Giới thiệu STEMLab" | ✅ đây là chỗ sửa |
 | `experienceDetails.*.js` | 30 chương trình trải nghiệm | **viết tay** từ catalogue chính thức | ✅ đây là chỗ sửa |
 
 File sinh ra có giới thiệu, đối tượng, kiến thức, kỹ năng, giáo trình và `sourceUrl`
@@ -412,7 +412,7 @@ gì catalogue cung cấp.
 
 Popup **chỉ hiện mục nào thật sự có dữ liệu**, không có thì bỏ hẳn mục đó chứ không
 bịa cho đầy. Vì thế popup của chương trình trải nghiệm chỉ hiện phần "Nội dung khóa
-học", còn popup của 4 khóa STEM hiện đủ năm mục.
+học", còn popup của khóa học chuyên sâu hiện "Đối tượng" + 8 buổi.
 
 > `cnc` là id duy nhất trùng giữa danh sách cũ và mới. Mục viết tay **thay hoàn
 > toàn** mục sinh ra cùng tên (spread nông ở cấp một) — đúng ý định, vì đây là hai
@@ -448,13 +448,12 @@ Bốn khóa nhóm `stem` lấy từ nội dung thật trên `fablab.eiu.edu.vn`;
 `duration` là số thật từ trang khóa học. Riêng `age` của khóa Scratch trang gốc
 không ghi nên vẫn để giả định `8+`.
 
-> **Nợ kỹ thuật:** bỏ 12 khóa cũ khiến `courseDetails.*.js` còn 11 mục không ai tra
+> **Nợ kỹ thuật:** bỏ các khóa cũ khiến `courseDetails.*.js` còn 15 mục không ai tra
 > tới (~25 KB nguồn vẫn bị đóng gói). Không xoá tay vì đó là file sinh ra — cách
 > sạch là chỉnh bộ scraper cho danh sách mới rồi chạy lại.
 
-Số tuần khớp chính xác với tổng số buổi cộng từ giáo trình (Cánh tay Robot:
-3+2+3+1+1 = 10 buổi = 10 tuần), nên **1 buổi = 1 tuần**. Muốn hiển thị "buổi"
-thay cho "tuần" thì sửa đúng một chuỗi trong mỗi từ điển.
+Khóa học chuyên sâu không có `duration` / `age`: slide chỉ ghi cấp học và 8 buổi, nên cấp
+học nằm ở chip và "Đối tượng" trong popup, số buổi nằm ở mô tả và giáo trình.
 
 ## Menu điều hướng
 

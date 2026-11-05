@@ -87,6 +87,7 @@ export function CourseModal({ course, onClose, onRegister }) {
   const topic = course?.topic && t.courses.topics.find((entry) => entry.id === course.topic)
   const level = course?.level && t.courses.levels[course.level]
   const chips = [
+    course?.comingSoon && t.courses.comingSoon && { key: 'soon', tone: 'signal', label: t.courses.comingSoon },
     level && { key: 'level', tone: 'wash', label: level },
     stage && { key: 'stage', tone: 'wash', label: stage.label },
     topic && { key: 'topic', tone: 'outline', label: topic.label },
