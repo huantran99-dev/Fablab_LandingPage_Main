@@ -12,21 +12,24 @@ export const STATUS = {
 
 export const STATUS_KEYS = Object.keys(STATUS)
 
-/** Cùng trạng thái `enrolled`, nhưng với thành viên FabLab nghĩa là đã kết nạp. */
+/** Cùng trạng thái `enrolled`: với thành viên FabLab là đã kết nạp, với sự kiện là đã xác nhận. */
 export function statusLabel(status, kind) {
   if (kind === 'member' && status === 'enrolled') return 'Đã kết nạp'
+  if (kind === 'event' && status === 'enrolled') return 'Đã xác nhận'
   return STATUS[status]?.label ?? status
 }
 
-/** Hai loại đăng ký — khớp `REGISTRATION_KINDS` ở server/schema/registration.js. */
+/** Ba loại đăng ký — khớp `REGISTRATION_KINDS` ở server/schema/registration.js. */
 export const KIND = {
   course: { label: 'Khóa học', color: 'gray' },
   member: { label: 'Thành viên FabLab', color: 'info' },
+  event: { label: 'Sự kiện', color: 'warning' },
 }
 
-/** Dòng phụ dưới tên trong danh sách: khóa học (hoặc "cần tư vấn") / "Thành viên FabLab". */
+/** Dòng phụ dưới tên trong danh sách: khóa học (hoặc "cần tư vấn") / "Thành viên FabLab" / tên sự kiện. */
 export function registrationTopic(entry) {
   if (entry.kind === 'member') return KIND.member.label
+  if (entry.kind === 'event') return entry.eventTitle ?? entry.eventId ?? KIND.event.label
   return entry.courseTitle ?? (entry.courseId ? entry.courseId : 'Cần tư vấn')
 }
 
@@ -36,7 +39,7 @@ export const SOURCE_LABELS = {
   nav: 'Nút trên thanh menu',
   'nav-drawer': 'Nút trong menu điện thoại',
   'seasonal-popup': 'Popup sự kiện mùa',
-  events: 'Section Hoạt động (nút thành viên)',
+  events: 'Section Hoạt động',
 }
 
 /** 0912345678 → 0912 345 678 (dễ đọc khi gọi điện). */

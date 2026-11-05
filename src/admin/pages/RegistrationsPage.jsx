@@ -98,18 +98,31 @@ function RegistrationDetail({ id, onSaved, onDeleted, onClose }) {
   if (loadError) return <Alert tone="error" title="Không tải được lượt đăng ký">{loadError}</Alert>
   if (!item) return <p className="py-6 text-center text-sm text-gray-500">Đang tải…</p>
   const member = item.kind === 'member'
+  const isEvent = item.kind === 'event'
 
   return (
     <div className="space-y-6">
       {item.courseId && item.courseOnPage === false && (
         <Alert tone="warning">Khóa học này không còn trên trang. Tên hiển thị là tên lúc người dùng gửi.</Alert>
       )}
+      {item.eventId && item.eventOnPage === false && (
+        <Alert tone="warning">Sự kiện này không còn trên trang. Tên hiển thị là tên lúc người dùng gửi.</Alert>
+      )}
 
       <dl className="space-y-3">
         <Row label="Loại">
           <Badge color={KIND[item.kind]?.color ?? 'gray'}>{KIND[item.kind]?.label ?? item.kind}</Badge>
         </Row>
-        {member ? (
+        {isEvent ? (
+          <>
+            <Row label="Sự kiện">{item.eventTitle ?? item.eventId}</Row>
+            <Row label="Người tham gia">{item.studentName}</Row>
+            <Row label="Năm sinh">{item.birthYear}</Row>
+            <Row label="Trường / đơn vị">{item.school}</Row>
+            {/* Chỉ có khi người tham gia dưới 16 tuổi: phụ huynh điền và đồng ý thay. */}
+            <Row label="Phụ huynh">{item.parentName}</Row>
+          </>
+        ) : member ? (
           <>
             <Row label="Họ tên">{item.studentName}</Row>
             <Row label="Năm sinh">{item.birthYear}</Row>
@@ -174,7 +187,7 @@ function RegistrationDetail({ id, onSaved, onDeleted, onClose }) {
             maxLength={2000}
             value={adminNote}
             onChange={(event) => setAdminNote(event.target.value)}
-            placeholder={member ? 'Đã gọi lúc…, hẹn đến xưởng…' : 'Đã gọi lúc…, hẹn học thử…'}
+            placeholder={member ? 'Đã gọi lúc…, hẹn đến xưởng…' : isEvent ? 'Đã gọi lúc…, đã xác nhận tham gia…' : 'Đã gọi lúc…, hẹn học thử…'}
           />
         </div>
       </div>
@@ -196,7 +209,7 @@ function RegistrationDetail({ id, onSaved, onDeleted, onClose }) {
       <ConfirmDialog
         open={confirming}
         title="Xoá lượt đăng ký này?"
-        message={`Xoá vĩnh viễn thông tin của ${item.studentName}${member ? '' : ' và phụ huynh'} khỏi hệ thống — dùng khi người đăng ký yêu cầu xoá dữ liệu. Bản sao lưu cũ và file CSV đã xuất vẫn còn dữ liệu này.`}
+        message={`Xoá vĩnh viễn thông tin của ${item.studentName}${item.parentName ? ' và phụ huynh' : ''} khỏi hệ thống — dùng khi người đăng ký yêu cầu xoá dữ liệu. Bản sao lưu cũ và file CSV đã xuất vẫn còn dữ liệu này.`}
         confirmLabel="Xoá vĩnh viễn"
         busy={deleting}
         onConfirm={remove}
@@ -207,7 +220,7 @@ function RegistrationDetail({ id, onSaved, onDeleted, onClose }) {
 }
 
 /**
- * Danh sách đăng ký — khóa học và thành viên FabLab. Phân trang ở máy chủ (khác thư viện ảnh): danh sách
+ * Danh sách đăng ký — khóa học, thành viên FabLab và sự kiện (cuộc thi, workshop, hội thảo). Phân trang ở máy chủ (khác thư viện ảnh): danh sách
  * này lớn dần theo thời gian. Bộ lọc gửi lên máy chủ; ô tìm kiếm chờ 300ms sau lần
  * gõ cuối mới gửi.
  */
@@ -286,7 +299,7 @@ export function RegistrationsPage({ openId, onChanged }) {
     <>
       <PageHeader
         title="Đăng ký"
-        description="Người gửi form đăng ký trên trang — khóa học và thành viên FabLab. Gọi lại, cập nhật trạng thái, ghi chú nội bộ."
+        description="Người gửi form đăng ký trên trang — khóa học, thành viên FabLab và sự kiện (cuộc thi, workshop, hội thảo). Gọi lại, cập nhật trạng thái, ghi chú nội bộ."
         breadcrumb={[{ label: 'Tuyển sinh' }, { label: 'Đăng ký' }]}
         actions={
           <LinkButton href={registrationsExportUrl(params)} download icon="download">
@@ -400,15 +413,20 @@ export function RegistrationsPage({ openId, onChanged }) {
                         <p className="text-theme-xs text-gray-500">
                           {(entry.kind === 'member'
                             ? [entry.birthYear, entry.memberRoleLabel, entry.school]
-                            : [entry.studentGrade, entry.school]
+                            : entry.kind === 'event'
+                              ? [entry.birthYear, entry.school]
+                              : [entry.studentGrade, entry.school]
                           )
                             .filter(Boolean)
                             .join(' · ') || '—'}
                         </p>
                       </td>
                       <td className="py-3 pr-4">
-                        {/* Thành viên tự liên hệ: không có phụ huynh, hiện email thay vào. */}
-                        <p className="text-theme-sm text-gray-800 dark:text-white/90">{entry.kind === 'member' ? entry.email : entry.parentName}</p>
+                        {/* Thành viên tự liên hệ: không có phụ huynh, hiện email thay vào. Sự kiện: phụ
+                            huynh nếu dưới 16 tuổi, không thì email. */}
+                        <p className="text-theme-sm text-gray-800 dark:text-white/90">
+                          {entry.kind === 'member' ? entry.email : entry.kind === 'event' ? (entry.parentName ?? entry.email) : entry.parentName}
+                        </p>
                         <a href={`tel:${entry.phone}`} className="text-theme-xs whitespace-nowrap text-brand-500 hover:underline">
                           {formatPhone(entry.phone)}
                         </a>
@@ -416,6 +434,11 @@ export function RegistrationsPage({ openId, onChanged }) {
                       <td className="max-w-[260px] py-3 pr-4 text-theme-sm text-gray-500 dark:text-gray-400">
                         {entry.kind === 'member' ? (
                           <Badge color={KIND.member.color}>{KIND.member.label}</Badge>
+                        ) : entry.kind === 'event' ? (
+                          <span className="flex flex-col items-start gap-1">
+                            <Badge color={KIND.event.color}>{KIND.event.label}</Badge>
+                            <span className="line-clamp-2">{entry.eventTitle ?? entry.eventId}</span>
+                          </span>
                         ) : (
                           <span className="line-clamp-2">{courseLabel(entry)}</span>
                         )}
@@ -452,7 +475,7 @@ export function RegistrationsPage({ openId, onChanged }) {
           )}
         </Card>
 
-        <Card title="Số đăng ký theo khóa học" description="Chỉ đăng ký khóa học (không gồm thành viên), toàn bộ thời gian, không theo bộ lọc. Bấm tên khóa để lọc danh sách." bodyClassName="p-0!">
+        <Card title="Số đăng ký theo khóa học" description="Chỉ đăng ký khóa học (không gồm thành viên và sự kiện), toàn bộ thời gian, không theo bộ lọc. Bấm tên khóa để lọc danh sách." bodyClassName="p-0!">
           {byCourse.length === 0 ? (
             <p className="px-5 py-6 text-sm text-gray-500 sm:px-6">Chưa có số liệu.</p>
           ) : (

@@ -424,6 +424,28 @@ ra từ nó, và đó mới là file `Logo.jsx` dùng. Đừng ghép nguyên fil
 — ở 36px thì dòng chữ trong ảnh chỉ còn ~4px. Chữ cạnh logo cố ý để dạng text.
 `public/favicon.png` là cùng ảnh mark, đổi logo thì nhớ đổi luôn kẻo lệch.
 
+**Ảnh khóa học (37) lấy từ bộ slide chính thức "Giới thiệu STEMLab"** (từ 2026-11-05, người
+dùng yêu cầu; một ảnh tiêu biểu mỗi khóa): `src/assets/images/stemlab-<id>.jpg`, 760×320.
+Quy trình đã dùng, lặp lại được (script ở scratchpad, ngoài git):
+
+1. Đọc presentation qua connector Google Slides lấy `image.contentUrl` của từng phần tử ảnh
+   rồi **tải ngay** — link hết hạn sau ~30 phút. Ảnh ghép 3 tấm (slide 6, 7, 13, 8) có khe
+   TRONG SUỐT ở `x = 599–612` và `1213–1226`: tách tấm bằng `extract`, đừng cắt giữa.
+2. Dựng bảng ảnh theo slide, chọn bằng mắt (ưu tiên ảnh chụp thật buổi học).
+3. Cắt bằng sharp: `cover` + `attention` mặc định; ảnh `attention` chọn sai (cắt đầu người,
+   bỏ chủ thể) thì đặt tay `top`; ảnh sản phẩm / bản vẽ dùng `contain` trên nền trắng (hoặc
+   màu góc ảnh). Lượt đầu 9/37 ảnh phải cắt lại — **luôn xem bảng ảnh đã cắt**.
+4. File import thẳng ở thư mục gốc `images/`: hook nạp ảnh của Node
+   ([import-hook.mjs](server/scripts/import-hook.mjs)) chỉ trả `basename`, nên thư mục con
+   làm seed tìm sai file.
+
+Database đang chạy nhận ảnh qua **`npm run images:replace -- <scope>`**
+([replace-images.js](server/scripts/replace-images.js)) — khác `seed:images` (chỉ điền scope
+CHƯA có ảnh): thay ảnh của scope ĐÃ có ảnh, đi `writeSectionPair` nên có lịch sử (khôi phục
+được ảnh cũ), `rev` +2, chữ gửi lại qua schema (thứ tự khoá đổi, nội dung không — đã so sau
+khi sắp khoá). Bỏ qua mục đã gắn đúng ảnh theo sha256 → chạy lại không làm gì. Chạy được khi
+máy chủ đang bật (đệm nội dung khoá theo `rev` đọc từ database).
+
 [index.js](src/assets/images/index.js) ánh xạ `id` khóa học / thiết bị sang ảnh.
 **Thêm khóa học mới mà quên thêm ảnh thì `src` thành `undefined` và card hiện ảnh
 vỡ** — không có ảnh mặc định, cũng không có cảnh báo lúc build. README liệt kê
@@ -672,21 +694,49 @@ mảng chính là thứ tự hiển thị); mỗi khóa trỏ về nhóm bằng 
 
 | `group` | Tiêu đề | Số khóa | Bộ lọc |
 |---|---|---|---|
-| `stem` | Khóa học STEM | 4 | không |
+| `stem` | Khóa học STEM (khóa học chuyên sâu) | 7 | không |
 | `experience` | Chương trình trải nghiệm STEM | 30 | có |
 
 **Hai nhóm cố ý mang hai bộ trường khác nhau**, và [CourseCard.jsx](src/components/CourseCard.jsx)
 render theo trường nào CÓ MẶT chứ không nhận prop kiểu:
 
-| | `stem` | `experience` |
+| | thẻ cấp độ | thẻ cấp học |
 |---|---|---|
-| Phân loại | `level` | `stage` + `topic` |
-| Chip trên ảnh | cấp độ | cấp học (TH/THCS/THPT) |
+| Phân loại | `level` | `stage` + `topic` (+ `comingSoon`) |
+| Chip trên ảnh | cấp độ | cấp học + "Sắp ra mắt" |
 | Dòng chân card | `duration` · `age` | chip nhóm chủ đề |
 | Icon | tra theo `id` | tra theo `icon` |
 
-Bốn khóa `stem` đọc từ breadcrumb `fablab.eiu.edu.vn/courses/<slug>/`, `duration`
-và `age` là số thật từ trang khóa học. 30 chương trình `experience` lấy từ
+**Từ 2026-11-05 (API 21) CẢ HAI nhóm dùng thẻ cấp học.** Kiểu thẻ cấp độ vẫn còn trong
+schema / dashboard nhưng không khóa nào dùng. Nhóm `stem` là **7 khóa học chuyên sâu** lấy
+từ bộ slide chính thức "Giới thiệu STEMLab" (Google Slides `1_79GBiFFR9…`, slide 35–42, đọc
+qua connector Google Slides): sáu khóa 8 buổi + "Thế giới điện tử" (COMING SOON, 3 module).
+Bốn khóa cũ của website trước (Cánh tay Robot, Robot Hình người, Lập trình Scratch, Xe
+Robot) đã bỏ. 30 chương trình `experience` (slide 5–34) đã khớp từ trước, không đổi.
+
+- **Nhóm chủ đề của khóa chuyên sâu đọc theo MÀU tiêu đề slide** (xanh = Robot, đỏ = AIoT,
+  theo slide 35) — chữ trên slide không ghi. "Thế giới điện tử" tô màu cam, không thuộc nhóm
+  nào; đang để `robotics` (2/3 module là drone / robot). Đã báo người dùng.
+- Cấp **`th-thcs`** ("Tiểu học – THCS", chip `TH/THCS`) cho bốn khóa ghi "TIỂU HỌC / THCS".
+  Bộ lọc của nhóm trải nghiệm chỉ liệt kê cấp học **có trong chính nhóm đó**
+  ([Courses.jsx](src/components/Courses.jsx)), kẻo hiện một chip 0 mục.
+- **`comingSoon: true`** (trường dùng chung, thẻ cấp học) + nhãn `courses.comingSoon`:
+  chip "Sắp ra mắt" góc trái ảnh thẻ và đầu popup. Vẫn nhận đăng ký (đăng ký trước / tư vấn).
+- "Khám phá xe robot" và "Thiết kế website" trùng TÊN với hai chương trình trải nghiệm
+  nhưng là khóa khác → id mang hậu tố (`xe-robot-chuyen-sau`, `website-chuyen-sau`).
+- Popup: `audience` (cấp học trên slide) + `curriculum` (8 buổi nguyên văn) ở
+  `intensiveDetails.*.js` — **viết tay**, nguồn `handwritten`. Slide không có giới thiệu /
+  kiến thức / kỹ năng / thời lượng / độ tuổi — đừng điền thêm.
+- Ảnh: migration 023 tạm gắn ảnh thật dùng lại (`↺ ~`); từ 2026-11-05 cả 37 khóa đã có ảnh
+  riêng cắt từ slide (xem mục "Hình ảnh"). Chỉ ảnh minh họa của slide 4 / 35 (tổng quan nhóm
+  chủ đề) ghi "được tạo bằng AI" — không dùng.
+- Database đang chạy nhận nội dung qua **migration 023** (sinh bằng máy, chốt theo từng ngôn
+  ngữ bằng id `the-gioi-robot`): giữ nguyên mọi mục không thuộc `stem`, nối 7 khóa mới, thêm
+  cấp `th-thcs`, đổi mô tả nhóm CHỈ khi còn nguyên văn cũ, chèn 14 dòng `course_detail` và
+  chép binding ảnh từ id nguồn. Đã thử trên bản sao: `rev` +2, 30 chương trình trải nghiệm
+  khớp mã băm, bảng đăng ký không đổi, chạy lại không đổi gì.
+
+30 chương trình `experience` lấy từ
 **catalogue chính thức do FabLab cung cấp** — catalogue không có thời lượng, độ
 tuổi hay mô tả ngắn, nên đừng đi tìm rồi điền vào.
 
@@ -719,11 +769,12 @@ nhóm hay đổi bố cục thì giữ nguyên thứ bậc, đừng để hai h3
 
 ### Hai file nội dung popup, hai luật ngược nhau
 
-`courses.details` trộn hai nguồn: `{ ...courseDetails*, ...experienceDetails* }`.
+`courses.details` trộn ba nguồn: `{ ...courseDetails*, ...experienceDetails*, ...intensiveDetails* }`.
 
 | File | Cho | Sửa tay? |
 |---|---|---|
-| `courseDetails.*.js` | 4 khóa STEM | **KHÔNG** — file sinh ra, sửa là mất |
+| `courseDetails.*.js` | 4 khóa STEM cũ (đã bỏ khỏi trang) | **KHÔNG** — file sinh ra, sửa là mất |
+| `intensiveDetails.*.js` | 7 khóa học chuyên sâu | **CÓ** — viết tay từ slide |
 | `experienceDetails.*.js` | 30 chương trình trải nghiệm | **CÓ** — viết tay có chủ đích |
 
 Nhầm file là mất công hoặc mất dữ liệu. Đầu mỗi file đều ghi rõ nó thuộc loại nào.
@@ -731,7 +782,7 @@ Nhầm file là mất công hoặc mất dữ liệu. Đầu mỗi file đều g
 `cnc` là id duy nhất trùng giữa hai file; spread nông nên mục viết tay **thay hoàn
 toàn** mục sinh ra cùng tên — đúng ý định, vì đó là hai chương trình khác nhau.
 
-Bỏ 12 khóa cũ để lại 11 mục mồ côi trong `courseDetails.*.js` (~25 KB vẫn bị đóng
+Bỏ các khóa cũ để lại 15 mục mồ côi trong `courseDetails.*.js` (~30 KB vẫn bị đóng
 gói). Cố ý không xoá tay; cách sạch là chỉnh bộ scraper rồi chạy lại.
 
 ### courseDetails.*.js là file SINH RA, đừng sửa tay
@@ -835,16 +886,25 @@ kết luận "tự chạy hỏng", kiểm luôn Windows có tắt hiệu ứng c
   database cũ qua migration 010; thiếu thì rơi về `activities.title`.
 - Ken Burns (`stamps[i]` làm `key` lớp zoom) giờ chỉ còn ở nền mờ của banner Cuộc thi khi
   chưa có video.
-- **Nút "Trở thành thành viên FabLab ngay"** nằm TRÊN TỪNG SLIDE của cả hai banner (từ API
-  19; ở API 18 nó đứng một mình dưới hàng chấm Sự kiện — người dùng đổi ý). Thẻ Sự kiện: cột
-  chữ, dưới mô tả. Banner Cuộc thi: hàng [Trở thành thành viên] [Xem chi tiết] dưới mô tả.
-  Mở form ở tab Thành viên qua tham số thứ ba của `openRegister(courseId, source, kind)`
-  (thắng cả "có khóa → tab Khóa học" lẫn "tab lần trước"). Chữ ở `activities.joinMember`
-  (tuỳ chọn — vắng thì KHÔNG vẽ nút, không mượn chữ khác).
+- **Nút đăng ký theo loại trên TỪNG SLIDE** (từ 2026-11-05, API 22 — thay nút "Trở thành thành
+  viên FabLab ngay" của API 18–21, người dùng đổi ý): "Đăng ký cuộc thi" / "Đăng ký Workshop" /
+  "Đăng ký hội thảo". Thẻ Sự kiện: cột chữ, dưới mô tả. Banner Cuộc thi: hàng [Đăng ký cuộc
+  thi] [Xem chi tiết]; chân popup chi tiết cũng có. Mở **form sự kiện** (xem "Ba loại đăng ký"
+  bên dưới) qua `openEventRegister(id, source)`.
+  - Luật vẽ nút ở MỘT chỗ, [eventRegisterLabel](src/lib/activities.js), dùng cho cả ba nơi và
+    khớp luật máy chủ nhận/từ chối: nhãn `activities.registerCta[kind]` có chữ, mục không bật
+    `registerClosed`, và `register.event` có mặt. `partnership` (lễ ký kết Việt Anh) cố ý
+    KHÔNG có nhãn → không có nút — người dùng chọn vậy.
+  - `items[].registerClosed: true` = "Đóng đăng ký" (switch trên dashboard, trường dùng chung).
+    **Vắng = đang nhận** — người dùng chọn "mặc định bật" dù gần hết sự kiện trên trang đã qua;
+    admin tự tắt từng mục. Đừng đổi thành cờ "mở đăng ký" — lật nghĩa là mọi nút biến mất.
+  - `joinMember` còn trong schema (tuỳ chọn, để khôi phục bản lịch sử cũ) nhưng trang không
+    đọc nữa; migration 024 xoá nó khỏi database, descriptor bỏ ô — để lại thì `check:admin`
+    báo "không có ô sửa được".
 - **Nút chữ dài trong ô hẹp dùng prop `wrap` của Button** (bỏ `whitespace-nowrap`, căn giữa):
   cột chữ của thẻ Sự kiện ở 320px chỉ ~240px, nút một dòng rộng ~280px. Đừng truyền
   `whitespace-normal` qua `className` — cùng bẫy thứ tự CSS với `hidden`/`inline-flex`.
-- Mọi nút thành viên trong section Hoạt động ghi CÙNG nguồn đăng ký `events` (dashboard gọi
+- Mọi nút đăng ký trong section Hoạt động ghi CÙNG nguồn đăng ký `events` (dashboard gọi
   là "Section Hoạt động") — cố ý, để khỏi dựng lại bảng `registration` lần nữa. Phân biệt
   từng nút bằng `cta_click`: `events` (thẻ Sự kiện), `competitions` (banner Cuộc thi),
   `competition-detail` (nút Xem chi tiết), `competition-modal` (nút trong popup). Cột
@@ -1143,6 +1203,38 @@ chọn lần trước (lần đầu Khóa học). Mỗi tab một bản nháp ri
 - `kind` vắng = `course`: bundle cũ trong cache trình duyệt vẫn gửi được.
 - Bài thử gửi form bằng puppeteer: chữ trên nút đã qua `tieLastWords` nên có U+00A0 —
   tìm nút bằng `/Đăng\s+ký/`, đừng so chuỗi có dấu cách thường.
+
+### Loại thứ ba: đăng ký sự kiện (từ 2026-11-05, API 22)
+
+`kind: 'event'` — form mở từ nút "Đăng ký cuộc thi / Workshop / hội thảo" của section Hoạt
+động (xem "Hai kiểu banner tự chạy"). **Không phải tab**: `KINDS` (danh sách tab) vẫn là
+member/course; provider nhớ riêng `tab` lần cuối, nên mở form sự kiện rồi bấm "Đăng ký" ở
+navbar vẫn về tab cũ. Tiêu đề form là chính nhãn nút; đầu form là khung tên sự kiện + chip
+loại + ngày, không đổi được trong form.
+
+- **Mọi lứa tuổi; dưới 16 tuổi (tính theo năm) thì BẮT BUỘC tên phụ huynh** — người dùng chọn
+  vậy (cuộc thi / workshop có học sinh). Ô "Họ tên phụ huynh" chỉ hiện khi năm sinh vừa nhập
+  cho ra < 16 (`needsParent` ở validate.js); máy chủ kiểm lại bằng `superRefine` của
+  `eventSchema`. Năm sinh: cùng luật năm hợp lệ, KHÔNG chặn tuổi (`eventBirthYearError`, chép
+  hai nơi). Tên phụ huynh còn sót trong nháp (gõ 2015 rồi sửa) thì form không gửi.
+- **Một câu đồng ý cho cả hai trường hợp** (`register.event.consent`: "Tôi là người tham gia từ
+  16 tuổi, hoặc cha mẹ / người giám hộ…") — `consent_text` lưu đúng chữ người gửi đã thấy, nên
+  đừng tách hai câu theo tuổi.
+- Máy chủ tra hoạt động trong bản VI hiện hành: không có / `registerClosed` / loại không có
+  nhãn `registerCta` → `422 event` (form cũng tự báo, khung tên sự kiện hiện lỗi). Lưu
+  `event_id` + `event_title` (tên chụp lúc gửi, như `course_title`), `student_name` = người
+  tham gia, `school` = đơn vị. Chống trùng thêm cả họ tên — anh chị em cùng số phụ huynh.
+- **Migration 024 dựng lại bảng `registration`** (như 014/017/021): CHECK `kind` thêm `event`,
+  hai cột mới, luật phụ huynh thành `kind <> 'course' OR parent_name IS NOT NULL`. Cùng file
+  chèn `activities.registerCta`, `register.event`, `errors.event` (chốt từng ngôn ngữ, `rev` +2
+  mỗi section) và xoá `joinMember`. Sinh bằng máy từ vi.js / en.js. Đã thử trên bản sao
+  database thật: 2 dòng đăng ký cũ khớp mã băm, chạy lại không đổi gì.
+- Loại đăng ký liệt kê ở: `REGISTRATION_KINDS` (máy chủ), CHECK của bảng, `KIND` +
+  `statusLabel` + `registrationTopic` (dashboard), `KIND_LABELS` / `KIND_STATUS_LABELS` (CSV).
+  `enrolled` của sự kiện hiển thị "Đã xác nhận".
+- Đã thử bằng puppeteer trên bản sao (3999 / 4320): nhãn đúng theo loại trên cả 14 slide, mục
+  hợp tác không nút, người lớn → 201, năm 2015 → hiện ô phụ huynh, trống thì báo lỗi, điền thì
+  lưu kèm `parent_name`; bật "Đóng đăng ký" → nút mất + POST 422; 320/390/1280 không tràn ngang.
 
 ### Thêm section vào database ĐÃ seed: migration có chốt, và chốt theo TỪNG ngôn ngữ
 

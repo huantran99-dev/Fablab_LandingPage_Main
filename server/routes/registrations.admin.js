@@ -21,9 +21,10 @@ export const registrationsRouter = Router()
 registrationsRouter.use('/registrations', requireSameOrigin, requireSession)
 
 // Thành viên (`kind = 'member'`): `studentName` = họ tên, `school` = trường / đơn vị —
-// quy ước của migration 014.
+// quy ước của migration 014. Sự kiện (`kind = 'event'`, migration 024) dùng cùng quy ước, cộng
+// `event_id` / `event_title`; `parentName` chỉ có khi người tham gia dưới 16 tuổi.
 const COLUMNS = `id, created_at AS createdAt, updated_at AS updatedAt, kind, status, status_at AS statusAt,
-  course_id AS courseId, course_title AS courseTitle, locale,
+  course_id AS courseId, course_title AS courseTitle, event_id AS eventId, event_title AS eventTitle, locale,
   student_name AS studentName, student_grade AS studentGrade, school,
   parent_name AS parentName, phone, email, note, admin_note AS adminNote,
   birth_year AS birthYear, member_role AS memberRole, interests,
@@ -63,6 +64,12 @@ function buildFilter(query, { ignoreStatus = false } = {}) {
     params.push(course)
   }
 
+  const event = str(query.event)
+  if (event) {
+    where.push("kind = 'event' AND event_id = ?")
+    params.push(event)
+  }
+
   const from = str(query.from)
   if (DAY.test(from)) {
     where.push('created_at >= ?')
@@ -95,6 +102,11 @@ function currentTitles() {
   return new Map((getContent().vi.courses?.items ?? []).map((item) => [item.id, item.title]))
 }
 
+/** Tên hoạt động hiện tại trên trang (bản VI); hoạt động đã bị xoá thì dùng tên chụp lúc gửi. */
+function currentEvents() {
+  return new Map((getContent().vi.activities?.items ?? []).map((item) => [item.id, item.title]))
+}
+
 /** Nhãn đối tượng / lĩnh vực của thành viên, theo bản VI hiện tại trên trang. */
 function memberLabels() {
   const register = getContent().vi.register ?? {}
@@ -110,12 +122,14 @@ function parseInterests(text) {
   }
 }
 
-function decorate(row, titles, labels = memberLabels()) {
+function decorate(row, titles, labels = memberLabels(), events = currentEvents()) {
   const interests = parseInterests(row.interests)
   return {
     ...row,
     courseTitle: (row.courseId && titles.get(row.courseId)) ?? row.courseTitle,
     courseOnPage: row.courseId ? titles.has(row.courseId) : null,
+    eventTitle: (row.eventId && events.get(row.eventId)) ?? row.eventTitle,
+    eventOnPage: row.eventId ? events.has(row.eventId) : null,
     interests,
     // Id lạ (nhãn bị xoá khỏi nội dung) thì hiện chính id — vẫn đọc được, không mất.
     memberRoleLabel: row.memberRole ? (labels.roles[row.memberRole] ?? row.memberRole) : null,
@@ -133,10 +147,11 @@ registrationsRouter.get('/registrations', (req, res) => {
   const filter = buildFilter(req.query)
   const total = db.prepare(`SELECT COUNT(*) AS n FROM registration ${filter.sql}`).get(...filter.params).n
   const labels = memberLabels()
+  const events = currentEvents()
   const items = db
     .prepare(`SELECT ${COLUMNS} FROM registration ${filter.sql} ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?`)
     .all(...filter.params, pageSize, (page - 1) * pageSize)
-    .map((row) => decorate(row, titles, labels))
+    .map((row) => decorate(row, titles, labels, events))
 
   // Bộ đếm tab bỏ qua chính bộ lọc trạng thái, để tab nào cũng hiện số thật của nó.
   const statusFilter = buildFilter(req.query, { ignoreStatus: true })
@@ -172,9 +187,14 @@ registrationsRouter.get('/registrations', (req, res) => {
 })
 
 const STATUS_LABELS = { new: 'Mới', contacted: 'Đã liên hệ', enrolled: 'Đã nhập học', cancelled: 'Đã huỷ' }
-// Cùng trạng thái `enrolled`, nhưng với thành viên nghĩa là đã kết nạp.
-const MEMBER_STATUS_LABELS = { ...STATUS_LABELS, enrolled: 'Đã kết nạp' }
-const KIND_LABELS = { course: 'Khóa học', member: 'Thành viên FabLab' }
+// Cùng trạng thái `enrolled`, nhưng với thành viên nghĩa là đã kết nạp, với sự kiện là đã
+// xác nhận tham gia. Khớp `statusLabel` ở src/admin/lib/registrations.js.
+const KIND_STATUS_LABELS = {
+  course: STATUS_LABELS,
+  member: { ...STATUS_LABELS, enrolled: 'Đã kết nạp' },
+  event: { ...STATUS_LABELS, enrolled: 'Đã xác nhận' },
+}
+const KIND_LABELS = { course: 'Khóa học', member: 'Thành viên FabLab', event: 'Sự kiện' }
 const SOURCE_LABELS = { 'course-modal': 'Popup khóa học', 'final-cta': 'Khối kêu gọi cuối trang', nav: 'Thanh menu', 'nav-drawer': 'Menu di động', 'seasonal-popup': 'Popup sự kiện', events: 'Section Hoạt động' }
 
 /** Giờ Việt Nam, dạng Excel đọc được: `2026-09-18 14:05`. */
@@ -195,13 +215,14 @@ registrationsRouter.get('/registrations/export', (req, res) => {
   const titles = currentTitles()
   const filter = buildFilter(req.query)
   const labels = memberLabels()
+  const events = currentEvents()
   const rows = db
     .prepare(`SELECT ${COLUMNS} FROM registration ${filter.sql} ORDER BY created_at DESC, id DESC`)
     .all(...filter.params)
-    .map((row) => decorate(row, titles, labels))
+    .map((row) => decorate(row, titles, labels, events))
 
   const header = [
-    'Mã', 'Thời gian gửi', 'Loại', 'Trạng thái', 'Khóa học', 'Mã khóa', 'Họ tên', 'Năm sinh / lớp', 'Trường / đơn vị',
+    'Mã', 'Thời gian gửi', 'Loại', 'Trạng thái', 'Khóa học', 'Mã khóa', 'Sự kiện', 'Mã sự kiện', 'Họ tên', 'Năm sinh / lớp', 'Trường / đơn vị',
     'Phụ huynh', 'Đối tượng', 'Lĩnh vực quan tâm', 'Điện thoại', 'Email', 'Ghi chú', 'Ghi chú quản trị', 'Nguồn',
     'Ngôn ngữ', 'Đồng ý lúc',
   ]
@@ -212,11 +233,13 @@ registrationsRouter.get('/registrations/export', (req, res) => {
         cell(row.id),
         cell(vnTime(row.createdAt)),
         cell(KIND_LABELS[row.kind] ?? row.kind),
-        cell((row.kind === 'member' ? MEMBER_STATUS_LABELS : STATUS_LABELS)[row.status] ?? row.status),
-        cell(row.kind === 'member' ? '' : (row.courseTitle ?? (row.courseId ? row.courseId : 'Cần tư vấn'))),
+        cell((KIND_STATUS_LABELS[row.kind] ?? STATUS_LABELS)[row.status] ?? row.status),
+        cell(row.kind === 'course' ? (row.courseTitle ?? (row.courseId ? row.courseId : 'Cần tư vấn')) : ''),
         cell(row.courseId),
+        cell(row.eventTitle),
+        cell(row.eventId),
         cell(row.studentName),
-        cell(row.kind === 'member' ? row.birthYear : row.studentGrade),
+        cell(row.kind === 'course' ? row.studentGrade : row.birthYear),
         cell(row.school),
         cell(row.parentName),
         cell(row.memberRoleLabel),

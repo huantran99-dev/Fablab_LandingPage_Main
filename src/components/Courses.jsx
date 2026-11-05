@@ -113,7 +113,11 @@ function CourseGroup({ group, courses, from, onOpen }) {
           <FilterRow
             label={t.courses.filters.stage}
             allLabel={t.courses.filters.all}
-            options={t.courses.stages.map((s) => ({ id: s.id, label: s.label }))}
+            // Chỉ cấp học có trong CHÍNH nhóm này: cấp "Tiểu học – THCS" của khóa chuyên sâu
+            // không được thành một chip 0 mục ở bộ lọc chương trình trải nghiệm.
+            options={t.courses.stages
+              .filter((s) => courses.some((c) => c.stage === s.id))
+              .map((s) => ({ id: s.id, label: s.label }))}
             value={stage}
             onChange={setStage}
             countOf={countStage}

@@ -116,14 +116,39 @@ publicWriteRouter.post(
     }
 
     const member = data.kind === 'member'
-    const courseId = member ? null : data.course || null
+    const isEvent = data.kind === 'event'
+    const courseId = data.kind === 'course' ? data.course || null : null
+    const content = getContent()
+
+    // Sự kiện: phải có trên trang, loại của nó có nút đăng ký, và chưa đóng đăng ký. Tra bản
+    // VI phía máy chủ — không tin client (người xem có thể cầm snapshot cũ).
+    let activity = null
+    if (isEvent) {
+      const activities = content.vi.activities
+      activity = activities?.items?.find((item) => item.id === data.event) ?? null
+      if (!activity || activity.registerClosed || !activities.registerCta?.[activity.kind]) {
+        res.status(422).json({ error: 'su kien khong nhan dang ky', issues: [{ path: 'event', code: 'event' }] })
+        return
+      }
+    }
+
     const now = new Date()
+    // Sự kiện so thêm họ tên: anh chị em cùng số điện thoại phụ huynh vẫn đăng ký được.
     const duplicate = db
       .prepare(
         `SELECT 1 FROM registration
-          WHERE phone = ? AND kind = ? AND COALESCE(course_id, '') = ? AND created_at > ?`,
+          WHERE phone = ? AND kind = ? AND COALESCE(course_id, '') = ? AND COALESCE(event_id, '') = ?
+            AND (? = 0 OR student_name = ?) AND created_at > ?`,
       )
-      .get(data.phone, data.kind, courseId ?? '', new Date(now.getTime() - DEDUPE_MS).toISOString())
+      .get(
+        data.phone,
+        data.kind,
+        courseId ?? '',
+        activity?.id ?? '',
+        isEvent ? 1 : 0,
+        isEvent ? data.fullName : '',
+        new Date(now.getTime() - DEDUPE_MS).toISOString(),
+      )
     if (duplicate) {
       // Bấm đúp hoặc gửi lại sau lỗi mạng: người gửi thấy thành công, database giữ một dòng.
       res.status(201).json({ ok: true })
@@ -131,17 +156,27 @@ publicWriteRouter.post(
     }
 
     // Tên khóa và câu đồng ý lấy từ nội dung phía máy chủ, không bao giờ tin client.
-    // Thành viên đồng ý theo câu chữ của riêng loại đó (`register.member.*`).
-    const content = getContent()
+    // Thành viên / sự kiện đồng ý theo câu chữ của riêng loại đó (`register.member.*`, `register.event.*`).
     const course = courseId ? content.vi.courses?.items?.find((item) => item.id === courseId) : null
     const dict = content[data.locale]
-    const words = member ? dict.register?.member : dict.register
+    const words = member ? dict.register?.member : isEvent ? dict.register?.event : dict.register
     const consentText = [words?.consent, fill(words?.privacy, { email: dict.footer?.contact?.email })]
       .filter(Boolean)
       .join('\n\n')
 
-    // Thành viên: `student_name` = họ tên, `school` = trường / đơn vị (xem migration 014).
-    const row = member
+    // Thành viên / sự kiện: `student_name` = họ tên, `school` = trường / đơn vị (xem migration 014).
+    // Sự kiện: `parent_name` chỉ có khi người tham gia dưới 16 tuổi (schema đã buộc).
+    const row = isEvent
+      ? {
+          studentName: data.fullName,
+          studentGrade: null,
+          school: data.organization ?? null,
+          parentName: data.parentName ?? null,
+          birthYear: Number(data.birthYear),
+          memberRole: null,
+          interests: null,
+        }
+      : member
       ? {
           studentName: data.fullName,
           studentGrade: null,
@@ -165,17 +200,19 @@ publicWriteRouter.post(
     db.transaction(() => {
       db.prepare(
         `INSERT INTO registration
-           (created_at, updated_at, kind, status, course_id, course_title, locale,
+           (created_at, updated_at, kind, status, course_id, course_title, event_id, event_title, locale,
             student_name, student_grade, school, parent_name, phone, email, note,
             birth_year, member_role, interests,
             source, referrer_host, consent_at, consent_text)
-         VALUES (?, ?, ?, 'new', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+         VALUES (?, ?, ?, 'new', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       ).run(
         stamp,
         stamp,
         data.kind,
         courseId,
         course?.title ?? null,
+        activity?.id ?? null,
+        activity?.title ?? null,
         data.locale,
         row.studentName,
         row.studentGrade,
@@ -197,7 +234,7 @@ publicWriteRouter.post(
       // `course_open` theo target, nên không bao giờ khớp nhầm.
       recordEvent(db, req, {
         name: 'register_submit',
-        target: member ? 'member' : courseId,
+        target: member ? 'member' : isEvent ? 'event' : courseId,
         width: data.width,
         lang: data.locale,
       })

@@ -127,7 +127,8 @@ export function RecordEditor({ record, draft, onChangeDraft, issues }) {
             Thêm {record.itemName}
           </Button>
         </div>
-        <FieldHelp>Xoá một {record.itemName} đang có mục dùng tới sẽ bị máy chủ từ chối khi lưu.</FieldHelp>
+        {/* `deleteHelp` của record thay câu mặc định — vd. nhãn nút đăng ký: xoá chỉ làm mất nút. */}
+        <FieldHelp>{record.deleteHelp ?? `Xoá một ${record.itemName} đang có mục dùng tới sẽ bị máy chủ từ chối khi lưu.`}</FieldHelp>
       </div>
       )}
 

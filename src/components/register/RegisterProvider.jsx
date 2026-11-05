@@ -4,8 +4,9 @@ import { RegisterContext } from './RegisterContext'
 import { EMPTY_DRAFTS } from './validate'
 
 /**
- * Giữ trạng thái mở/đóng, TAB đang chọn (`kind`: 'course' | 'member') và BẢN NHÁP của
- * từng tab.
+ * Giữ trạng thái mở/đóng, loại form đang mở (`kind`: 'course' | 'member' | 'event') và BẢN
+ * NHÁP của từng loại. `event` không phải tab — form sự kiện chỉ mở từ nút trên từng slide
+ * của section Hoạt động — nên `tab` nhớ riêng tab member/course chọn lần cuối.
  *
  * Bản nháp sống ở đây chứ không trong form: form chỉ được dựng khi dialog mở, nên
  * lỡ tay bấm Esc mà nháp nằm trong form là mất sạch chữ đã gõ. Mỗi tab một bản nháp
@@ -14,25 +15,42 @@ import { EMPTY_DRAFTS } from './validate'
  * liệu cá nhân (có trẻ em).
  */
 export function RegisterProvider({ children }) {
-  const [state, setState] = useState({ open: false, source: 'nav', kind: 'course' })
+  const [state, setState] = useState({ open: false, source: 'nav', kind: 'course', tab: 'course' })
   const [drafts, setDrafts] = useState(EMPTY_DRAFTS)
 
   /**
    * `courseId` có giá trị (nút trong popup khóa học) → tab Khóa học, chọn sẵn khóa đó.
    * `null` (navbar, cuối trang) → giữ tab đã chọn lần trước (lần đầu là Khóa học).
-   * `kind` truyền vào (nút "Trở thành thành viên" dưới carousel Sự kiện) thắng cả hai.
+   * `kind` truyền vào ('member' | 'course') thắng cả hai.
    */
   const openRegister = useCallback((courseId, source, kind = null) => {
     track('register_open', source)
     if (courseId) setDrafts((current) => ({ ...current, course: { ...current.course, course: courseId } }))
-    setState((current) => ({ open: true, source, kind: kind ?? (courseId ? 'course' : current.kind) }))
+    setState((current) => {
+      const tab = kind ?? (courseId ? 'course' : current.tab)
+      return { open: true, source, kind: tab, tab }
+    })
+  }, [])
+
+  /**
+   * Form đăng ký một hoạt động (nút "Đăng ký cuộc thi / Workshop / hội thảo"). Đổi sang sự
+   * kiện khác thì nháp giữ chữ đã gõ (họ tên, số điện thoại…), chỉ đổi sự kiện.
+   */
+  const openEventRegister = useCallback((eventId, source) => {
+    track('register_open', source)
+    setDrafts((current) => ({ ...current, event: { ...current.event, event: eventId } }))
+    setState((current) => ({ ...current, open: true, source, kind: 'event' }))
   }, [])
 
   const closeRegister = useCallback(() => {
     setState((current) => (current.open ? { ...current, open: false } : current))
   }, [])
 
-  const setKind = useCallback((kind) => setState((current) => (current.kind === kind ? current : { ...current, kind })), [])
+  // Chỉ tab member/course gọi tới (form sự kiện không có tab).
+  const setKind = useCallback(
+    (kind) => setState((current) => (current.kind === kind ? current : { ...current, kind, tab: kind })),
+    [],
+  )
 
   /** Cập nhật bản nháp của MỘT tab, dạng `setState` (nhận hàm). */
   const setDraft = useCallback(
@@ -44,8 +62,8 @@ export function RegisterProvider({ children }) {
   const resetDraft = useCallback((kind) => setDrafts((current) => ({ ...current, [kind]: EMPTY_DRAFTS[kind] })), [])
 
   const value = useMemo(
-    () => ({ ...state, drafts, setDraft, setKind, openRegister, closeRegister, resetDraft }),
-    [state, drafts, setDraft, setKind, openRegister, closeRegister, resetDraft],
+    () => ({ ...state, drafts, setDraft, setKind, openRegister, openEventRegister, closeRegister, resetDraft }),
+    [state, drafts, setDraft, setKind, openRegister, openEventRegister, closeRegister, resetDraft],
   )
 
   return <RegisterContext.Provider value={value}>{children}</RegisterContext.Provider>

@@ -79,6 +79,10 @@ export const SHARED_FIELDS = new Set([
   'ornamentSize',
   // Link trang ngoài của hoạt động (popup Cuộc thi) — một URL cho cả hai bản.
   'link',
+  // Khóa học "Sắp ra mắt".
+  'comingSoon',
+  // Hoạt động đóng đăng ký (ẩn nút, máy chủ từ chối lượt gửi) — từ API 22.
+  'registerClosed',
 ])
 
 const isObject = (value) => typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -216,6 +220,11 @@ export function checkInvariants({ vi, en }, lookups, { imageMaps = null } = {}) 
     }
     for (const kind of claimed) {
       if (!kindLabels.has(kind)) fail(`${lang} activities.groups: nhan kind '${kind}' nhung khong co nhan chu`)
+    }
+    // Nhãn nút đăng ký theo loại: khoá lạ không hại gì (không mục nào khớp) nhưng là dấu
+    // hiệu gõ nhầm id — loại thật sẽ không có nút. Chỉ cảnh báo.
+    for (const kind of Object.keys(activities.registerCta ?? {})) {
+      if (!kindLabels.has(kind)) warn(`${lang} activities.registerCta: '${kind}' khong phai loai hoat dong nao -> nut nay khong hien o dau`)
     }
   }
 

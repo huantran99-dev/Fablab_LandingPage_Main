@@ -126,7 +126,14 @@ const courseBase = {
  * thẻ cấp độ mang `level`/`duration`/`age`, thẻ cấp học mang `stage`/`topic`/`icon`.
  */
 const levelCourse = z.strictObject({ ...courseBase, level: idSchema, duration: text(80), age: text(40) })
-const stageCourse = z.strictObject({ ...courseBase, stage: idSchema, topic: idSchema, icon: idSchema })
+// `comingSoon`: khóa đã công bố nhưng chưa mở lớp (nhãn "Sắp ra mắt"). Từ API 21; chỉ `true` hoặc vắng.
+const stageCourse = z.strictObject({
+  ...courseBase,
+  stage: idSchema,
+  topic: idSchema,
+  icon: idSchema,
+  comingSoon: z.literal(true, 'chi true hoac vang').optional(),
+})
 
 export const coursesSchema = z.strictObject({
   ...visibility,
@@ -135,6 +142,9 @@ export const coursesSchema = z.strictObject({
   description: text(400),
   imageAlt: text(200),
   cardCta: text(40),
+  // Nhãn của khóa có `comingSoon` (từ API 21). Tuỳ chọn: bản lịch sử cũ không có — vắng thì
+  // không vẽ nhãn.
+  comingSoon: text(40).optional(),
   ageLabel: text(40),
   emptyState: text(200),
   showMore: text(40),
@@ -256,9 +266,12 @@ export const activitiesSchema = z.strictObject({
   // Nút dừng/phát của banner tự chạy (WCAG 2.2.2). Từ API 9.
   pause: text(60),
   play: text(60),
-  // Nút "Trở thành thành viên FabLab ngay" dưới carousel Sự kiện (từ API 18). Tuỳ chọn vì
-  // bản lịch sử cũ không có — vắng thì trang không vẽ nút.
+  // Nút "Trở thành thành viên FabLab ngay" (API 18–21). Trang KHÔNG còn dùng từ API 22 (thay
+  // bằng `registerCta`); giữ tuỳ chọn để khôi phục bản lịch sử cũ vẫn qua được schema.
   joinMember: text(60).optional(),
+  // Nhãn nút đăng ký sự kiện theo `kind` (từ API 22): "Đăng ký cuộc thi / Workshop / hội
+  // thảo". Loại không có nhãn thì không có nút. Tuỳ chọn vì bản lịch sử cũ không có.
+  registerCta: z.record(idSchema, text(60)).optional(),
   // Popup chi tiết của banner Cuộc thi (từ API 19). Tuỳ chọn cùng lý do: vắng `viewDetails`
   // thì không vẽ nút "Xem chi tiết", vắng `closeDetails` thì mượn nhãn đóng của popup khóa học.
   viewDetails: text(60).optional(),
@@ -291,6 +304,9 @@ export const activitiesSchema = z.strictObject({
       // bằng dòng trống; `link` dùng chung (KHÔNG tên `href` — `href` bị buộc trỏ neo có thật).
       details: z.string().trim().max(3000, 'toi da 3000 ky tu').optional(),
       link: z.url({ protocol: /^https?$/, error: 'phai la duong dan https://...' }).optional(),
+      // Đóng đăng ký (từ API 22): `true` = ẩn nút đăng ký, máy chủ từ chối lượt gửi. Vắng = đang
+      // nhận — mặc định BẬT theo yêu cầu người dùng, sự kiện đã qua thì admin tắt. Dùng chung.
+      registerClosed: z.literal(true, 'chi true hoac vang').optional(),
     }),
   ),
 })
@@ -377,6 +393,8 @@ export const registerSchema = z.strictObject({
     age: text(200),
     birthYear: text(120),
     role: text(120),
+    // Form sự kiện — từ API 22, tuỳ chọn vì bản lịch sử cũ không có.
+    event: text(200).optional(),
   }),
   success: z.strictObject({ title: text(80), message: text(300), close: text(30) }),
   // Hai tab của form (từ API 12). Các khoá cấp một phía trên là của tab Khóa học.
@@ -396,6 +414,24 @@ export const registerSchema = z.strictObject({
     consent: text(300),
     privacy: text(800),
   }),
+  // Form đăng ký sự kiện (từ API 22). Tuỳ chọn: bản lịch sử cũ không có — thiếu thì trang
+  // không vẽ nút đăng ký sự kiện.
+  event: z
+    .strictObject({
+      description: text(300),
+      eventLabel: text(60),
+      heading: text(60),
+      fullName: text(60),
+      birthYear: text(60),
+      birthYearHint: text(80),
+      organization: text(60),
+      parentName: text(60),
+      parentNote: text(300),
+      notePlaceholder: text(120),
+      consent: text(400),
+      privacy: text(800),
+    })
+    .optional(),
   // Khoá là id CỐ ĐỊNH trong mã (MEMBER_ROLES / MEMBER_INTERESTS) — strictObject đúng các
   // khoá đó: admin sửa được nhãn, không thêm/bớt được lựa chọn (máy chủ không nhận id lạ).
   memberRoles: z.strictObject(Object.fromEntries(MEMBER_ROLES.map((id) => [id, text(60)]))),

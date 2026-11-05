@@ -10,6 +10,7 @@
  */
 import { courseDetailsVi } from './courseDetails.vi'
 import { experienceDetailsVi } from './experienceDetails.vi'
+import { intensiveDetailsVi } from './intensiveDetails.vi'
 
 export const vi = {
   nav: {
@@ -175,7 +176,7 @@ export const vi = {
         id: 'stem',
         title: 'Khóa học STEM',
         description:
-          'Chương trình đầy đủ 5–10 tuần, theo một dự án từ bản phác đầu tiên đến sản phẩm hoàn thiện.',
+          'Khóa học 8 buổi đi sâu một chủ đề robot hoặc AIoT, cho học sinh tiểu học – THCS và THPT.',
       },
       {
         id: 'experience',
@@ -198,6 +199,9 @@ export const vi = {
       { id: 'th', short: 'TH', label: 'Tiểu học' },
       { id: 'thcs', short: 'THCS', label: 'Trung học cơ sở' },
       { id: 'thpt', short: 'THPT', label: 'Trung học phổ thông' },
+      // Khóa học chuyên sâu dành cho cả tiểu học lẫn THCS (slide 36–39). Bộ lọc của nhóm
+      // trải nghiệm chỉ hiện cấp học có trong chính nhóm đó, nên mục này không lọt vào đó.
+      { id: 'th-thcs', short: 'TH/THCS', label: 'Tiểu học – THCS' },
     ],
     topics: [
       { id: 'science', label: 'Khoa học tự nhiên và Sự sống' },
@@ -220,6 +224,8 @@ export const vi = {
     },
     ageLabel: 'Độ tuổi',
     cardCta: 'Tìm hiểu thêm',
+    // Nhãn của khóa có cờ `comingSoon` (từ API 21).
+    comingSoon: 'Sắp ra mắt',
     // `{title}` được thay bằng tên khóa học lúc render.
     imageAlt: 'Ảnh hoạt động tại EIU FabLab minh hoạ cho khóa {title}',
 
@@ -243,7 +249,7 @@ export const vi = {
      * - `experienceDetailsVi` — VIẾT TAY từ catalogue chính thức (30 chương trình)
      * Xem đầu mỗi file để biết cái nào được phép sửa tay.
      */
-    details: { ...courseDetailsVi, ...experienceDetailsVi },
+    details: { ...courseDetailsVi, ...experienceDetailsVi, ...intensiveDetailsVi },
     showMore: 'Xem thêm khóa học',
     showLess: 'Thu gọn',
     emptyState: 'Chưa có khóa học nào trong nhóm này.',
@@ -557,46 +563,77 @@ export const vi = {
           'Khái niệm giao diện và trải nghiệm người dùng, quy trình thiết kế và thực hành dựng một website đơn giản.',
       },
 
-      // --- Khóa học STEM ---------------------------------------------------
+      // --- Khóa học STEM: các khóa học chuyên sâu (slide 35–42 "Giới thiệu STEMLab") ---
       {
-        id: 'robotic-arm',
+        id: 'the-gioi-robot',
         group: 'stem',
-        level: 'intermediate',
-        duration: '10 tuần · 30 giờ',
-        age: '15–18',
-        title: 'Cánh tay Robot',
+        stage: 'th-thcs',
+        topic: 'robotics',
+        icon: 'humanoid',
+        title: 'Thế giới robot',
         description:
-          'Tự tay lắp ráp và lập trình cánh tay robot thực hiện chuỗi thao tác gắp — thả.',
+          'Tám buổi đi từ robot hình người, mobile robot đến cánh tay robot trong sản xuất, khép lại bằng dự án cuối khóa.',
       },
       {
-        id: 'humanoid',
+        id: 'xe-robot-chuyen-sau',
         group: 'stem',
-        level: 'intermediate',
-        duration: '5 tuần · 15 giờ',
-        age: '6–12',
-        title: 'Robot Hình người',
+        stage: 'th-thcs',
+        topic: 'robotics',
+        icon: 'robot-car',
+        title: 'Khám phá xe robot',
         description:
-          'Khám phá cách robot giữ thăng bằng, di chuyển và tương tác với con người.',
+          'Lập trình xe robot với mBlock qua cảm biến, màu sắc, âm thanh và chuyển động, khép lại bằng dự án cuối khóa.',
       },
       {
-        id: 'scratch',
+        id: 'lap-trinh-ai',
         group: 'stem',
-        level: 'basic',
-        duration: '7 tuần · 24 giờ',
-        age: '8+',
-        title: 'Lập trình Scratch',
+        stage: 'th-thcs',
+        topic: 'aiot',
+        icon: 'scratch',
+        title: 'Lập trình cùng AI',
         description:
-          'Bước đầu tiên vào lập trình bằng khối lệnh trực quan — kể chuyện, làm game và hoạt hình.',
+          'Làm quen Pictoblox, lập trình trò chơi và AI cơ bản, rồi điều khiển nhân vật, tạo trợ lý ảo và xe tự hành.',
       },
       {
-        id: 'robot-car',
+        id: 'the-gioi-3d',
         group: 'stem',
-        level: 'basic',
-        duration: '8 tuần · 24 giờ',
-        age: '12–15',
-        title: 'Xe Robot',
+        stage: 'th-thcs',
+        topic: 'aiot',
+        icon: 'process',
+        title: 'Chinh phục thế giới 3D',
         description:
-          'Chế tạo xe tự hành biết dò đường, tránh vật cản và điều khiển từ điện thoại.',
+          'Thiết kế 3D từ kiến trúc, nội thất đến con lắc Newton và nhân vật chuyển động với SimLab, khép lại bằng dự án cuối khóa.',
+      },
+      {
+        id: 'website-chuyen-sau',
+        group: 'stem',
+        stage: 'thpt',
+        topic: 'aiot',
+        icon: 'scratch',
+        title: 'Thiết kế website',
+        description:
+          'Thiết kế giao diện trong Figma với Gestalt, Grid, màu sắc, Typography, Component, AutoLayout và Prototype, hoàn thiện một Landing Page.',
+      },
+      {
+        id: 'ai-khoa-hoc-du-lieu',
+        group: 'stem',
+        stage: 'thpt',
+        topic: 'aiot',
+        icon: 'photonics',
+        title: 'AI và khoa học dữ liệu',
+        description:
+          'Từ trí tuệ nhân tạo và Python đến nhận diện vật thể với YOLO: huấn luyện, đánh giá mô hình và xây dựng ứng dụng AI.',
+      },
+      {
+        id: 'the-gioi-dien-tu',
+        group: 'stem',
+        stage: 'thpt',
+        topic: 'robotics',
+        icon: 'electronics',
+        comingSoon: true,
+        title: 'Thế giới điện tử',
+        description:
+          'Ba module Mini Drone, Mini Robot và IoT smart kit.',
       },
     ],
   },
@@ -884,7 +921,13 @@ export const vi = {
     goTo: 'Xem hoạt động số',
     pause: 'Tạm dừng trình chiếu',
     play: 'Phát trình chiếu',
-    joinMember: 'Trở thành thành viên FabLab ngay',
+    // Nút đăng ký trên từng slide, theo `kind` (từ API 22). Loại không có nhãn ở đây thì
+    // không có nút — `partnership` (lễ ký kết) cố ý không có.
+    registerCta: {
+      competition: 'Đăng ký cuộc thi',
+      workshop: 'Đăng ký Workshop',
+      seminar: 'Đăng ký hội thảo',
+    },
     // Popup chi tiết của banner Cuộc thi (từ API 19).
     viewDetails: 'Xem chi tiết',
     detailLink: 'Xem trang cuộc thi',
@@ -1187,6 +1230,8 @@ export const vi = {
       age: 'Thành viên cần từ 16 tuổi trở lên. Học sinh nhỏ hơn vui lòng đăng ký khóa học.',
       birthYear: 'Năm sinh chưa đúng (ví dụ 2004).',
       role: 'Vui lòng chọn một mục.',
+      // Form sự kiện (từ API 22): sự kiện đã đóng đăng ký hoặc vừa bị gỡ khỏi trang.
+      event: 'Sự kiện này hiện không nhận đăng ký trực tuyến. Vui lòng tải lại trang hoặc liên hệ FabLab.',
     },
     success: {
       title: 'Đã nhận đăng ký!',
@@ -1211,6 +1256,27 @@ export const vi = {
       consent: 'Tôi đồng ý để EIU FabLab xử lý các thông tin trên nhằm liên hệ về việc đăng ký thành viên.',
       privacy:
         'Thông tin chỉ dùng để liên hệ và quản lý thành viên, do EIU FabLab (Đại học Quốc tế Miền Đông) quản lý và lưu tối đa 12 tháng. Bạn có thể rút lại đồng ý hoặc yêu cầu xoá dữ liệu qua {email} (Nghị định 13/2023/NĐ-CP).',
+    },
+    // Form đăng ký sự kiện (từ API 22) — mở từ nút "Đăng ký cuộc thi / Workshop / hội thảo"
+    // trên từng slide của section Hoạt động. Không có tab: sự kiện đã chọn sẵn. Tiêu đề form
+    // là chính nhãn nút (`activities.registerCta`). Mọi lứa tuổi; dưới 16 tuổi thì phụ huynh
+    // điền và đồng ý thay — nên câu đồng ý là MỘT câu phủ cả hai trường hợp.
+    event: {
+      description: 'Để lại thông tin, EIU FabLab sẽ liên hệ xác nhận việc tham gia.',
+      eventLabel: 'Sự kiện đăng ký',
+      heading: 'Thông tin người tham gia',
+      fullName: 'Họ và tên người tham gia',
+      birthYear: 'Năm sinh',
+      birthYearHint: 'Ví dụ: 2008',
+      organization: 'Trường hoặc đơn vị',
+      parentName: 'Họ và tên phụ huynh',
+      parentNote:
+        'Người tham gia dưới 16 tuổi: phụ huynh hoặc người giám hộ điền họ tên, số điện thoại liên hệ của mình và đồng ý thay.',
+      notePlaceholder: 'Câu hỏi cho FabLab, nhu cầu hỗ trợ…',
+      consent:
+        'Tôi là người tham gia từ 16 tuổi trở lên, hoặc là cha mẹ / người giám hộ của người tham gia, và đồng ý để EIU FabLab xử lý các thông tin trên nhằm liên hệ về sự kiện.',
+      privacy:
+        'Thông tin chỉ dùng để liên hệ và tổ chức sự kiện, do EIU FabLab (Đại học Quốc tế Miền Đông) quản lý và lưu tối đa 12 tháng. Bạn có thể rút lại đồng ý hoặc yêu cầu xoá dữ liệu qua {email} (Nghị định 13/2023/NĐ-CP).',
     },
     // Khoá (id) cố định trong mã — xem MEMBER_ROLES / MEMBER_INTERESTS ở
     // server/schema/registration.js. Chỉ sửa nhãn, không thêm/bớt khoá.

@@ -9,6 +9,7 @@
  */
 import { courseDetailsEn } from './courseDetails.en'
 import { experienceDetailsEn } from './experienceDetails.en'
+import { intensiveDetailsEn } from './intensiveDetails.en'
 
 export const en = {
   nav: {
@@ -171,7 +172,7 @@ export const en = {
         id: 'stem',
         title: 'STEM Courses',
         description:
-          'Full programmes of 5–10 weeks, carrying one project from first sketch through to a finished build.',
+          'Eight-session courses that go deep into one robotics or AIoT topic, for primary, lower and upper secondary students.',
       },
       {
         id: 'experience',
@@ -194,6 +195,8 @@ export const en = {
       { id: 'th', short: 'Primary', label: 'Primary school' },
       { id: 'thcs', short: 'Secondary', label: 'Lower secondary school' },
       { id: 'thpt', short: 'High school', label: 'Upper secondary school' },
+      // Intensive courses for both primary and lower secondary (slides 36–39).
+      { id: 'th-thcs', short: 'Primary/Secondary', label: 'Primary & lower secondary' },
     ],
     topics: [
       { id: 'science', label: 'Natural science & life' },
@@ -216,6 +219,8 @@ export const en = {
     },
     ageLabel: 'Ages',
     cardCta: 'Learn more',
+    // Label for courses flagged `comingSoon` (since API 21).
+    comingSoon: 'Coming soon',
     // `{title}` is replaced with the course name at render time.
     imageAlt: 'Activity at FabLab EIU illustrating the {title} course',
 
@@ -239,7 +244,7 @@ export const en = {
      * - `experienceDetailsEn` — HAND-WRITTEN from the official catalogue (30 programmes)
      * See the header of each file for which one may be edited by hand.
      */
-    details: { ...courseDetailsEn, ...experienceDetailsEn },
+    details: { ...courseDetailsEn, ...experienceDetailsEn, ...intensiveDetailsEn },
     showMore: 'Show more courses',
     showLess: 'Show less',
     emptyState: 'No courses in this track yet.',
@@ -553,46 +558,77 @@ export const en = {
           'The basics of user interface and user experience, the design process and building a simple website.',
       },
 
-      // --- STEM courses -------------------------------------------------------
+      // --- STEM courses: intensive courses (slides 35–42 of "Giới thiệu STEMLab") ---
       {
-        id: 'robotic-arm',
+        id: 'the-gioi-robot',
         group: 'stem',
-        level: 'intermediate',
-        duration: '10 weeks · 30 hours',
-        age: '15–18',
-        title: 'Robotic Arms',
+        stage: 'th-thcs',
+        topic: 'robotics',
+        icon: 'humanoid',
+        title: 'World of Robots',
         description:
-          'Assemble and program a robotic arm to carry out a full pick-and-place routine.',
+          'Eight sessions from humanoid robots and mobile robots to robotic arms in manufacturing, wrapped up with a final project.',
       },
       {
-        id: 'humanoid',
+        id: 'xe-robot-chuyen-sau',
         group: 'stem',
-        level: 'intermediate',
-        duration: '5 weeks · 15 hours',
-        age: '6–12',
-        title: 'Humanoid Robots',
+        stage: 'th-thcs',
+        topic: 'robotics',
+        icon: 'robot-car',
+        title: 'Robot Car Discovery',
         description:
-          'Discover how robots keep their balance, walk, and interact with the people around them.',
+          'Program a robot car in mBlock through sensors, colours, sound and motion, wrapped up with a final project.',
       },
       {
-        id: 'scratch',
+        id: 'lap-trinh-ai',
         group: 'stem',
-        level: 'basic',
-        duration: '7 weeks · 24 hours',
-        age: '8+',
-        title: 'Scratch Programming',
+        stage: 'th-thcs',
+        topic: 'aiot',
+        icon: 'scratch',
+        title: 'Coding with AI',
         description:
-          'A first step into coding with visual blocks — telling stories, building games and animations.',
+          'Get started with Pictoblox, code games and basic AI, then control characters, build a virtual assistant and a self-driving car.',
       },
       {
-        id: 'robot-car',
+        id: 'the-gioi-3d',
         group: 'stem',
-        level: 'basic',
-        duration: '8 weeks · 24 hours',
-        age: '12–15',
-        title: 'Robot Vehicles',
+        stage: 'th-thcs',
+        topic: 'aiot',
+        icon: 'process',
+        title: 'Conquering the 3D World',
         description:
-          'Build a self-driving car that follows lines, avoids obstacles and responds to your phone.',
+          '3D design from architecture and interiors to a Newton\'s cradle and animated characters in SimLab, wrapped up with a final project.',
+      },
+      {
+        id: 'website-chuyen-sau',
+        group: 'stem',
+        stage: 'thpt',
+        topic: 'aiot',
+        icon: 'scratch',
+        title: 'Website Design',
+        description:
+          'Interface design in Figma with Gestalt, grids, colour, typography, components, AutoLayout and prototypes, finishing with a landing page.',
+      },
+      {
+        id: 'ai-khoa-hoc-du-lieu',
+        group: 'stem',
+        stage: 'thpt',
+        topic: 'aiot',
+        icon: 'photonics',
+        title: 'AI and Data Science',
+        description:
+          'From artificial intelligence and Python to object detection with YOLO: training and evaluating models and building an AI app.',
+      },
+      {
+        id: 'the-gioi-dien-tu',
+        group: 'stem',
+        stage: 'thpt',
+        topic: 'robotics',
+        icon: 'electronics',
+        comingSoon: true,
+        title: 'World of Electronics',
+        description:
+          'Three modules: Mini Drone, Mini Robot and IoT smart kit.',
       },
     ],
   },
@@ -878,7 +914,12 @@ export const en = {
     goTo: 'Go to activity',
     pause: 'Pause slideshow',
     play: 'Play slideshow',
-    joinMember: 'Become a FabLab member today',
+    // Registration button on each slide, by `kind` (since API 22). No label = no button.
+    registerCta: {
+      competition: 'Register for the competition',
+      workshop: 'Register for the workshop',
+      seminar: 'Register for the seminar',
+    },
     // Popup chi tiết của banner Cuộc thi (từ API 19).
     viewDetails: 'View details',
     detailLink: 'Visit the competition page',
@@ -1178,6 +1219,7 @@ export const en = {
       age: 'Members must be 16 or older. Younger students, please register for a course.',
       birthYear: 'Year of birth looks wrong (e.g. 2004).',
       role: 'Please choose one.',
+      event: 'This event is not taking online registrations right now. Please reload the page or contact FabLab.',
     },
     success: {
       title: 'Registration received!',
@@ -1200,6 +1242,23 @@ export const en = {
       consent: 'I agree that EIU FabLab may process the information above to contact me about membership.',
       privacy:
         'Your information is used only for contacting you and managing membership, is managed by EIU FabLab (Eastern International University) and kept for at most 12 months. You can withdraw consent or ask for deletion at {email} (Decree 13/2023/ND-CP).',
+    },
+    event: {
+      description: 'Leave your details and EIU FabLab will contact you to confirm your place.',
+      eventLabel: 'Registering for',
+      heading: 'Participant',
+      fullName: 'Participant full name',
+      birthYear: 'Year of birth',
+      birthYearHint: 'E.g. 2008',
+      organization: 'School or organisation',
+      parentName: 'Parent or guardian full name',
+      parentNote:
+        'Participants under 16: a parent or guardian fills in their own name and phone number and gives consent on their behalf.',
+      notePlaceholder: 'Questions for FabLab, support you need…',
+      consent:
+        'I am the participant and aged 16 or over, or the parent / guardian of the participant, and I agree that EIU FabLab may process the information above to contact me about the event.',
+      privacy:
+        'Your information is used only for contacting you and running the event, is managed by EIU FabLab (Eastern International University) and kept for at most 12 months. You can withdraw consent or ask for deletion at {email} (Decree 13/2023/ND-CP).',
     },
     memberRoles: {
       'eiu-student': 'EIU student',
