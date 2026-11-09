@@ -211,6 +211,7 @@
         }
       ],
       "kinds": {
+        "activity": "Activity",
         "competition": "Competition",
         "partnership": "Partnership",
         "seminar": "Seminar",
@@ -1873,9 +1874,23 @@
       "title": "An open workshop for digital fabrication"
     },
     "finalCta": {
+      "buttons": [
+        {
+          "action": "register",
+          "arrow": true,
+          "id": "primary",
+          "label": "Enroll in a course",
+          "style": "primary"
+        },
+        {
+          "action": "link",
+          "href": "#contact",
+          "id": "secondary",
+          "label": "Get in touch",
+          "style": "secondary"
+        }
+      ],
       "description": "Enroll in a course, or simply drop by to see what we are making. The door at FabLab EIU is always open.",
-      "primaryCta": "Enroll in a course",
-      "secondaryCta": "Get in touch",
       "title": "Your idea deserves to be built"
     },
     "footer": {
@@ -1967,8 +1982,77 @@
         "title": "Connect"
       }
     },
+    "forms": {
+      "adultOnly": "This form is for people aged 16 or over.",
+      "birthYear": "Year of birth",
+      "birthYearHint": "E.g. 2004",
+      "closedMessage": "This form is no longer accepting submissions.",
+      "invalid": "This value is not valid.",
+      "items": [
+        {
+          "closed": true,
+          "consent": "I agree that EIU FabLab may process the information above to get back to me.",
+          "description": "Send EIU FabLab a question or feedback. We will get back to you by the phone number or email you leave.",
+          "fields": [
+            {
+              "fieldType": "text",
+              "help": "",
+              "id": "ho-ten",
+              "label": "Full name",
+              "required": true
+            },
+            {
+              "fieldType": "phone",
+              "help": "",
+              "id": "dien-thoai",
+              "label": "Phone number",
+              "required": true
+            },
+            {
+              "fieldType": "email",
+              "help": "",
+              "id": "email",
+              "label": "Email"
+            },
+            {
+              "fieldType": "textarea",
+              "help": "",
+              "id": "noi-dung",
+              "label": "Message",
+              "required": true
+            }
+          ],
+          "id": "gop-y",
+          "privacy": "Your information is used only to get back to you, is managed by EIU FabLab (Eastern International University) and kept for at most 12 months. You can withdraw consent or ask for deletion at {email} (Decree 13/2023/ND-CP).",
+          "submitLabel": "Send",
+          "successBody": "Thank you. EIU FabLab will get back to you soon.",
+          "successTitle": "Sent",
+          "title": "Feedback / Contact"
+        }
+      ],
+      "parentName": "Parent or guardian full name",
+      "parentNote": "Under 16: a parent or guardian fills in their own name and gives consent on their behalf.",
+      "selectPlaceholder": "Choose one"
+    },
     "hero": {
-      "description": "EIU FabLab is a typical digital fabrication workshop with many advanced technologies, machinery and equipment, dynamic and creative open spaces and diverse activities to serve the community.community.",
+      "buttons": [
+        {
+          "action": "link",
+          "arrow": true,
+          "href": "#courses",
+          "id": "primary",
+          "label": "Explore courses",
+          "style": "primary"
+        },
+        {
+          "action": "link",
+          "href": "#facilities",
+          "id": "secondary",
+          "label": "Visit the lab",
+          "style": "secondary"
+        }
+      ],
+      "description": "EIU FabLab is a typical digital fabrication workshop with many advanced technologies, machinery and equipment, dynamic and creative open spaces and diverse activities to serve the community.",
       "eyebrow": "Eastern International University",
       "floatingBadges": [
         {
@@ -1986,8 +2070,6 @@
         "width": 1200
       },
       "imageAlt": "A FabLab EIU instructor helping three children assemble a STEM kit at a workbench.",
-      "primaryCta": "Explore courses",
-      "secondaryCta": "Visit the lab",
       "title": "Proudly Serving the Community"
     },
     "motifs": {
@@ -2026,8 +2108,15 @@
     },
     "nav": {
       "brandTagline": "Digital fabrication lab",
+      "buttons": [
+        {
+          "action": "register",
+          "id": "register",
+          "label": "Enroll now",
+          "style": "primary"
+        }
+      ],
       "closeMenu": "Close menu",
-      "cta": "Enroll now",
       "links": [
         {
           "href": "#about",
@@ -2234,6 +2323,25 @@
         }
       ]
     },
+    "popups": {
+      "close": "Close",
+      "items": [
+        {
+          "body": "This is a sample popup. Edit the title and text, add an image and buttons, then set a button on the page to \"Open popup\" so visitors can open it.",
+          "buttons": [
+            {
+              "action": "link",
+              "href": "#courses",
+              "id": "courses",
+              "label": "See courses",
+              "style": "primary"
+            }
+          ],
+          "id": "popup-mau",
+          "title": "Sample popup"
+        }
+      ]
+    },
     "projects": {
       "description": "Models and products designed and built at FabLab EIU — from STEM teaching kits to robots and medical models.",
       "eyebrow": "Projects",
@@ -2436,11 +2544,6 @@
           "colorSurface": "#fff3d6",
           "ctaAction": "register",
           "ctaLabel": "Register for a course",
-          "decor": {
-            "height": 636,
-            "url": "/media/activity-machine-learning.c6a02acf.jpg",
-            "width": 900
-          },
           "end": "2027-02-14",
           "fall": true,
           "href": "#",
@@ -2482,11 +2585,6 @@
           "colorSurface": "#eef7f0",
           "ctaAction": "link",
           "ctaLabel": "See projects",
-          "decor": {
-            "height": 240,
-            "url": "/media/team-tuan.086e9dc4.jpg",
-            "width": 240
-          },
           "enabled": true,
           "end": "2026-12-26",
           "fall": true,
@@ -2679,12 +2777,12 @@
           "role": "STEM Specialist"
         },
         {
-          "education": "BEng in Automation Engineering",
+          "education": "MSc in Electronic Engineering",
           "id": "linh",
           "image": {
-            "height": 240,
-            "url": "/media/team-linh.e9e92a0b.jpg",
-            "width": 240
+            "height": 1600,
+            "url": "/media/a-linh.9315b38d.jpg",
+            "width": 1200
           },
           "name": "Võ Đoàn Linh",
           "role": "Technician"
@@ -2732,6 +2830,39 @@
           },
           "name": "Trần Thị Nhân Kim Thủy",
           "role": "Executive"
+        },
+        {
+          "education": "Software Engineer Student",
+          "id": "au-duong-tai",
+          "image": {
+            "height": 709,
+            "url": "/media/au-duong-tai.c16b2ca1.jpg",
+            "width": 484
+          },
+          "name": "Âu Dương Tài",
+          "role": "Student Assistant"
+        },
+        {
+          "education": "Electrical Engineering Student",
+          "id": "dao-le-ngoc-thuy",
+          "image": {
+            "height": 1153,
+            "url": "/media/dao-le-ngoc-thuy.d65361aa.jpg",
+            "width": 1024
+          },
+          "name": "Đào Lê Ngọc Thủy",
+          "role": "Student Assistant"
+        },
+        {
+          "education": "Student of Control and Automation Engineering",
+          "id": "pham-phuong-thanh",
+          "image": {
+            "height": 1449,
+            "url": "/media/thanh.03d35f91.png",
+            "width": 1086
+          },
+          "name": "Phạm Phương Thành",
+          "role": "Student Assistant"
         }
       ],
       "photoAlt": "Portrait of {name}",
@@ -2740,6 +2871,7 @@
     "testimonials": {
       "eyebrow": "Testimonials",
       "goTo": "Go to testimonial",
+      "hidden": true,
       "items": [
         {
           "id": "t1",
@@ -2765,8 +2897,8 @@
       "title": "What learners say about FabLab EIU"
     }
   },
-  "rev": 190,
-  "updatedAt": "2026-11-05T04:00:45.428Z",
+  "rev": 246,
+  "updatedAt": "2026-11-09T09:23:56.946Z",
   "vi": {
     "activities": {
       "closeDetails": "Đóng",
@@ -2979,6 +3111,7 @@
         }
       ],
       "kinds": {
+        "activity": "Hoạt động",
         "competition": "Cuộc thi",
         "partnership": "Hợp tác",
         "seminar": "Hội thảo",
@@ -3000,7 +3133,7 @@
       "ageLabel": "Độ tuổi",
       "cardCta": "Tìm hiểu thêm",
       "comingSoon": "Sắp ra mắt",
-      "description": "Từ những bước lập trình đầu tiên đến kỹ năng vận hành máy công nghiệp — mỗi khóa học đều bắt đầu bằng việc bắt tay vào làm.",
+      "description": "Hành trình khám phá và trải nghiệm, nơi học viên được trực tiếp thực hành, sáng tạo và phát triển kỹ năng thông qua những hoạt động thực tế.",
       "details": {
         "ai-khoa-hoc-du-lieu": {
           "audience": "học sinh THPT",
@@ -3764,12 +3897,12 @@
       },
       "groups": [
         {
-          "description": "Khóa học 8 buổi đi sâu một chủ đề robot hoặc AIoT, cho học sinh tiểu học – THCS và THPT.",
+          "description": "Chương trình STEM chuyên sâu được thiết kế theo lộ trình 8 buổi, phù hợp với từng độ tuổi và năng lực học sinh từ Tiểu học đến THPT.",
           "id": "stem",
           "title": "Khóa học STEM"
         },
         {
-          "description": "Ba mươi chương trình ngắn, đi thẳng vào một lĩnh vực để thử sức. Lọc theo cấp học và nhóm chủ đề để tìm nhanh chương trình phù hợp.",
+          "description": "Hơn 30 chủ đề trải nghiệm STEM giúp học sinh khám phá khoa học, tiếp cận công nghệ và thực hành sáng tạo qua từng buổi học.",
           "filterable": true,
           "id": "experience",
           "title": "Chương trình trải nghiệm STEM"
@@ -4342,11 +4475,11 @@
       "topics": [
         {
           "id": "science",
-          "label": "Khoa học tự nhiên và Sự sống"
+          "label": "Khoa học tự nhiên & Sự sống"
         },
         {
           "id": "robotics",
-          "label": "Kỹ thuật và công nghệ Robot"
+          "label": "Kỹ thuật & công nghệ Robot"
         },
         {
           "id": "aiot",
@@ -4760,7 +4893,7 @@
       "specsTitle": "Thông số kỹ thuật"
     },
     "facilities": {
-      "description": "Toàn bộ thiết bị đều mở cho học viên và cộng đồng sử dụng, có kỹ thuật viên hướng dẫn trực tiếp.",
+      "description": "Không gian chế tạo mở với hệ thống thiết bị đa dạng, được hỗ trợ trực tiếp bởi đội ngũ chuyên viên trong quá trình nghiên cứu và chế tạo sản phẩm.",
       "eyebrow": "Thiết bị & Không gian",
       "imageAlt": "Ảnh chụp {title} tại xưởng EIU FabLab",
       "items": [
@@ -4808,9 +4941,23 @@
       "title": "Xưởng mở với công nghệ chế tạo số"
     },
     "finalCta": {
+      "buttons": [
+        {
+          "action": "register",
+          "arrow": true,
+          "id": "primary",
+          "label": "Đăng ký khóa học",
+          "style": "primary"
+        },
+        {
+          "action": "link",
+          "href": "#contact",
+          "id": "secondary",
+          "label": "Liên hệ với chúng tôi",
+          "style": "secondary"
+        }
+      ],
       "description": "Đăng ký một khóa học, hoặc đơn giản là ghé thăm xưởng để xem chúng tôi đang làm gì. Cửa EIU FabLab luôn mở.",
-      "primaryCta": "Đăng ký khóa học",
-      "secondaryCta": "Liên hệ với chúng tôi",
       "title": "Ý tưởng của bạn xứng đáng được chế tạo"
     },
     "footer": {
@@ -4902,9 +5049,78 @@
         "title": "Kết nối"
       }
     },
+    "forms": {
+      "adultOnly": "Form này dành cho người từ 16 tuổi trở lên.",
+      "birthYear": "Năm sinh",
+      "birthYearHint": "Ví dụ: 2004",
+      "closedMessage": "Form này đã ngừng nhận bài gửi.",
+      "invalid": "Giá trị chưa hợp lệ.",
+      "items": [
+        {
+          "closed": true,
+          "consent": "Tôi đồng ý để EIU FabLab xử lý các thông tin trên nhằm liên hệ lại với tôi.",
+          "description": "Gửi câu hỏi hoặc góp ý cho EIU FabLab. Chúng tôi sẽ liên hệ lại qua số điện thoại hoặc email bạn để lại.",
+          "fields": [
+            {
+              "fieldType": "text",
+              "help": "",
+              "id": "ho-ten",
+              "label": "Họ và tên",
+              "required": true
+            },
+            {
+              "fieldType": "phone",
+              "help": "",
+              "id": "dien-thoai",
+              "label": "Số điện thoại",
+              "required": true
+            },
+            {
+              "fieldType": "email",
+              "help": "",
+              "id": "email",
+              "label": "Email"
+            },
+            {
+              "fieldType": "textarea",
+              "help": "",
+              "id": "noi-dung",
+              "label": "Nội dung",
+              "required": true
+            }
+          ],
+          "id": "gop-y",
+          "privacy": "Thông tin chỉ dùng để liên hệ lại, do EIU FabLab (Đại học Quốc tế Miền Đông) quản lý và lưu tối đa 12 tháng. Bạn có thể rút lại đồng ý hoặc yêu cầu xoá dữ liệu qua {email} (Nghị định 13/2023/NĐ-CP).",
+          "submitLabel": "Gửi",
+          "successBody": "Cảm ơn bạn. EIU FabLab sẽ liên hệ lại sớm.",
+          "successTitle": "Đã gửi",
+          "title": "Góp ý / Liên hệ"
+        }
+      ],
+      "parentName": "Họ và tên phụ huynh",
+      "parentNote": "Người dưới 16 tuổi: phụ huynh hoặc người giám hộ điền họ tên của mình và đồng ý thay.",
+      "selectPlaceholder": "Chọn một mục"
+    },
     "hero": {
-      "description": "EIU FabLab là một xưởng chế tác số điển hình với nhiều công nghệ, máy móc thiết bị hiện đại, không gian mở năng động - sáng tạo và các hoạt động đa dạng nhằm phục vụ cộng đồng. ",
-      "eyebrow": "Đại học Quốc tế Miền Đông",
+      "buttons": [
+        {
+          "action": "link",
+          "arrow": true,
+          "href": "#courses",
+          "id": "primary",
+          "label": "Khám phá khóa học",
+          "style": "primary"
+        },
+        {
+          "action": "link",
+          "href": "#facilities",
+          "id": "secondary",
+          "label": "Tham quan FabLab",
+          "style": "secondary"
+        }
+      ],
+      "description": "EIU FabLab là không gian chế tạo số mở, năng động và sáng tạo, nơi kết nối tri thức với thực tiễn, biến ý tưởng thành sản phẩm thông qua nghiên cứu, phát triển công nghệ và thúc đẩy giáo dục STEM.",
+      "eyebrow": "Trường Đại học Quốc tế Miền Đông",
       "floatingBadges": [
         {
           "id": "open",
@@ -4921,8 +5137,6 @@
         "width": 1200
       },
       "imageAlt": "Giảng viên EIU FabLab hướng dẫn ba em nhỏ lắp bộ kit STEM trên bàn thực hành.",
-      "primaryCta": "Khám phá khóa học",
-      "secondaryCta": "Tham quan FabLab",
       "title": "Tự Hào Phục Vụ Cộng Đồng"
     },
     "motifs": {
@@ -4961,8 +5175,15 @@
     },
     "nav": {
       "brandTagline": "Xưởng chế tạo số",
+      "buttons": [
+        {
+          "action": "register",
+          "id": "register",
+          "label": "Đăng ký ngay",
+          "style": "primary"
+        }
+      ],
       "closeMenu": "Đóng menu",
-      "cta": "Đăng ký ngay",
       "links": [
         {
           "href": "#about",
@@ -5169,8 +5390,27 @@
         }
       ]
     },
+    "popups": {
+      "close": "Đóng",
+      "items": [
+        {
+          "body": "Đây là popup mẫu. Sửa tiêu đề, nội dung, thêm ảnh và nút, rồi chọn \"Mở popup\" cho một nút trên trang để người xem mở được nó.",
+          "buttons": [
+            {
+              "action": "link",
+              "href": "#courses",
+              "id": "courses",
+              "label": "Xem khóa học",
+              "style": "primary"
+            }
+          ],
+          "id": "popup-mau",
+          "title": "Popup mẫu"
+        }
+      ]
+    },
     "projects": {
-      "description": "Những mô hình và sản phẩm được thiết kế, chế tạo tại FabLab EIU — từ học cụ STEM tới robot và mô hình y tế.",
+      "description": "Những dự án nghiên cứu, mô hình và sản phẩm công nghệ được thiết kế, chế tạo và phát triển tại FabLab.",
       "eyebrow": "Dự án",
       "goTo": "Xem dự án số",
       "imageAlt": "Ảnh dự án {title}",
@@ -5371,11 +5611,6 @@
           "colorSurface": "#fff3d6",
           "ctaAction": "register",
           "ctaLabel": "Đăng ký khóa học",
-          "decor": {
-            "height": 636,
-            "url": "/media/activity-machine-learning.c6a02acf.jpg",
-            "width": 900
-          },
           "end": "2027-02-14",
           "fall": true,
           "href": "#",
@@ -5417,11 +5652,6 @@
           "colorSurface": "#eef7f0",
           "ctaAction": "link",
           "ctaLabel": "Xem dự án",
-          "decor": {
-            "height": 240,
-            "url": "/media/team-tuan.086e9dc4.jpg",
-            "width": 240
-          },
           "enabled": true,
           "end": "2026-12-26",
           "fall": true,
@@ -5570,7 +5800,7 @@
           "role": "Chuyên viên STEM"
         },
         {
-          "education": "Cử nhân Khoa học Vật lý",
+          "education": "Cử nhân Vật lý hạt nhân",
           "id": "thy",
           "image": {
             "height": 240,
@@ -5614,12 +5844,12 @@
           "role": "Chuyên viên STEM"
         },
         {
-          "education": "Kỹ sư Kỹ thuật Tự động hóa",
+          "education": "Thạc sĩ Kỹ thuật điện tử",
           "id": "linh",
           "image": {
-            "height": 240,
-            "url": "/media/team-linh.e9e92a0b.jpg",
-            "width": 240
+            "height": 1600,
+            "url": "/media/a-linh.9315b38d.jpg",
+            "width": 1200
           },
           "name": "Võ Đoàn Linh",
           "role": "Kỹ thuật viên"
@@ -5667,6 +5897,39 @@
           },
           "name": "Trần Thị Nhân Kim Thủy",
           "role": "Chuyên viên STEM"
+        },
+        {
+          "education": "Sinh viên Kỹ thuật phần mềm",
+          "id": "au-duong-tai",
+          "image": {
+            "height": 709,
+            "url": "/media/au-duong-tai.c16b2ca1.jpg",
+            "width": 484
+          },
+          "name": "Âu Dương Tài",
+          "role": "Sinh viên cộng tác"
+        },
+        {
+          "education": "Sinh viên Kỹ thuật điện",
+          "id": "dao-le-ngoc-thuy",
+          "image": {
+            "height": 1153,
+            "url": "/media/dao-le-ngoc-thuy.d65361aa.jpg",
+            "width": 1024
+          },
+          "name": "Đào Lê Ngọc Thủy",
+          "role": "Sinh viên cộng tác"
+        },
+        {
+          "education": "Sinh viên Điều khiển và tự động hóa",
+          "id": "pham-phuong-thanh",
+          "image": {
+            "height": 1449,
+            "url": "/media/thanh.03d35f91.png",
+            "width": 1086
+          },
+          "name": "Phạm Phương Thành",
+          "role": "Sinh viên cộng tác"
         }
       ],
       "photoAlt": "Ảnh chân dung {name}",
@@ -5675,6 +5938,7 @@
     "testimonials": {
       "eyebrow": "Cảm nhận",
       "goTo": "Xem cảm nhận số",
+      "hidden": true,
       "items": [
         {
           "id": "t1",

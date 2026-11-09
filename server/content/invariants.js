@@ -18,6 +18,7 @@
  */
 import { WHITE, contrast } from './color.js'
 import { BUILTIN_MOTIFS, IMAGE_SHAPE_PREFIX, MOTIF_GLYPHS } from './motifs.js'
+import { eachButton } from './buttons.js'
 import { assertParity } from './parity.js'
 import { renderedAnchors } from './lookups.js'
 import { TOGGLEABLE_SECTIONS } from '../schema/sections.js'
@@ -83,6 +84,19 @@ export const SHARED_FIELDS = new Set([
   'comingSoon',
   // Hoạt động đóng đăng ký (ẩn nút, máy chủ từ chối lượt gửi) — từ API 22.
   'registerClosed',
+  // Nút, popup, form tự tạo (API 23): kiểu, hành động và đích của nút; loại / bắt buộc của
+  // ô form; công tắc của form. `popupId` / `formId` dùng ở cả nút lẫn sự kiện mùa.
+  'style',
+  'arrow',
+  'action',
+  'registerKind',
+  'courseId',
+  'formId',
+  'popupId',
+  'fieldType',
+  'required',
+  'allowMinors',
+  'closed',
 ])
 
 const isObject = (value) => typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -374,6 +388,55 @@ export function checkInvariants({ vi, en }, lookups, { imageMaps = null } = {}) 
     }
   }
 
+  // --- 3g. Nút, popup, form tự tạo (API 23) ------------------------------------------
+  //
+  // Cắt ngang section như luật `facility`: nút trỏ tới form / popup / khóa học không có thật
+  // là nút chết — và chiều ngược lại, xoá form / popup đang có nút trỏ tới bị chặn. Trường
+  // hành động dùng chung (luật số 1) nên kiểm trên bản VI; nhãn (dịch) kiểm cả hai.
+
+  const formsById = new Map((vi.forms?.items ?? []).map((form) => [form.id, form]))
+  const popupIds = new Set((vi.popups?.items ?? []).map((popup) => popup.id))
+  const courseIds = new Set((vi.courses?.items ?? []).map((course) => course.id))
+
+  /** Đích của một hành động (nút hoặc nút popup sự kiện mùa). */
+  const checkTarget = (at, action, { formId, popupId, courseId, href }, ownerPopup) => {
+    if (action === 'link' && (!href || href === '#')) fail(`${at}: nut "mo link" nhung chua co duong dan`)
+    if (action === 'form') {
+      const form = formsById.get(formId)
+      if (!form) fail(`${at}: form '${formId ?? ''}' khong co trong forms.items -> nut chet`)
+      else if (form.closed) warn(`${at}: form '${formId}' dang dong nhan -> nut tu an`)
+    }
+    if (action === 'popup') {
+      if (!popupIds.has(popupId)) fail(`${at}: popup '${popupId ?? ''}' khong co trong popups.items -> nut chet`)
+      else if (popupId === ownerPopup) fail(`${at}: popup tro vao chinh no`)
+    }
+    if (courseId && !courseIds.has(courseId)) fail(`${at}: khoa hoc '${courseId}' khong co trong courses.items`)
+  }
+
+  for (const { where, button, popupId } of eachButton(vi)) checkTarget(where, button.action, button, popupId)
+  for (const [lang, dict] of Object.entries(dicts)) {
+    for (const { where, button } of eachButton(dict)) {
+      if (!String(button.label ?? '').trim()) fail(`${lang} ${where}: nut chua co chu`)
+    }
+  }
+  for (const season of seasons) {
+    if (season.ctaAction === 'form' || season.ctaAction === 'popup') {
+      checkTarget(`seasonal.items[${season.id}]`, season.ctaAction, season)
+    }
+  }
+
+  for (const form of vi.forms?.items ?? []) {
+    const at = `forms.items[${form.id}]`
+    for (const field of form.fields ?? []) {
+      const isChoice = field.fieldType === 'select' || field.fieldType === 'multiselect'
+      if (isChoice && !(field.options?.length > 0)) fail(`${at}.fields[${field.id}]: o chon chua co lua chon nao`)
+      if (!isChoice && field.options) fail(`${at}.fields[${field.id}]: chi o chon moi co lua chon`)
+    }
+    if (!(form.fields ?? []).some((field) => field.fieldType === 'phone' || field.fieldType === 'email')) {
+      warn(`${at}: khong co o so dien thoai hay email -> khong lien lac lai duoc nguoi gui`)
+    }
+  }
+
   // --- 4. Trụ cột và thiết bị: có đường lui, chỉ ghi chú ----------------------
 
   const TOLERANT = [
@@ -473,6 +536,9 @@ export function checkInvariants({ vi, en }, lookups, { imageMaps = null } = {}) 
       // Nút của popup sự kiện: chỉ kiểm khi nút thật sự là link.
       for (const season of dict.seasonal?.items ?? []) {
         if (season.ctaAction === 'link') checkHref(`${lang} seasonal.items[${season.id}]`, season.href)
+      }
+      for (const { where, button } of eachButton(dict)) {
+        if (button.action === 'link') checkHref(`${lang} ${where}`, button.href)
       }
     }
   }

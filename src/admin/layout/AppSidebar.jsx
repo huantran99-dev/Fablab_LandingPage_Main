@@ -9,6 +9,8 @@ const SYSTEM_LINKS = [
 
 const ENROLLMENT_LINKS = [
   { name: 'registrations', href: '#/registrations', label: 'Đăng ký', icon: 'inbox' },
+  // Bài gửi của form tự tạo (API 23).
+  { name: 'forms-inbox', href: '#/forms-inbox', label: 'Bài gửi form', icon: 'register' },
   { name: 'stats', href: '#/stats', label: 'Thống kê truy cập', icon: 'chart' },
 ]
 
@@ -88,7 +90,7 @@ function GroupTitle({ collapsed, children }) {
  * Sidebar kiểu TailAdmin: 290px, thu gọn còn 90px chỉ icon trên màn hình lớn, trượt
  * vào kèm lớp phủ trên điện thoại. Thứ tự section trong menu = thứ tự trên trang.
  */
-export function AppSidebar({ route, collapsed, mobileOpen, onNavigate, newRegistrations = 0, hiddenSections = null }) {
+export function AppSidebar({ route, collapsed, mobileOpen, onNavigate, newRegistrations = 0, newSubmissions = 0, hiddenSections = null }) {
   const isActive = (name, param) => route.name === name && (param === undefined || route.param === param)
 
   return (
@@ -122,7 +124,7 @@ export function AppSidebar({ route, collapsed, mobileOpen, onNavigate, newRegist
               active={isActive(link.name)}
               collapsed={collapsed}
               onNavigate={onNavigate}
-              badge={link.name === 'registrations' ? newRegistrations : 0}
+              badge={{ registrations: newRegistrations, 'forms-inbox': newSubmissions }[link.name] ?? 0}
             />
           ))}
         </ul>

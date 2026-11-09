@@ -51,7 +51,8 @@ export const vi = {
       // thảo" trong section Hoạt động.
       { id: 'events', label: 'Sự kiện', href: '#events' },
     ],
-    cta: 'Đăng ký ngay',
+    // Nút trên thanh menu (tối đa 2). Hành động do admin chọn — xem buttonSchema.
+    buttons: [{ id: 'register', label: 'Đăng ký ngay', style: 'primary', action: 'register' }],
     openMenu: 'Mở menu',
     closeMenu: 'Đóng menu',
     switchLanguage: 'Chuyển ngôn ngữ',
@@ -62,8 +63,11 @@ export const vi = {
     title: 'Tự Hào Phục Vụ Cộng Đồng',
     description:
       'EIU FabLab là một xưởng chế tác số điển hình với nhiều công nghệ, máy móc thiết bị hiện đại, không gian mở năng động - sáng tạo và các hoạt động đa dạng nhằm phục vụ cộng đồng. ',
-    primaryCta: 'Khám phá khóa học',
-    secondaryCta: 'Tham quan FabLab',
+    // Nút có hành động do admin chọn (API 23): mở form đăng ký / form / popup tự tạo, hoặc link.
+    buttons: [
+      { id: 'primary', label: 'Khám phá khóa học', style: 'primary', arrow: true, action: 'link', href: '#courses' },
+      { id: 'secondary', label: 'Tham quan FabLab', style: 'secondary', action: 'link', href: '#facilities' },
+    ],
     imageAlt:
       'Giảng viên EIU FabLab hướng dẫn ba em nhỏ lắp bộ kit STEM trên bàn thực hành.',
     floatingBadges: [
@@ -1179,8 +1183,10 @@ export const vi = {
     title: 'Ý tưởng của bạn xứng đáng được chế tạo',
     description:
       'Đăng ký một khóa học, hoặc đơn giản là ghé thăm xưởng để xem chúng tôi đang làm gì. Cửa EIU FabLab luôn mở.',
-    primaryCta: 'Đăng ký khóa học',
-    secondaryCta: 'Liên hệ với chúng tôi',
+    buttons: [
+      { id: 'primary', label: 'Đăng ký khóa học', style: 'primary', arrow: true, action: 'register' },
+      { id: 'secondary', label: 'Liên hệ với chúng tôi', style: 'secondary', action: 'link', href: '#contact' },
+    ],
   },
 
   // Form đăng ký khóa học. {email}, {phone}, {count} được thay lúc render.
@@ -1450,6 +1456,58 @@ export const vi = {
         ornamentShape: 'snowflake',
         ornamentCorner: 'right',
         ornamentSize: 16,
+      },
+    ],
+  },
+  // Popup tự tạo (dashboard "Popup"). Chỉ mở khi người xem bấm một nút trỏ tới nó (hành động
+  // "Mở popup" của nút ở Hero / thanh menu / cuối trang / popup khác / sự kiện mùa).
+  // Ảnh qua binding, scope `popup`. Mục mẫu không nút nào trỏ tới.
+  popups: {
+    close: 'Đóng',
+    items: [
+      {
+        id: 'popup-mau',
+        title: 'Popup mẫu',
+        body: 'Đây là popup mẫu. Sửa tiêu đề, nội dung, thêm ảnh và nút, rồi chọn "Mở popup" cho một nút trên trang để người xem mở được nó.',
+        buttons: [
+          { id: 'courses', label: 'Xem khóa học', style: 'primary', action: 'link', href: '#courses' },
+        ],
+      },
+    ],
+  },
+  // Form tự tạo (dashboard "Form"). Bài gửi xem ở dashboard → "Bài gửi form". Mọi form có sẵn
+  // ô năm sinh (không nằm trong `fields`); `allowMinors` bật thì dưới 16 tuổi phải có tên
+  // phụ huynh, tắt thì chặn người dưới 16. Chữ lỗi chung, nút gửi… mượn `register`.
+  // {email} trong `privacy` được thay lúc render. Mục mẫu đang đóng nhận.
+  forms: {
+    birthYear: 'Năm sinh',
+    birthYearHint: 'Ví dụ: 2004',
+    parentName: 'Họ và tên phụ huynh',
+    parentNote:
+      'Người dưới 16 tuổi: phụ huynh hoặc người giám hộ điền họ tên của mình và đồng ý thay.',
+    adultOnly: 'Form này dành cho người từ 16 tuổi trở lên.',
+    closedMessage: 'Form này đã ngừng nhận bài gửi.',
+    invalid: 'Giá trị chưa hợp lệ.',
+    selectPlaceholder: 'Chọn một mục',
+    items: [
+      {
+        id: 'gop-y',
+        title: 'Góp ý / Liên hệ',
+        description:
+          'Gửi câu hỏi hoặc góp ý cho EIU FabLab. Chúng tôi sẽ liên hệ lại qua số điện thoại hoặc email bạn để lại.',
+        submitLabel: 'Gửi',
+        successTitle: 'Đã gửi',
+        successBody: 'Cảm ơn bạn. EIU FabLab sẽ liên hệ lại sớm.',
+        consent: 'Tôi đồng ý để EIU FabLab xử lý các thông tin trên nhằm liên hệ lại với tôi.',
+        privacy:
+          'Thông tin chỉ dùng để liên hệ lại, do EIU FabLab (Đại học Quốc tế Miền Đông) quản lý và lưu tối đa 12 tháng. Bạn có thể rút lại đồng ý hoặc yêu cầu xoá dữ liệu qua {email} (Nghị định 13/2023/NĐ-CP).',
+        closed: true,
+        fields: [
+          { id: 'ho-ten', label: 'Họ và tên', help: '', fieldType: 'text', required: true },
+          { id: 'dien-thoai', label: 'Số điện thoại', help: '', fieldType: 'phone', required: true },
+          { id: 'email', label: 'Email', help: '', fieldType: 'email' },
+          { id: 'noi-dung', label: 'Nội dung', help: '', fieldType: 'textarea', required: true },
+        ],
       },
     ],
   },

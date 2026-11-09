@@ -46,6 +46,32 @@ const link = z.strictObject({ id: idSchema, label: text(80), href: hrefSchema })
 const idLabel = (max = 80) => z.strictObject({ id: idSchema, label: text(max) })
 
 /**
+ * Nút do admin tạo (từ API 23): Hero, thanh menu, cuối trang, nút trong popup tự tạo.
+ *
+ * `style` là NGỮ NGHĨA (chính / phụ), không phải tên class — component đổi sang variant
+ * theo nền nó đứng (FinalCTA nền tối → inverted). Tên class trong dữ liệu thì Tailwind không
+ * sinh CSS. Các trường của hành động đều tuỳ chọn ở đây; "hành động nào cần trường nào" và
+ * tham chiếu (form / popup / khóa học có thật) là luật cắt ngang section ở invariants.js.
+ */
+export const BUTTON_STYLES = ['primary', 'secondary']
+export const BUTTON_ACTIONS = ['register', 'form', 'popup', 'link']
+export const REGISTER_KINDS = ['member', 'course']
+export const buttonSchema = z.strictObject({
+  id: idSchema,
+  label: text(40),
+  style: z.enum(BUTTON_STYLES, 'chon kieu nut'),
+  arrow: z.literal(true).optional(),
+  action: z.enum(BUTTON_ACTIONS, 'chon chuc nang cho nut'),
+  // register: vắng = mở tab dùng lần trước; courseId vắng = "chưa chọn khóa, cần tư vấn".
+  registerKind: z.enum(REGISTER_KINDS, 'chon loai form dang ky').optional(),
+  courseId: idSchema.optional(),
+  formId: idSchema.optional(),
+  popupId: idSchema.optional(),
+  href: hrefSchema.optional(),
+})
+const buttonList = (max) => z.array(buttonSchema).max(max, `toi da ${max} nut`)
+
+/**
  * Các khối của trang bật/tắt được từ dashboard, theo đúng thứ tự trên trang. Mỗi khối mang
  * khoá `hidden: true` ở cấp trên cùng khi đang tắt; vắng khoá = hiện, nên bản cũ (seed,
  * snapshot, lịch sử) vẫn hợp lệ. Thanh menu, footer, form đăng ký không nằm trong danh sách.
@@ -70,8 +96,11 @@ export const heroSchema = z.strictObject({
   eyebrow: text(80),
   title: text(120),
   description: text(400),
-  primaryCta: text(40),
-  secondaryCta: text(40),
+  // Nút cũ (trước API 23): chỉ còn để bản lịch sử cũ vẫn hợp lệ — trang dựng nút từ đây
+  // khi vắng `buttons` (legacyButtons trong src/lib/actions.js).
+  primaryCta: text(40).optional(),
+  secondaryCta: text(40).optional(),
+  buttons: buttonList(3).optional(),
   imageAlt: text(200),
   // Badge nằm tuyệt đối trên khung ảnh; quá bốn là tràn ra ngoài khung.
   floatingBadges: z.array(idLabel(40)).max(4, 'toi da 4 nhan noi'),
@@ -347,8 +376,10 @@ export const finalCtaSchema = z.strictObject({
   ...visibility,
   title: text(120),
   description: text(400),
-  primaryCta: text(40),
-  secondaryCta: text(40),
+  // Như hero: hai khoá cũ chỉ còn cho bản lịch sử; từ API 23 nút nằm ở `buttons`.
+  primaryCta: text(40).optional(),
+  secondaryCta: text(40).optional(),
+  buttons: buttonList(3).optional(),
 })
 
 /**
@@ -446,7 +477,9 @@ const navLink = z.union([
 
 export const navSchema = z.strictObject({
   brandTagline: text(80),
-  cta: text(40),
+  // Nút "Đăng ký ngay" cũ — từ API 23 là `buttons` (tối đa 2: thanh menu hẹp).
+  cta: text(40).optional(),
+  buttons: buttonList(2).optional(),
   openMenu: text(40),
   closeMenu: text(40),
   switchLanguage: text(40),
@@ -511,7 +544,10 @@ export const seasonalSchema = z.strictObject({
       end: dateSchema,
       title: text(120),
       body: text(500),
-      ctaAction: z.enum(['none', 'register', 'link'], 'chon mot hanh dong cho nut'),
+      // 'form' / 'popup' từ API 23: mở form / popup tự tạo (`formId` / `popupId`).
+      ctaAction: z.enum(['none', 'register', 'link', 'form', 'popup'], 'chon mot hanh dong cho nut'),
+      formId: idSchema.optional(),
+      popupId: idSchema.optional(),
       // Được rỗng khi không có nút (`ctaAction: 'none'`) — invariants đòi có chữ khi có nút.
       ctaLabel: z.string().trim().max(40, 'toi da 40 ky tu'),
       href: hrefSchema,
@@ -589,6 +625,70 @@ export const motifsSchema = z.strictObject({
     .max(40, 'toi da 40 hoa tiet'),
 })
 
+/**
+ * Popup tự tạo (từ API 23). Chỉ mở khi người xem bấm một nút trỏ tới nó — tự hiện khi vào
+ * trang là việc của popup sự kiện mùa. Ảnh qua bảng binding, scope `popup`.
+ */
+export const popupsSchema = z.strictObject({
+  close: text(40),
+  items: z
+    .array(
+      z.strictObject({
+        id: idSchema,
+        title: text(120),
+        // Được rỗng: popup chỉ có ảnh + nút.
+        body: z.string().trim().max(1000, 'toi da 1000 ky tu'),
+        buttons: buttonList(2),
+      }),
+    )
+    .max(30, 'toi da 30 popup'),
+})
+
+/**
+ * Form tự tạo (từ API 23). Bài gửi vào bảng `form_submission`, câu trả lời dạng JSON theo
+ * id ô — máy chủ dựng schema kiểm động từ chính định nghĩa ở đây (formSubmission.js).
+ *
+ * Mọi form đều có sẵn ô năm sinh (không nằm trong `fields`): tắt `allowMinors` thì chặn
+ * người dưới 16 tuổi, bật thì dưới 16 phải có tên phụ huynh (Nghị định 13/2023).
+ */
+export const FORM_FIELD_TYPES = ['text', 'textarea', 'phone', 'email', 'number', 'date', 'select', 'multiselect', 'checkbox']
+const formFieldSchema = z.strictObject({
+  id: idSchema,
+  label: text(120),
+  help: z.string().trim().max(200, 'toi da 200 ky tu'),
+  fieldType: z.enum(FORM_FIELD_TYPES, 'chon loai o'),
+  required: z.literal(true).optional(),
+  // Chỉ ô chọn một / chọn nhiều — luật "phải có lựa chọn" ở invariants.js.
+  options: z.array(idLabel(80)).max(30, 'toi da 30 lua chon').optional(),
+})
+export const formsSchema = z.strictObject({
+  birthYear: text(60),
+  birthYearHint: text(120),
+  parentName: text(60),
+  parentNote: text(300),
+  adultOnly: text(200),
+  closedMessage: text(200),
+  invalid: text(120),
+  selectPlaceholder: text(60),
+  items: z
+    .array(
+      z.strictObject({
+        id: idSchema,
+        title: text(120),
+        description: z.string().trim().max(500, 'toi da 500 ky tu'),
+        submitLabel: text(40),
+        successTitle: text(120),
+        successBody: text(500),
+        consent: text(400),
+        privacy: text(800),
+        allowMinors: z.literal(true).optional(),
+        closed: z.literal(true).optional(),
+        fields: z.array(formFieldSchema).min(1, 'form phai co it nhat mot o').max(20, 'toi da 20 o'),
+      }),
+    )
+    .max(30, 'toi da 30 form'),
+})
+
 /** Theo thứ tự xuất hiện trên trang — dashboard dùng thứ tự này cho sidebar. */
 export const SECTION_SCHEMAS = {
   nav: navSchema,
@@ -610,6 +710,9 @@ export const SECTION_SCHEMAS = {
   seasonal: seasonalSchema,
   // Thư viện họa tiết của sự kiện mùa — không hiện thành khối nào, đứng sau cùng.
   motifs: motifsSchema,
+  // Nút trỏ tới popup / form tự tạo (API 23) — không phải khối trên trang.
+  popups: popupsSchema,
+  forms: formsSchema,
 }
 
 export function schemaFor(section) {

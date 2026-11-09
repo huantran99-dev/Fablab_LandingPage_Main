@@ -38,13 +38,15 @@ export function runRetention(now = new Date()) {
       events: db.prepare('DELETE FROM event WHERE day < ?').run(cutoff).changes,
       salts: db.prepare('DELETE FROM analytics_salt WHERE day <> ?').run(today).changes,
       registrations: db.prepare('DELETE FROM registration WHERE created_at < ?').run(registrationCutoff).changes,
+      // Bài gửi form tự tạo (API 23): cùng hạn với đăng ký — lời hứa 12 tháng trong thông báo dữ liệu.
+      submissions: db.prepare('DELETE FROM form_submission WHERE created_at < ?').run(registrationCutoff).changes,
     }
   })
 
   const result = run()
-  if (result.events > 0 || result.registrations > 0) {
+  if (result.events > 0 || result.registrations > 0 || result.submissions > 0) {
     console.info(
-      `[retention] xoa ${result.events} su kien truoc ${cutoff}, ${result.registrations} dang ky qua ${config.registrationRetentionDays} ngay`,
+      `[retention] xoa ${result.events} su kien truoc ${cutoff}, ${result.registrations} dang ky + ${result.submissions} bai gui form qua ${config.registrationRetentionDays} ngay`,
     )
   }
   return result

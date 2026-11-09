@@ -9,6 +9,7 @@ import { AccountPage } from './pages/AccountPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { LoginPage } from './pages/LoginPage'
 import { MediaPage } from './pages/MediaPage'
+import { FormSubmissionsPage } from './pages/FormSubmissionsPage'
 import { RegistrationsPage } from './pages/RegistrationsPage'
 import { SectionPage } from './pages/SectionPage'
 import { StatsPage } from './pages/StatsPage'
@@ -30,7 +31,7 @@ import { useToast } from './ui/toastContext'
  * thì KHÔNG: quên khởi động lại là dashboard mới nói chuyện với máy chủ cũ, và mọi
  * lỗi (không tải được ảnh, không lưu được) trông như lỗi của dashboard.
  */
-const EXPECTED_API = 22
+const EXPECTED_API = 23
 
 /** Nạp lại số liệu nền (badge đăng ký mới) theo chu kỳ khi tab đang hiện. */
 const META_POLL_MS = 120_000
@@ -175,8 +176,10 @@ export default function App() {
     )
   } else if (route.name === 'registrations') {
     page = <RegistrationsPage openId={route.param} onChanged={refreshMeta} />
+  } else if (route.name === 'forms-inbox') {
+    page = <FormSubmissionsPage openId={route.param} onChanged={refreshMeta} />
   } else if (route.name === 'stats') {
-    page = <StatsPage />
+    page = <StatsPage ctaLabels={meta?.ctaLabels} />
   } else if (route.name === 'media') {
     page = <MediaPage onChanged={refreshMeta} />
   } else if (route.name === 'account') {
@@ -206,6 +209,7 @@ export default function App() {
       onToggleTheme={toggleTheme}
       onLogout={logout}
       newRegistrations={meta?.registrations?.new ?? 0}
+      newSubmissions={meta?.formSubmissions?.new ?? 0}
       hiddenSections={hiddenSections}
     >
       {serverApi < EXPECTED_API && (

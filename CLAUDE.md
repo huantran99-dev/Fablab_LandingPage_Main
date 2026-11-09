@@ -188,6 +188,67 @@ Thanh menu, footer, form đăng ký không tắt được. Thanh bên dashboard 
   ẩn; tắt thêm Hero → trang bắt đầu từ Số liệu, navbar vẫn dính; 320/390/1280 không tràn
   ngang, không lỗi console. Menu FabLab mở khi RÊ CHUỘT — bài thử bấm vào nó là đóng lại.
 
+## Nút, popup, form do admin tạo (từ 2026-11-09, API 23)
+
+Người dùng muốn nút và form "linh hoạt, CRUD được": admin tạo nút rồi chọn chức năng (mở form,
+mở popup, mở link). Đã chốt: **chỉ nút kêu gọi chính** (Hero, thanh menu + drawer, cuối trang;
+nút chính của popup sự kiện mùa thêm hai lựa chọn form / popup) — nút trong thẻ khóa học / sự
+kiện giữ nguyên vì chúng đã tự gắn đúng khóa / sự kiện. Có **trình tạo form** (section `forms`)
+và **popup tự tạo** (section `popups`) — popup chỉ mở khi bấm nút, không tự hiện.
+
+| Mảnh | File |
+|---|---|
+| Hình dạng nút · popup · form | `buttonSchema` / `popupsSchema` / `formsSchema` ở [sections.js](server/schema/sections.js) |
+| Duyệt mọi nút (luật, id thống kê, nhãn) | [server/content/buttons.js](server/content/buttons.js) |
+| Đường lui nút cũ, variant, nút còn vẽ được không | [src/lib/actions.js](src/lib/actions.js) |
+| Vẽ một nút | [ActionButton.jsx](src/components/ui/ActionButton.jsx) |
+| Trạng thái popup / form + `runAction` | [ActionProvider.jsx](src/components/actions/ActionProvider.jsx) |
+| Popup · form | [CustomPopup.jsx](src/components/CustomPopup.jsx) · [FormDialog.jsx](src/components/forms/FormDialog.jsx) + [CustomForm.jsx](src/components/forms/CustomForm.jsx) |
+| Kiểm bài gửi (CHÉP hai nơi) | [validateForm.js](src/components/forms/validateForm.js) · [formSubmission.js](server/schema/formSubmission.js) |
+| Route | `POST /api/forms/:id` ở [public.write.js](server/routes/public.write.js) · [forms.admin.js](server/routes/forms.admin.js) |
+| Dashboard | `buttonFields()` ở [descriptors.js](src/admin/sections/descriptors.js) · [FormSubmissionsPage.jsx](src/admin/pages/FormSubmissionsPage.jsx) |
+
+- **`style` của nút là NGỮ NGHĨA (`primary` / `secondary`), không phải tên class** — `variantFor`
+  đổi theo nền (`surface="dark"` ở FinalCTA → `inverted` / `invertedOutline`). Tên class trong dữ
+  liệu thì Tailwind không sinh CSS (xem "Component phải chịu được dữ liệu lạ").
+- **Tên trường né khoá có sẵn**: `popup` đã là cờ của seasonal, `type` là chữ DỊCH của bảng thiết bị
+  → nút dùng `formId` / `popupId` / `courseId`, ô form dùng `fieldType`. Cả bảy khoá hành động nằm
+  trong `SHARED_FIELDS` VÀ `SKIP_KEYS` (typography.js) — thiếu ở `SKIP_KEYS` là id dính U+00A0.
+- **Khoá cũ `primaryCta` / `secondaryCta` / `nav.cta` vẫn ở schema (tuỳ chọn)**: khôi phục bản lịch
+  sử cũ ghi lại không qua schema. Vắng `buttons` → `buttonsOf()` dựng nút từ khoá cũ với ĐÚNG hành
+  động cũ (như migration 025). `buttons: []` là admin xoá hết — giữ trống, không rơi về khoá cũ.
+- **Ô hiện theo điều kiện `when: { trường: [giá trị…] }`** ([model.js](src/admin/editor/model.js) `isActive`):
+  MỌI điều kiện phải đúng, và chuỗi phụ thuộc phải nêu đủ (khóa chọn sẵn là `{ action: ['register'],
+  registerKind: ['course'] }` — chỉ nêu `registerKind` thì đổi sang link vẫn giữ khóa). Ô ẩn bị BỎ
+  KHOÁ ở `fromWorking`, nên không sót `formId` cũ. `fillSubIds` giờ đệ quy (lựa chọn lồng trong ô).
+  Danh sách con có `maxItems` (nút của popup ≤ 2).
+- **Thứ tự dialog trong App**: `SeasonalPopup › CustomPopup › FormDialog › RegisterDialog` — dialog có
+  nút mở dialog khác đứng TRƯỚC (cùng lý do "Hai dialog chuyển giao…" ở dưới). Nút trong popup gọi
+  `onBefore` (đóng popup) rồi `runAction` trong CÙNG handler; popup → popup khác chỉ đổi nội dung.
+- **Id thống kê `${slot}-${id}`** (`hero`, `final`, `nav`, `nav-drawer`, `popup-<id popup>`). Nút seed
+  giữ id `primary` / `secondary` nên `hero-primary`… trùng id cũ, số liệu nối tiếp. Máy chủ nhận
+  `cta_click` theo `CTA_IDS` cũ HOẶC nút đang có trong nội dung (đệm theo `rev`); trang Thống kê lấy
+  nhãn từ `meta.ctaLabels`. Thêm chỗ đặt nút: thêm vào `SLOTS` ở buttons.js, dùng đúng tên slot ở component.
+- **Form tự tạo luôn có ô năm sinh + ô đồng ý** (không nằm trong `fields`). `allowMinors` tắt → dưới
+  16 bị chặn (mã `age`, chữ lỗi là `forms.adultOnly`); bật → dưới 16 phải có tên phụ huynh. Chữ
+  chung (nút đang gửi, lỗi chung, "bắt buộc") mượn `register`.
+- **Bài gửi lưu nhãn + chữ đọc được bản VI chụp lúc gửi** (`answers_json`: `{ id, label, type, value,
+  text }`) — lựa chọn lưu bằng id, admin đổi nhãn / xoá ô về sau thì bài cũ vẫn đọc được. CSV theo
+  một form mở mỗi ô thành một cột. Bảng `form_submission` KHÔNG có CHECK trên `source` (Zod kiểm,
+  `FORM_SOURCES`) — thêm chỗ đặt nút không phải dựng lại bảng; bảng `registration` thì vẫn phải (025
+  đã thêm `hero`, `popup`). Hai route ghi công khai DÙNG CHUNG bộ giới hạn IP và trần mỗi ngày.
+- Migration 025 (sinh bằng máy): `buttons` dựng từ CHỮ đang có trong database (`json_extract`), bỏ
+  khoá cũ, chốt `buttons IS NULL`; chèn `popups` / `forms` (mục mẫu, form mẫu đang đóng); dựng lại
+  `registration`; tạo `form_submission`. Đã thử trên bản sao database thật: `rev` hero / finalCta /
+  nav +2, 2 dòng đăng ký khớp mã băm, seed mới + `verify:seed` → `identical`.
+- **Đừng chạy `npm run build` trong repo để thử** khi database thật chưa áp migration mới: `prebuild`
+  mở `data/fablab.db` qua `getDb()` và áp migration ngay. Thử thì `vite build --outDir <scratch>`.
+- Đã thử bằng puppeteer trên bản sao (3999 / 4320): nút mặc định đúng hành động cũ; Hero → popup →
+  nút "Gửi góp ý" → form (popup đóng, form mở); gửi trống → tóm tắt lỗi; 2015 ở form không nhận
+  trẻ em → lỗi tuổi; form nhận trẻ em → ô phụ huynh, lưu kèm `parent_name`; nút register chọn sẵn
+  khóa; link https mở tab mới; đóng form → nút trong popup ẩn + POST 422; xoá form đang được trỏ /
+  nút trỏ form lạ / VI-EN lệch hành động → 422; 320/390 không tràn; không lỗi console.
+
 ## Menu hai cấp và bảng neo
 
 Navbar có bốn mục cấp một: **Về chúng tôi** và **Sự kiện** (link thường), **FabLab**

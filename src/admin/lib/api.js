@@ -94,6 +94,11 @@ export const api = {
   registration: (id) => request(`/api/admin/registrations/${id}`),
   updateRegistration: (id, body) => request(`/api/admin/registrations/${id}`, { method: 'PATCH', body }),
   deleteRegistration: (id) => request(`/api/admin/registrations/${id}`, { method: 'DELETE' }),
+  // Bài gửi form tự tạo (API 23).
+  formSubmissions: (params) => request(`/api/admin/form-submissions?${query(params)}`),
+  formSubmission: (id) => request(`/api/admin/form-submissions/${id}`),
+  updateFormSubmission: (id, body) => request(`/api/admin/form-submissions/${id}`, { method: 'PATCH', body }),
+  deleteFormSubmission: (id) => request(`/api/admin/form-submissions/${id}`, { method: 'DELETE' }),
 
   stats: (range) => request(`/api/admin/stats?range=${encodeURIComponent(range)}`),
 }
@@ -115,6 +120,12 @@ function query(params = {}) {
 export function registrationsExportUrl(params) {
   const { page: _page, pageSize: _pageSize, ...filters } = params ?? {}
   return `/api/admin/registrations/export?${query(filters)}`
+}
+
+/** URL tải CSV bài gửi form, theo bộ lọc đang xem (chọn một form thì mỗi ô là một cột). */
+export function formSubmissionsExportUrl(params) {
+  const { page: _page, pageSize: _pageSize, ...filters } = params ?? {}
+  return `/api/admin/form-submissions/export?${query(filters)}`
 }
 
 /** Gom lỗi của một lượt lưu thành một câu đọc được, cho toast. */

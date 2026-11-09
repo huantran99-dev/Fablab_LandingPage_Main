@@ -15,6 +15,7 @@ import { adminContentRouter } from './routes/content.admin.js'
 import { authRouter } from './routes/auth.js'
 import { contentRouter } from './routes/content.public.js'
 import { courseDetailsRouter } from './routes/courseDetails.admin.js'
+import { formsRouter } from './routes/forms.admin.js'
 import { mediaRouter } from './routes/media.admin.js'
 import { metaRouter } from './routes/meta.admin.js'
 import { publicWriteRouter } from './routes/public.write.js'
@@ -86,6 +87,7 @@ export function createApp() {
   app.use('/api/admin', mediaRouter)
   app.use('/api/admin', courseDetailsRouter)
   app.use('/api/admin', registrationsRouter)
+  app.use('/api/admin', formsRouter)
   app.use('/api/admin', statsRouter)
 
   app.use('/api', (_req, res) => {

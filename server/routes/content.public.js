@@ -68,7 +68,7 @@ contentRouter.get('/content/:locale', (req, res) => {
  * dashboard mới, còn `npm run server` thì KHÔNG tự nạp lại, nên dashboard mới nói
  * chuyện với máy chủ cũ và mọi lỗi đều trông như lỗi của dashboard.
  */
-export const API_VERSION = 22
+export const API_VERSION = 23
 
 contentRouter.get('/health', (_req, res) => {
   const { rev, updatedAt } = getContent()

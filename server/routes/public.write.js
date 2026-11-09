@@ -18,8 +18,10 @@ import rateLimit from 'express-rate-limit'
 import { dayKey, isBot, normalizeRef, recordEvent } from '../analytics/track.js'
 import { isSameOrigin } from '../auth/middleware.js'
 import { config } from '../config.js'
+import { ctaTargets } from '../content/buttons.js'
 import { getContent } from '../content/cache.js'
 import { getDb } from '../db/index.js'
+import { checkSubmission, submissionEnvelope } from '../schema/formSubmission.js'
 import { REGISTRATION_SOURCES, registrationIssues, registrationSchema } from '../schema/registration.js'
 
 export const publicWriteRouter = Router()
@@ -248,6 +250,106 @@ function courseIds() {
   return new Set((getContent().vi.courses?.items ?? []).map((item) => item.id))
 }
 
+/** Id thống kê của mọi nút do admin tạo, tính lại theo `rev` nội dung (đệm một bản). */
+let ctaCache = { rev: null, ids: new Set() }
+function liveCtaIds() {
+  const content = getContent()
+  if (ctaCache.rev !== content.rev) ctaCache = { rev: content.rev, ids: new Set(ctaTargets(content.vi).keys()) }
+  return ctaCache.ids
+}
+
+/**
+ * Bài gửi của form tự tạo (API 23). Cùng chốt với form đăng ký: nguồn gốc, hai bộ giới hạn
+ * theo IP (DÙNG CHUNG bộ đếm với đăng ký — một người không được gấp đôi hạn mức bằng cách đổi
+ * form), bẫy bot, trần mỗi ngày (đếm cả hai bảng). Định nghĩa form tra trong bản VI hiện hành.
+ */
+publicWriteRouter.post(
+  '/forms/:id',
+  requirePublicOrigin,
+  registrationBurst,
+  registrationDaily,
+  express.json({ limit: '16kb' }),
+  (req, res) => {
+    const envelope = submissionEnvelope.safeParse(req.body)
+    if (!envelope.success) {
+      res.status(422).json({ error: 'du lieu khong hop le', issues: [{ path: 'form', code: 'invalid' }] })
+      return
+    }
+    const data = envelope.data
+
+    const content = getContent()
+    const form = content.vi.forms?.items?.find((item) => item.id === req.params.id)
+    if (!form || form.closed) {
+      res.status(422).json({ error: 'form khong nhan bai', issues: [{ path: 'form', code: 'form' }] })
+      return
+    }
+
+    const checked = checkSubmission(form, data)
+    if (checked.issues.length > 0) {
+      res.status(422).json({ error: 'du lieu khong hop le', issues: checked.issues })
+      return
+    }
+
+    // Bot: trả "thành công" để nó không học được gì, và không lưu gì cả.
+    if (data.website || (data.elapsed ?? 0) < MIN_FILL_MS || isBot(req.get('user-agent'))) {
+      res.status(201).json({ ok: true })
+      return
+    }
+
+    const db = getDb()
+    const since = startOfTodayIso()
+    const received =
+      db.prepare('SELECT COUNT(*) AS n FROM registration WHERE created_at >= ?').get(since).n +
+      db.prepare('SELECT COUNT(*) AS n FROM form_submission WHERE created_at >= ?').get(since).n
+    if (received >= config.registrationDailyCap) {
+      console.warn(`[form] cham tran ${config.registrationDailyCap} bai gui/ngay, tam ngung nhan`)
+      res.status(503).json({ error: 'tam ngung nhan bai gui', code: 'paused' })
+      return
+    }
+
+    const now = new Date()
+    const answersJson = JSON.stringify(checked.answers)
+    const duplicate = db
+      .prepare('SELECT 1 FROM form_submission WHERE form_id = ? AND answers_json = ? AND birth_year = ? AND created_at > ?')
+      .get(form.id, answersJson, checked.birthYear, new Date(now.getTime() - DEDUPE_MS).toISOString())
+    if (duplicate) {
+      // Bấm đúp hoặc gửi lại sau lỗi mạng: người gửi thấy thành công, database giữ một dòng.
+      res.status(201).json({ ok: true })
+      return
+    }
+
+    // Câu đồng ý theo ngôn ngữ người gửi đang xem, lấy từ nội dung phía máy chủ.
+    const words = content[data.locale]?.forms?.items?.find((item) => item.id === form.id) ?? form
+    const consentText = [words.consent, fill(words.privacy, { email: content[data.locale]?.footer?.contact?.email })]
+      .filter(Boolean)
+      .join('\n\n')
+
+    const stamp = now.toISOString()
+    db.prepare(
+      `INSERT INTO form_submission
+         (created_at, updated_at, form_id, form_title, status, locale, answers_json, birth_year, parent_name,
+          phone, email, source, referrer_host, consent_at, consent_text)
+       VALUES (?, ?, ?, ?, 'new', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ).run(
+      stamp,
+      stamp,
+      form.id,
+      form.title,
+      data.locale,
+      answersJson,
+      checked.birthYear,
+      checked.parentName,
+      checked.phone,
+      checked.email,
+      data.source,
+      normalizeRef(data.ref),
+      stamp,
+      consentText || '(khong co noi dung dong y)',
+    )
+    res.status(201).json({ ok: true })
+  },
+)
+
 /** Thân sự kiện → bản ghi, hoặc `null` nếu không hợp lệ (bỏ im lặng). */
 function parseEvent(raw) {
   let body = raw
@@ -264,7 +366,10 @@ function parseEvent(raw) {
   if (!CLIENT_EVENTS.has(name)) return null
 
   if (name === 'course_open' && !(typeof target === 'string' && courseIds().has(target))) return null
-  if (name === 'cta_click' && !CTA_IDS.has(target)) return null
+  // Id cũ (CTA_IDS) hoặc id của một nút do admin tạo đang có trên trang (`${slot}-${id}`).
+  if (name === 'cta_click' && !CTA_IDS.has(target) && !(typeof target === 'string' && liveCtaIds().has(target))) {
+    return null
+  }
   if (name === 'register_open' && !REGISTRATION_SOURCES.includes(target)) return null
 
   return {
