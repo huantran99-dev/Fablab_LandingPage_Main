@@ -105,10 +105,7 @@ function ActivityCarousel({ group, items, from }) {
     <div id={group.id} className="flex flex-col">
       {/* h3: nằm dưới h2 của section, và trên h4 là tên từng hoạt động. */}
       <Reveal className="flex flex-col items-center gap-3 text-center">
-        <span className="flex flex-wrap items-center justify-center gap-3">
-          <h3 className="text-heading-sm md:text-heading-lg text-ink">{group.title}</h3>
-          <Pill tone="outline">{total}</Pill>
-        </span>
+        <h3 className="text-heading-sm md:text-heading-lg text-ink">{group.title}</h3>
         <p className="max-w-[620px] text-body-sm text-graphite">{group.description}</p>
       </Reveal>
 
