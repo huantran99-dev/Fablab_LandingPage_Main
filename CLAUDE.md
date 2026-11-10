@@ -684,26 +684,50 @@ thưa trên cả trang** có nút tắt. Nút vẫn pill, không shadow, không 
   Admin đã đổi cấu trúc (không còn nhánh `fablab` / cột `explore`) thì câu đó bỏ qua.
   Kiểm bằng `rev`: section +2, nav +2, footer +2.
 
-### Vòng xoay 3D (từ 2026-10-21)
+**Nội dung database thật đã khác corpus seed** (đo 2026-11-10): admin còn 3 dự án (Xe đua MCR,
+Robot giao hàng, STEM Platform), ảnh là ẢNH CHỤP ngang (tới 1600px, không còn ảnh tách nền),
+mô tả tới 273 ký tự, có `status` (kể cả khoá tự thêm `comingsoon`). Thiết kế phải chịu được
+cả hai: 3 hay 8 dự án, ảnh dọc 0.4 hay ngang 2:1, mô tả 85 hay 300 ký tự.
 
-Màn ≥ 768px và không giảm chuyển động: vòng trụ CSS 3D thuần, không thư viện (đã thử bằng
-puppeteer: nút, kéo chuột, bấm thẻ bên, lùi từ dự án 2 về 8 chỉ xoay +45°). Thẻ `i`
-`rotateY(i·θ) translateZ(R)`, cả vòng `translateZ(-R) rotateY(-turn·θ)`, với θ = 360°/N
-và **R tính từ N** (`(W/2 + khe/2) / tan(π/N)`): thêm/bớt dự án là vòng tự giãn. Dưới 3
-dự án hoặc màn hẹp / giảm chuyển động → hàng trượt ngang `snap-x` (cùng component thẻ).
+### Sân khấu trưng bày (từ 2026-11-10, thay vòng xoay 3D)
 
-- **`turn` là số nguyên KHÔNG quấn vòng** (`useRing` trong Projects.jsx), `current =
-  mod(turn, N)`. Dùng `useCarousel` (quấn chỉ số) thì từ dự án cuối sang đầu góc nhảy
-  315° → 0° và cả vòng quay ngược gần một vòng. `goTo` đi đường ngắn nhất (±N/2).
-- **Không dùng RevealGroup cho vòng**: rule `[data-reveal-group] > *` ghi `transform` lên
-  con trực tiếp và đè transform 3D của thẻ. Vòng bọc trong `Reveal` — transform reveal
-  nằm ở phần tử ngoài, `perspective`/`preserve-3d` ở lớp trong nên không bị làm phẳng.
-- Kéo/vuốt **không** dùng pointer capture: capture làm cú bấm rơi vào khung chứ không vào
-  thẻ, mất tính năng bấm thẻ bên cạnh để xoay tới. Kéo xong nuốt click đi kèm.
-- Nhãn `previous`/`next`/`goTo` vào database cũ qua migration 009; thiếu thì
-  `aria-label` rơi về `projects.title`, trang không sập. Chọn bố cục bằng
-  [useMediaQuery](src/hooks/useMediaQuery.js) (`useSyncExternalStore`, không setState
-  trong effect).
+Người dùng báo vòng 3D "hơi nhỏ", mô tả bị cắt (`line-clamp-3` trên thẻ 280px), và "vuốt
+trên di động không chạy". Đo bằng `page.touchscreen` trên bản cũ: trong giả lập, hàng cuộn
+`snap-x` (< 768px) VẪN cuộn và vòng (≥ 768px chạm) VẪN xoay — không tái hiện được lỗi vuốt;
+cái đo ra được là với **3 dự án, bán kính vòng chỉ ~90px nên ba thẻ chồng lên nhau**, và hàng
+cuộn không có dấu hiệu nào (chấm, số đếm) cho thấy vuốt được. Người dùng chọn "sân khấu
+trưng bày" trong bốn phương án (coverflow, bento + popup, cuộn kể chuyện). Vòng 3D cũ còn
+trong lịch sử git (trước commit này) nếu muốn quay lại.
+
+[Projects.jsx](src/components/Projects.jsx): một dự án mỗi lúc trên một thẻ lớn — khung hình
+(nền `wash` + vệt sáng + số thứ tự khổng lồ `ink/5` + ảnh `object-contain` có `drop-shadow`)
+và cột chữ (đếm `03 / 03`, nhãn trạng thái, tên, mô tả ĐẦY ĐỦ, ← → + vạch tiến độ). Từ `lg`
+hai cột `[1.15fr_1fr]`, dưới đó xếp dọc. Dải ảnh nhỏ bên dưới để chọn thẳng.
+
+- **Bộ não là `useSlideshow`** (chung với section Hoạt động): phím ← →, vuốt / kéo ngưỡng 40px
+  không pointer capture, nuốt click sau khi kéo. Vùng nhận cử chỉ mang `touch-pan-y`: trình
+  duyệt giữ cuộn dọc (đã đo: kéo dọc trên sân khấu vẫn cuộn trang), cử chỉ ngang về tay mình.
+- **Không tự chạy**: không vẽ vạch tiến trình nên hook không bao giờ tự chuyển → không cần nút
+  dừng (WCAG 2.2.2), không thêm nhãn mới vào database.
+- **Các slide chồng cùng một ô grid** (như carousel Sự kiện): thẻ cao theo slide cao nhất, mô tả
+  dài không bị cắt, đổi dự án không nhảy chiều cao. Slide không chọn: `inert` + `aria-hidden` +
+  `opacity-0`. Hàng ← → đặt TUYỆT ĐỐI ở đáy thẻ, ngoài các slide (không mờ theo) — vì vậy cột chữ
+  chừa `pb-24` / `lg:pb-28`; đổi chiều cao hàng nút là đổi cả hai số đó.
+- **Chuyển cảnh** bằng transition trên phần tử luôn mount (không dính bẫy 4): ảnh trượt + lớn
+  dần, số thứ tự trượt ngược (thị sai), chữ hiện dần có trễ. Utility nêu rõ
+  `transition-[opacity,translate,scale]` (bẫy 2). Giảm chuyển động: `motion-reduce:transition-none`.
+- **Nghiêng theo chuột** (≤ 6°): chỉ `pointerType === 'mouse'`, không khi giảm chuyển động. Ghi
+  biến CSS `--tilt-x/y` thẳng lên khung hình (không state, không re-render); ảnh dùng `transform:
+  perspective() rotateX/Y(var)` — độc lập với `translate`/`scale` của chuyển cảnh ở lớp bọc.
+- **Ảnh không phóng quá cỡ thật**: `max-h` + `w-auto` + `max-w-full` (ảnh nhỏ nhất ~230px).
+- **Dải ảnh nhỏ cuộn bằng `scrollTo` của CHÍNH dải** để đưa nút đang chọn vào giữa —
+  `scrollIntoView` kéo cả trang về section mỗi lần đổi dự án.
+- Bọc sân khấu trong `Reveal` (không RevealGroup — rule `> *` sẽ ghi `transform` lên slide).
+- Nhãn `previous`/`next`/`goTo` từ migration 009; thiếu thì rơi về `projects.title`.
+- Đã thử bằng puppeteer: vuốt chạm ở 390 / 820 / 1024px đổi 1 → 2 → 1; mô tả không bị cắt và hàng
+  nút không đè chữ ở 320 / 390 / 768 / 1280px; không tràn ngang; dải ảnh nhỏ, phím ← →, giảm
+  chuyển động đúng; không lỗi console. Nút tròn bông tuyết đè góc dưới-trái trong ảnh chụp
+  điện thoại là nút tắt hạt rơi của sự kiện mùa (cố định), không thuộc section này.
 
 ## Popup thông số thiết bị
 
