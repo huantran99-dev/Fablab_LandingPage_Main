@@ -55,15 +55,19 @@ kéo theo database.
 ## 2. Yêu cầu máy chủ
 
 - Ubuntu 22.04 hoặc 24.04, tối thiểu 1 vCPU / 1 GB RAM (build Vite là bước nặng nhất).
-- **Node.js 20** — `package.json` ghim `"engines": { "node": ">=20 <21" }`.
+- **Node.js 20, tối thiểu 20.19** — `package.json` ghim `"engines": { "node": ">=20 <21" }`,
+  còn Vite 8 / rolldown / plugin React đòi `^20.19.0`. Node 20 cũ hơn (vd. bản `nodejs`
+  có sẵn trong kho Ubuntu) thì `npm run build` hỏng.
 - nginx, certbot, git, và `sqlite3` (CLI, dùng để sao lưu).
+- `build-essential` + `python3`: chỉ để dự phòng — nếu `npm ci` không tải được nhị phân
+  dựng sẵn của `better-sqlite3` thì nó tự biên dịch, và cần hai gói này.
 
 ```bash
 sudo apt update
-sudo apt install -y nginx git sqlite3 certbot python3-certbot-nginx
+sudo apt install -y nginx git sqlite3 certbot python3-certbot-nginx build-essential python3
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt install -y nodejs
-node -v   # phai la v20.x
+node -v   # phai la v20.19 tro len (v20.x)
 ```
 
 `better-sqlite3` và `sharp` là **module biên dịch sẵn theo hệ điều hành + phiên bản
@@ -162,16 +166,26 @@ Trên Windows mà không có `sqlite3`, dùng chính driver của dự án:
 node -e "const D=require('better-sqlite3');new D('data/fablab.db',{readonly:true}).backup('fablab-deploy.db').then(()=>console.log('xong'))"
 ```
 
-Rồi đưa lên VPS cùng thư mục ảnh:
+Rồi đưa lên VPS cùng thư mục ảnh (`scp` nhận cổng bằng `-P` viết HOA, còn `ssh` là
+`-p` thường):
 
 ```bash
-scp fablab-deploy.db user@vps:/tmp/fablab.db
-scp -r data/media user@vps:/tmp/media
+scp -P <cong-ssh> fablab-deploy.db user@vps:/tmp/fablab.db
+scp -P <cong-ssh> -r data/media user@vps:/tmp/media
 # tren VPS:
 sudo mv /tmp/fablab.db /var/lib/fablab/fablab.db
 sudo mv /tmp/media /var/lib/fablab/media
 sudo chown -R fablab:fablab /var/lib/fablab
 ```
+
+> ⚠️ **Chỉ chép hai thứ đó, đừng chép cả thư mục `data/`.** Trong `data/` của máy lập
+> trình còn `fablab.before-014.db` — bản database cũ giữ lại lúc dựng lại bảng đăng ký,
+> có thể mang dữ liệu cá nhân — cùng `fablab.db-wal` / `-shm` của tiến trình đang chạy.
+> Không file nào trong số đó có việc trên máy chủ.
+
+Database đã chép mang sẵn mọi migration và ảnh đã áp trên máy lập trình (vd. 11
+workshop 2026 của migration 026 cùng ảnh của chúng), nên lần deploy đầu **không** phải
+chạy `images:replace` trên VPS.
 
 Migration (`server/db/migrations/*.sql`) **tự chạy** mỗi lần máy chủ mở database, nên
 database cũ hơn mã nguồn vẫn dùng được.
@@ -196,19 +210,29 @@ Chạy theo đúng thứ tự.
 **1. User và thư mục**
 
 ```bash
-sudo useradd --system --create-home --home-dir /srv/fablab --shell /usr/sbin/nologin fablab
-sudo mkdir -p /var/lib/fablab
-sudo chown fablab:fablab /var/lib/fablab
+sudo useradd --system --create-home --home-dir /home/fablab --shell /usr/sbin/nologin fablab
+sudo mkdir -p /srv/fablab /var/lib/fablab
+sudo chown fablab:fablab /srv/fablab /var/lib/fablab
 ```
+
+Home của user là `/home/fablab` (chứa cache của npm), **không** phải `/srv/fablab`:
+`--create-home` chép sẵn `.bashrc`, `.profile` vào thư mục home, và `git clone` vào một
+thư mục không rỗng sẽ báo `destination path already exists`. Bản trước của tài liệu này
+mắc đúng lỗi đó.
 
 **2. Mã nguồn và thư viện**
 
 ```bash
-sudo -u fablab git clone <url-repo> /srv/fablab
+sudo -u fablab git clone https://github.com/huantran99-dev/Fablab_LandingPage_Main.git /srv/fablab
 cd /srv/fablab
 sudo -u fablab git checkout main
 sudo -u fablab npm ci
 ```
+
+> **Đừng nạp `/etc/fablab.env` trước `npm ci`.** File đó có `NODE_ENV=production`, và
+> với biến này npm bỏ qua `devDependencies` — Vite, Tailwind nằm cả ở đó — nên bước build
+> sau sẽ hỏng với `vite: not found`. Biến môi trường chỉ nạp cho `npm run build` và các
+> script đọc database.
 
 **3. Dữ liệu** — theo [mục 5](#5-đưa-dữ-liệu-lên-máy-chủ).
 
@@ -396,7 +420,10 @@ Bốn điều **đã từng gây sự cố thật** hoặc sẽ gây nếu bỏ 
    **chưa có ảnh nào**, nên chạy mọi lần cập nhật đều an toàn: không gắn lại ảnh admin
    đã gỡ. Phải có `DATA_DIR` (nạp `/etc/fablab.env`), kẻo nó ghi vào `data/` trong repo.
 
-Nếu `npm ci` báo lỗi biên dịch `better-sqlite3`: Node trên VPS không phải bản 20.
+Nếu `npm ci` báo lỗi biên dịch `better-sqlite3`: Node trên VPS không phải bản 20, hoặc
+thiếu `build-essential` / `python3` ([mục 2](#2-yêu-cầu-máy-chủ)).
+
+`npm ci` ở đây cũng **không** nạp `/etc/fablab.env` (xem [mục 6, bước 2](#6-deploy-lần-đầu)).
 
 ---
 
@@ -408,7 +435,7 @@ Chạy từ máy bất kỳ:
 D=https://fablab.example.vn
 
 curl -s $D/api/health
-# {"ok":true,"rev":88,"updatedAt":"...","api":12}
+# {"ok":true,"rev":...,"updatedAt":"...","api":24}
 
 curl -sI $D/ | grep -iE '^(HTTP|content-security-policy|strict-transport-security)'
 # HTTP/2 200 + ca hai header bao mat
@@ -421,6 +448,16 @@ curl -s $D/admin | grep -o '<title>[^<]*</title>'
 
 curl -s -o /dev/null -w '%{http_code}\n' $D/api/admin/meta
 # 401
+
+JS=$(curl -s $D/ | grep -o '/assets/[^"]*\.js' | head -1)
+curl -sI $D$JS | grep -i '^cache-control'
+# cache-control: public, max-age=31536000, immutable
+
+curl -s -o /dev/null -w '%{http_code}\n' $D/assets/khong-co.js
+# 404  (khong phai 200)
+
+curl -s $D/robots.txt
+# User-agent: * ... Disallow: /admin  (chu thuong, khong phai HTML)
 ```
 
 Rồi làm bằng trình duyệt:
@@ -548,7 +585,10 @@ nhập được. Muốn có dashboard thì dùng kiến trúc ở [mục 1](#1-k
 | `/admin` hiện trang công khai | `dist/admin.html` không có (build lỗi giữa chừng) | Build lại, xem log |
 | Dịch vụ thoát ngay, log `Database chua co noi dung` | `DATA_DIR` sai, hoặc chưa chép/seed database | Kiểm `/etc/fablab.env`, [mục 5](#5-đưa-dữ-liệu-lên-máy-chủ) |
 | Log `SQLITE_READONLY` / `EACCES` | `/var/lib/fablab` không thuộc user `fablab` | `chown -R fablab:fablab /var/lib/fablab` |
-| `npm ci` lỗi biên dịch `better-sqlite3` | Node không phải bản 20 | Cài Node 20 ([mục 2](#2-yêu-cầu-máy-chủ)) |
+| `npm ci` lỗi biên dịch `better-sqlite3` | Node không phải bản 20, hoặc thiếu `build-essential` | Cài Node 20 + các gói ở [mục 2](#2-yêu-cầu-máy-chủ) |
+| `npm run build` báo `vite: not found` | `npm ci` chạy khi đã nạp `NODE_ENV=production` nên bỏ qua devDependencies | Chạy lại `sudo -u fablab npm ci` **không** nạp env, rồi build |
+| `npm run build` báo cần Node `^20.19.0` | Node 20 quá cũ (vd. bản trong kho Ubuntu) | Cài Node từ NodeSource ([mục 2](#2-yêu-cầu-máy-chủ)) |
+| `git clone` báo `destination path already exists` | `/srv/fablab` là thư mục home của user `fablab` (có `.bashrc`) | Tạo user theo [mục 6, bước 1](#6-deploy-lần-đầu) |
 | Ảnh vỡ trên bản `dist/` mang đi nơi khác | Ảnh tải lên sau lần build cuối chưa được chép vào `dist/media` | Build lại |
 | `meta.warnings` báo `Khong quet duoc ...` | Máy chủ thiếu `src/` | Deploy cả repo ([mục 3](#3-vì-sao-cần-cả-repo-trên-máy-chủ-không-chỉ-dist)) |
 | Sửa xong trang công khai chưa đổi | Máy chủ chạy bản cũ (còn header `max-age=60`), hoặc có proxy/CDN cache `/api/content` | Chạy `curl -sI $D/api/content`: dòng `cache-control` phải là `no-cache`; khởi động lại máy chủ. Dashboard báo "Trang công khai chưa trả bản mới" là dấu hiệu của đúng lỗi này |
