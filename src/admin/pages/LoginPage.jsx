@@ -44,7 +44,7 @@ export function LoginPage({ onSignedIn, theme, onToggleTheme }) {
         <div className="mx-auto w-full max-w-md">
           <div className="mb-10 flex items-center gap-3 lg:hidden">
             <LogoMark size={40} />
-            <span className="text-lg font-semibold text-gray-800 dark:text-white/90">FabLab EIU</span>
+            <span className="text-lg font-semibold text-gray-800 dark:text-white/90">EIU FabLab</span>
           </div>
 
           <h1 className="mb-2 text-title-sm font-semibold text-gray-800 dark:text-white/90">Đăng nhập</h1>
@@ -119,7 +119,7 @@ export function LoginPage({ onSignedIn, theme, onToggleTheme }) {
           <div className="rounded-3xl bg-white p-4">
             <LogoMark size={72} />
           </div>
-          <p className="mt-6 text-2xl font-semibold text-white">FabLab EIU</p>
+          <p className="mt-6 text-2xl font-semibold text-white">EIU FabLab</p>
           <p className="mt-2 text-gray-400">Quản trị nội dung trang giới thiệu</p>
           <p className="mt-6 text-sm text-brand-300">Tự Hào Phục vụ cộng đồng</p>
         </div>

@@ -798,7 +798,7 @@ export const SECTIONS = [
             placeholder: 'Thứ Tư, 14:00–16:00',
             help: 'Hiện dưới mô tả kèm icon đồng hồ (khối Sự kiện). Ngày đã nằm ở ô "Ngày". Để trống nếu nguồn không ghi — đừng đoán.',
           }),
-          text('venue', 'Địa điểm', { optional: true, omitEmpty: true, placeholder: 'Phòng 305.B11, FabLab EIU', help: 'Để trống nếu không có.' }),
+          text('venue', 'Địa điểm', { optional: true, omitEmpty: true, placeholder: 'Phòng 305.B11, EIU FabLab', help: 'Để trống nếu không có.' }),
           text('fee', 'Chi phí', { optional: true, omitEmpty: true, placeholder: '35.000 đ/người (đã gồm vật tư)', help: 'Để trống nếu miễn phí hoặc nguồn không ghi.' }),
           area('details', 'Nội dung chi tiết (popup "Xem chi tiết")', {
             optional: true,
