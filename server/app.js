@@ -103,6 +103,13 @@ export function createApp() {
       res.sendFile(join(config.distDir, 'admin.html'))
     })
 
+    // JS/CSS do Vite sinh ra mang băm nội dung trong tên → cache vĩnh viễn được, như ảnh.
+    // File không tồn tại phải là 404: rơi xuống fallback SPA thì trình duyệt còn giữ HTML
+    // của bản cũ sẽ nhận `index.html` thay cho một chunk đã bị xoá → lỗi MIME khó hiểu.
+    app.use('/assets', express.static(join(config.distDir, 'assets'), mediaOptions))
+    app.use('/assets', (_req, res) => {
+      res.status(404).end()
+    })
     app.use(express.static(config.distDir))
     app.get(/^(?!\/api\/).*/, (_req, res) => {
       res.sendFile(join(config.distDir, 'index.html'))
