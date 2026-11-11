@@ -153,8 +153,12 @@ Trên máy đang giữ dữ liệu (nên dừng `npm run server` trước, nhưn
 toàn khi máy chủ đang chạy):
 
 ```bash
-sqlite3 data/fablab.db ".backup fablab-deploy.db"
+sqlite3 data/fablab.db ".backup ../fablab-deploy.db"
 ```
+
+File sao lưu ghi ra **ngoài** thư mục repo (`../`): `.gitignore` chỉ chặn `data/`, nên một
+`fablab-deploy.db` nằm ở gốc repo sẽ lọt vào `git add -A` — kèm tên trẻ em và số điện
+thoại phụ huynh. Chép lên VPS xong thì xoá nó.
 
 > Đừng dùng `cp`/`Copy-Item` cho file `.db` khi máy chủ có thể đang chạy. SQLite chạy
 > chế độ WAL: phần ghi gần nhất nằm trong `fablab.db-wal`, chép riêng file `.db` là
@@ -163,14 +167,14 @@ sqlite3 data/fablab.db ".backup fablab-deploy.db"
 Trên Windows mà không có `sqlite3`, dùng chính driver của dự án:
 
 ```bash
-node -e "const D=require('better-sqlite3');new D('data/fablab.db',{readonly:true}).backup('fablab-deploy.db').then(()=>console.log('xong'))"
+node -e "const D=require('better-sqlite3');new D('data/fablab.db',{readonly:true}).backup('../fablab-deploy.db').then(()=>console.log('xong'))"
 ```
 
 Rồi đưa lên VPS cùng thư mục ảnh (`scp` nhận cổng bằng `-P` viết HOA, còn `ssh` là
 `-p` thường):
 
 ```bash
-scp -P <cong-ssh> fablab-deploy.db user@vps:/tmp/fablab.db
+scp -P <cong-ssh> ../fablab-deploy.db user@vps:/tmp/fablab.db
 scp -P <cong-ssh> -r data/media user@vps:/tmp/media
 # tren VPS:
 sudo mv /tmp/fablab.db /var/lib/fablab/fablab.db
