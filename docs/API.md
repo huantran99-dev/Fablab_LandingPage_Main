@@ -204,7 +204,7 @@ Không cần đăng nhập. Trang công khai chỉ gọi `GET /api/content`.
 Máy chủ còn sống không, đang ở bản nội dung nào, phiên bản API nào.
 
 ```json
-{"ok":true,"rev":204,"updatedAt":"2026-11-09T08:56:57.884Z","api":23}
+{"ok":true,"rev":326,"updatedAt":"2026-11-11T04:10:00.618Z","api":24}
 ```
 
 | Trường | Ý nghĩa |
@@ -691,11 +691,13 @@ vòng xoay 3D *(từ API 8)* · `statuses`: record `id → chữ(40)` (nhãn tr�
 | `registerCta` | object `{ idLoai: chữ(60) }`, tuỳ chọn — nhãn nút đăng ký trên từng slide theo `kind` ("Đăng ký cuộc thi / Workshop / hội thảo"), cũng là tiêu đề form sự kiện. Loại không có nhãn thì không có nút (`partnership` cố ý không có) *(từ API 22; database đã seed nhận qua migration `024_event_registration.sql`)* |
 | `joinMember` | chữ(60), tuỳ chọn — **không còn dùng từ API 22** (nút "Trở thành thành viên FabLab ngay" của API 18–21, migration 024 xoá khỏi database). Giữ trong schema để khôi phục bản lịch sử cũ vẫn hợp lệ |
 | `viewDetails`, `detailLink`, `closeDetails` | chữ(60), tuỳ chọn — nút "Xem chi tiết" của banner Cuộc thi, link trang ngoài và nút đóng trong popup *(từ API 19; database đã seed nhận qua migration `022_activity_details.sql`; vắng `viewDetails` thì không có nút)* |
+| `timeLabel`, `venueLabel`, `feeLabel` | chữ(40), tuỳ chọn — nhãn đọc (ẩn, cho trình đọc màn hình) của dòng giờ · địa điểm · chi phí trên thẻ sự kiện *(từ API 24; database đã seed nhận qua migration `026_workshops_2026.sql`)* |
 | `kinds` | object `{ idLoai: chữ(40) }` — nhãn của từng loại |
 | `groups[]` (≥ 1) | `{ id, title: chữ(120), description: chữ(400), kinds: [idLoai], videoBanner?: boolean }` |
-| `items[]` | `{ id, title: chữ(200), description: chữ(600), date, kind, details?: chuỗi ≤ 3000, link?: "https://…", registerClosed?: true }` |
+| `items[]` | `{ id, title: chữ(200), description: chữ(600), date, kind, details?: chuỗi ≤ 3000, link?: "https://…", registerClosed?: true, time?: chữ(120), venue?: chữ(120), fee?: chữ(120) }` |
 
 - `date`: chuỗi ≤ 60 ký tự, **được rỗng** (vài hoạt động thật không có ngày).
+- `time` / `venue` / `fee` *(từ API 24, chữ dịch, tuỳ chọn)*: giờ, địa điểm, chi phí — hiện dưới mô tả thẻ sự kiện, mỗi dòng một icon. Vắng = nguồn không ghi, trang bỏ dòng đó.
 - `registerClosed` *(từ API 22, trường dùng chung)*: `true` = "Đóng đăng ký" — trang ẩn nút đăng ký của mục đó và `POST /api/registrations` từ chối (`422 event`). Vắng = đang nhận đăng ký.
 - `details` (dịch) / `link` (dùng chung, chỉ http/https): nội dung popup "Xem chi tiết" của khối Cuộc thi *(từ API 19)*. Đoạn cách nhau bằng dòng trống. Bản seed không có — vắng thì popup chỉ hiện poster + mô tả. Tên `link` chứ không phải `href` vì `href` buộc trỏ neo có thật.
 - Khối chứa hoạt động suy từ `kind`: `kind` phải có nhãn trong `kinds` **và** phải nằm

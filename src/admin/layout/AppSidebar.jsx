@@ -104,7 +104,7 @@ export function AppSidebar({ route, collapsed, mobileOpen, onNavigate, newRegist
         <a href="#/" onClick={onNavigate} className="flex items-center gap-3">
           <LogoMark size={36} />
           <span className={`leading-tight ${collapsed ? 'lg:hidden' : ''}`}>
-            <span className="block text-base font-semibold text-gray-800 dark:text-white/90">FabLab EIU</span>
+            <span className="block text-base font-semibold text-gray-800 dark:text-white/90">EIU FabLab</span>
             <span className="block text-theme-xs text-gray-500 dark:text-gray-400">Quản trị nội dung</span>
           </span>
         </a>

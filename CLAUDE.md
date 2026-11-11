@@ -401,8 +401,9 @@ xe đua, v.v.). Bộ ảnh hiện tại được gán bằng cách **mở từng
 theo nội dung và ngày in trên poster. Bổ sung ảnh mới thì làm y như vậy, đừng tin
 thứ tự trong HTML.
 
-Ba hoạt động không có ảnh riêng trên trang gốc (`stm32`, `print-3d-medical`,
-`pcb`) dùng lại ảnh thật khác của FabLab, đánh dấu `// ~`.
+Từ 2026-11-11 khối Sự kiện là 11 workshop 2026 (xem "Workshop 2026" bên dưới); các
+hoạt động cũ cùng ba ảnh dùng lại `// ~` của chúng (`stm32`, `print-3d-medical`, `pcb`)
+đã bỏ khỏi corpus và `index.js`.
 
 Tỷ lệ ảnh hoạt động rất lệch nhau (poster dọc 0.7 đến ảnh ngang 2.05) nên banner
 dùng `object-contain` cho poster (xem "Hai kiểu banner tự chạy"). **Đừng đổi sang `object-cover`** — nó sẽ
@@ -1018,6 +1019,50 @@ kết luận "tự chạy hỏng", kiểm luôn Windows có tắt hiệu ứng c
     `dialog[open]` bắt nhầm popup Tết.
 - Bài thử gửi form bằng puppeteer phải đặt user agent thường và chờ > 3 giây trước khi gửi:
   máy chủ coi trình duyệt headless / điền dưới `MIN_FILL_MS` là bot, trả 201 mà KHÔNG lưu.
+
+### Workshop 2026 (từ 2026-11-11, API 24)
+
+Khối Sự kiện giờ chỉ còn **11 workshop tháng 1–10/2026**. Người dùng chọn thay TOÀN BỘ khối:
+bỏ 5 workshop + 6 hội thảo + lễ ký kết Việt Anh (2019–2022). Nguồn là tài liệu Claude Docs
+**"Workshop EIU FabLab 2026"** (`claude.ai/artifact/KXk5qDD1fU2Zs4wqT2Mks4`) người dùng soạn từ
+fanpage FabLab – EIU.
+
+- **Ảnh lấy qua bản export .docx của tài liệu** (connector Claude Docs chỉ cho XEM ảnh, không
+  cho tải file): `export` dạng docx → file kết quả lớn được lưu ở `tool-results/`, giải nén
+  `word/media/imageN.jpeg` theo đúng thứ tự tài liệu. Các ảnh này chỉ cao ~489px (bộ render đã
+  thu nhỏ), nên ở màn hình độ phân giải cao hơi mềm. Có ảnh gốc thì admin thay qua dashboard.
+  Đã mở từng ảnh ra xem, khớp tên và ngày trên poster / màn hình.
+- **Ba trường mới `time` / `venue` / `fee`** (chữ dịch, tuỳ chọn, `omitEmpty`). `EventFacts` ở
+  [Activities.jsx](src/components/Activities.jsx) vẽ chúng thành `<dl>` dưới mô tả: icon
+  `ClockIcon` / `MapPinIcon` / `TicketIcon` và `dt` sr-only lấy từ `timeLabel` / `venueLabel` /
+  `feeLabel`. Chỉ dòng có dữ liệu mới vẽ. Chỉ carousel Sự kiện dùng; popup Cuộc thi chưa dùng.
+- Cả 11 mục `registerClosed: true` vì đã diễn ra. Thứ tự: mới nhất trước.
+- **`uav-f1tenth` là mục admin tự tạo** (có video + ảnh drone tải lên). Migration thay object
+  JSON bằng bản theo tài liệu (ngày `27/1/2026`, `details` = 4 nội dung giai đoạn 1). Ảnh và
+  video nằm ở `binding` theo id nên giữ nguyên. Corpus seed gắn ảnh slide ROS2 cho nó.
+- **Migration 026** (sinh bằng máy từ vi.js / en.js, chốt từng ngôn ngữ bằng id `ws26-clay`):
+  - giữ mọi mục có `kind` KHÔNG thuộc khối `events` (Cuộc thi, kể cả `trai-nghiem-stem` admin
+    thêm);
+  - bỏ mọi mục của khối events, nối 11 mục mới;
+  - thêm ba nhãn;
+  - đổi mô tả khối chỉ khi còn nguyên văn cũ.
+  - Binding ảnh của mục cũ để lại (mồ côi có chủ đích).
+- **Ảnh vào database thật: `npm run images:replace -- activity --missing`.** Cờ `--missing`
+  (mới) chỉ gắn cho mục CHƯA có ảnh. Bỏ cờ thì script thay luôn ảnh drone của `uav-f1tenth` và
+  ảnh hai cuộc thi: admin đã đổi chúng nên khác bản đóng gói (đã thử trên bản sao: không cờ thì
+  thay 3, có cờ thì giữ 3). Script gọi `getDb()` nên chính nó áp luôn migration 026.
+- Đã thử trên bản sao database thật:
+  - `rev` activities 28 → 29 (migration) → 30 (ảnh) mỗi ngôn ngữ;
+  - 3 mục Cuộc thi khớp mã băm; UAV còn video + ảnh drone; 2 dòng đăng ký không đổi;
+  - chạy lại: "13 mục đã có ảnh";
+  - seed mới + `verify:seed` → `identical`.
+- Puppeteer (3999 / 4333):
+  - 11 slide đúng thứ tự, không nút đăng ký;
+  - dòng giờ / địa điểm / chi phí đúng từng mục ở VI và EN;
+  - 320 / 390 / 768 / 1280px: không chữ nào lọt khỏi thẻ, không tràn ngang;
+  - không lỗi console.
+- Nút "tiếp" của carousel có nhãn `Hoạt động tiếp theo` đã bị nối U+00A0. Bài thử tìm bằng
+  `/tiếp\s+theo/`.
 
 ## Bẫy khi sửa i18n bằng regex
 

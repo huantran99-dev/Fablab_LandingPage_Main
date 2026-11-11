@@ -59,7 +59,7 @@ export function DashboardPage({ meta, username }) {
 
   return (
     <>
-      <PageHeader title={`Xin chào, ${username}`} description="Quản lý toàn bộ nội dung trang FabLab EIU bằng hai ngôn ngữ." />
+      <PageHeader title={`Xin chào, ${username}`} description="Quản lý toàn bộ nội dung trang EIU FabLab bằng hai ngôn ngữ." />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 xl:grid-cols-4">
         {metrics.map((metric) => (

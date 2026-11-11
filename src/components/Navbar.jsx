@@ -286,7 +286,7 @@ export function Navbar() {
           + nút menu từng vượt khung 2px → cả trang kéo ngang được. Khe 8px trên điện thoại,
           và logo được co (`min-w-0`): chật thì dòng phụ xuống hàng thay vì đẩy tràn. */}
       <nav ref={navRef} className="container-page flex items-center justify-between gap-2 py-4 sm:gap-6">
-        <a href="#top" className="min-w-0" aria-label="FabLab EIU">
+        <a href="#top" className="min-w-0" aria-label="EIU FabLab">
           <Logo tagline={t.nav.brandTagline} />
         </a>
 
@@ -348,7 +348,7 @@ export function Navbar() {
       <dialog
         ref={drawerRef}
         onClose={closeDrawer}
-        aria-label="FabLab EIU"
+        aria-label="EIU FabLab"
         className="m-0 h-dvh max-h-none w-full max-w-none overflow-y-auto bg-white animate-rise"
       >
         {drawerOpen && (

@@ -306,6 +306,11 @@ export const activitiesSchema = z.strictObject({
   viewDetails: text(60).optional(),
   detailLink: text(60).optional(),
   closeDetails: text(60).optional(),
+  // Nhãn trợ năng (dt ẩn) của dòng giờ · địa điểm · chi phí trên thẻ sự kiện (từ API 24).
+  // Tuỳ chọn: bản lịch sử cũ không có — thiếu thì dòng vẫn hiện, chỉ không có nhãn đọc.
+  timeLabel: text(40).optional(),
+  venueLabel: text(40).optional(),
+  feeLabel: text(40).optional(),
   kinds: z.record(idSchema, text(40)),
   groups: z
     .array(
@@ -333,6 +338,11 @@ export const activitiesSchema = z.strictObject({
       // bằng dòng trống; `link` dùng chung (KHÔNG tên `href` — `href` bị buộc trỏ neo có thật).
       details: z.string().trim().max(3000, 'toi da 3000 ky tu').optional(),
       link: z.url({ protocol: /^https?$/, error: 'phai la duong dan https://...' }).optional(),
+      // Giờ · địa điểm · chi phí của thẻ sự kiện (từ API 24). Chữ dịch, tuỳ chọn: vắng = nguồn
+      // không ghi, component bỏ dòng đó.
+      time: text(120).optional(),
+      venue: text(120).optional(),
+      fee: text(120).optional(),
       // Đóng đăng ký (từ API 22): `true` = ẩn nút đăng ký, máy chủ từ chối lượt gửi. Vắng = đang
       // nhận — mặc định BẬT theo yêu cầu người dùng, sự kiện đã qua thì admin tắt. Dùng chung.
       registerClosed: z.literal(true, 'chi true hoac vang').optional(),

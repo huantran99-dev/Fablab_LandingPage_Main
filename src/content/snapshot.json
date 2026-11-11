@@ -5,19 +5,21 @@
       "description": "Competitions, seminars and workshops run by FabLab EIU for students, pupils and the wider community.",
       "detailLink": "Visit the competition page",
       "eyebrow": "Events",
+      "feeLabel": "Fee",
       "goTo": "Go to activity",
       "groups": [
         {
           "description": "Two annual contests run by FabLab EIU, open to university and high-school students across southern Vietnam.",
           "id": "competitions",
           "kinds": [
-            "competition"
+            "competition",
+            "activity"
           ],
           "title": "Competitions",
           "videoBanner": true
         },
         {
-          "description": "Specialist seminars, hands-on workshops and partnership signings hosted at the lab between 2019 and 2023.",
+          "description": "Technical workshops for students, hands-on DIY craft workshops and FabLab orientation sessions in 2026.",
           "id": "events",
           "kinds": [
             "seminar",
@@ -39,6 +41,7 @@
             "width": 453
           },
           "kind": "competition",
+          "registerClosed": true,
           "title": "EIU Drone Soccer Championship 2026",
           "video": {
             "duration": 24.3,
@@ -57,6 +60,7 @@
             "width": 452
           },
           "kind": "competition",
+          "registerClosed": true,
           "title": "EIU MCR 2026 — Autonomous car programming",
           "video": {
             "duration": 28.9,
@@ -67,147 +71,194 @@
         },
         {
           "date": "",
-          "description": "A model car racing competition run by EIU FabLab together with the EIU School of Engineering for engineering students.",
-          "id": "racing-cup",
+          "description": "A series of hands-on STEM activities covering diverse topics, giving students rich knowledge and practical experience.",
+          "id": "trai-nghiem-stem",
           "image": {
-            "height": 600,
-            "url": "/media/activity-racing-cup.fd0574bf.jpg",
-            "width": 900
+            "height": 1066,
+            "url": "/media/stem-2.b71a98ee.jpg",
+            "width": 1600
           },
-          "kind": "competition",
-          "title": "FabLab Racing Cup"
+          "kind": "activity",
+          "title": "STEM learning experience",
+          "video": {
+            "duration": 27,
+            "height": 1080,
+            "url": "/media/stem-activity.03b283c3.mp4",
+            "width": 1920
+          }
         },
         {
-          "date": "Every Wednesday afternoon",
-          "description": "Guiding students through microcontroller peripherals such as ADC, PWM and I2C. Held in room 202, block 11.",
-          "id": "stm32",
+          "date": "21 Oct 2026",
+          "description": "An introduction to the FabLab creative space for students. Participants got to know the technology equipment, learned how to use it and how to apply it in study, research and practice — turning ideas into real products.",
+          "id": "ws26-fablab-intro",
           "image": {
-            "height": 320,
-            "url": "/media/course-electronics.39d13333.jpg",
-            "width": 760
-          },
-          "kind": "seminar",
-          "title": "STM32 programming basics"
-        },
-        {
-          "date": "20 July 2022",
-          "description": "Learning about 3D printing, the types of printer available and how to run them. Led by Vo Doan Linh, at the EIU Library.",
-          "id": "print-3d",
-          "image": {
-            "height": 640,
-            "url": "/media/activity-print-3d.390a6462.jpg",
-            "width": 470
+            "height": 489,
+            "url": "/media/activity-ws26-fablab-intro.30bcfc83.jpg",
+            "width": 1061
           },
           "kind": "workshop",
-          "title": "3D printing technology and applications"
+          "registerClosed": true,
+          "title": "Getting started with FabLab",
+          "venue": "EIU FabLab, Block B11"
         },
         {
-          "date": "19 July 2022",
-          "description": "A strategic partnership with the Viet Anh School System covering STEM experience programmes, research support and entering pupils into science and technology competitions.",
-          "id": "viet-anh",
+          "date": "23 Sep 2026",
+          "description": "Make your own Mid-Autumn lantern from wood and acrylic, cut and engraved on the laser cutter. Participants were guided through sketching ideas and choosing a design, assembling it, then decorating and finishing the lantern.",
+          "fee": "60,000 VND",
+          "id": "ws26-lantern",
           "image": {
-            "height": 502,
-            "url": "/media/activity-viet-anh.0388b383.jpg",
-            "width": 900
-          },
-          "kind": "partnership",
-          "title": "Strategic partnership: EIU – Viet Anh"
-        },
-        {
-          "date": "21 June 2022",
-          "description": "Cutting wood and acrylic on the laser cutter, engraving circuit boards, designing and 3D printing. Led by Bui Quang Tien.",
-          "id": "laser-cnc",
-          "image": {
-            "height": 640,
-            "url": "/media/activity-laser-cnc.764e77dc.jpg",
-            "width": 441
+            "height": 489,
+            "url": "/media/activity-ws26-lantern.74099696.jpg",
+            "width": 347
           },
           "kind": "workshop",
-          "title": "Get creative with 3D printers and laser CNC"
+          "registerClosed": true,
+          "time": "Wednesday, 2:00–4:00 pm",
+          "title": "Mid-Autumn lantern making",
+          "venue": "Room 204, Block B11, EIU FabLab"
         },
         {
-          "date": "20 June 2022",
-          "description": "On engineering design and prototyping of industrial products. Speaker: Nguyen Tran Bao Hien, Anco Company – Binh Duong.",
-          "id": "industrial-design",
+          "date": "12 Aug 2026",
+          "description": "A DIY workshop making handmade bouquets for loved ones or for yourself. Participants combined small flower stems with hand-modelled characters into a bouquet of their own, with a wish carried in every detail.",
+          "id": "ws26-bouquet",
           "image": {
-            "height": 640,
-            "url": "/media/activity-industrial-design.fc32c71d.jpg",
-            "width": 468
-          },
-          "kind": "seminar",
-          "title": "The role of industrial design"
-        },
-        {
-          "date": "",
-          "description": "3D printing applied to maxillofacial surgery. Speaker: Dr Tran Tuan Anh, DDS, Becamex International Hospital.",
-          "id": "print-3d-medical",
-          "image": {
-            "height": 320,
-            "url": "/media/course-water.9e0a5a8d.jpg",
-            "width": 760
-          },
-          "kind": "seminar",
-          "title": "3D printing in healthcare"
-        },
-        {
-          "date": "15 March",
-          "description": "Stretchable tension sensors built from nanomaterials for medical use. Speaker: Dr Tran Quang Trung, Sungkyunkwan University, Korea.",
-          "id": "nano",
-          "image": {
-            "height": 640,
-            "url": "/media/activity-nano.c7dc7ca6.jpg",
-            "width": 738
-          },
-          "kind": "seminar",
-          "title": "Nanomaterials in healthcare"
-        },
-        {
-          "date": "23 August",
-          "description": "Neural network basics, TensorFlow, convolutional networks and where deep learning is heading. Speaker: Dr Cuong Pham.",
-          "id": "machine-learning",
-          "image": {
-            "height": 636,
-            "url": "/media/activity-machine-learning.c6a02acf.jpg",
-            "width": 900
-          },
-          "kind": "seminar",
-          "title": "Machine learning"
-        },
-        {
-          "date": "7 August 2019",
-          "description": "How a product travels from idea to sketch to prototype, with hands-on sketching practice.",
-          "id": "design-workshop",
-          "image": {
-            "height": 438,
-            "url": "/media/activity-design-workshop.2ce1badc.jpg",
-            "width": 900
+            "height": 489,
+            "url": "/media/activity-ws26-bouquet.c14ec287.jpg",
+            "width": 653
           },
           "kind": "workshop",
-          "title": "Industrial design"
+          "registerClosed": true,
+          "time": "Wednesday, 2:00–4:00 pm",
+          "title": "Youthful bouquets",
+          "venue": "Room 202, Block B11, EIU FabLab"
         },
         {
-          "date": "",
-          "description": "Using resistors, diodes, transistors, FETs and optocouplers to build real applications, plus basic PCB layout technique.",
-          "id": "pcb",
+          "date": "22 Jul 2026",
+          "description": "A DIY workshop decorating everyday items with cream glue and charms. Participants decorated hairbrushes, phone cases, mirrors and other accessories, each with its own personality.",
+          "fee": "35,000 VND per person",
+          "id": "ws26-decoden",
           "image": {
-            "height": 600,
-            "url": "/media/lab-workbenches.c235eaa8.jpg",
-            "width": 1000
+            "height": 489,
+            "url": "/media/activity-ws26-decoden.4d0973e4.jpg",
+            "width": 869
           },
           "kind": "workshop",
-          "title": "Designing and prototyping circuits"
+          "registerClosed": true,
+          "time": "Wednesday, morning 9:00–11:00 am, afternoon 2:00–4:00 pm",
+          "title": "Decoden cream-glue decorating",
+          "venue": "Room 202, Block B11, EIU FabLab"
         },
         {
-          "date": "",
-          "description": "The 3D design process and the factors that shape a product from first drawing through to finished part.",
-          "id": "design-3d",
+          "date": "1 Jul 2026",
+          "description": "Part of the DIY craft workshop series. Participants designed and strung beads into a bracelet of their own, free to choose colours and details, and took it home. Each piece is a small gift showing the care and personality of its maker.",
+          "id": "ws26-beads",
           "image": {
-            "height": 640,
-            "url": "/media/activity-design-3d.e408b3dc.jpg",
-            "width": 853
+            "height": 489,
+            "url": "/media/activity-ws26-beads.34f6c70f.jpg",
+            "width": 331
           },
           "kind": "workshop",
-          "title": "3D design with SolidWorks"
+          "registerClosed": true,
+          "time": "Wednesday, morning and afternoon sessions",
+          "title": "Beaded bracelets",
+          "venue": "Room 305, Block B11, EIU FabLab"
+        },
+        {
+          "date": "10 Jun 2026",
+          "description": "A cheerful, relaxing DIY workshop for students after class. Everyone designed and decorated a glass in their own style. The session was lively, and every glass became a piece bearing its maker’s mark.",
+          "fee": "35,000 VND per person (materials included)",
+          "id": "ws26-glass",
+          "image": {
+            "height": 489,
+            "url": "/media/activity-ws26-glass.29f2081f.jpg",
+            "width": 652
+          },
+          "kind": "workshop",
+          "registerClosed": true,
+          "time": "Wednesday, morning 9:00–11:00 am, afternoon 2:00–4:00 pm",
+          "title": "Glass painting",
+          "venue": "Room 305, Block B11, EIU FabLab"
+        },
+        {
+          "date": "27 May 2026",
+          "description": "A DIY workshop to unwind and connect after class. Participants used Mont Marte air-dry clay and acrylic paint to model small, cute pieces to take home. Students and university staff joined in together.",
+          "fee": "35,000 VND per person (materials included)",
+          "id": "ws26-clay",
+          "image": {
+            "height": 489,
+            "url": "/media/activity-ws26-clay.70583a7e.jpg",
+            "width": 276
+          },
+          "kind": "workshop",
+          "registerClosed": true,
+          "time": "Wednesday, session 1 9:00–11:00 am, session 2 2:00–4:00 pm",
+          "title": "Creating with Clay",
+          "venue": "Room 209, Block B11, EIU FabLab"
+        },
+        {
+          "date": "20 May 2026",
+          "description": "A workshop on managing source code, working in teams and “rescuing code” for course projects. Participants learned Git and GitHub from scratch: the pull → add → commit → push workflow, working with branches (branch, merge) and hands-on teamwork. Many programming enthusiasts took part.",
+          "id": "ws26-git",
+          "image": {
+            "height": 487,
+            "url": "/media/activity-ws26-git.a2364131.jpg",
+            "width": 276
+          },
+          "kind": "workshop",
+          "registerClosed": true,
+          "time": "Wednesday, 2:00–4:00 pm",
+          "title": "Getting started with Git and GitHub",
+          "venue": "Room 305, Block B11, EIU FabLab"
+        },
+        {
+          "date": "15 Apr 2026",
+          "description": "For engineering-minded students who need mechanical design for course or personal projects. Topics covered mechanical design thinking, technical standards and hands-on design in software, with a sharing session and plenty of focused practice.",
+          "id": "ws26-mech-design",
+          "image": {
+            "height": 489,
+            "url": "/media/activity-ws26-mech-design.83b44711.jpg",
+            "width": 869
+          },
+          "kind": "workshop",
+          "registerClosed": true,
+          "time": "Wednesday, 2:00–4:00 pm",
+          "title": "Mechanical design basics",
+          "venue": "Room 305, Block B11, EIU FabLab"
+        },
+        {
+          "date": "27 Jan 2026",
+          "description": "A long-running workshop series for students interested in autonomous robots, starting 27 January 2026. Phase 1 builds the foundations: Ubuntu and Linux, core maths, ROS 2 and its key concepts, and ROS 2 programming in simulation before moving to real drones and F1TENTH cars — preparing for the advanced phase 2.",
+          "details": "Getting started with Ubuntu and the Linux environment.\n\nCore maths review: calculus, linear algebra, probability and statistics.\n\nROS 2 and its core concepts: Workspace, Package, Node, Topic, Service, Action.\n\nROS 2 programming in simulation, then connecting to real models such as drones and F1TENTH cars.",
+          "id": "uav-f1tenth",
+          "image": {
+            "height": 899,
+            "url": "/media/drone.720e5138.jpg",
+            "width": 1600
+          },
+          "kind": "workshop",
+          "registerClosed": true,
+          "title": "UAV & F1TENTH workshop series",
+          "video": {
+            "duration": 28.5,
+            "height": 1080,
+            "url": "/media/droneandf1.6555549c.mp4",
+            "width": 1920
+          }
+        },
+        {
+          "date": "14 Jan 2026",
+          "description": "For students who love making, engineering and DIY, or who need machines for course and personal projects. Participants learned the procedures and safety rules for working at FabLab and practised hands-on with basic mechanical machines, so they can use them confidently for study, research and building products.",
+          "id": "ws26-machines",
+          "image": {
+            "height": 489,
+            "url": "/media/activity-ws26-machines.86b6b5cb.jpg",
+            "width": 347
+          },
+          "kind": "workshop",
+          "registerClosed": true,
+          "time": "Wednesday, morning 9:00–11:00 am, afternoon 2:00–4:00 pm",
+          "title": "Using the FabLab workshop machines",
+          "venue": "Room 204, Block B11, EIU FabLab"
         }
       ],
       "kinds": {
@@ -226,7 +277,9 @@
         "seminar": "Register for the seminar",
         "workshop": "Register for the workshop"
       },
+      "timeLabel": "Time",
       "title": "Annual activities & competitions",
+      "venueLabel": "Venue",
       "viewDetails": "View details"
     },
     "courses": {
@@ -1880,13 +1933,14 @@
           "arrow": true,
           "id": "primary",
           "label": "Enroll in a course",
+          "registerKind": "course",
           "style": "primary"
         },
         {
-          "action": "link",
-          "href": "#contact",
+          "action": "register",
           "id": "secondary",
-          "label": "Get in touch",
+          "label": "Become a Member",
+          "registerKind": "member",
           "style": "secondary"
         }
       ],
@@ -2349,66 +2403,6 @@
       "imageAlt": "Photo of the {title} project",
       "items": [
         {
-          "description": "Cobot is a multifunctional robot that supports people in public areas with tasks such as delivery and security.",
-          "id": "cobot",
-          "image": {
-            "height": 681,
-            "url": "/media/project-cobot.d9bdca30.jpg",
-            "width": 278
-          },
-          "title": "Cobot"
-        },
-        {
-          "description": "The aircraft model is designed to be simple, easy to assemble and easy to use in STEM classes.",
-          "id": "plane",
-          "image": {
-            "height": 433,
-            "url": "/media/project-plane.fa948ab1.jpg",
-            "width": 577
-          },
-          "title": "Plane model"
-        },
-        {
-          "description": "Helps students access technology and programming, and promotes scientific and technical research activities among students.",
-          "id": "microbit-kit",
-          "image": {
-            "height": 404,
-            "url": "/media/project-microbit-kit.22993878.jpg",
-            "width": 617
-          },
-          "title": "Micro:bit starter kit"
-        },
-        {
-          "description": "A skull model made by 3D printing so that doctors can practise before operating on a real patient.",
-          "id": "jaw-model",
-          "image": {
-            "height": 453,
-            "url": "/media/project-jaw-model.54102f84.jpg",
-            "width": 317
-          },
-          "title": "Skull model for surgery"
-        },
-        {
-          "description": "The light changes colour and brightness with a push button or from a phone, or turns on automatically when someone is present in low light.",
-          "id": "smart-light",
-          "image": {
-            "height": 471,
-            "url": "/media/project-smart-light.a98ff1ee.jpg",
-            "width": 530
-          },
-          "title": "Micro:bit smart light"
-        },
-        {
-          "description": "A physics teaching kit for the Laser & Fibre Optics STEM class that shows the refraction of light.",
-          "id": "refraction-model",
-          "image": {
-            "height": 449,
-            "url": "/media/project-refraction-model.4efbe7c2.jpg",
-            "width": 483
-          },
-          "title": "Physics training kit"
-        },
-        {
           "description": "Racing car models help students improve their specialised knowledge.",
           "id": "mcr-racing-car",
           "image": {
@@ -2416,26 +2410,40 @@
             "url": "/media/project-mcr-racing-car.d872a969.jpg",
             "width": 517
           },
+          "status": "done",
           "title": "EIU – MCR racing car"
         },
         {
-          "description": "The hydroponic growing model has automatic functions such as a misting timer, remote control, lights that simulate sunlight, scheduled fertilisation and a pH sensor.",
-          "id": "hydroponic-garden",
+          "description": "The delivery robot is integrated with an intuitive control screen, allowing users to select a destination on the map and send movement requests. The system enables the robot to self-localize, navigate, and move to designated locations to execute delivery tasks",
+          "id": "robot-giao-hang",
           "image": {
-            "height": 417,
-            "url": "/media/project-hydroponic-garden.7c69f863.jpg",
-            "width": 598
+            "height": 496,
+            "url": "/media/robot-van-chuyen.a9f0bfb5.jpg",
+            "width": 983
           },
-          "title": "Hydroponic garden"
+          "status": "ongoing",
+          "title": "The delivery robot"
+        },
+        {
+          "description": "STEM Platform is an educational STEM platform developed by EIU FabLab. Integrating interactive simulations and Augmented Reality (AR) technology, it provides an environment for learners to explore, program, and test engineering models across fields such as electronics, robotics, drones, and automation.",
+          "id": "stem-platform",
+          "image": {
+            "height": 851,
+            "url": "/media/stem-platform.41cb213a.jpg",
+            "width": 1600
+          },
+          "status": "comingsoon",
+          "title": "STEM Platform"
         }
       ],
       "next": "Next project",
       "previous": "Previous project",
       "statuses": {
+        "comingsoon": "Coming soon",
         "done": "Completed",
         "ongoing": "In progress"
       },
-      "title": "Made in our workshop"
+      "title": "FabLab Research Products"
     },
     "register": {
       "close": "Close",
@@ -2897,27 +2905,29 @@
       "title": "What learners say about FabLab EIU"
     }
   },
-  "rev": 246,
-  "updatedAt": "2026-11-09T09:23:56.946Z",
+  "rev": 326,
+  "updatedAt": "2026-11-11T04:17:32.395Z",
   "vi": {
     "activities": {
       "closeDetails": "Đóng",
       "description": "Sân chơi, hội thảo và workshop do EIU FabLab tổ chức cho sinh viên, học sinh và cộng đồng.",
       "detailLink": "Xem trang cuộc thi",
       "eyebrow": "Sự kiện",
+      "feeLabel": "Chi phí",
       "goTo": "Xem hoạt động số",
       "groups": [
         {
           "description": "Hai sân chơi thường niên do EIU FabLab tổ chức, mở cho sinh viên và học sinh khu vực phía Nam.",
           "id": "competitions",
           "kinds": [
-            "competition"
+            "competition",
+            "activity"
           ],
           "title": "Cuộc thi",
           "videoBanner": true
         },
         {
-          "description": "Hội thảo chuyên đề, workshop thực hành và lễ hợp tác diễn ra tại FabLab trong khoảng 2019–2023.",
+          "description": "Workshop kỹ thuật cho sinh viên, workshop thủ công DIY và buổi hướng dẫn sử dụng FabLab trong năm 2026.",
           "id": "events",
           "kinds": [
             "seminar",
@@ -2939,6 +2949,7 @@
             "width": 453
           },
           "kind": "competition",
+          "registerClosed": true,
           "title": "EIU Drone Soccer Championship 2026",
           "video": {
             "duration": 24.3,
@@ -2957,6 +2968,7 @@
             "width": 452
           },
           "kind": "competition",
+          "registerClosed": true,
           "title": "EIU MCR 2026 — Lập trình xe đua tự động",
           "video": {
             "duration": 28.9,
@@ -2967,147 +2979,194 @@
         },
         {
           "date": "",
-          "description": "Cuộc thi đua xe mô hình do EIU FabLab phối hợp với khoa Kỹ thuật EIU tổ chức cho sinh viên khoa Kỹ thuật.",
-          "id": "racing-cup",
+          "description": "Chuỗi hoạt động trải nghiệm STEM cho học sinh với đa dạng chủ đề, từ đó giúp các bạn có thêm nhiều kiến thức và trải nghiệm.",
+          "id": "trai-nghiem-stem",
           "image": {
-            "height": 600,
-            "url": "/media/activity-racing-cup.fd0574bf.jpg",
-            "width": 900
+            "height": 1066,
+            "url": "/media/stem-2.b71a98ee.jpg",
+            "width": 1600
           },
-          "kind": "competition",
-          "title": "FabLab Racing Cup"
+          "kind": "activity",
+          "title": "Trải nghiệm STEM",
+          "video": {
+            "duration": 27,
+            "height": 1080,
+            "url": "/media/stem-activity.03b283c3.mp4",
+            "width": 1920
+          }
         },
         {
-          "date": "Chiều thứ 4 hàng tuần",
-          "description": "Hướng dẫn sinh viên sử dụng các chức năng ngoại vi của vi điều khiển như ADC, PWM, I2C. Tại phòng 202, block 11.",
-          "id": "stm32",
+          "date": "21/10/2026",
+          "description": "Buổi giới thiệu không gian sáng tạo FabLab cho sinh viên. Người tham gia làm quen với các thiết bị công nghệ, tìm hiểu quy trình sử dụng và cách ứng dụng chúng trong học tập, nghiên cứu, thực hành, để biến ý tưởng thành sản phẩm thực tế.",
+          "id": "ws26-fablab-intro",
           "image": {
-            "height": 320,
-            "url": "/media/course-electronics.39d13333.jpg",
-            "width": 760
-          },
-          "kind": "seminar",
-          "title": "Lập trình STM32 căn bản"
-        },
-        {
-          "date": "20/7/2022",
-          "description": "Tìm hiểu công nghệ in 3D, các loại máy in 3D và cách vận hành. Phụ trách: Võ Đoàn Linh. Tại Thư viện EIU.",
-          "id": "print-3d",
-          "image": {
-            "height": 640,
-            "url": "/media/activity-print-3d.390a6462.jpg",
-            "width": 470
+            "height": 489,
+            "url": "/media/activity-ws26-fablab-intro.30bcfc83.jpg",
+            "width": 1061
           },
           "kind": "workshop",
-          "title": "Công nghệ và ứng dụng in 3D"
+          "registerClosed": true,
+          "title": "Hướng dẫn sử dụng FabLab",
+          "venue": "EIU FabLab, Block B11"
         },
         {
-          "date": "19/7/2022",
-          "description": "Thiết lập quan hệ đối tác chiến lược với Hệ thống trường Việt Anh: tổ chức trải nghiệm STEM, hỗ trợ nghiên cứu và đưa học sinh tham gia các cuộc thi khoa học công nghệ.",
-          "id": "viet-anh",
+          "date": "23/9/2026",
+          "description": "Workshop tự làm đèn lồng Trung thu bằng gỗ và mica, có dùng máy cắt/khắc laser. Người tham gia được hướng dẫn lên ý tưởng và chọn mẫu, lắp ráp theo mẫu, rồi trang trí và hoàn thiện sản phẩm.",
+          "fee": "60.000 đ",
+          "id": "ws26-lantern",
           "image": {
-            "height": 502,
-            "url": "/media/activity-viet-anh.0388b383.jpg",
-            "width": 900
-          },
-          "kind": "partnership",
-          "title": "Ký kết hợp tác chiến lược EIU – Việt Anh"
-        },
-        {
-          "date": "21/6/2022",
-          "description": "Cắt gỗ và mica bằng máy laser, khắc mạch in, thiết kế và in 3D. Phụ trách: Bùi Quang Tiến.",
-          "id": "laser-cnc",
-          "image": {
-            "height": 640,
-            "url": "/media/activity-laser-cnc.764e77dc.jpg",
-            "width": 441
+            "height": 489,
+            "url": "/media/activity-ws26-lantern.74099696.jpg",
+            "width": 347
           },
           "kind": "workshop",
-          "title": "Sáng tạo với máy in 3D và máy CNC laser"
+          "registerClosed": true,
+          "time": "Thứ Tư, 14:00–16:00",
+          "title": "Làm lồng đèn Trung thu",
+          "venue": "Phòng 204.B11, FabLab EIU"
         },
         {
-          "date": "20/6/2022",
-          "description": "Trao đổi về thiết kế kỹ thuật và tạo mẫu sản phẩm công nghiệp. Diễn giả: Nguyễn Trần Bảo Hiền, Công ty Anco – Bình Dương.",
-          "id": "industrial-design",
+          "date": "12/8/2026",
+          "description": "Workshop DIY làm bó hoa handmade tặng người thân hoặc tặng chính mình. Người tham gia kết hợp những cành hoa nhỏ và các nhân vật tự nặn bằng tay thành một bó hoa mang dấu ấn riêng, kèm lời chúc gửi gắm qua từng chi tiết.",
+          "id": "ws26-bouquet",
           "image": {
-            "height": 640,
-            "url": "/media/activity-industrial-design.fc32c71d.jpg",
-            "width": 468
-          },
-          "kind": "seminar",
-          "title": "Vai trò của kiểu dáng công nghiệp"
-        },
-        {
-          "date": "",
-          "description": "Ứng dụng in 3D trong phẫu thuật định hình răng hàm mặt. Diễn giả: TS.BS Trần Tuấn Anh, Bệnh viện quốc tế Becamex.",
-          "id": "print-3d-medical",
-          "image": {
-            "height": 320,
-            "url": "/media/course-water.9e0a5a8d.jpg",
-            "width": 760
-          },
-          "kind": "seminar",
-          "title": "Ứng dụng công nghệ in 3D trong y tế"
-        },
-        {
-          "date": "15/3",
-          "description": "Chế tạo cảm biến đo lực căng từ vật liệu nano, ứng dụng trong y khoa. Diễn giả: TS Trần Quang Trung, Đại học Sungkyunkwan (Hàn Quốc).",
-          "id": "nano",
-          "image": {
-            "height": 640,
-            "url": "/media/activity-nano.c7dc7ca6.jpg",
-            "width": 738
-          },
-          "kind": "seminar",
-          "title": "Ứng dụng vật liệu nano vào y tế"
-        },
-        {
-          "date": "23/8",
-          "description": "Mạng nơ-ron, TensorFlow, mạng tích chập và hướng đi của deep learning. Diễn giả: TS Cường Phạm.",
-          "id": "machine-learning",
-          "image": {
-            "height": 636,
-            "url": "/media/activity-machine-learning.c6a02acf.jpg",
-            "width": 900
-          },
-          "kind": "seminar",
-          "title": "Công nghệ học máy — Machine Learning"
-        },
-        {
-          "date": "7/8/2019",
-          "description": "Quy trình tạo ra một sản phẩm từ ý tưởng, phác thảo đến chế tạo mẫu thử, kèm phần thực hành phác thảo.",
-          "id": "design-workshop",
-          "image": {
-            "height": 438,
-            "url": "/media/activity-design-workshop.2ce1badc.jpg",
-            "width": 900
+            "height": 489,
+            "url": "/media/activity-ws26-bouquet.c14ec287.jpg",
+            "width": 653
           },
           "kind": "workshop",
-          "title": "Thiết kế công nghiệp"
+          "registerClosed": true,
+          "time": "Thứ Tư, 14:00–16:00",
+          "title": "Bó hoa thanh xuân",
+          "venue": "Phòng 202.B11, FabLab EIU"
         },
         {
-          "date": "",
-          "description": "Dùng điện trở, diode, transistor, FET, opto để thiết kế ứng dụng thực tế; các kỹ thuật layout mạch in cơ bản.",
-          "id": "pcb",
+          "date": "22/7/2026",
+          "description": "Workshop DIY trang trí đồ dùng bằng kem keo và charm. Người tham gia tự trang trí lược chải tóc, ốp lưng điện thoại, gương và các phụ kiện khác, mỗi món mang cá tính riêng.",
+          "fee": "35.000 đ/người",
+          "id": "ws26-decoden",
           "image": {
-            "height": 600,
-            "url": "/media/lab-workbenches.c235eaa8.jpg",
-            "width": 1000
+            "height": 489,
+            "url": "/media/activity-ws26-decoden.4d0973e4.jpg",
+            "width": 869
           },
           "kind": "workshop",
-          "title": "Thiết kế và gia công thử nghiệm mạch điện"
+          "registerClosed": true,
+          "time": "Thứ Tư, ca sáng 9:00–11:00, ca chiều 14:00–16:00",
+          "title": "Trang trí kem keo",
+          "venue": "Phòng 202.B11, FabLab EIU"
         },
         {
-          "date": "",
-          "description": "Quy trình thiết kế 3D và các yếu tố ảnh hưởng tới sản phẩm từ khâu thiết kế đến khi chế tạo thành phẩm.",
-          "id": "design-3d",
+          "date": "1/7/2026",
+          "description": "Workshop DIY trong chuỗi workshop thủ công. Người tham gia tự thiết kế và xỏ các hạt cườm thành chiếc vòng của riêng mình, tự do chọn màu sắc và chi tiết, làm xong được mang về. Mỗi sản phẩm là một món quà nhỏ thể hiện sự tỉ mỉ và cá tính của người làm.",
+          "id": "ws26-beads",
           "image": {
-            "height": 640,
-            "url": "/media/activity-design-3d.e408b3dc.jpg",
-            "width": 853
+            "height": 489,
+            "url": "/media/activity-ws26-beads.34f6c70f.jpg",
+            "width": 331
           },
           "kind": "workshop",
-          "title": "Thiết kế 3D với SolidWorks"
+          "registerClosed": true,
+          "time": "Thứ Tư, chia ca sáng và ca chiều",
+          "title": "Xỏ hạt đan vòng",
+          "venue": "Phòng 305.B11, FabLab EIU"
+        },
+        {
+          "date": "10/6/2026",
+          "description": "Workshop DIY tạo không khí vui vẻ, thư giãn cho sinh viên sau giờ học. Mỗi người tự thiết kế và trang trí một chiếc ly thủy tinh theo phong cách riêng. Buổi học diễn ra sôi nổi, mỗi chiếc ly là một tác phẩm mang dấu ấn của người làm.",
+          "fee": "35.000 đ/người (đã gồm vật tư)",
+          "id": "ws26-glass",
+          "image": {
+            "height": 489,
+            "url": "/media/activity-ws26-glass.29f2081f.jpg",
+            "width": 652
+          },
+          "kind": "workshop",
+          "registerClosed": true,
+          "time": "Thứ Tư, ca sáng 9:00–11:00, ca chiều 14:00–16:00",
+          "title": "Trang trí ly thủy tinh",
+          "venue": "Phòng 305.B11, FabLab EIU"
+        },
+        {
+          "date": "27/5/2026",
+          "description": "Workshop DIY giúp sinh viên thư giãn và kết nối sau giờ học. Người tham gia dùng đất sét tự khô Mont Marte và màu acrylic để nặn các sản phẩm nhỏ xinh, làm xong được mang về. Sinh viên và cả chuyên viên của trường cùng tham gia.",
+          "fee": "35.000 đ/người (đã gồm vật tư)",
+          "id": "ws26-clay",
+          "image": {
+            "height": 489,
+            "url": "/media/activity-ws26-clay.70583a7e.jpg",
+            "width": 276
+          },
+          "kind": "workshop",
+          "registerClosed": true,
+          "time": "Thứ Tư, ca 1 9:00–11:00, ca 2 14:00–16:00",
+          "title": "Creating with Clay – tạo hình đất sét",
+          "venue": "Phòng 209.B11, FabLab EIU"
+        },
+        {
+          "date": "20/5/2026",
+          "description": "Workshop giúp sinh viên quản lý mã nguồn, làm việc nhóm và “cứu hộ code” cho đồ án. Người tham gia học Git và GitHub từ con số 0, quy trình pull → add → commit → push, làm việc với nhánh (branch, merge) và thực hành làm việc nhóm trực tiếp. Buổi học thu hút đông đảo sinh viên yêu thích lập trình.",
+          "id": "ws26-git",
+          "image": {
+            "height": 487,
+            "url": "/media/activity-ws26-git.a2364131.jpg",
+            "width": 276
+          },
+          "kind": "workshop",
+          "registerClosed": true,
+          "time": "Thứ Tư, 14:00–16:00",
+          "title": "Hướng dẫn sử dụng Git, GitHub",
+          "venue": "Phòng 305.B11, FabLab EIU"
+        },
+        {
+          "date": "15/4/2026",
+          "description": "Workshop cho sinh viên đam mê kỹ thuật, cần tìm hiểu thiết kế cơ khí cho đồ án hoặc dự án cá nhân. Nội dung gồm tư duy thiết kế cơ khí, các tiêu chuẩn kỹ thuật và thực hành thiết kế trên phần mềm, với phần chia sẻ và nhiều giờ thực hành tập trung.",
+          "id": "ws26-mech-design",
+          "image": {
+            "height": 489,
+            "url": "/media/activity-ws26-mech-design.83b44711.jpg",
+            "width": 869
+          },
+          "kind": "workshop",
+          "registerClosed": true,
+          "time": "Thứ Tư, 14:00–16:00",
+          "title": "Thiết kế cơ khí cơ bản",
+          "venue": "Phòng 305.B11, FabLab EIU"
+        },
+        {
+          "date": "27/1/2026",
+          "description": "Chuỗi workshop dài hạn cho sinh viên quan tâm đến robot tự hành, bắt đầu từ 27/01/2026. Giai đoạn 1 trang bị kiến thức nền tảng: Ubuntu và Linux, toán nền tảng, ROS 2 và các khái niệm cốt lõi, lập trình ROS 2 trên mô phỏng rồi kết nối với drone và xe F1TENTH thật — chuẩn bị cho phần chuyên sâu ở giai đoạn 2.",
+          "details": "Làm quen Ubuntu và môi trường Linux.\n\nÔn toán nền tảng: giải tích, đại số tuyến tính, xác suất – thống kê.\n\nROS 2 và các khái niệm cốt lõi: Workspace, Package, Node, Topic, Service, Action.\n\nLập trình ROS 2 trên môi trường mô phỏng, rồi kết nối với mô hình thực tế như drone và xe F1TENTH.",
+          "id": "uav-f1tenth",
+          "image": {
+            "height": 899,
+            "url": "/media/drone.720e5138.jpg",
+            "width": 1600
+          },
+          "kind": "workshop",
+          "registerClosed": true,
+          "title": "Chuỗi workshop UAV & F1TENTH",
+          "video": {
+            "duration": 28.5,
+            "height": 1080,
+            "url": "/media/droneandf1.6555549c.mp4",
+            "width": 1920
+          }
+        },
+        {
+          "date": "14/1/2026",
+          "description": "Workshop dành cho sinh viên thích chế tạo, kỹ thuật, DIY hoặc cần dùng máy móc cho đồ án và dự án cá nhân. Người tham gia được học quy trình và quy định an toàn khi làm việc tại FabLab, thực hành trực tiếp với các máy cơ khí cơ bản, để tự tin dùng máy cho học tập, nghiên cứu và làm sản phẩm.",
+          "id": "ws26-machines",
+          "image": {
+            "height": 489,
+            "url": "/media/activity-ws26-machines.86b6b5cb.jpg",
+            "width": 347
+          },
+          "kind": "workshop",
+          "registerClosed": true,
+          "time": "Thứ Tư, ca sáng 9:00–11:00, ca chiều 14:00–16:00",
+          "title": "Hướng dẫn sử dụng máy móc tại xưởng FabLab",
+          "venue": "Phòng 204.B11, FabLab EIU"
         }
       ],
       "kinds": {
@@ -3126,7 +3185,9 @@
         "seminar": "Đăng ký hội thảo",
         "workshop": "Đăng ký Workshop"
       },
+      "timeLabel": "Thời gian",
       "title": "Hoạt động & cuộc thi thường niên",
+      "venueLabel": "Địa điểm",
       "viewDetails": "Xem chi tiết"
     },
     "courses": {
@@ -4947,13 +5008,14 @@
           "arrow": true,
           "id": "primary",
           "label": "Đăng ký khóa học",
+          "registerKind": "course",
           "style": "primary"
         },
         {
-          "action": "link",
-          "href": "#contact",
+          "action": "register",
           "id": "secondary",
-          "label": "Liên hệ với chúng tôi",
+          "label": "Đăng ký thành viên",
+          "registerKind": "member",
           "style": "secondary"
         }
       ],
@@ -5416,66 +5478,6 @@
       "imageAlt": "Ảnh dự án {title}",
       "items": [
         {
-          "description": "Cobot là mô hình robot đa chức năng nhằm thực hiện các tác vụ hỗ trợ con người (vận chuyển, giám sát an ninh,…) ở nơi công cộng.",
-          "id": "cobot",
-          "image": {
-            "height": 681,
-            "url": "/media/project-cobot.d9bdca30.jpg",
-            "width": 278
-          },
-          "title": "Mô hình Cobot"
-        },
-        {
-          "description": "Mô hình máy bay được thiết kế đơn giản, dễ dàng lắp ráp và áp dụng vào trong lớp học STEM.",
-          "id": "plane",
-          "image": {
-            "height": 433,
-            "url": "/media/project-plane.fa948ab1.jpg",
-            "width": 577
-          },
-          "title": "Mô hình máy bay"
-        },
-        {
-          "description": "Giúp học sinh tiếp cận công nghệ, lập trình, thúc đẩy các hoạt động nghiên cứu khoa học kĩ thuật cho sinh viên.",
-          "id": "microbit-kit",
-          "image": {
-            "height": 404,
-            "url": "/media/project-microbit-kit.22993878.jpg",
-            "width": 617
-          },
-          "title": "Bộ kit micro:bit mở rộng"
-        },
-        {
-          "description": "Mô hình xương sọ thực hiện bằng phương pháp in 3D giúp hỗ trợ cho bác sĩ làm thí nghiệm trong phẫu thuật tạo hình.",
-          "id": "jaw-model",
-          "image": {
-            "height": 453,
-            "url": "/media/project-jaw-model.54102f84.jpg",
-            "width": 317
-          },
-          "title": "Mô hình xương hàm cho phẫu thuật nha"
-        },
-        {
-          "description": "Đèn thay đổi màu sắc, độ sáng bằng nút nhấn, qua điện thoại hoặc để đèn chạy tự động bật nếu có người trong điều kiện ánh sáng yếu.",
-          "id": "smart-light",
-          "image": {
-            "height": 471,
-            "url": "/media/project-smart-light.a98ff1ee.jpg",
-            "width": 530
-          },
-          "title": "Đèn thông minh"
-        },
-        {
-          "description": "Mô hình học cụ vật lý ứng dụng vào chương trình trải nghiệm Quang học trong chuỗi chương trình trải nghiệm STEM của STEM Lab.",
-          "id": "refraction-model",
-          "image": {
-            "height": 449,
-            "url": "/media/project-refraction-model.4efbe7c2.jpg",
-            "width": 483
-          },
-          "title": "Mô hình khúc xạ ánh sáng"
-        },
-        {
           "description": "Mô hình xe đua MCR giúp sinh viên nâng cao kiến thức chuyên ngành thông qua sản phẩm.",
           "id": "mcr-racing-car",
           "image": {
@@ -5483,26 +5485,40 @@
             "url": "/media/project-mcr-racing-car.d872a969.jpg",
             "width": 517
           },
+          "status": "done",
           "title": "Xe đua MCR – EIU"
         },
         {
-          "description": "Mô hình trồng rau thủy canh có các chức năng tự động như hẹn giờ phun sương, điều khiển từ xa, đèn mô phỏng ánh sáng mặt trời, bón phân theo lịch trình hay cảm biến.",
-          "id": "hydroponic-garden",
+          "description": "Robot giao hàng được tích hợp màn hình điều khiển trực quan, cho phép người dùng lựa chọn điểm đến trên bản đồ và gửi yêu cầu di chuyển. Hệ thống hỗ trợ robot tự định vị, điều hướng và di chuyển đến các vị trí được chỉ định để thực hiện nhiệm vụ giao hàng.",
+          "id": "robot-giao-hang",
           "image": {
-            "height": 417,
-            "url": "/media/project-hydroponic-garden.7c69f863.jpg",
-            "width": 598
+            "height": 496,
+            "url": "/media/robot-van-chuyen.a9f0bfb5.jpg",
+            "width": 983
           },
-          "title": "Vườn thủy canh"
+          "status": "ongoing",
+          "title": "Robot giao hàng"
+        },
+        {
+          "description": "STEM Platform là nền tảng giáo dục STEM do EIU FabLab phát triển, kết hợp mô phỏng tương tác và công nghệ thực tế ảo tăng cường (AR), tạo môi trường để người học khám phá, lập trình và thử nghiệm các mô hình kỹ thuật trong các lĩnh vực điện tử, robot, drone và tự động hóa.",
+          "id": "stem-platform",
+          "image": {
+            "height": 851,
+            "url": "/media/stem-platform.41cb213a.jpg",
+            "width": 1600
+          },
+          "status": "comingsoon",
+          "title": "STEM Platform"
         }
       ],
       "next": "Dự án tiếp theo",
       "previous": "Dự án trước",
       "statuses": {
+        "comingsoon": "Sắp ra mắt",
         "done": "Đã hoàn thành",
         "ongoing": "Đang thực hiện"
       },
-      "title": "Sản phẩm làm ra từ xưởng"
+      "title": "Sản phẩm nghiên cứu tại FabLab"
     },
     "register": {
       "close": "Đóng",
