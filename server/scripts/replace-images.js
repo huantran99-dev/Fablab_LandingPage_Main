@@ -16,6 +16,11 @@
  *
  * Chạy được khi máy chủ đang bật: bộ đệm nội dung khoá theo `rev` đọc từ database.
  * Kiểm thử thì chạy trên BẢN SAO: `DATA_DIR=<thư mục khác> npm run images:replace -- course`.
+ *
+ * `--missing` (từ API 24): chỉ gắn ảnh cho mục CHƯA có ảnh, không đụng mục đã có — cho lúc
+ * migration thêm mục mới mà admin đã tự đổi ảnh của mục cũ. Vd. 11 workshop 2026:
+ * `npm run images:replace -- activity --missing` gắn ảnh workshop mới, giữ ảnh drone admin
+ * tải lên cho `uav-f1tenth` và ảnh Cuộc thi.
  */
 import { readFileSync } from 'node:fs'
 import { register } from 'node:module'
@@ -33,6 +38,7 @@ import { SRC_IMAGES, filenameOf, imageScopes } from './image-sources.js'
 register('./import-hook.mjs', import.meta.url)
 
 const scope = process.argv[2]
+const onlyMissing = process.argv.includes('--missing')
 const targets = MEDIA_SLOTS.find((entry) => entry.slot === 'images').targets
 
 function fail(message) {
@@ -42,7 +48,7 @@ function fail(message) {
 
 async function main() {
   if (!scope || !targets[scope]) {
-    fail(`Cach dung: npm run images:replace -- <scope>\n  scope: ${Object.keys(targets).join(', ')}`)
+    fail(`Cach dung: npm run images:replace -- <scope> [--missing]\n  scope: ${Object.keys(targets).join(', ')}`)
     return
   }
   const [section, arrayKey] = targets[scope]
@@ -60,11 +66,17 @@ async function main() {
 
   const pending = []
   let same = 0
+  let kept = 0
   for (const [itemId, value] of Object.entries(map)) {
     const filename = filenameOf(value)
     if (!filename || !live.has(itemId)) continue
+    const current = currentSha.get(scope, itemId)
+    if (onlyMissing && current) {
+      kept += 1
+      continue
+    }
     const processed = await processImage(readFileSync(join(SRC_IMAGES, filename)))
-    if (currentSha.get(scope, itemId)?.sha256 === processed.sha256) {
+    if (current?.sha256 === processed.sha256) {
       same += 1
       continue
     }
@@ -72,7 +84,7 @@ async function main() {
   }
 
   if (pending.length === 0) {
-    console.log(`Khong co gi de thay: ${same} muc da gan dung anh.`)
+    console.log(`Khong co gi de thay: ${same} muc da gan dung anh, ${kept} muc da co anh (--missing: giu nguyen).`)
     return
   }
 
@@ -102,7 +114,7 @@ async function main() {
   })
 
   for (const entry of pending) console.log(`  ${entry.itemId.padEnd(24)} ${entry.old}  ->  ${entry.url}`)
-  console.log(`Da thay ${pending.length} anh (${same} muc da dung tu truoc). rev ${section}: ${outcome.rev}.`)
+  console.log(`Da thay ${pending.length} anh (${same} muc da dung tu truoc, ${kept} muc da co anh giu nguyen). rev ${section}: ${outcome.rev}.`)
   for (const warning of outcome.warnings ?? []) console.log(`  canh bao: ${warning}`)
   console.log('Chay `npm run build` de ban offline (snapshot + public/media) mang anh moi.')
 }

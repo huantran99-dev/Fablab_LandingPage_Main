@@ -190,6 +190,34 @@ export function CheckIcon({ className = '', size = 22 }) {
   )
 }
 
+/* Ba icon của dòng thông tin trên thẻ sự kiện: giờ · địa điểm · chi phí. */
+export function ClockIcon({ className = '', size = 18 }) {
+  return (
+    <Svg className={className} size={size} strokeWidth={1.8}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 7.5V12l3 2" />
+    </Svg>
+  )
+}
+
+export function MapPinIcon({ className = '', size = 18 }) {
+  return (
+    <Svg className={className} size={size} strokeWidth={1.8}>
+      <path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0113 0C18.5 15.4 12 21 12 21z" />
+      <circle cx="12" cy="10" r="2.3" />
+    </Svg>
+  )
+}
+
+export function TicketIcon({ className = '', size = 18 }) {
+  return (
+    <Svg className={className} size={size} strokeWidth={1.8}>
+      <path d="M3.5 7.5A1.5 1.5 0 015 6h14a1.5 1.5 0 011.5 1.5v2a2.5 2.5 0 000 5v2A1.5 1.5 0 0119 18H5a1.5 1.5 0 01-1.5-1.5v-2a2.5 2.5 0 000-5z" />
+      <path d="M14.5 6.5v2M14.5 11v2M14.5 15.5v2" />
+    </Svg>
+  )
+}
+
 export function QuoteIcon({ className = '', size = 40 }) {
   return (
     <svg

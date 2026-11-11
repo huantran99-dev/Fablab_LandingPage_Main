@@ -938,6 +938,10 @@ export const vi = {
     closeDetails: 'Đóng',
     // `{title}` được thay bằng tên hoạt động lúc render.
     imageAlt: 'Ảnh của {title}',
+    // Nhãn trợ năng cho dòng giờ · phòng · chi phí trên thẻ sự kiện (từ API 24).
+    timeLabel: 'Thời gian',
+    venueLabel: 'Địa điểm',
+    feeLabel: 'Chi phí',
     kinds: {
       competition: 'Cuộc thi',
       seminar: 'Hội thảo',
@@ -967,15 +971,18 @@ export const vi = {
         id: 'events',
         title: 'Sự kiện & hội thảo',
         description:
-          'Hội thảo chuyên đề, workshop thực hành và lễ hợp tác diễn ra tại FabLab trong khoảng 2019–2023.',
+          'Workshop kỹ thuật cho sinh viên, workshop thủ công DIY và buổi hướng dẫn sử dụng FabLab trong năm 2026.',
         kinds: ['seminar', 'workshop', 'partnership'],
       },
     ],
 
     /**
-     * Phần lớn lấy từ trang "Sự kiện" của trường (fablab.eiu.edu.vn/vi/su-kien/).
-     * Hai cuộc thi 2026 lấy từ poster chính thức do FabLab cung cấp — mọi ngày
-     * tháng, giờ và địa điểm đều đọc thẳng từ poster, không suy đoán.
+     * Cuộc thi lấy từ trang "Sự kiện" của trường (fablab.eiu.edu.vn/vi/su-kien/) và poster
+     * chính thức do FabLab cung cấp — mọi ngày tháng, giờ và địa điểm đọc thẳng từ poster.
+     *
+     * 11 workshop 2026 (từ 2026-11-11, thay các workshop / hội thảo 2019–2022) lấy từ tài liệu
+     * "Workshop EIU FabLab 2026" người dùng soạn từ fanpage FabLab – EIU. `time` / `venue` /
+     * `fee` chỉ có khi bài đăng ghi — vắng là nguồn không ghi, đừng đoán.
      *
      * Cuộc thi xếp trước, trong mỗi loại thì mới nhất trước.
      */
@@ -1005,92 +1012,128 @@ export const vi = {
           'Cuộc thi đua xe mô hình do EIU FabLab phối hợp với khoa Kỹ thuật EIU tổ chức cho sinh viên khoa Kỹ thuật.',
       },
       {
-        id: 'stm32',
-        kind: 'seminar',
-        date: 'Chiều thứ 4 hàng tuần',
-        title: 'Lập trình STM32 căn bản',
-        description:
-          'Hướng dẫn sinh viên sử dụng các chức năng ngoại vi của vi điều khiển như ADC, PWM, I2C. Tại phòng 202, block 11.',
-      },
-      {
-        id: 'print-3d',
+        id: 'ws26-fablab-intro',
         kind: 'workshop',
-        date: '20/7/2022',
-        title: 'Công nghệ và ứng dụng in 3D',
+        date: '21/10/2026',
+        title: 'Hướng dẫn sử dụng FabLab',
         description:
-          'Tìm hiểu công nghệ in 3D, các loại máy in 3D và cách vận hành. Phụ trách: Võ Đoàn Linh. Tại Thư viện EIU.',
+          'Buổi giới thiệu không gian sáng tạo FabLab cho sinh viên. Người tham gia làm quen với các thiết bị công nghệ, tìm hiểu quy trình sử dụng và cách ứng dụng chúng trong học tập, nghiên cứu, thực hành, để biến ý tưởng thành sản phẩm thực tế.',
+        venue: 'EIU FabLab, Block B11',
+        registerClosed: true,
       },
       {
-        id: 'viet-anh',
-        kind: 'partnership',
-        date: '19/7/2022',
-        title: 'Ký kết hợp tác chiến lược EIU – Việt Anh',
-        description:
-          'Thiết lập quan hệ đối tác chiến lược với Hệ thống trường Việt Anh: tổ chức trải nghiệm STEM, hỗ trợ nghiên cứu và đưa học sinh tham gia các cuộc thi khoa học công nghệ.',
-      },
-      {
-        id: 'laser-cnc',
+        id: 'ws26-lantern',
         kind: 'workshop',
-        date: '21/6/2022',
-        title: 'Sáng tạo với máy in 3D và máy CNC laser',
+        date: '23/9/2026',
+        title: 'Làm lồng đèn Trung thu',
         description:
-          'Cắt gỗ và mica bằng máy laser, khắc mạch in, thiết kế và in 3D. Phụ trách: Bùi Quang Tiến.',
+          'Workshop tự làm đèn lồng Trung thu bằng gỗ và mica, có dùng máy cắt/khắc laser. Người tham gia được hướng dẫn lên ý tưởng và chọn mẫu, lắp ráp theo mẫu, rồi trang trí và hoàn thiện sản phẩm.',
+        time: 'Thứ Tư, 14:00–16:00',
+        venue: 'Phòng 204.B11, FabLab EIU',
+        fee: '60.000 đ',
+        registerClosed: true,
       },
       {
-        id: 'industrial-design',
-        kind: 'seminar',
-        date: '20/6/2022',
-        title: 'Vai trò của kiểu dáng công nghiệp',
-        description:
-          'Trao đổi về thiết kế kỹ thuật và tạo mẫu sản phẩm công nghiệp. Diễn giả: Nguyễn Trần Bảo Hiền, Công ty Anco – Bình Dương.',
-      },
-      {
-        id: 'print-3d-medical',
-        kind: 'seminar',
-        date: '',
-        title: 'Ứng dụng công nghệ in 3D trong y tế',
-        description:
-          'Ứng dụng in 3D trong phẫu thuật định hình răng hàm mặt. Diễn giả: TS.BS Trần Tuấn Anh, Bệnh viện quốc tế Becamex.',
-      },
-      {
-        id: 'nano',
-        kind: 'seminar',
-        date: '15/3',
-        title: 'Ứng dụng vật liệu nano vào y tế',
-        description:
-          'Chế tạo cảm biến đo lực căng từ vật liệu nano, ứng dụng trong y khoa. Diễn giả: TS Trần Quang Trung, Đại học Sungkyunkwan (Hàn Quốc).',
-      },
-      {
-        id: 'machine-learning',
-        kind: 'seminar',
-        date: '23/8',
-        title: 'Công nghệ học máy — Machine Learning',
-        description:
-          'Mạng nơ-ron, TensorFlow, mạng tích chập và hướng đi của deep learning. Diễn giả: TS Cường Phạm.',
-      },
-      {
-        id: 'design-workshop',
+        id: 'ws26-bouquet',
         kind: 'workshop',
-        date: '7/8/2019',
-        title: 'Thiết kế công nghiệp',
+        date: '12/8/2026',
+        title: 'Bó hoa thanh xuân',
         description:
-          'Quy trình tạo ra một sản phẩm từ ý tưởng, phác thảo đến chế tạo mẫu thử, kèm phần thực hành phác thảo.',
+          'Workshop DIY làm bó hoa handmade tặng người thân hoặc tặng chính mình. Người tham gia kết hợp những cành hoa nhỏ và các nhân vật tự nặn bằng tay thành một bó hoa mang dấu ấn riêng, kèm lời chúc gửi gắm qua từng chi tiết.',
+        time: 'Thứ Tư, 14:00–16:00',
+        venue: 'Phòng 202.B11, FabLab EIU',
+        registerClosed: true,
       },
       {
-        id: 'pcb',
+        id: 'ws26-decoden',
         kind: 'workshop',
-        date: '',
-        title: 'Thiết kế và gia công thử nghiệm mạch điện',
+        date: '22/7/2026',
+        title: 'Trang trí kem keo',
         description:
-          'Dùng điện trở, diode, transistor, FET, opto để thiết kế ứng dụng thực tế; các kỹ thuật layout mạch in cơ bản.',
+          'Workshop DIY trang trí đồ dùng bằng kem keo và charm. Người tham gia tự trang trí lược chải tóc, ốp lưng điện thoại, gương và các phụ kiện khác, mỗi món mang cá tính riêng.',
+        time: 'Thứ Tư, ca sáng 9:00–11:00, ca chiều 14:00–16:00',
+        venue: 'Phòng 202.B11, FabLab EIU',
+        fee: '35.000 đ/người',
+        registerClosed: true,
       },
       {
-        id: 'design-3d',
+        id: 'ws26-beads',
         kind: 'workshop',
-        date: '',
-        title: 'Thiết kế 3D với SolidWorks',
+        date: '1/7/2026',
+        title: 'Xỏ hạt đan vòng',
         description:
-          'Quy trình thiết kế 3D và các yếu tố ảnh hưởng tới sản phẩm từ khâu thiết kế đến khi chế tạo thành phẩm.',
+          'Workshop DIY trong chuỗi workshop thủ công. Người tham gia tự thiết kế và xỏ các hạt cườm thành chiếc vòng của riêng mình, tự do chọn màu sắc và chi tiết, làm xong được mang về. Mỗi sản phẩm là một món quà nhỏ thể hiện sự tỉ mỉ và cá tính của người làm.',
+        time: 'Thứ Tư, chia ca sáng và ca chiều',
+        venue: 'Phòng 305.B11, FabLab EIU',
+        registerClosed: true,
+      },
+      {
+        id: 'ws26-glass',
+        kind: 'workshop',
+        date: '10/6/2026',
+        title: 'Trang trí ly thủy tinh',
+        description:
+          'Workshop DIY tạo không khí vui vẻ, thư giãn cho sinh viên sau giờ học. Mỗi người tự thiết kế và trang trí một chiếc ly thủy tinh theo phong cách riêng. Buổi học diễn ra sôi nổi, mỗi chiếc ly là một tác phẩm mang dấu ấn của người làm.',
+        time: 'Thứ Tư, ca sáng 9:00–11:00, ca chiều 14:00–16:00',
+        venue: 'Phòng 305.B11, FabLab EIU',
+        fee: '35.000 đ/người (đã gồm vật tư)',
+        registerClosed: true,
+      },
+      {
+        id: 'ws26-clay',
+        kind: 'workshop',
+        date: '27/5/2026',
+        title: 'Creating with Clay – tạo hình đất sét',
+        description:
+          'Workshop DIY giúp sinh viên thư giãn và kết nối sau giờ học. Người tham gia dùng đất sét tự khô Mont Marte và màu acrylic để nặn các sản phẩm nhỏ xinh, làm xong được mang về. Sinh viên và cả chuyên viên của trường cùng tham gia.',
+        time: 'Thứ Tư, ca 1 9:00–11:00, ca 2 14:00–16:00',
+        venue: 'Phòng 209.B11, FabLab EIU',
+        fee: '35.000 đ/người (đã gồm vật tư)',
+        registerClosed: true,
+      },
+      {
+        id: 'ws26-git',
+        kind: 'workshop',
+        date: '20/5/2026',
+        title: 'Hướng dẫn sử dụng Git, GitHub',
+        description:
+          'Workshop giúp sinh viên quản lý mã nguồn, làm việc nhóm và “cứu hộ code” cho đồ án. Người tham gia học Git và GitHub từ con số 0, quy trình pull → add → commit → push, làm việc với nhánh (branch, merge) và thực hành làm việc nhóm trực tiếp. Buổi học thu hút đông đảo sinh viên yêu thích lập trình.',
+        time: 'Thứ Tư, 14:00–16:00',
+        venue: 'Phòng 305.B11, FabLab EIU',
+        registerClosed: true,
+      },
+      {
+        id: 'ws26-mech-design',
+        kind: 'workshop',
+        date: '15/4/2026',
+        title: 'Thiết kế cơ khí cơ bản',
+        description:
+          'Workshop cho sinh viên đam mê kỹ thuật, cần tìm hiểu thiết kế cơ khí cho đồ án hoặc dự án cá nhân. Nội dung gồm tư duy thiết kế cơ khí, các tiêu chuẩn kỹ thuật và thực hành thiết kế trên phần mềm, với phần chia sẻ và nhiều giờ thực hành tập trung.',
+        time: 'Thứ Tư, 14:00–16:00',
+        venue: 'Phòng 305.B11, FabLab EIU',
+        registerClosed: true,
+      },
+      {
+        id: 'uav-f1tenth',
+        kind: 'workshop',
+        date: '27/1/2026',
+        title: 'Chuỗi workshop UAV & F1TENTH',
+        description:
+          'Chuỗi workshop dài hạn cho sinh viên quan tâm đến robot tự hành, bắt đầu từ 27/01/2026. Giai đoạn 1 trang bị kiến thức nền tảng: Ubuntu và Linux, toán nền tảng, ROS 2 và các khái niệm cốt lõi, lập trình ROS 2 trên mô phỏng rồi kết nối với drone và xe F1TENTH thật — chuẩn bị cho phần chuyên sâu ở giai đoạn 2.',
+        details:
+          'Làm quen Ubuntu và môi trường Linux.\n\nÔn toán nền tảng: giải tích, đại số tuyến tính, xác suất – thống kê.\n\nROS 2 và các khái niệm cốt lõi: Workspace, Package, Node, Topic, Service, Action.\n\nLập trình ROS 2 trên môi trường mô phỏng, rồi kết nối với mô hình thực tế như drone và xe F1TENTH.',
+        registerClosed: true,
+      },
+      {
+        id: 'ws26-machines',
+        kind: 'workshop',
+        date: '14/1/2026',
+        title: 'Hướng dẫn sử dụng máy móc tại xưởng FabLab',
+        description:
+          'Workshop dành cho sinh viên thích chế tạo, kỹ thuật, DIY hoặc cần dùng máy móc cho đồ án và dự án cá nhân. Người tham gia được học quy trình và quy định an toàn khi làm việc tại FabLab, thực hành trực tiếp với các máy cơ khí cơ bản, để tự tin dùng máy cho học tập, nghiên cứu và làm sản phẩm.',
+        time: 'Thứ Tư, ca sáng 9:00–11:00, ca chiều 14:00–16:00',
+        venue: 'Phòng 204.B11, FabLab EIU',
+        registerClosed: true,
       },
     ],
   },

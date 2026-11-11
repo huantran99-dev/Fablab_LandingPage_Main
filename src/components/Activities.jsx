@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { ArrowLeftIcon, ArrowRightIcon, PauseIcon, PlayIcon } from '../assets/icons/Icons'
+import { ArrowLeftIcon, ArrowRightIcon, ClockIcon, MapPinIcon, PauseIcon, PlayIcon, TicketIcon } from '../assets/icons/Icons'
 import { useSlideshow } from '../hooks/useSlideshow'
 import { useT } from '../i18n/context'
 import { eventRegisterLabel } from '../lib/activities'
@@ -24,6 +24,34 @@ const KIND_TONES = {
 
 /** Thời gian mỗi slide đứng (ms) — cũng là thời lượng chấm đang chọn tô đầy. */
 const SLIDE_MS = 6500
+
+/** Dòng thông tin dưới mô tả thẻ sự kiện: trường của mục · nhãn đọc · icon (từ API 24). */
+const EVENT_FACTS = [
+  { key: 'time', label: 'timeLabel', Icon: ClockIcon },
+  { key: 'venue', label: 'venueLabel', Icon: MapPinIcon },
+  { key: 'fee', label: 'feeLabel', Icon: TicketIcon },
+]
+
+/**
+ * Giờ · địa điểm · chi phí. Chỉ vẽ dòng có dữ liệu; mục không có dòng nào thì không vẽ gì.
+ * Nhãn (`timeLabel`…) là `dt` ẩn cho trình đọc màn hình — mắt thường thấy icon. Thiếu nhãn
+ * (bản lịch sử cũ) thì `dt` rỗng — cấu trúc `dl` vẫn hợp lệ, dòng vẫn đọc được.
+ */
+function EventFacts({ item, labels }) {
+  const facts = EVENT_FACTS.filter(({ key }) => item[key])
+  if (facts.length === 0) return null
+  return (
+    <dl className="flex flex-col gap-2 text-body-sm text-ink">
+      {facts.map(({ key, label, Icon }) => (
+        <div key={key} className="flex items-start gap-2.5">
+          <Icon className="mt-0.5 shrink-0 text-signal" />
+          <dt className="sr-only">{labels[label] ?? ''}</dt>
+          <dd>{item[key]}</dd>
+        </div>
+      ))}
+    </dl>
+  )
+}
 
 /**
  * Khối nào chứa hoạt động nào — vẫn suy từ `kind`, KHÔNG có trường `group` trên
@@ -160,6 +188,7 @@ function ActivityCarousel({ group, items, from }) {
                   </div>
                   <h4 className="text-heading-sm md:text-heading-lg text-ink">{item.title}</h4>
                   <p className="text-body-sm text-graphite">{item.description}</p>
+                  <EventFacts item={item} labels={labels} />
                   {/* Nút đăng ký theo loại ("Đăng ký Workshop / hội thảo"): mở form sự kiện,
                       chọn sẵn hoạt động này. Không vẽ khi loại không có nhãn (lễ hợp tác) hoặc
                       admin bật "Đóng đăng ký" — luật ở eventRegisterLabel. `wrap`: cột chữ ở

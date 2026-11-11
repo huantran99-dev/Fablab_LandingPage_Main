@@ -15,9 +15,6 @@ import labLaserCutter from './lab-laser-cutter.jpg'
 import labMachineShop from './lab-machine-shop.jpg'
 import labWorkbenches from './lab-workbenches.jpg'
 
-import courseElectronics from './course-electronics.jpg'
-import courseWater from './course-water.jpg'
-
 import partnerBbi from './partner-bbi.png'
 import partnerBecamex from './partner-becamex.png'
 import partnerEiu from './partner-eiu.png'
@@ -29,17 +26,20 @@ import partnerTvtphcm from './partner-tvtphcm.png'
 import partnerPetrusky from './partner-petrusky.png'
 import partnerTalent from './partner-talent.png'
 
-import activityDesign3d from './activity-design-3d.jpg'
-import activityDesignWorkshop from './activity-design-workshop.jpg'
 import activityDroneSoccer from './activity-drone-soccer.jpg'
-import activityIndustrialDesign from './activity-industrial-design.jpg'
-import activityLaserCnc from './activity-laser-cnc.jpg'
-import activityMachineLearning from './activity-machine-learning.jpg'
 import activityMcr2026 from './activity-mcr-2026.jpg'
-import activityNano from './activity-nano.jpg'
-import activityPrint3d from './activity-print-3d.jpg'
 import activityRacingCup from './activity-racing-cup.jpg'
-import activityVietAnh from './activity-viet-anh.jpg'
+import activityWs26FablabIntro from './activity-ws26-fablab-intro.jpg'
+import activityWs26Lantern from './activity-ws26-lantern.jpg'
+import activityWs26Bouquet from './activity-ws26-bouquet.jpg'
+import activityWs26Decoden from './activity-ws26-decoden.jpg'
+import activityWs26Beads from './activity-ws26-beads.jpg'
+import activityWs26Glass from './activity-ws26-glass.jpg'
+import activityWs26Clay from './activity-ws26-clay.jpg'
+import activityWs26Git from './activity-ws26-git.jpg'
+import activityWs26MechDesign from './activity-ws26-mech-design.jpg'
+import activityUavF1tenth from './activity-uav-f1tenth.jpg'
+import activityWs26Machines from './activity-ws26-machines.jpg'
 
 import teamHien from './team-hien.jpg'
 import teamHuan from './team-huan.jpg'
@@ -307,22 +307,23 @@ export const PARTNER_LOGOS = {
  * và ảnh chụp — vì thế carousel dùng `object-contain` trên nền pastel chứ không
  * `object-cover`, kẻo cắt mất tiêu đề poster hoặc mặt người.
  *
- * Ba hoạt động cuối không có ảnh riêng trên trang gốc nên dùng lại ảnh thật khác
- * của FabLab, đánh dấu `// ~` như quy ước ở các map trên.
+ * 11 workshop 2026: ảnh / poster đầu tiên của bài đăng trên fanpage, lấy từ tài liệu
+ * "Workshop EIU FabLab 2026" (qua bản export .docx — cao ~489px). Đã mở từng ảnh ra xem,
+ * khớp tên và ngày in trên poster / màn hình.
  */
 export const ACTIVITY_IMAGES = {
   'drone-soccer': activityDroneSoccer,
   'mcr-2026': activityMcr2026,
   'racing-cup': activityRacingCup,
-  'print-3d': activityPrint3d,
-  'viet-anh': activityVietAnh,
-  'laser-cnc': activityLaserCnc,
-  'industrial-design': activityIndustrialDesign,
-  nano: activityNano,
-  'machine-learning': activityMachineLearning,
-  'design-workshop': activityDesignWorkshop,
-  'design-3d': activityDesign3d,
-  stm32: courseElectronics, // ~ ảnh khóa điện tử, trang gốc không có ảnh
-  'print-3d-medical': courseWater, // ~ ảnh một buổi hội thảo khác tại FabLab
-  pcb: labWorkbenches, // ~ ảnh xưởng chung
+  'ws26-fablab-intro': activityWs26FablabIntro,
+  'ws26-lantern': activityWs26Lantern,
+  'ws26-bouquet': activityWs26Bouquet,
+  'ws26-decoden': activityWs26Decoden,
+  'ws26-beads': activityWs26Beads,
+  'ws26-glass': activityWs26Glass,
+  'ws26-clay': activityWs26Clay,
+  'ws26-git': activityWs26Git,
+  'ws26-mech-design': activityWs26MechDesign,
+  'uav-f1tenth': activityUavF1tenth,
+  'ws26-machines': activityWs26Machines,
 }
