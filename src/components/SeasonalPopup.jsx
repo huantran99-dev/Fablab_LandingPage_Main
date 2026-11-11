@@ -1,12 +1,10 @@
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
-import { ArrowRightIcon, CloseIcon } from '../assets/icons/Icons'
-import { useLiveHref } from '../hooks/useLiveHref'
+import { CloseIcon } from '../assets/icons/Icons'
 import { useScrollLock } from '../hooks/useScrollLock'
 import { useLanguage } from '../i18n/context'
 import { getContentState, subscribeContent } from '../lib/contentStore'
 import { forcedSeasonId, useActiveSeason } from '../lib/season'
-import { track } from '../lib/track'
-import { useRegister } from './register/RegisterContext'
+import { ActionButton } from './ui/ActionButton'
 import { Button } from './ui/Button'
 import { Pill } from './ui/Pill'
 
@@ -75,11 +73,9 @@ function versionOf(content, id) {
  */
 export function SeasonalPopup() {
   const { t } = useLanguage()
-  const isLive = useLiveHref()
   // Cả hai ngôn ngữ (phiên bản popup không theo ngôn ngữ đang xem) — cùng store LanguageProvider đọc.
   const content = useSyncExternalStore(subscribeContent, getContentState, getContentState)
   const season = useActiveSeason()
-  const { openRegister } = useRegister()
   const ref = useRef(null)
 
   const forced = forcedSeasonId() !== null
@@ -131,39 +127,27 @@ export function SeasonalPopup() {
   }
 
   const labels = t.seasonal ?? {}
-  const external = /^https?:\/\//.test(season?.href ?? '')
-
-  let cta = null
-  if (season?.ctaAction === 'register' && season.ctaLabel) {
-    cta = (
-      <Button
-        type="button"
-        onClick={() => {
-          track('cta_click', 'seasonal-popup')
-          close()
-          openRegister(null, 'seasonal-popup')
-        }}
-      >
-        {season.ctaLabel}
-        <ArrowRightIcon />
-      </Button>
-    )
-  } else if (season?.ctaAction === 'link' && season.ctaLabel && isLive(season.href)) {
-    // Link trỏ vào khối admin đã tắt thì bỏ nút, đừng để một nút bấm vào không đi đâu.
-    cta = (
-      <Button
-        href={season.href}
-        {...(external ? { target: '_blank', rel: 'noreferrer' } : {})}
-        onClick={() => {
-          track('cta_click', 'seasonal-popup')
-          close()
-        }}
-      >
-        {season.ctaLabel}
-        <ArrowRightIcon />
-      </Button>
-    )
-  }
+  // Nút chính: cùng bộ hành động với nút do admin tạo (form đăng ký / form / popup tự tạo / link),
+  // vẽ qua ActionButton. 'none' (không có nút) và đích không còn (khối đã tắt, form đóng nhận)
+  // thì ActionButton trả null. Id thống kê giữ 'seasonal-popup' như trước API 23.
+  const cta = season ? (
+    <ActionButton
+      button={{
+        id: 'cta',
+        label: season.ctaLabel,
+        style: 'primary',
+        arrow: true,
+        action: season.ctaAction,
+        href: season.href,
+        formId: season.formId,
+        popupId: season.popupId,
+      }}
+      ctaId="seasonal-popup"
+      source="seasonal-popup"
+      size="md"
+      onBefore={close}
+    />
+  ) : null
 
   return (
     <dialog

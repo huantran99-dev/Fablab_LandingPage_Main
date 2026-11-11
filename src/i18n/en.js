@@ -51,7 +51,8 @@ export const en = {
       // targets the "Events & seminars" block inside the Activities section.
       { id: 'events', label: 'Events', href: '#events' },
     ],
-    cta: 'Enroll now',
+    // Nút trên thanh menu (tối đa 2). Hành động do admin chọn — xem buttonSchema.
+    buttons: [{ id: 'register', label: 'Enroll now', style: 'primary', action: 'register' }],
     openMenu: 'Open menu',
     closeMenu: 'Close menu',
     switchLanguage: 'Switch language',
@@ -62,8 +63,11 @@ export const en = {
     title: 'Proudly Serving the Community',
     description:
       'EIU FabLab is a typical digital fabrication workshop with many advanced technologies, machinery and equipment, dynamic and creative open spaces and diverse activities to serve the community.community.',
-    primaryCta: 'Explore courses',
-    secondaryCta: 'Visit the lab',
+    // Nút có hành động do admin chọn (API 23): mở form đăng ký / form / popup tự tạo, hoặc link.
+    buttons: [
+      { id: 'primary', label: 'Explore courses', style: 'primary', arrow: true, action: 'link', href: '#courses' },
+      { id: 'secondary', label: 'Visit the lab', style: 'secondary', action: 'link', href: '#facilities' },
+    ],
     imageAlt:
       'A FabLab EIU instructor helping three children assemble a STEM kit at a workbench.',
     floatingBadges: [
@@ -1172,8 +1176,10 @@ export const en = {
     title: 'Your idea deserves to be built',
     description:
       'Enroll in a course, or simply drop by to see what we are making. The door at FabLab EIU is always open.',
-    primaryCta: 'Enroll in a course',
-    secondaryCta: 'Get in touch',
+    buttons: [
+      { id: 'primary', label: 'Enroll in a course', style: 'primary', arrow: true, action: 'register' },
+      { id: 'secondary', label: 'Get in touch', style: 'secondary', action: 'link', href: '#contact' },
+    ],
   },
 
   // Course registration form. {email}, {phone}, {count} are replaced at render time.
@@ -1423,6 +1429,52 @@ export const en = {
         ornamentShape: 'snowflake',
         ornamentCorner: 'right',
         ornamentSize: 16,
+      },
+    ],
+  },
+  // Custom popups — opened only by a button pointing at them. See vi.js.
+  popups: {
+    close: 'Close',
+    items: [
+      {
+        id: 'popup-mau',
+        title: 'Sample popup',
+        body: 'This is a sample popup. Edit the title and text, add an image and buttons, then set a button on the page to "Open popup" so visitors can open it.',
+        buttons: [
+          { id: 'courses', label: 'See courses', style: 'primary', action: 'link', href: '#courses' },
+        ],
+      },
+    ],
+  },
+  // Custom forms — see vi.js.
+  forms: {
+    birthYear: 'Year of birth',
+    birthYearHint: 'E.g. 2004',
+    parentName: 'Parent or guardian full name',
+    parentNote: 'Under 16: a parent or guardian fills in their own name and gives consent on their behalf.',
+    adultOnly: 'This form is for people aged 16 or over.',
+    closedMessage: 'This form is no longer accepting submissions.',
+    invalid: 'This value is not valid.',
+    selectPlaceholder: 'Choose one',
+    items: [
+      {
+        id: 'gop-y',
+        title: 'Feedback / Contact',
+        description:
+          'Send EIU FabLab a question or feedback. We will get back to you by the phone number or email you leave.',
+        submitLabel: 'Send',
+        successTitle: 'Sent',
+        successBody: 'Thank you. EIU FabLab will get back to you soon.',
+        consent: 'I agree that EIU FabLab may process the information above to get back to me.',
+        privacy:
+          'Your information is used only to get back to you, is managed by EIU FabLab (Eastern International University) and kept for at most 12 months. You can withdraw consent or ask for deletion at {email} (Decree 13/2023/ND-CP).',
+        closed: true,
+        fields: [
+          { id: 'ho-ten', label: 'Full name', help: '', fieldType: 'text', required: true },
+          { id: 'dien-thoai', label: 'Phone number', help: '', fieldType: 'phone', required: true },
+          { id: 'email', label: 'Email', help: '', fieldType: 'email' },
+          { id: 'noi-dung', label: 'Message', help: '', fieldType: 'textarea', required: true },
+        ],
       },
     ],
   },

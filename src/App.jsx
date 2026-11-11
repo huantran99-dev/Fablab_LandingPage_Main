@@ -1,10 +1,13 @@
 import { Suspense, lazy, useEffect } from 'react'
+import { ActionProvider } from './components/actions/ActionProvider'
 import { Activities } from './components/Activities'
 import { ContentSyncBar } from './components/ContentSyncBar'
 import { Courses } from './components/Courses'
+import { CustomPopup } from './components/CustomPopup'
 import { Facilities } from './components/Facilities'
 import { FinalCTA } from './components/FinalCTA'
 import { Footer } from './components/Footer'
+import { FormDialog } from './components/forms/FormDialog'
 import { Hero } from './components/Hero'
 import { Navbar } from './components/Navbar'
 import { Partners } from './components/Partners'
@@ -78,21 +81,29 @@ export default function App() {
   return (
     <LanguageProvider>
       <RegisterProvider>
-        {/* Bảng màu của sự kiện mùa đang chạy — ghi biến CSS lên <html>, không vẽ gì. */}
-        <SeasonTheme />
-        <ContentSyncBar />
-        <Navbar />
-        <main>
-          <PageSections />
-        </main>
-        <Footer />
-        {/* Hạt rơi + nút tắt của sự kiện mùa. Sau Footer: nút tắt là điểm dừng Tab CUỐI,
-            không chen lên trước menu. */}
-        <SeasonEffects />
-        {/* Popup sự kiện mùa: đứng TRƯỚC RegisterDialog vì nút "Đăng ký" của nó mở form. */}
-        <SeasonalPopup />
-        {/* PHẢI đứng sau mọi thứ có thể mở nó — xem ghi chú đầu RegisterDialog.jsx. */}
-        <RegisterDialog />
+        {/* Nút do admin tạo: mở popup / form tự tạo, hoặc form đăng ký (cần RegisterProvider). */}
+        <ActionProvider>
+          {/* Bảng màu của sự kiện mùa đang chạy — ghi biến CSS lên <html>, không vẽ gì. */}
+          <SeasonTheme />
+          <ContentSyncBar />
+          <Navbar />
+          <main>
+            <PageSections />
+          </main>
+          <Footer />
+          {/* Hạt rơi + nút tắt của sự kiện mùa. Sau Footer: nút tắt là điểm dừng Tab CUỐI,
+              không chen lên trước menu. */}
+          <SeasonEffects />
+          {/* Thứ tự bốn dialog dưới đây có chủ đích: dialog nào có nút mở dialog khác phải đứng
+              TRƯỚC dialog được mở (đóng-rồi-mở trong cùng một lượt, effect chạy theo thứ tự cây —
+              xem ghi chú đầu RegisterDialog.jsx). Popup sự kiện mùa và popup tự tạo mở được form
+              tự tạo lẫn form đăng ký; popup sự kiện mùa còn mở được popup tự tạo. */}
+          <SeasonalPopup />
+          <CustomPopup />
+          <FormDialog />
+          {/* PHẢI đứng sau mọi thứ có thể mở nó. */}
+          <RegisterDialog />
+        </ActionProvider>
       </RegisterProvider>
     </LanguageProvider>
   )

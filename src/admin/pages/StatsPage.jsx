@@ -13,6 +13,11 @@ const RANGES = [
   ['90d', '90 ngày'],
 ]
 
+/**
+ * Nhãn của id cũ (trước API 23) và của nút không do admin tạo. Nút do admin tạo lấy nhãn từ
+ * `meta.ctaLabels` (máy chủ dựng từ nội dung hiện hành) — nút đã xoá thì rơi về bảng này,
+ * rồi về id thô.
+ */
 const CTA_LABELS = {
   nav: 'Nút "Đăng ký" trên menu',
   'nav-drawer': 'Nút "Đăng ký" trong menu điện thoại',
@@ -22,10 +27,10 @@ const CTA_LABELS = {
   'final-secondary': 'Nút "Liên hệ" cuối trang',
   'course-modal': 'Nút đăng ký trong popup khóa học',
   'seasonal-popup': 'Nút trong popup sự kiện mùa',
-  events: 'Nút thành viên trên carousel Sự kiện',
-  competitions: 'Nút thành viên trên banner Cuộc thi',
+  events: 'Nút đăng ký trên carousel Sự kiện',
+  competitions: 'Nút đăng ký trên banner Cuộc thi',
   'competition-detail': 'Nút "Xem chi tiết" cuộc thi',
-  'competition-modal': 'Nút thành viên trong popup cuộc thi',
+  'competition-modal': 'Nút đăng ký trong popup cuộc thi',
 }
 const DEVICE_LABELS = { mobile: 'Điện thoại', tablet: 'Máy tính bảng', desktop: 'Máy tính' }
 const LANGUAGE_LABELS = { vi: 'Tiếng Việt', en: 'Tiếng Anh' }
@@ -61,7 +66,7 @@ function StatTile({ label, value, note, icon }) {
  * Đổi khoảng thời gian thì giữ nguyên biểu đồ cũ (mờ đi) cho tới khi số mới về —
  * không nháy trắng, không nhảy bố cục.
  */
-export function StatsPage() {
+export function StatsPage({ ctaLabels = {} }) {
   const [range, setRange] = useState('30d')
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -168,7 +173,7 @@ export function StatsPage() {
             </Card>
             <Card title="Nút kêu gọi được bấm">
               <BarList
-                rows={data.ctas.map((row) => ({ key: row.cta, label: CTA_LABELS[row.cta] ?? row.cta, value: row.clicks }))}
+                rows={data.ctas.map((row) => ({ key: row.cta, label: ctaLabels[row.cta] ?? CTA_LABELS[row.cta] ?? row.cta, value: row.clicks }))}
                 emptyText="Chưa có lượt bấm nào."
               />
             </Card>

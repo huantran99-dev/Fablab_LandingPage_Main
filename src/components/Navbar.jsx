@@ -7,9 +7,8 @@ import { useMediaQuery } from '../hooks/useMediaQuery'
 import { useScrollLock } from '../hooks/useScrollLock'
 import { LANGUAGES, useLanguage } from '../i18n/context'
 import { liveNavLinks } from '../lib/pageSections'
-import { track } from '../lib/track'
-import { useRegister } from './register/RegisterContext'
-import { Button } from './ui/Button'
+import { buttonsOf } from '../lib/actions'
+import { ActionButton } from './ui/ActionButton'
 
 /**
  * Class dùng chung cho mọi mục cấp một, dù là link hay nút mở nhánh — viết một
@@ -191,7 +190,8 @@ function DrawerBranch({ link, open, onToggle, onNavigate }) {
 
 export function Navbar() {
   const { t } = useLanguage()
-  const { openRegister } = useRegister()
+  // Nút do admin tạo (dashboard → Menu điều hướng → Nút), tối đa 2.
+  const navButtons = buttonsOf(t.nav, 'nav')
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -326,15 +326,9 @@ export function Navbar() {
               ẩn trong CSS nên luôn thắng — nút từng hiện cả trên điện thoại, đẩy
               thanh menu (và cả trang) rộng ra ~480px. */}
           <span className="hidden sm:contents">
-            <Button
-              type="button"
-              onClick={() => {
-                track('cta_click', 'nav')
-                openRegister(null, 'nav')
-              }}
-            >
-              {t.nav.cta}
-            </Button>
+            {navButtons.map((button) => (
+              <ActionButton key={button.id} button={button} slot="nav" source="nav" size="md" />
+            ))}
           </span>
           <button
             type="button"
@@ -392,21 +386,23 @@ export function Navbar() {
                   </a>
                 ),
               )}
-              <Button
-                type="button"
-                size="lg"
-                className="mt-6 w-full"
-                onClick={() => {
-                  // Đóng drawer rồi mở form trong CÙNG một lượt: Navbar đứng trước
-                  // RegisterDialog trong cây, nên drawer `close()` (trả focus về nút
-                  // menu) trước khi form `showModal()` — như popup khóa học → form.
-                  closeDrawer()
-                  track('cta_click', 'nav-drawer')
-                  openRegister(null, 'nav-drawer')
-                }}
-              >
-                {t.nav.cta}
-              </Button>
+              {/* Đóng drawer rồi chạy hành động trong CÙNG một lượt: Navbar đứng trước mọi
+                  dialog mở ra trong cây, nên drawer `close()` (trả focus về nút menu)
+                  trước khi form / popup `showModal()` — như popup khóa học → form. */}
+              {navButtons.length > 0 && (
+                <div className="mt-6 flex flex-col gap-3">
+                  {navButtons.map((button) => (
+                    <ActionButton
+                      key={button.id}
+                      button={button}
+                      slot="nav-drawer"
+                      source="nav-drawer"
+                      className="w-full"
+                      onBefore={closeDrawer}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </>
         )}

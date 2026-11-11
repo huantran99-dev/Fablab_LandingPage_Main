@@ -11,6 +11,7 @@ import { Router } from 'express'
 import { dayKey } from '../analytics/track.js'
 import { requireSameOrigin, requireSession } from '../auth/middleware.js'
 import { SECTION_IMAGES } from '../content/assemble.js'
+import { ctaTargets } from '../content/buttons.js'
 import { getContent } from '../content/cache.js'
 import { getLookups, renderedAnchors } from '../content/lookups.js'
 import { getDb } from '../db/index.js'
@@ -39,6 +40,10 @@ metaRouter.get('/meta', (_req, res) => {
     db.prepare('SELECT key, MAX(updated_at) AS at FROM section GROUP BY key').all().map((row) => [row.key, row.at]),
   )
   const anchors = renderedAnchors(content.vi, lookups)
+  const submissionCounts = new Map(
+    db.prepare('SELECT form_id AS id, COUNT(*) AS n FROM form_submission GROUP BY form_id').all().map((row) => [row.id, row.n]),
+  )
+  const courseGroups = new Map((content.vi.courses?.groups ?? []).map((group) => [group.id, group.title]))
 
   res.json({
     rev: content.rev,
@@ -61,6 +66,26 @@ metaRouter.get('/meta', (_req, res) => {
       shapes: content.vi.motifs?.shapes ?? [],
       items: content.vi.motifs?.items ?? [],
     },
+    // Nút do admin tạo (API 23): đích của ô chọn "Form mở ra" / "Popup mở ra" / "Chọn sẵn
+    // khóa học" — section khác với section đang soạn nên phải qua đây.
+    forms: (content.vi.forms?.items ?? []).map((form) => ({
+      id: form.id,
+      title: form.title,
+      closed: Boolean(form.closed),
+      submissions: submissionCounts.get(form.id) ?? 0,
+    })),
+    popups: (content.vi.popups?.items ?? []).map((popup) => ({ id: popup.id, title: popup.title })),
+    courses: (content.vi.courses?.items ?? []).map((course) => ({
+      id: course.id,
+      title: course.title,
+      group: courseGroups.get(course.group) ?? course.group,
+    })),
+    // Id thống kê lượt bấm → nhãn đọc được (trang Thống kê). Nút đã xoá không còn ở đây —
+    // trang tự rơi về id thô.
+    ctaLabels: Object.fromEntries(ctaTargets(content.vi)),
+    formSubmissions: db
+      .prepare(`SELECT COUNT(*) AS total, COALESCE(SUM(CASE WHEN status = 'new' THEN 1 ELSE 0 END), 0) AS new FROM form_submission`)
+      .get(),
     icons: {
       course: lookups.courseIcons ?? [],
       pillar: lookups.pillarIcons ?? [],

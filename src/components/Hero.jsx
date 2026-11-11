@@ -1,14 +1,11 @@
-import { ArrowRightIcon } from '../assets/icons/Icons'
 import { useT } from '../i18n/context'
+import { buttonsOf } from '../lib/actions'
 import { useActiveSeason } from '../lib/season'
-import { track } from '../lib/track'
-import { Button } from './ui/Button'
+import { ActionButton } from './ui/ActionButton'
 import { Pill } from './ui/Pill'
-import { useLiveHref } from '../hooks/useLiveHref'
 
 export function Hero() {
   const t = useT()
-  const isLive = useLiveHref()
   // Ảnh trang trí của sự kiện mùa đang chạy (cành mai, đèn lồng…), do admin tải lên.
   const decor = useActiveSeason()?.decor
 
@@ -24,24 +21,12 @@ export function Hero() {
             {t.hero.description}
           </p>
 
+          {/* Nút do admin tạo (dashboard → Hero → Nút): link / form / popup / form đăng ký.
+              Nút không còn đích (khối đã tắt, form đóng nhận…) tự ẩn trong ActionButton. */}
           <div className="flex flex-wrap items-center gap-3 pt-2">
-            {/* Khối đích admin đã tắt thì nút trỏ vào nó cũng ẩn (useLiveHref). */}
-            {isLive('#courses') && (
-              <Button href="#courses" size="lg" onClick={() => track('cta_click', 'hero-primary')}>
-                {t.hero.primaryCta}
-                <ArrowRightIcon />
-              </Button>
-            )}
-            {isLive('#facilities') && (
-              <Button
-                href="#facilities"
-                variant="outlined"
-                size="lg"
-                onClick={() => track('cta_click', 'hero-secondary')}
-              >
-                {t.hero.secondaryCta}
-              </Button>
-            )}
+            {buttonsOf(t.hero, 'hero').map((button) => (
+              <ActionButton key={button.id} button={button} slot="hero" source="hero" />
+            ))}
           </div>
         </div>
 

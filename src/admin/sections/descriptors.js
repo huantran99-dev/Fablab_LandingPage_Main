@@ -147,6 +147,140 @@ function presetFromBuiltin(id) {
 const slugifyId = (glyph) => glyph.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
 const kindOptions = (ctx) => Object.entries(ctx.vi?.kinds ?? {}).map(([id, label]) => ({ value: id, label }))
 
+/*
+ * Nút do admin tạo (API 23) — một bộ ô cho mọi chỗ có nút: Hero, thanh menu, cuối trang, nút
+ * trong popup. Khớp `buttonSchema` (server/schema/sections.js). Ô của hành động chỉ hiện khi
+ * đúng hành động (`when`), và ô đang ẩn bị bỏ khoá lúc lưu.
+ *
+ * Form / popup / khóa học là section KHÁC nên lấy qua `/meta` (dashboard nạp lại sau mỗi lượt
+ * Lưu). Riêng nút trong popup chọn popup đích từ CHÍNH bản nháp, để thấy cả popup chưa lưu.
+ */
+export const BUTTON_ACTION_LABELS = {
+  register: 'Mở form đăng ký có sẵn',
+  form: 'Mở form tự tạo',
+  popup: 'Mở popup',
+  link: 'Mở đường dẫn',
+}
+const formOptions = (ctx) =>
+  (ctx.meta?.forms ?? []).map((form) => ({ value: form.id, label: form.closed ? `${form.title} (đang đóng nhận — nút tự ẩn)` : form.title }))
+const metaPopupOptions = (ctx) => (ctx.meta?.popups ?? []).map((popup) => ({ value: popup.id, label: popup.title }))
+const draftPopupOptions = (ctx) =>
+  (ctx.vi?.items ?? []).filter((popup) => popup.id).map((popup) => ({ value: popup.id, label: popup.title || popup.id }))
+const metaCourseOptions = (ctx) =>
+  (ctx.meta?.courses ?? []).map((course) => ({ value: course.id, label: course.title, group: course.group }))
+
+/** Mô tả ngắn hành động của một nút — cột "Chức năng" của danh sách nút. */
+function describeAction(button, ctx) {
+  const name = (list, id) => list?.find((entry) => entry.id === id)?.title ?? id
+  switch (button.action) {
+    case 'register': {
+      const course = button.courseId ? ` · ${name(ctx.meta?.courses, button.courseId)}` : ''
+      const tab = { course: 'khóa học', member: 'thành viên' }[button.registerKind] ?? 'tab lần trước'
+      return `Form đăng ký (${tab})${course}`
+    }
+    case 'form':
+      return `Form: ${name(ctx.meta?.forms, button.formId)}`
+    case 'popup':
+      return `Popup: ${name(ctx.meta?.popups ?? ctx.vi?.items, button.popupId)}`
+    case 'link':
+      return button.href
+    default:
+      return '—'
+  }
+}
+
+/**
+ * @param {{ popupOptions?: (ctx: object) => object[] }} [options]
+ */
+function buttonFields({ popupOptions = metaPopupOptions } = {}) {
+  return [
+    text('label', 'Chữ trên nút'),
+    {
+      key: 'style',
+      label: 'Kiểu nút',
+      type: 'select',
+      options: () => [
+        { value: 'primary', label: 'Nút chính (nền đậm)' },
+        { value: 'secondary', label: 'Nút phụ (viền)' },
+      ],
+    },
+    { key: 'arrow', label: 'Mũi tên sau chữ', type: 'switch', description: 'Thêm mũi tên → ở cuối nút.' },
+    {
+      key: 'action',
+      label: 'Chức năng khi bấm',
+      type: 'select',
+      options: () => Object.entries(BUTTON_ACTION_LABELS).map(([value, label]) => ({ value, label })),
+    },
+    {
+      key: 'registerKind',
+      label: 'Mở form đăng ký ở tab',
+      type: 'select',
+      optional: true,
+      placeholder: '— Tab người xem dùng lần trước —',
+      options: () => [
+        { value: 'course', label: 'Đăng ký khóa học' },
+        { value: 'member', label: 'Đăng ký thành viên FabLab' },
+      ],
+      when: { action: ['register'] },
+    },
+    {
+      key: 'courseId',
+      label: 'Chọn sẵn khóa học',
+      type: 'select',
+      optional: true,
+      placeholder: '— Không chọn sẵn (người xem tự chọn / cần tư vấn) —',
+      options: metaCourseOptions,
+      when: { action: ['register'], registerKind: ['course'] },
+    },
+    {
+      key: 'formId',
+      label: 'Form mở ra',
+      type: 'select',
+      options: formOptions,
+      help: 'Tạo form ở mục "Form tự tạo". Form đang đóng nhận thì nút tự ẩn khỏi trang.',
+      when: { action: ['form'] },
+    },
+    {
+      key: 'popupId',
+      label: 'Popup mở ra',
+      type: 'select',
+      options: popupOptions,
+      help: 'Tạo popup ở mục "Popup".',
+      when: { action: ['popup'] },
+    },
+    { ...href, help: 'Neo trên trang (#…) hoặc trang ngoài (https://… — mở ở tab mới).', when: { action: ['link'] } },
+  ]
+}
+
+/** Danh sách nút của một section. */
+const buttonList = ({ maxItems, description }) => ({
+  path: 'buttons',
+  title: 'Nút',
+  description,
+  itemName: 'nút',
+  titleField: 'label',
+  maxItems,
+  idHint: 'Id nằm trong số liệu thống kê lượt bấm — đặt ngắn, không đổi được sau khi tạo.',
+  createDefaults: { style: 'primary', action: 'register' },
+  columns: [
+    { label: 'Kiểu', value: (item) => (item.style === 'secondary' ? 'Phụ' : 'Chính') },
+    { label: 'Chức năng', value: describeAction },
+  ],
+  fields: buttonFields(),
+})
+
+const FIELD_TYPE_LABELS = {
+  text: 'Chữ một dòng',
+  textarea: 'Đoạn văn',
+  phone: 'Số điện thoại',
+  email: 'Email',
+  number: 'Số',
+  date: 'Ngày',
+  select: 'Chọn một',
+  multiselect: 'Chọn nhiều',
+  checkbox: 'Ô tích (có / không)',
+}
+
 export const SECTIONS = [
   {
     key: 'nav',
@@ -157,7 +291,7 @@ export const SECTIONS = [
       'Thêm nhóm khóa học hay khối hoạt động thì neo trên trang tự có, nhưng KHÔNG tự lên menu — phải thêm mục ở đây.',
     ],
     groups: [
-      { title: 'Chữ chung', fields: [text('brandTagline', 'Dòng chữ cạnh logo'), text('cta', 'Nút kêu gọi')] },
+      { title: 'Chữ chung', fields: [text('brandTagline', 'Dòng chữ cạnh logo')] },
       {
         title: 'Nhãn trợ năng',
         description: 'Trình đọc màn hình đọc các nhãn này; chúng không hiện ra trên trang.',
@@ -165,6 +299,10 @@ export const SECTIONS = [
       },
     ],
     lists: [
+      buttonList({
+        maxItems: 2,
+        description: 'Nút ở góc phải thanh menu (máy tính, từ màn hình vừa trở lên) và cuối menu trượt trên điện thoại. Tối đa 2 — thanh menu hẹp.',
+      }),
       {
         path: 'links',
         title: 'Mục menu',
@@ -215,13 +353,12 @@ export const SECTIONS = [
           eyebrow,
           title,
           description,
-          text('primaryCta', 'Nút chính'),
-          text('secondaryCta', 'Nút phụ'),
           area('imageAlt', 'Mô tả ảnh (alt)', { rows: 2 }),
         ],
       },
     ],
     lists: [
+      buttonList({ maxItems: 3, description: 'Nút dưới đoạn mô tả. Tối đa 3.' }),
       {
         path: 'floatingBadges',
         title: 'Nhãn nổi trên ảnh',
@@ -812,10 +949,15 @@ export const SECTIONS = [
     groups: [
       {
         title: 'Nội dung',
-        fields: [title, description, text('primaryCta', 'Nút chính'), text('secondaryCta', 'Nút phụ')],
+        fields: [title, description],
       },
     ],
-    lists: [],
+    lists: [
+      buttonList({
+        maxItems: 3,
+        description: 'Tối đa 3. Khối này nền tối: nút chính là nền trắng, nút phụ là viền trắng.',
+      }),
+    ],
   },
   {
     key: 'register',
@@ -1053,10 +1195,14 @@ export const SECTIONS = [
             type: 'select',
             options: () => [
               { value: 'register', label: 'Mở form đăng ký' },
+              { value: 'form', label: 'Mở form tự tạo' },
+              { value: 'popup', label: 'Mở popup' },
               { value: 'link', label: 'Mở đường dẫn' },
               { value: 'none', label: 'Không có nút chính' },
             ],
           },
+          { key: 'formId', label: 'Form mở ra', type: 'select', options: formOptions, when: { ctaAction: ['form'] } },
+          { key: 'popupId', label: 'Popup mở ra', type: 'select', options: metaPopupOptions, when: { ctaAction: ['popup'] } },
           text('ctaLabel', 'Chữ trên nút chính', { optional: true, help: 'Để trống khi không có nút chính.' }),
           { ...href, help: 'Chỉ dùng khi nút chính là "Mở đường dẫn".' },
           colorField('colorPrimary', 'Màu chủ đạo', 'Nút, link, nhãn, mục menu đang chọn.'),
@@ -1191,6 +1337,123 @@ export const SECTIONS = [
             ],
           },
           number('ornamentSize', 'Cỡ vật trang trí (px)', '12–32.'),
+        ],
+      },
+    ],
+  },
+  {
+    key: 'popups',
+    label: 'Popup',
+    icon: 'external',
+    description: 'Popup tự tạo: chỉ mở khi người xem bấm một nút có chức năng "Mở popup".',
+    notes: [
+      'Popup không tự hiện khi vào trang — muốn vậy, dùng mục "Sự kiện mùa". Gắn popup vào nút ở Hero, thanh menu, cuối trang, nút của popup khác hoặc nút chính của popup sự kiện mùa.',
+      'Không xoá được popup đang có nút trỏ tới: đổi chức năng của nút đó trước.',
+    ],
+    groups: [{ title: 'Chữ chung', fields: [text('close', 'Nhãn nút × (trình đọc màn hình)')] }],
+    lists: [
+      {
+        path: 'items',
+        title: 'Popup',
+        itemName: 'popup',
+        titleField: 'title',
+        image: { label: 'Ảnh', optional: true, hint: 'Hiện trọn khung (không cắt) phía trên tiêu đề. Không có ảnh thì popup chỉ có chữ.' },
+        columns: [{ label: 'Nút', value: (item) => (item.buttons?.length ? item.buttons.map((button) => button.label).join(' · ') : '—') }],
+        fields: [
+          text('title', 'Tiêu đề'),
+          area('body', 'Nội dung', { rows: 4, optional: true, help: 'Chữ thường; xuống dòng hai lần để tách đoạn.' }),
+          {
+            key: 'buttons',
+            label: 'Nút (tối đa 2)',
+            type: 'sublist',
+            maxItems: 2,
+            rowDefaults: { style: 'primary', action: 'register' },
+            itemFields: buttonFields({ popupOptions: draftPopupOptions }),
+          },
+        ],
+      },
+    ],
+  },
+  {
+    key: 'forms',
+    label: 'Form tự tạo',
+    icon: 'pencil',
+    description: 'Form do bạn tạo: tự thêm ô, gắn vào nút có chức năng "Mở form tự tạo". Bài gửi xem ở "Bài gửi form".',
+    notes: [
+      'Mọi form đều có sẵn ô năm sinh và ô đồng ý (không cần thêm). Tắt "Nhận người dưới 16 tuổi" thì form chặn người dưới 16; bật thì người dưới 16 phải có phụ huynh điền tên và đồng ý thay (Nghị định 13/2023).',
+      'Nên có ít nhất một ô số điện thoại hoặc email — không có thì không liên lạc lại được người gửi.',
+      'Sửa nhãn hay xoá ô không làm hỏng bài gửi cũ: mỗi bài lưu kèm nhãn của ô tại lúc gửi. Bài gửi tự xoá sau 12 tháng, như đăng ký khóa học.',
+      'Không xoá được form đang có nút trỏ tới: đổi chức năng của nút đó, hoặc bật "Đóng nhận bài" để ẩn nút.',
+    ],
+    groups: [
+      {
+        title: 'Chữ chung của mọi form',
+        description: 'Nút gửi xong, chữ lỗi chung và chữ "bắt buộc" lấy từ mục "Form đăng ký".',
+        fields: [
+          text('birthYear', 'Nhãn ô năm sinh'),
+          text('birthYearHint', 'Gợi ý ô năm sinh'),
+          text('parentName', 'Nhãn ô tên phụ huynh'),
+          area('parentNote', 'Ghi chú cho người dưới 16 tuổi', { rows: 2 }),
+          text('adultOnly', 'Dòng ghi chú của form chỉ nhận từ 16 tuổi'),
+          text('closedMessage', 'Báo khi form đã đóng nhận'),
+          text('invalid', 'Lỗi: giá trị không hợp lệ'),
+          text('selectPlaceholder', 'Chữ mặc định của ô chọn'),
+        ],
+      },
+    ],
+    lists: [
+      {
+        path: 'items',
+        title: 'Form',
+        itemName: 'form',
+        titleField: 'title',
+        idHint: 'Id nằm trong bài gửi và số liệu — không đổi được sau khi tạo.',
+        columns: [
+          { label: 'Ô', value: (item) => `${item.fields?.length ?? 0} ô` },
+          { label: 'Bài gửi', value: (item, ctx) => String(ctx.meta?.forms?.find((form) => form.id === item.id)?.submissions ?? 0) },
+          { label: '', value: (item) => (item.closed ? 'Đóng nhận' : 'Đang nhận'), badge: true },
+        ],
+        fields: [
+          text('title', 'Tiêu đề form'),
+          area('description', 'Mô tả ngắn', { rows: 2, optional: true }),
+          { key: 'closed', label: 'Đóng nhận bài', type: 'switch', description: 'Ẩn mọi nút mở form này; máy chủ từ chối bài gửi.' },
+          {
+            key: 'allowMinors',
+            label: 'Nhận người dưới 16 tuổi',
+            type: 'switch',
+            description: 'Bật: người dưới 16 phải có phụ huynh điền tên và đồng ý thay. Tắt: chỉ nhận người từ 16 tuổi.',
+          },
+          {
+            key: 'fields',
+            label: 'Các ô của form',
+            type: 'sublist',
+            minItems: 1,
+            rowDefaults: { fieldType: 'text' },
+            itemFields: [
+              text('label', 'Nhãn ô'),
+              text('help', 'Gợi ý dưới ô', { optional: true }),
+              {
+                key: 'fieldType',
+                label: 'Loại ô',
+                type: 'select',
+                options: () => Object.entries(FIELD_TYPE_LABELS).map(([value, label]) => ({ value, label })),
+              },
+              { key: 'required', label: 'Bắt buộc', type: 'switch' },
+              {
+                key: 'options',
+                label: 'Các lựa chọn',
+                type: 'sublist',
+                minItems: 1,
+                itemFields: [text('label', 'Lựa chọn')],
+                when: { fieldType: ['select', 'multiselect'] },
+              },
+            ],
+          },
+          text('submitLabel', 'Chữ trên nút gửi'),
+          area('consent', 'Câu đồng ý (ô tích bắt buộc)', { rows: 2 }),
+          area('privacy', 'Thông báo xử lý dữ liệu', { rows: 3, help: '{email} được thay bằng email liên hệ ở chân trang.' }),
+          text('successTitle', 'Tiêu đề khi gửi xong'),
+          area('successBody', 'Lời nhắn khi gửi xong', { rows: 2 }),
         ],
       },
     ],

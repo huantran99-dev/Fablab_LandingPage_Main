@@ -38,6 +38,15 @@ const SKIP_KEYS = new Set([
   'now',
   'popup',
   'ctaAction',
+  // Nút, popup, form tự tạo (API 23): hành động, kiểu và đích của nút; loại ô form. Thiếu ở
+  // đây thì id dính U+00A0 và tra hụt (nút tự ẩn vì "form không tồn tại").
+  'action',
+  'style',
+  'registerKind',
+  'courseId',
+  'formId',
+  'popupId',
+  'fieldType',
   'colorPrimary',
   'colorSurface',
   'colorDark',

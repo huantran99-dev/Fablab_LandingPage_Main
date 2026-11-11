@@ -4,7 +4,7 @@ import { COURSE_ICON_IDS, CourseIcon } from '../../assets/icons/CourseIcons'
 import { Button, IconButton } from '../ui/Button'
 import { FieldError, FieldHelp, Input, LocaleTag, Select, Switch, TextArea } from '../ui/Field'
 import { Icon } from '../ui/Icon'
-import { LOCALES, narrow, toWorking } from './model'
+import { LOCALES, isActive, narrow, toWorking } from './model'
 
 /** Nhãn nhỏ cạnh tên trường dùng chung — để người sửa biết ô này ghi vào cả hai bản. */
 function SharedHint() {
@@ -209,6 +209,8 @@ function SubListEditor({ field, rows, onChange, errors, serverIssues, ctx, idPre
           size="xs"
           variant="soft"
           icon="plus"
+          // `maxItems`: vd. nút của popup — tối đa 2 (schema máy chủ).
+          disabled={field.maxItems != null && rows.length >= field.maxItems}
           // `rowDefaults`: dòng mới có sẵn giá trị hợp lệ (vd. loại hạt: số 0 là ngoài khoảng schema).
           onClick={() => onChange([...rows, toWorking(field.itemFields, field.rowDefaults ?? null, field.rowDefaults ?? null)])}
         >
@@ -272,6 +274,9 @@ function SubListEditor({ field, rows, onChange, errors, serverIssues, ctx, idPre
  */
 export function FieldControl({ field, working, onChange, errors = {}, serverIssues = {}, ctx, idPrefix }) {
   const inputId = `${idPrefix}-${field.key.replaceAll('.', '-')}`
+  // `when`: ô chỉ hiện khi một trường khác của mục mang giá trị phù hợp (vd. "Form" chỉ hiện
+  // khi hành động của nút là "Mở form"). Ẩn ở đây, bỏ khoá ở fromWorking.
+  if (!isActive(field, working)) return null
   const setShared = (value) => onChange({ ...working, shared: { ...working.shared, [field.key]: value } })
 
   if (field.translated) {

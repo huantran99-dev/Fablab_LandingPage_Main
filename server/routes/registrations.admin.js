@@ -195,7 +195,7 @@ const KIND_STATUS_LABELS = {
   event: { ...STATUS_LABELS, enrolled: 'Đã xác nhận' },
 }
 const KIND_LABELS = { course: 'Khóa học', member: 'Thành viên FabLab', event: 'Sự kiện' }
-const SOURCE_LABELS = { 'course-modal': 'Popup khóa học', 'final-cta': 'Khối kêu gọi cuối trang', nav: 'Thanh menu', 'nav-drawer': 'Menu di động', 'seasonal-popup': 'Popup sự kiện', events: 'Section Hoạt động' }
+const SOURCE_LABELS = { 'course-modal': 'Popup khóa học', 'final-cta': 'Khối kêu gọi cuối trang', nav: 'Thanh menu', 'nav-drawer': 'Menu di động', 'seasonal-popup': 'Popup sự kiện', events: 'Section Hoạt động', hero: 'Nút ở Hero', popup: 'Popup tự tạo' }
 
 /** Giờ Việt Nam, dạng Excel đọc được: `2026-09-18 14:05`. */
 const vnTime = (iso) => (iso ? new Date(new Date(iso).getTime() + 7 * 3600_000).toISOString().slice(0, 16).replace('T', ' ') : '')

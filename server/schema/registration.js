@@ -15,7 +15,17 @@
 import { z } from 'zod'
 
 // Thêm nguồn là phải dựng lại bảng `registration` (CHECK trên cột `source`) — xem migration 017.
-export const REGISTRATION_SOURCES = ['course-modal', 'final-cta', 'nav', 'nav-drawer', 'seasonal-popup', 'events']
+// 'hero' / 'popup' từ API 23 (migration 025): nút do admin tạo ở Hero / trong popup tự tạo.
+export const REGISTRATION_SOURCES = [
+  'course-modal',
+  'final-cta',
+  'nav',
+  'nav-drawer',
+  'seasonal-popup',
+  'events',
+  'hero',
+  'popup',
+]
 export const REGISTRATION_STATUSES = ['new', 'contacted', 'enrolled', 'cancelled']
 // Thêm loại là phải dựng lại bảng `registration` (CHECK trên cột `kind`) — xem migration 024.
 export const REGISTRATION_KINDS = ['course', 'member', 'event']

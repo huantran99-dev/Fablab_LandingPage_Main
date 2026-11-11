@@ -40,6 +40,9 @@ export const SOURCE_LABELS = {
   'nav-drawer': 'Nút trong menu điện thoại',
   'seasonal-popup': 'Popup sự kiện mùa',
   events: 'Section Hoạt động',
+  // Nút do admin tạo (API 23).
+  hero: 'Nút ở Hero',
+  popup: 'Nút trong popup tự tạo',
 }
 
 /** 0912345678 → 0912 345 678 (dễ đọc khi gọi điện). */

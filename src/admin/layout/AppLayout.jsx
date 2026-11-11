@@ -6,7 +6,7 @@ import { AppSidebar } from './AppSidebar'
 
 const COLLAPSED_KEY = 'fablab-admin.sidebar-collapsed'
 
-export function AppLayout({ route, username, theme, onToggleTheme, onLogout, newRegistrations = 0, hiddenSections = null, children }) {
+export function AppLayout({ route, username, theme, onToggleTheme, onLogout, newRegistrations = 0, newSubmissions = 0, hiddenSections = null, children }) {
   const [collapsed, setCollapsed] = useState(() => readStored(COLLAPSED_KEY, false) === true)
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -27,6 +27,7 @@ export function AppLayout({ route, username, theme, onToggleTheme, onLogout, new
         collapsed={collapsed}
         mobileOpen={mobileOpen}
         newRegistrations={newRegistrations}
+        newSubmissions={newSubmissions}
         hiddenSections={hiddenSections}
         onNavigate={() => setMobileOpen(false)}
       />

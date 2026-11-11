@@ -22,13 +22,14 @@ gọn chỗ dài bằng `…`). Deploy thì xem [DEPLOY.md](DEPLOY.md).
 4. [Route công khai](#4-route-công-khai)
 5. [Đăng nhập — `/api/auth`](#5-đăng-nhập--apiauth)
 6. [Nội dung section — `/api/admin`](#6-nội-dung-section--apiadmin)
-7. [Hình dạng 17 section](#7-hình-dạng-17-section)
+7. [Hình dạng 19 section](#7-hình-dạng-19-section)
 8. [Thư viện ảnh](#8-thư-viện-ảnh)
 9. [Popup chi tiết khóa học](#9-popup-chi-tiết-khóa-học)
 10. [Meta cho dashboard](#10-meta-cho-dashboard)
 11. [Ví dụ trọn luồng bằng curl](#11-ví-dụ-trọn-luồng-bằng-curl)
 12. [Đăng ký khóa học](#12-đăng-ký-khóa-học)
 13. [Thống kê truy cập](#13-thống-kê-truy-cập)
+14. [Form tự tạo và bài gửi](#14-form-tự-tạo-và-bài-gửi) *(từ API 23)*
 
 ### Bảng route
 
@@ -62,6 +63,12 @@ gọn chỗ dài bằng `…`). Deploy thì xem [DEPLOY.md](DEPLOY.md).
 | PATCH | [`/api/admin/registrations/:id`](#patch-apiadminregistrationsid) | ✔ | ✔ |
 | DELETE | [`/api/admin/registrations/:id`](#delete-apiadminregistrationsid) | ✔ | ✔ |
 | GET | [`/api/admin/stats`](#get-apiadminstats) | ✔ | |
+| POST | [`/api/forms/:id`](#post-apiformsid) | | |
+| GET | [`/api/admin/form-submissions`](#get-apiadminform-submissions) | ✔ | |
+| GET | [`/api/admin/form-submissions/export`](#get-apiadminform-submissionsexport) | ✔ | |
+| GET | [`/api/admin/form-submissions/:id`](#get-apiadminform-submissionsid) | ✔ | |
+| PATCH | [`/api/admin/form-submissions/:id`](#patch-apiadminform-submissionsid) | ✔ | ✔ |
+| DELETE | [`/api/admin/form-submissions/:id`](#delete-apiadminform-submissionsid) | ✔ | ✔ |
 
 "Cần đăng nhập" kéo theo kiểm `Origin` cho mọi phương thức không phải GET (xem mục 2).
 
@@ -197,7 +204,7 @@ Không cần đăng nhập. Trang công khai chỉ gọi `GET /api/content`.
 Máy chủ còn sống không, đang ở bản nội dung nào, phiên bản API nào.
 
 ```json
-{"ok":true,"rev":190,"updatedAt":"2026-11-05T03:52:00.755Z","api":22}
+{"ok":true,"rev":204,"updatedAt":"2026-11-09T08:56:57.884Z","api":23}
 ```
 
 | Trường | Ý nghĩa |
@@ -517,7 +524,7 @@ video nào để quay về.
 
 ---
 
-## 7. Hình dạng 17 section
+## 7. Hình dạng 19 section
 
 Tóm tắt [server/schema/sections.js](../server/schema/sections.js). Luật chung:
 
@@ -540,7 +547,9 @@ Tóm tắt [server/schema/sections.js](../server/schema/sections.js). Luật chu
 
 Trên mọi phần tử mảng có `id`, các trường sau không được dịch:
 `group`, `level`, `stage`, `topic`, `icon`, `kind`, `kinds`, `value`, `suffix`, `lead`,
-`href`, `filterable`, `facility`, `status` — cộng thêm `team.members[].name`. Lệch → `422` dạng ràng buộc
+`href`, `filterable`, `facility`, `status` — cộng thêm `team.members[].name`. Từ API 23 thêm
+`style`, `arrow`, `action`, `registerKind`, `courseId`, `formId`, `popupId` (nút), `fieldType`,
+`required`, `allowMinors`, `closed` (form tự tạo). Lệch → `422` dạng ràng buộc
 (`truong khong dich nhung khac nhau`).
 
 ### nav
@@ -548,7 +557,9 @@ Trên mọi phần tử mảng có `id`, các trường sau không được dị
 | Trường | Kiểu |
 |---|---|
 | `brandTagline` | chữ(80) |
-| `cta`, `openMenu`, `closeMenu`, `switchLanguage` | chữ(40) |
+| `openMenu`, `closeMenu`, `switchLanguage` | chữ(40) |
+| `buttons[]` (≤ 2) | [nút](#nút-do-admin-tạo-từ-api-23) — góc phải thanh menu (từ `sm`) và cuối menu trượt trên điện thoại *(từ API 23)* |
+| `cta` | chữ(40), tuỳ chọn — **nút cũ trước API 23**, chỉ còn để bản lịch sử cũ hợp lệ (vắng `buttons` thì trang dựng nút "mở form đăng ký" từ đây) |
 | `links[]` (≥ 1) | **hoặc** link `{ id, label: chữ(60), href }` **hoặc** nhánh `{ id, label: chữ(60), children: [{ id, label: chữ(80), href }] (≥ 1) }` — không bao giờ có cả `href` lẫn `children` |
 
 ### hero *(có ảnh: khoá `"hero"`)*
@@ -558,7 +569,8 @@ Trên mọi phần tử mảng có `id`, các trường sau không được dị
 | `eyebrow` | chữ(80) |
 | `title` | chữ(120) |
 | `description` | chữ(400) |
-| `primaryCta`, `secondaryCta` | chữ(40) |
+| `buttons[]` (≤ 3) | [nút](#nút-do-admin-tạo-từ-api-23) dưới đoạn mô tả *(từ API 23)* |
+| `primaryCta`, `secondaryCta` | chữ(40), tuỳ chọn — nút cũ trước API 23 (vắng `buttons` thì trang dựng hai link `#courses` / `#facilities` từ đây) |
 | `imageAlt` | chữ(200) |
 | `floatingBadges[]` (≤ 4) | `{ id, label: chữ(40) }` |
 
@@ -713,7 +725,9 @@ vòng xoay 3D *(từ API 8)* · `statuses`: record `id → chữ(40)` (nhãn tr�
 
 ### finalCta
 
-`title` chữ(120) · `description` chữ(400) · `primaryCta`, `secondaryCta` chữ(40).
+`title` chữ(120) · `description` chữ(400) · `buttons[]` (≤ 3) [nút](#nút-do-admin-tạo-từ-api-23) trên nền
+tối *(từ API 23)* · `primaryCta`, `secondaryCta` chữ(40) tuỳ chọn — nút cũ (vắng `buttons` thì nút chính
+mở form đăng ký, nút phụ trỏ `#contact`).
 
 ### register
 
@@ -773,7 +787,7 @@ nhãn nút tắt hiệu ứng và họa tiết của ba mục mẫu qua
 | `close` | chữ(40) — nhãn nút × (trình đọc màn hình) |
 | `dismiss` | chữ(40) — nút phụ của popup |
 | `effectOff` / `effectOn` | chữ(40) — *(từ API 14)* nhãn nút tắt / bật hạt rơi (trình đọc màn hình) |
-| `items[]` | `{ id, name: chữ(80), enabled?: true, now?: true, popup?: true, start, end: "YYYY-MM-DD", title: chữ(120), body: chữ(500), ctaAction: "none" | "register" | "link", ctaLabel: chuỗi ≤40 (được rỗng), href, colorPrimary?, colorSurface?, colorDark?, colorAccent?: "#rrggbb", motif?: "snow" | "mai" | "dao" | "lantern" | "confetti" | "halloween", fall?: true }` — từ API 17 `motif?` là id (bộ có sẵn hoặc `motifs.items[].id`) |
+| `items[]` | `{ id, name: chữ(80), enabled?: true, now?: true, popup?: true, start, end: "YYYY-MM-DD", title: chữ(120), body: chữ(500), ctaAction: "none" | "register" | "link" | "form" | "popup", formId?, popupId?, ctaLabel: chuỗi ≤40 (được rỗng), href, colorPrimary?, colorSurface?, colorDark?, colorAccent?: "#rrggbb", motif?: "snow" | "mai" | "dao" | "lantern" | "confetti" | "halloween", fall?: true }` — từ API 17 `motif?` là id (bộ có sẵn hoặc `motifs.items[].id`) |
 
 Dùng chung (bằng nhau giữa VI và EN): `enabled`, `now`, `popup`, `start`, `end`, `ctaAction`,
 `href`, bốn khoá màu, `motif`, `fall`. `motif` là bộ họa tiết vẽ sẵn (vật trang trí trên
@@ -786,7 +800,8 @@ Ràng buộc (invariants): lỗi khi `start > end`, khi có nút mà `ctaLabel` 
 đang bật trùng ngày, khi tương phản dưới 4.5:1 (chữ trắng trên `colorDark`;
 `colorPrimary` trên `colorSurface`), khi mục đang bật có popup mà chưa có ảnh popup, khi bật `fall` mà chưa chọn `motif`. Lỗi
 *(từ API 17)* khi `motif` không phải bộ có sẵn và không có trong `motifs.items` — vì vậy
-xoá một họa tiết đang được sự kiện dùng bị chặn.
+xoá một họa tiết đang được sự kiện dùng bị chặn. *(Từ API 23)* `ctaAction` nhận thêm `"form"` / `"popup"`
+(mở [form](#forms-từ-api-23) / [popup](#popups-từ-api-23) tự tạo theo `formId` / `popupId`) — lỗi khi đích không có.
 
 ### motifs *(từ API 17)*
 
@@ -811,6 +826,73 @@ sẵn không có, hoặc `img:` không có trong `shapes`), khi `sizeMin > sizeM
 `GET /api/admin/meta` trả thêm `motifs: { shapes, items }` (bản VI, có ảnh) cho ô chọn họa
 tiết và khung xem trước của section Sự kiện mùa.
 
+### Nút do admin tạo *(từ API 23)*
+
+Một hình dạng cho mọi chỗ có nút: `nav.buttons`, `hero.buttons`, `finalCta.buttons`,
+`popups.items[].buttons`. Database cũ nhận nút qua
+[025_actions_forms_popups.sql](../server/db/migrations/025_actions_forms_popups.sql): chữ đang có
+giữ nguyên, hành động y như mã cũ (Hero → `#courses` / `#facilities`, cuối trang → mở form đăng
+ký / `#contact`, thanh menu → mở form đăng ký).
+
+```json
+{ "id": "khoa", "label": "Đăng ký khóa này", "style": "secondary", "action": "register",
+  "registerKind": "course", "courseId": "thien-nhien" }
+```
+
+| Trường | Kiểu |
+|---|---|
+| `id` | id — id thống kê lượt bấm là `<slot>-<id>` (`hero-primary`, `final-secondary`, `nav-register`, `nav-drawer-register`, `popup-<id popup>-<id nút>`) |
+| `label` | chữ(40), dịch |
+| `style` | `"primary"` \| `"secondary"` — **ngữ nghĩa**, không phải tên class: nền sáng → nút đặc / nút viền, khối cuối trang (nền tối) → nút trắng / viền trắng |
+| `arrow` | `true` hoặc vắng — mũi tên → sau chữ |
+| `action` | `"register"` (form đăng ký có sẵn) \| `"form"` (form tự tạo) \| `"popup"` (popup tự tạo) \| `"link"` |
+| `registerKind` | `"member"` \| `"course"`, tuỳ chọn (register) — vắng = tab người xem dùng lần trước |
+| `courseId` | id khóa học, tuỳ chọn (register + course) — vắng = "cần tư vấn" |
+| `formId` / `popupId` | id trong `forms.items` / `popups.items` (form / popup) |
+| `href` | href (link). `https://…` mở tab mới |
+
+Các trường hành động đều tuỳ chọn ở schema; "hành động nào cần trường nào" là ràng buộc
+toàn trang. Trang tự ẩn nút không còn đích: link vào khối đang tắt, form `closed`, form /
+popup không có. Dashboard chỉ hiện ô của đúng hành động và bỏ khoá của ô đang ẩn lúc lưu.
+
+Lượt lưu trỏ tới form / popup không có — hoặc xoá form / popup đang có nút trỏ tới — bị chặn
+(phản hồi thật trên bản sao):
+
+```json
+{"error":"noi dung vi pham rang buoc cua trang","invariants":["popups.items[popup-mau].buttons[gop-y]: form 'gop-y' khong co trong forms.items -> nut chet"]}
+```
+
+### popups *(từ API 23)*
+
+Popup tự tạo — chỉ mở khi người xem bấm một nút `action: "popup"`, không tự hiện (đó là việc
+của `seasonal`). Ảnh qua `images` của lượt lưu, scope `popup`.
+
+| Trường | Kiểu |
+|---|---|
+| `close` | chữ(40) — nhãn nút × (trình đọc màn hình) |
+| `items[]` (≤ 30) | `{ id, title: chữ(120), body: chuỗi ≤1000 (được rỗng; dòng trống tách đoạn), buttons: [nút] (≤ 2) }` |
+
+Lỗi khi nút của popup trỏ vào chính popup đó.
+
+### forms *(từ API 23)*
+
+Form tự tạo. Bài gửi vào bảng `form_submission` qua [`POST /api/forms/:id`](#post-apiformsid).
+Mọi form có sẵn ô năm sinh và ô đồng ý (không nằm trong `fields`).
+
+| Trường | Kiểu |
+|---|---|
+| `birthYear`, `parentName`, `selectPlaceholder` | chữ(60) — nhãn chung |
+| `birthYearHint`, `invalid` | chữ(120) |
+| `parentNote` | chữ(300) — ghi chú cho người dưới 16 tuổi |
+| `adultOnly`, `closedMessage` | chữ(200) — ghi chú form chỉ nhận từ 16 tuổi (cũng là chữ lỗi tuổi); báo form đã đóng |
+| `items[]` (≤ 30) | `{ id, title: chữ(120), description: chuỗi ≤500, submitLabel: chữ(40), successTitle: chữ(120), successBody: chữ(500), consent: chữ(400), privacy: chữ(800), allowMinors?: true, closed?: true, fields: [ô] (1–20) }` |
+| ô | `{ id, label: chữ(120), help: chuỗi ≤200, fieldType: "text" \| "textarea" \| "phone" \| "email" \| "number" \| "date" \| "select" \| "multiselect" \| "checkbox", required?: true, options?: [{ id, label: chữ(80) }] (≤ 30, chỉ select / multiselect) }` |
+
+`{email}` trong `privacy` được thay bằng email ở chân trang. Chữ lỗi chung, nút "đang gửi" và
+nút đóng mượn section `register`. Ràng buộc: lỗi khi ô chọn không có lựa chọn, khi ô không
+phải ô chọn mà có `options`; cảnh báo khi form không có ô `phone` hay `email`, khi nút trỏ form
+đang `closed` (nút tự ẩn).
+
 ### Ràng buộc toàn trang (bước 9)
 
 Kiểm trên bản đã ráp của **cả trang**, nên bắt được lỗi mà schema một section không
@@ -828,6 +910,8 @@ thấy. Danh sách đầy đủ ở [invariants.js](../server/content/invariants
 | Lỗi | Mục menu có cả `href` lẫn `children`, hoặc không có cả hai |
 | Lỗi | `equipment.items[].facility` không phải id trong `facilities.items` |
 | Lỗi | `projects.items[].status` có mặt nhưng không phải khoá của `projects.statuses` |
+| Lỗi | Nút (`nav` / `hero` / `finalCta` / popup) hoặc nút popup sự kiện mùa: trỏ form / popup / khóa học không có; link mà href rỗng hay `#`; popup trỏ chính nó; nhãn rỗng *(từ API 23)* |
+| Lỗi | Ô chọn của form tự tạo không có lựa chọn *(từ API 23)* |
 | Cảnh báo | Khóa học / thiết bị / dự án / hoạt động / hero chưa có ảnh (khung ảnh trống) |
 | *(không báo)* | Đối tác / thành viên / máy chưa có ảnh — trang có bản dự phòng (tên bằng chữ, chữ cái đầu) |
 | Cảnh báo | Khóa học kiểu cấp độ không có icon tra theo `id` |
@@ -1059,6 +1143,11 @@ Số liệu trang Tổng quan và danh sách cho các ô chọn.
   "overriddenDetails": 0,
   "recent": [{"id":17,"key":"team","savedAt":"2026-09-15T04:33:25.986Z","note":"khoi phuc tu 2026-09-15T04:33:25.630Z"}, …],
   "warnings": [],
+  "forms": [{"id":"gop-y","title":"Góp ý / Liên hệ","closed":true,"submissions":1},{"id":"tre-em","title":"Đăng ký tham quan","closed":false,"submissions":1}],
+  "popups": [{"id":"popup-mau","title":"Popup mẫu"}],
+  "courses": [{"id":"the-gioi-robot","title":"Thế giới robot","group":"Khóa học STEM"}, …],
+  "ctaLabels": {"hero-primary":"Hero — Khám phá khóa học","nav-drawer-register":"Thanh menu (điện thoại) — Đăng ký ngay","popup-popup-mau-gop-y":"Popup “Popup mẫu” — Gửi góp ý", …},
+  "formSubmissions": {"total":2,"new":2},
   "registrations": {
     "total": 1, "new": 0, "last7d": 1,
     "recent": [{"id":1,"createdAt":"2026-09-18T04:47:50.335Z","studentName":"Nguyễn Minh An","courseId":"robotic-arm","courseTitle":"Cánh tay Robot","status":"contacted"}]
@@ -1076,6 +1165,9 @@ Số liệu trang Tổng quan và danh sách cho các ô chọn.
 | `overriddenDetails` | Số khóa học đang có bản sửa popup |
 | `recent` | 10 lượt lưu gần nhất (mọi section) |
 | `warnings` | Khác rỗng nghĩa là máy chủ **không quét được** `src/` — bộ kiểm href/icon đang tắt. Xem [DEPLOY.md](DEPLOY.md#3-vì-sao-cần-cả-repo-trên-máy-chủ-không-chỉ-dist) |
+| `forms` / `popups` / `courses` | *(từ API 23)* đích cho ô chọn của nút ("Form mở ra", "Popup mở ra", "Chọn sẵn khóa học"); `forms[].submissions` = số bài gửi |
+| `ctaLabels` | *(từ API 23)* id thống kê → nhãn của mọi nút do admin tạo đang có (trang Thống kê) |
+| `formSubmissions.new` | *(từ API 23)* số bài gửi form trạng thái `new` — badge "Bài gửi form" |
 | `registrations.new` | Số đăng ký trạng thái `new` — badge trên sidebar |
 | `registrations.last7d` | Số đăng ký gửi trong 7 × 24 giờ qua |
 | `registrations.recent` | 5 đăng ký mới nhất (khối "Đăng ký gần nhất" ở Tổng quan) |
@@ -1485,7 +1577,7 @@ Công khai; cùng chốt gốc request như form đăng ký. Trang gửi bằng
 | Trường | Ý nghĩa |
 |---|---|
 | `n` | `pageview` \| `course_open` \| `cta_click` \| `register_open`. `register_submit` **chỉ máy chủ ghi được** |
-| `t` | Đích, kiểm theo `n`: `course_open` → id khóa có thật; `cta_click` → `nav`, `nav-drawer`, `hero-primary`, `hero-secondary`, `final-primary`, `final-secondary`, `course-modal`, `seasonal-popup`, `events`, `competitions`, `competition-detail`, `competition-modal` *(ba id cuối từ API 19)*; `register_open` → một `source` của form |
+| `t` | Đích, kiểm theo `n`: `course_open` → id khóa có thật; `cta_click` → `nav`, `nav-drawer`, `hero-primary`, `hero-secondary`, `final-primary`, `final-secondary`, `course-modal`, `seasonal-popup`, `events`, `competitions`, `competition-detail`, `competition-modal` *(ba id cuối từ API 19)*, hoặc *(từ API 23)* id `<slot>-<id nút>` của một nút do admin tạo đang có trong nội dung; `register_open` → một `source` của form (`hero`, `popup` từ API 23) |
 | `l` | Ngôn ngữ trang lúc gửi |
 | `w` | Bề rộng khung nhìn: < 768 điện thoại, < 1024 máy tính bảng, còn lại máy tính |
 | `r` | Chỉ với `pageview`: tên host trang giới thiệu, hoặc `utm:<nguồn>` |
@@ -1535,3 +1627,104 @@ bản thô, nên khoảng dài nhất là 90 ngày.
 
 Số liệu **thấp hơn thực tế**: người bật Do Not Track / Global Privacy Control không được
 đếm, và trình chặn quảng cáo có thể chặn `sendBeacon`.
+
+---
+
+## 14. Form tự tạo và bài gửi
+
+*(Từ API 23.)* Định nghĩa form ở section [`forms`](#forms-từ-api-23); nút `action: "form"` mở form.
+Bảng `form_submission` tạo ở [025_actions_forms_popups.sql](../server/db/migrations/025_actions_forms_popups.sql).
+Bài gửi tự xoá cùng hạn với đăng ký (`REGISTRATION_RETENTION_DAYS`, mặc định 365 ngày).
+
+### `POST /api/forms/:id`
+
+Công khai, cùng chốt với `POST /api/registrations`: kiểm `Origin`, **dùng chung** hai bộ giới
+hạn theo IP (5 / 10 phút, 20 / ngày), bẫy bot (`website`, `elapsed` < 3000, user agent máy) trả
+201 mà không lưu, trần mỗi ngày `REG_DAILY_CAP` đếm **cả hai bảng**. Thân tối đa 16 KB.
+
+```json
+{
+  "answers": { "ho-ten": "Nguyen Van A", "dien-thoai": "0912 345 678", "chu-de": "khac", "quan-tam": ["robot"], "nhan-tin": false },
+  "birthYear": "2000",
+  "parentName": "",
+  "consent": true,
+  "locale": "vi",
+  "source": "popup",
+  "website": "",
+  "elapsed": 9120,
+  "ref": "",
+  "width": 1280
+}
+```
+
+| Trường | Luật |
+|---|---|
+| `answers` | object theo id ô của form trong bản VI **hiện hành** — ô lạ → `invalid`. Chữ: ≤200 (đoạn văn ≤2000); `phone` chuẩn hoá về `0xxxxxxxxx`; `email`; `number`; `date` YYYY-MM-DD; `select` một id lựa chọn; `multiselect` mảng id không trùng; `checkbox` boolean (bắt buộc = phải `true`) |
+| `birthYear` | bắt buộc, 4 chữ số, 1900 → năm nay. Form tắt `allowMinors`: dưới 16 tuổi → `age` |
+| `parentName` | bắt buộc (≤120) khi form bật `allowMinors` và người gửi dưới 16 tuổi; trường hợp khác bị bỏ |
+| `consent` | phải là `true` |
+| `source` | `hero` \| `nav` \| `nav-drawer` \| `final-cta` \| `popup` \| `seasonal-popup` |
+
+Phản hồi: `201 {"ok":true}`. `422` với `issues: [{ path, code }]`, `path` là `answers.<id ô>`,
+`birthYear`, `parentName`, `consent` hoặc `form` (phản hồi thật trên bản sao):
+
+```json
+{"error":"form khong nhan bai","issues":[{"path":"form","code":"form"}]}
+{"error":"du lieu khong hop le","issues":[{"path":"answers.hack","code":"invalid"}]}
+```
+
+Máy chủ lưu câu trả lời kèm **nhãn và chữ đọc được bản tiếng Việt chụp lúc gửi** (lựa chọn lưu bằng
+id; `text` là nhãn), cộng ô điện thoại / email đầu tiên để tìm kiếm. Gửi lại y hệt trong 10 phút →
+201, không thêm dòng. `consent_text` = `consent` + `privacy` của form theo ngôn ngữ người gửi.
+
+### `GET /api/admin/form-submissions`
+
+Tham số: `form` (id), `status` (`new` \| `contacted` \| `done` \| `cancelled`), `from` / `to`
+(YYYY-MM-DD, ngày Việt Nam), `q` (tìm trong câu trả lời, điện thoại, email, phụ huynh), `page`,
+`pageSize` (10–100, mặc định 25).
+
+```json
+{
+  "items": [{
+    "id": 2, "createdAt": "2026-11-09T09:14:21.512Z", "formId": "tre-em", "formTitle": "Đăng ký tham quan",
+    "formOnPage": true, "status": "new", "locale": "vi", "birthYear": 2015, "parentName": "Tran Thi C",
+    "phone": "0987654321", "email": null, "source": "hero",
+    "answers": [
+      {"id":"ho-ten","label":"Họ và tên","type":"text","value":"Be B","text":"Be B"},
+      {"id":"dien-thoai","label":"Số điện thoại","type":"phone","value":"0987654321","text":"0987654321"}
+    ],
+    "consentText": "Tôi đồng ý để EIU FabLab xử lý các thông tin trên nhằm liên hệ lại với tôi.\n\nThông tin chỉ dùng…"
+  }],
+  "total": 2, "page": 1, "pageSize": 25,
+  "counts": {
+    "byStatus": {"new":2,"contacted":0,"done":0,"cancelled":0,"all":2},
+    "byForm": [{"formId":"gop-y","title":"Góp ý / Liên hệ","onPage":true,"total":1,"new":1}, …]
+  }
+}
+```
+
+`formOnPage: false` = form đã bị xoá khỏi section `forms` (`formTitle` là tên chụp lúc gửi).
+
+### `GET /api/admin/form-submissions/export`
+
+CSV UTF-8 có BOM, cùng bộ lọc. Có `form` thì mỗi ô một cột (ô hiện tại theo thứ tự của form, rồi
+ô chỉ còn trong bài cũ); không có thì gộp câu trả lời vào cột "Câu trả lời". Phản hồi thật:
+
+```
+Mã,Thời gian gửi,Form,Trạng thái,Họ và tên,Số điện thoại,Email,Nội dung,Chủ đề,Quan tâm,Nhận bản tin,Năm sinh,Phụ huynh,Ghi chú quản trị,Nguồn,Ngôn ngữ,Đồng ý lúc
+1,2026-11-09 16:13,Góp ý / Liên hệ,Mới,Nguyen Van A,="0912345678",a@example.com,Xin chào FabLab,Khác,Robot,Không,2000,,,Popup tự tạo,vi,2026-11-09 16:13
+```
+
+### `GET /api/admin/form-submissions/:id`
+
+`{ "item": { … } }` như một phần tử của danh sách. Không có → `404`.
+
+### `PATCH /api/admin/form-submissions/:id`
+
+Thân `{ "status"?: …, "adminNote"?: chuỗi ≤2000 | null }` → `{ "item": { … } }`. `statusAt` đổi khi
+trạng thái đổi.
+
+### `DELETE /api/admin/form-submissions/:id`
+
+Xoá vĩnh viễn (người gửi yêu cầu xoá dữ liệu) → `{ "ok": true }`.
+

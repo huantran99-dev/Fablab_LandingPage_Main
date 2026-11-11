@@ -27,6 +27,19 @@ export function activeFields(list, variant) {
   return [...list.fields, ...(option?.fields ?? [])]
 }
 
+/**
+ * Ô hiện theo điều kiện (`when: { trường: [giá trị…], … }`): chỉ hiện — và chỉ được ghi — khi MỌI
+ * trường dùng chung được nêu của CÙNG bản làm việc mang một trong các giá trị của nó (điều kiện
+ * nối nhau phải nêu đủ cả chuỗi, vd. khóa học chọn sẵn: `{ action: ['register'], registerKind:
+ * ['course'] }` — chỉ nêu `registerKind` thì đổi hành động sang link vẫn giữ khóa). Ô đang ẩn bị bỏ
+ * khoá ở `fromWorking`, nên đổi hành động của nút từ "mở form" sang "mở link" không để sót
+ * `formId` cũ trong dữ liệu (schema strict, luật tham chiếu ở invariants sẽ vấp phải nó).
+ */
+export function isActive(field, working) {
+  if (!field.when) return true
+  return Object.entries(field.when).every(([key, values]) => values.includes(working?.shared?.[key]))
+}
+
 function defaultFor(field) {
   switch (field.type) {
     case 'number':
@@ -68,7 +81,9 @@ export function fromWorking(fields, working, locale) {
   const out = { id: working.id }
   for (const field of fields) {
     const value = working.shared[field.key]
-    if (field.type === 'sublist') {
+    if (!isActive(field, working)) {
+      // Ô đang ẩn theo điều kiện = khoá vắng.
+    } else if (field.type === 'sublist') {
       out[field.key] = (value ?? []).map((row) => fromWorking(field.itemFields, row, locale))
     } else if (field.omitEmpty && isBlank(field.translated ? [working.vi[field.key], working.en[field.key]] : [value])) {
       // `omitEmpty`: ô tuỳ chọn để trống = khoá VẮNG (bản seed vốn không có khoá đó). Trường
@@ -91,19 +106,23 @@ export function fromWorking(fields, working, locale) {
   return out
 }
 
-/** Dòng con mới có id rỗng; điền id từ nhãn tiếng Việt lúc Áp dụng. */
+/**
+ * Dòng con mới có id rỗng; điền id từ nhãn tiếng Việt lúc Áp dụng. Đệ quy: dòng con lồng trong
+ * dòng con (lựa chọn của một ô form) cũng được điền.
+ */
 export function fillSubIds(fields, working) {
   const shared = { ...working.shared }
   for (const field of fields) {
     if (field.type !== 'sublist') continue
     const used = new Set((shared[field.key] ?? []).map((row) => row.id).filter(Boolean))
     shared[field.key] = (shared[field.key] ?? []).map((row) => {
-      if (row.id) return row
+      const filled = fillSubIds(field.itemFields, row)
+      if (filled.id) return filled
       // `idFrom`: dòng không có nhãn dịch (vd. loại hạt của họa tiết) lấy id từ một trường chung.
       const source = field.idFrom ? row.shared[field.idFrom] : (row.vi.label ?? row.vi.title)
       const id = uniqueId(slugify(source ?? ''), used)
       used.add(id)
-      return { ...row, id }
+      return { ...filled, id }
     })
   }
   return { ...working, shared }
@@ -113,6 +132,7 @@ export function fillSubIds(fields, working) {
 export function validateWorking(fields, working, { checkId = false, usedIds } = {}) {
   const errors = {}
   for (const field of fields) {
+    if (!isActive(field, working)) continue
     // Ô màu tuỳ chọn: trống thì được, có chữ thì phải đúng `#rrggbb` (schema máy chủ).
     const value = working.shared?.[field.key]
     if (field.type === 'color' && value && !/^#[0-9a-fA-F]{6}$/.test(value)) {
@@ -125,6 +145,7 @@ export function validateWorking(fields, working, { checkId = false, usedIds } = 
   }
 
   for (const field of fields) {
+    if (!isActive(field, working)) continue
     if (field.type === 'sublist') {
       const rows = working.shared[field.key] ?? []
       if (field.minItems && rows.length < field.minItems) errors[`shared.${field.key}`] = `Cần ít nhất ${field.minItems} mục.`

@@ -43,6 +43,8 @@ export const MEDIA_SLOTS = [
       seasonal: ['seasonal', 'items'],
       // Ảnh của thư viện họa tiết (PNG nền trong suốt) — làm hạt rơi / vật trang trí nút.
       'motif-shape': ['motifs', 'shapes'],
+      // Ảnh của popup tự tạo (API 23).
+      popup: ['popups', 'items'],
     },
   },
   { slot: 'videos', field: 'video', mime: 'video/', targets: { 'activity-video': ['activities', 'items'] } },
