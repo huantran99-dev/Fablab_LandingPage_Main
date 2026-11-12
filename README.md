@@ -44,7 +44,7 @@ thông tin học viên, phụ huynh, khóa học quan tâm và ô đồng ý x�
 - **Thống kê không cookie:** không lưu IP, không dịch vụ bên ngoài, tôn trọng Do Not
   Track. Vì vậy "khách" được đếm theo từng ngày, và số liệu thấp hơn thực tế một chút.
 
-Chi tiết: [docs/API.md](docs/API.md#12-đăng-ký-khóa-học) · vận hành, sao lưu:
+Chi tiết: [docs/API.md](docs/API.md#12-đăng-ký-khóa-học-thành-viên-fablab-sự-kiện) · vận hành, sao lưu:
 [docs/DEPLOY.md](docs/DEPLOY.md).
 
 ## Chạy dự án
@@ -67,7 +67,9 @@ npm run dev      # trang + dashboard, http://localhost:5173 va /admin.html
 Vite chuyển tiếp `/api` và `/media` sang cổng 3001, nên không cần cấu hình CORS.
 
 Đưa lên máy chủ thật (VPS Linux + nginx): [docs/DEPLOY.md](docs/DEPLOY.md). Mô tả
-đầy đủ các route, xác thực và mã lỗi: [docs/API.md](docs/API.md).
+đầy đủ các route, xác thực và mã lỗi: [docs/API.md](docs/API.md). **Người tiếp quản dự
+án** bắt đầu từ [docs/HANDOVER.md](docs/HANDOVER.md): luồng hệ thống, cấu hình
+production đang chạy, quy trình cập nhật.
 
 ```bash
 npm run build          # tu chay prebuild: xuat lai snapshot + dong bo anh
