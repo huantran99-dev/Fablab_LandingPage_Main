@@ -1307,7 +1307,7 @@ Mọi nút "Đăng ký" (navbar, drawer, popup khóa học, FinalCTA) mở **m�
 [public.write.js](server/routes/public.write.js), quản trị ở
 [registrations.admin.js](server/routes/registrations.admin.js) và
 [stats.admin.js](server/routes/stats.admin.js). Hợp đồng đầy đủ ở
-[docs/API.md](docs/API.md#12-đăng-ký-khóa-học).
+[docs/API.md](docs/API.md#12-đăng-ký-khóa-học-thành-viên-fablab-sự-kiện).
 
 ### Hai loại đăng ký: Thành viên FabLab | Khóa học (từ 2026-10-27, API 12)
 

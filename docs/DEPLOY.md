@@ -5,8 +5,10 @@ nginx**. Viết cho người phụ trách máy chủ; chạy dự án trên máy
 [README.md](../README.md), còn API thì xem [API.md](API.md).
 
 > Mẫu cấu hình systemd và nginx dưới đây được soát theo đúng mã nguồn
-> ([server/config.js](../server/config.js), [server/app.js](../server/app.js)), nhưng
-> **chưa được chạy thử trên một VPS thật**. Lần đầu làm theo, hãy đi hết mục
+> ([server/config.js](../server/config.js), [server/app.js](../server/app.js)) và **đã
+> chạy thật ngày 2026-11-12**, ở biến thể đứng sau proxy của trường
+> ([mục 12](#12-biến-thể-sau-proxy-của-tổ-chức-https-ở-proxy)). Cấu hình đang chạy và
+> sổ tay vận hành nằm ở [HANDOVER.md](HANDOVER.md). Lần đầu làm theo, hãy đi hết mục
 > [8. Kiểm tra sau deploy](#8-kiểm-tra-sau-deploy) trước khi báo xong.
 
 Trong tài liệu, `fablab.example.vn` là tên miền giả định — thay bằng tên miền thật.
@@ -597,3 +599,45 @@ nhập được. Muốn có dashboard thì dùng kiến trúc ở [mục 1](#1-k
 | `meta.warnings` báo `Khong quet duoc ...` | Máy chủ thiếu `src/` | Deploy cả repo ([mục 3](#3-vì-sao-cần-cả-repo-trên-máy-chủ-không-chỉ-dist)) |
 | Sửa xong trang công khai chưa đổi | Máy chủ chạy bản cũ (còn header `max-age=60`), hoặc có proxy/CDN cache `/api/content` | Chạy `curl -sI $D/api/content`: dòng `cache-control` phải là `no-cache`; khởi động lại máy chủ. Dashboard báo "Trang công khai chưa trả bản mới" là dấu hiệu của đúng lỗi này |
 | Animation không chạy trên một máy | Máy đó bật giảm chuyển động (`prefers-reduced-motion`) | Không phải lỗi — hành vi đúng |
+
+---
+
+## 12. Biến thể: sau proxy của tổ chức (HTTPS ở proxy)
+
+Mục này dành cho trường hợp VPS nằm trong mạng nội bộ, và một proxy của tổ chức nhận
+HTTPS từ Internet rồi chuyển vào VPS bằng HTTP. Production hiện tại chạy đúng mô hình
+này ([HANDOVER.md mục 4](HANDOVER.md#4-môi-trường-production-đang-chạy)). So với các mục
+trên, có bốn điểm khác:
+
+1. **Bỏ bước certbot** ([mục 6 bước 9](#6-deploy-lần-đầu)). Proxy giữ chứng chỉ và lo
+   chuyển `http` → `https`. Vẫn giữ `NODE_ENV=production` và
+   `SITE_ORIGIN=https://...`: trình duyệt nhìn thấy HTTPS, nên cookie `Secure` vẫn chạy.
+   `server_name` có thể để `_`, vì proxy thường gọi VPS bằng IP.
+2. **Cho nginx tin IP thật mà proxy gửi.** Nếu không, mọi request mang IP của proxy, và
+   cảnh báo "khoá cả thế giới" ở mục 6 bước 8 xảy ra y như khi thiếu `X-Forwarded-For`.
+   Không cần sửa `trust proxy` trong mã. Tạo `/etc/nginx/conf.d/fablab-realip.conf`:
+
+   ```nginx
+   set_real_ip_from <IP-proxy>;
+   real_ip_header X-Forwarded-For;
+   real_ip_recursive on;
+   ```
+
+   Sau khi `reload`, `access.log` phải ghi IP người xem chứ không phải IP proxy. Nếu vẫn
+   là IP proxy, nghĩa là proxy chưa gửi `X-Forwarded-For`: nhờ bên quản lý proxy bật.
+3. **Tường lửa chỉ mở cổng 80 cho proxy.** Phải mở cổng SSH **trước** khi bật, kẻo tự khoá
+   mình ở ngoài:
+
+   ```bash
+   sudo ufw allow <cong-ssh>/tcp
+   sudo ufw allow from <IP-proxy> to any port 80 proto tcp
+   sudo ufw enable
+   ```
+
+   Proxy đổi IP thì phải sửa **cả** `realip` lẫn `ufw`.
+4. **Giới hạn tải lên cộng dồn.** Proxy cũng có giới hạn cỡ request, nhiều khi mặc định
+   chỉ 1 MB. Lớp nhỏ nhất quyết định, nên phải nhờ bên quản lý proxy cho ít nhất 41 MB,
+   rồi thử tải lên một video khoảng 20 MB.
+
+Proxy cũng **không được cache** `/api/*`, nếu không bản sửa trên dashboard không lên trang
+(xem dòng "Sửa xong trang công khai chưa đổi" ở [mục 11](#11-xử-lý-sự-cố)).
