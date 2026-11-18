@@ -20,7 +20,29 @@ export const CSRF_COOKIE = 'fablab_csrf'
 const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000
 const HARD_LIMIT_MS = 30 * 24 * 60 * 60 * 1000
 
+/**
+ * Cookie chỉ đi kèm request tới `/api`, KHÔNG đi kèm trang, CSS, JS, ảnh.
+ *
+ * Production đứng sau WAF của trường (Check Point CloudGuard / open-appsec). Với
+ * `Path=/`, trình duyệt của admin gửi hai chuỗi ngẫu nhiên kèm MỌI request, kể cả file
+ * CSS; WAF thỉnh thoảng coi một chuỗi như vậy là tấn công (base64url có thể chứa `--`,
+ * dấu chú thích SQL) và chặn. Kết quả là trang mất CSS, hoặc hiện trang "Attack
+ * blocked". Dashboard chỉ cần cookie ở `/api`: trang `/admin` là file tĩnh, phiên
+ * được hỏi qua `/api/auth/session`, và CSRF token đọc từ JSON chứ không từ
+ * `document.cookie`.
+ */
+export const COOKIE_PATH = '/api'
+/** Đường dẫn cookie của bản cũ. Trình duyệt còn giữ thì xoá đi (xem `auth.js`). */
+export const LEGACY_COOKIE_PATH = '/'
+
 const hash = (token) => createHash('sha256').update(token).digest('hex')
+
+/**
+ * Token dùng chữ số hex: chỉ `0-9a-f`, không có `-` hay `_`, nên không bao giờ tạo
+ * ra chuỗi giống cú pháp tấn công trong mắt WAF. Phiên cũ dạng base64url vẫn đọc được,
+ * vì database chỉ so mã băm.
+ */
+const newToken = (bytes) => randomBytes(bytes).toString('hex')
 
 export function cookieOptions(maxAgeMs = MAX_AGE_MS) {
   return {
@@ -29,13 +51,13 @@ export function cookieOptions(maxAgeMs = MAX_AGE_MS) {
     // trên http://localhost và việc đăng nhập trông như hỏng vô cớ.
     secure: config.isProduction,
     sameSite: 'lax',
-    path: '/',
+    path: COOKIE_PATH,
     maxAge: maxAgeMs,
   }
 }
 
 export function createSession({ ip, userAgent }) {
-  const token = randomBytes(32).toString('base64url')
+  const token = newToken(32)
   const now = Date.now()
 
   getDb()
@@ -96,7 +118,7 @@ export function destroyAllSessions() {
 }
 
 export function newCsrfToken() {
-  return randomBytes(24).toString('base64url')
+  return newToken(24)
 }
 
 /** So chuỗi theo thời gian hằng định, an toàn với độ dài khác nhau. */

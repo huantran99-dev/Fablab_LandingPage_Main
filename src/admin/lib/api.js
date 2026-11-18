@@ -28,6 +28,17 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * Trang chặn của WAF trường (Check Point CloudGuard / open-appsec): HTML mã 403 kèm
+ * "Incident Id". Nhận ra nó để báo đúng nguyên nhân và đưa mã sự cố cho admin gửi IT —
+ * không có mã đó thì IT không tra được request nào bị chặn.
+ */
+function wafBlock(text) {
+  if (!/web application protection|Incident Id/i.test(text)) return null
+  const incident = text.match(/Incident Id:\s*([0-9a-f-]{8,})/i)?.[1] ?? null
+  return { error: 'waf', incident }
+}
+
 async function request(path, { method = 'GET', body, raw, headers: extra = {} } = {}) {
   const headers = { ...extra }
   if (body !== undefined) headers['content-type'] = 'application/json'
@@ -48,7 +59,7 @@ async function request(path, { method = 'GET', body, raw, headers: extra = {} } 
       parsed = JSON.parse(text)
     } catch {
       // Proxy hay máy chủ chết có thể trả HTML; đừng để lỗi phân tích che mất mã HTTP.
-      parsed = { error: `May chu tra ve noi dung khong phai JSON (HTTP ${response.status})` }
+      parsed = wafBlock(text) ?? { error: `May chu tra ve noi dung khong phai JSON (HTTP ${response.status})` }
     }
   }
 
@@ -131,6 +142,10 @@ export function formSubmissionsExportUrl(params) {
 /** Gom lỗi của một lượt lưu thành một câu đọc được, cho toast. */
 export function describeError(error) {
   if (!(error instanceof ApiError)) return error?.message ?? 'Lỗi không xác định'
+  if (error.body?.error === 'waf') {
+    const code = error.body.incident ? ` Mã sự cố: ${error.body.incident}.` : ''
+    return `Tường lửa (WAF) của trường đã chặn lượt này, chưa có gì được lưu.${code} Thử lại; nếu vẫn bị chặn, gửi mã sự cố cho phòng IT để họ bỏ chặn.`
+  }
   if (error.status === 409) return 'Nội dung đã bị sửa ở nơi khác (tab khác?). Tải lại để lấy bản mới.'
   if (error.status === 413) return 'File quá lớn (ảnh tối đa 15 MB, video tối đa 40 MB).'
   // Hai câu trả lời đặc trưng của máy chủ bản cũ: route chưa tồn tại, và section chưa

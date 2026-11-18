@@ -1550,6 +1550,28 @@ kết quả là một chấm trống trơn. Phải hỏi tập id (`COURSE_ICON_
   tên `.sm\:size-20`, tìm `.size-20{` sẽ báo thiếu trong khi code hoàn toàn đúng.
   Đây là lần thứ ba script kiểm sai chứ không phải code sai — nghi ngờ script trước.
 
+## WAF của trường đứng trước trang (từ 2026-11-18)
+
+Proxy của trường có WAF (Check Point CloudGuard / open-appsec), trả trang HTML 403 "Attack
+blocked by web application protection" kèm `Incident Id`. Người dùng gặp cả trang chặn lẫn
+"thỉnh thoảng mất CSS, tải lại thì được". Chỉ IT xem được log theo mã sự cố — **nguyên nhân
+chắc chắn phải hỏi IT**, phía mình chỉ giảm bề mặt và tự hồi phục:
+
+- **Cookie quản trị ở `Path=/api`, token dạng hex** ([session.js](server/auth/session.js)).
+  Trước đó `Path=/` + base64url: trình duyệt admin gửi hai chuỗi ngẫu nhiên kèm MỌI request
+  (cả CSS), và base64url có thể chứa `--`. Cookie cũ tự chuyển ở `GET /api/auth/session`
+  (đặt lại ở `/api` RỒI mới xoá `/`). Đừng trả về `Path=/`: dashboard không cần cookie ngoài
+  `/api` (CSRF token lấy từ JSON).
+- **[ensureStyles.js](src/lib/ensureStyles.js)** chạy đầu cả hai entry: stylesheet nào không
+  có rule thì nạp lại với `?retry=`, tối đa 3 lần. Đã thử bằng puppeteer chặn CSS 1 và 2 lần →
+  trang có style, navbar sticky, không cần F5; tải bình thường thì không có request thừa.
+  Không cứu được khi JS bị chặn (trang trắng) — việc đó chỉ ngoại lệ ở WAF giải quyết.
+- **Dashboard nhận ra trang chặn** (`wafBlock` ở [api.js](src/admin/lib/api.js)) và báo
+  "Tường lửa của trường đã chặn…" kèm mã sự cố, thay cho "không phải JSON".
+- Proxy còn GHI ĐÈ `Cache-Control` của `/assets` (thành `max-age` tới mốc giờ cố định, mất
+  `immutable`) và thêm `X-Frame-Options: SAMEORIGIN`. Không hại, nhưng đừng tưởng header
+  đo được ở `curl https://…` là của Express.
+
 ## Giới hạn của agent trong repo này
 
 **Xem được file ảnh — và CHỤP ĐƯỢC trang đã render** (từ 2026-10-21). Máy có Chrome ở

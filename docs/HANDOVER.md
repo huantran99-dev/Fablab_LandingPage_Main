@@ -632,6 +632,7 @@ của mô hình proxy, hoặc hay gặp nhất:
 | Dịch vụ thoát ngay: `Database chua co noi dung` | `DATA_DIR` sai hoặc chưa chép database | Kiểm env, mục 5 bước 3 |
 | `SQLITE_READONLY` / `EACCES` | `/var/lib/fablab` không thuộc `fablabweb` | `sudo chown -R fablabweb:fablabweb /var/lib/fablab` |
 | `npm run build` báo `vite: not found` | `npm ci` chạy khi đã nạp env | Chạy lại `sudo -u fablabweb npm ci` không nạp env |
+| Trang "Attack blocked by web application protection", hoặc trang mất CSS | WAF của trường (Check Point / open-appsec) chặn nhầm một request | Gửi IT **mã sự cố (Incident Id)** trên trang chặn để họ tra log và thêm ngoại lệ. Trang tự nạp lại CSS bị chặn (`ensureStyles.js`); dashboard báo lỗi WAF kèm mã sự cố |
 | Animation không chạy trên một máy | Máy đó bật giảm chuyển động | Không phải lỗi |
 
 Khi cần nhờ người khác xem, gửi kết quả của `journalctl -u fablab -n 50` và

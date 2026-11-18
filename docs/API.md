@@ -100,8 +100,15 @@ gọn chỗ dài bằng `…`). Deploy thì xem [DEPLOY.md](DEPLOY.md).
 
 | Cookie | Thuộc tính | Vai trò |
 |---|---|---|
-| `fablab_admin` | `HttpOnly`, `SameSite=Lax`, `Path=/`, `Secure` khi `NODE_ENV=production` | Token phiên mờ 32 byte. Database chỉ lưu sha256 của nó |
-| `fablab_csrf` | như trên nhưng **không** `HttpOnly` | Token CSRF, JS đọc được |
+| `fablab_admin` | `HttpOnly`, `SameSite=Lax`, `Path=/api`, `Secure` khi `NODE_ENV=production` | Token phiên mờ 32 byte, dạng hex. Database chỉ lưu sha256 của nó |
+| `fablab_csrf` | như trên nhưng **không** `HttpOnly` | Token CSRF 24 byte, dạng hex. Dashboard lấy token từ JSON (`csrfToken`), không đọc cookie |
+
+**`Path=/api`, không phải `/`**: trang, CSS, JS và ảnh không mang cookie nào. Production
+đứng sau WAF của trường; với `Path=/` hai chuỗi ngẫu nhiên đi kèm mọi request và WAF
+thỉnh thoảng chặn nhầm (trang mất CSS, hoặc hiện trang "Attack blocked"). Token dạng hex
+cũng vì lý do đó: base64url có thể chứa `--`, dấu chú thích SQL trong mắt WAF.
+Cookie cũ ở `Path=/` được chuyển sang `/api` ở lượt `GET /api/auth/session` kế tiếp, nên
+admin đang đăng nhập không bị đá ra.
 
 Phiên sống **7 ngày kể từ lần dùng cuối** (gia hạn trượt), trần cứng **30 ngày** kể từ
 lúc đăng nhập. Đổi mật khẩu xoá mọi phiên.
