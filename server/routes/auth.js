@@ -15,7 +15,9 @@ import { getAdmin, hashPassword, setPassword, verifyPassword } from '../auth/pas
 import { requireCsrf, requireSameOrigin, requireSession } from '../auth/middleware.js'
 import {
   COOKIE_NAME,
+  COOKIE_PATH,
   CSRF_COOKIE,
+  LEGACY_COOKIE_PATH,
   cookieOptions,
   createSession,
   destroyAllSessions,
@@ -34,11 +36,28 @@ const loginLimiter = rateLimit({
   message: { error: 'thu qua nhieu lan, doi mot lat' },
 })
 
-/** Đặt cookie phiên + cookie CSRF. Cookie CSRF CỐ Ý đọc được từ JS. */
+/** Đặt cookie CSRF. Cookie này CỐ Ý không `HttpOnly`. */
 function issueCookies(res) {
   const csrf = newCsrfToken()
   res.cookie(CSRF_COOKIE, csrf, { ...cookieOptions(), httpOnly: false })
   return csrf
+}
+
+/**
+ * Xoá cookie ở đường dẫn cũ `/` (bản trước ngày chuyển sang `/api`). Phải gọi SAU khi
+ * đã đặt cookie mới ở `/api`: xoá trước thì phiên đang dùng mất luôn.
+ */
+function clearLegacyCookies(res) {
+  res.clearCookie(COOKIE_NAME, { path: LEGACY_COOKIE_PATH })
+  res.clearCookie(CSRF_COOKIE, { path: LEGACY_COOKIE_PATH })
+}
+
+/** Xoá cả hai cookie ở cả hai đường dẫn: đăng xuất, đổi mật khẩu. */
+function clearAllCookies(res) {
+  for (const path of [COOKIE_PATH, LEGACY_COOKIE_PATH]) {
+    res.clearCookie(COOKIE_NAME, { path })
+    res.clearCookie(CSRF_COOKIE, { path })
+  }
 }
 
 authRouter.post('/login', loginLimiter, async (req, res) => {
@@ -62,14 +81,14 @@ authRouter.post('/login', loginLimiter, async (req, res) => {
   const token = createSession({ ip: req.ip, userAgent: req.get('user-agent') })
   res.cookie(COOKIE_NAME, token, cookieOptions())
   const csrfToken = issueCookies(res)
+  clearLegacyCookies(res)
 
   res.json({ authenticated: true, username: getAdmin().username, csrfToken })
 })
 
 authRouter.post('/logout', requireSameOrigin, requireSession, (req, res) => {
   destroySession(req.cookies?.[COOKIE_NAME])
-  res.clearCookie(COOKIE_NAME, { path: '/' })
-  res.clearCookie(CSRF_COOKIE, { path: '/' })
+  clearAllCookies(res)
   res.json({ authenticated: false })
 })
 
@@ -84,9 +103,14 @@ authRouter.get('/session', (req, res) => {
     return
   }
 
+  // Phiên của bản cũ còn nằm ở cookie `Path=/`: đặt lại đúng token đó ở `/api` rồi mới
+  // xoá bản cũ, để admin đang đăng nhập không bị đá ra khi máy chủ lên bản mới.
+  res.cookie(COOKIE_NAME, req.cookies[COOKIE_NAME], cookieOptions())
+
   // Cấp lại CSRF token mỗi lần hỏi: tải lại trang là dashboard có token mới, không
   // phải giữ token cũ qua nhiều phiên làm việc.
   const csrfToken = issueCookies(res)
+  clearLegacyCookies(res)
   res.json({ authenticated: true, username: getAdmin()?.username ?? null, csrfToken })
 })
 
@@ -111,6 +135,6 @@ authRouter.post('/password', requireSameOrigin, requireSession, requireCsrf, asy
   setPassword(await hashPassword(nextPassword))
   // Đổi mật khẩu là đăng xuất MỌI NƠI, kể cả phiên đang thao tác.
   destroyAllSessions()
-  res.clearCookie(COOKIE_NAME, { path: '/' })
+  clearAllCookies(res)
   res.json({ ok: true, message: 'da doi mat khau, dang nhap lai' })
 })
