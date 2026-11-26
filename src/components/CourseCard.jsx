@@ -1,6 +1,7 @@
 import { COURSE_ICON_IDS, CourseIcon } from '../assets/icons/CourseIcons'
 import { ArrowRightIcon } from '../assets/icons/Icons'
 import { useT } from '../i18n/context'
+import { Button } from './ui/Button'
 import { Pill } from './ui/Pill'
 
 /**
@@ -44,7 +45,9 @@ export function CourseCard({ course, index, onOpen }) {
   return (
     <article
       className={[
-        'group flex h-full flex-col rounded-card-sm md:rounded-[46px] bg-white p-5 md:p-6',
+        // `min-w-0`: ô lưới mặc định không co nhỏ hơn nội dung, nên một ảnh tải hỏng (chữ
+        // thay thế dài + `width` thật 760) đẩy thẻ rộng 420px ở màn 390px và lố khung.
+        'group relative flex h-full min-w-0 flex-col rounded-card-sm md:rounded-[46px] bg-white p-5 md:p-6',
         'shadow-ambient hover:-translate-y-1 hover:shadow-ambient-lift',
       ].join(' ')}
     >
@@ -99,29 +102,41 @@ export function CourseCard({ course, index, onOpen }) {
 
       {/* `mt-auto` đẩy phần chân xuống đáy để mọi card trong hàng cao bằng nhau */}
       <div className="mt-auto pt-6">
-        {topic ? (
-          <Pill tone="outline">{topic.label}</Pill>
-        ) : (
-          <div className="flex items-center gap-2 text-caption text-steel">
-            <span>{course.duration}</span>
-            <span aria-hidden="true">·</span>
-            <span>
-              {t.courses.ageLabel} {course.age}
-            </span>
-          </div>
-        )}
+        {/* Chip / dòng thời lượng nằm trong khối RIÊNG: bản trước để chip và nút cùng là
+            phần tử nội dòng, nên ở bề rộng vừa đủ (768px) chúng dính sát trên một dòng,
+            còn ở bề rộng khác lại tách hai dòng — thẻ trong cùng hàng cao lệch nhau. */}
+        <div>
+          {topic ? (
+            <Pill tone="outline">{topic.label}</Pill>
+          ) : (
+            <div className="flex items-center gap-2 text-caption text-steel">
+              <span>{course.duration}</span>
+              <span aria-hidden="true">·</span>
+              <span>
+                {t.courses.ageLabel} {course.age}
+              </span>
+            </div>
+          )}
+        </div>
 
-        {/* Mở popup chi tiết. Phần `sr-only` giữ lại vì 16 card có cùng một nhãn
-            "Tìm hiểu thêm" — screen reader cần biết nút này thuộc khóa nào. */}
-        <button
+        {/* Mở popup chi tiết. Phần `sr-only` giữ lại vì mọi card có cùng một nhãn
+            "Tìm hiểu thêm" — screen reader cần biết nút này thuộc khóa nào.
+
+            Cả thẻ bấm được theo mẫu "stretched link": lớp `::after` của nút phủ kín
+            thẻ (thẻ là `relative`). Vẫn chỉ MỘT điểm dừng Tab mỗi thẻ, và rê chuột ở
+            đâu trên thẻ cũng là rê lên nút nên nút tự tô xanh. Mẫu này cần nút KHÔNG
+            tự đặt `relative` — Button chỉ đặt khi đeo vật trang trí mùa, mà biến thể
+            này không đeo. */}
+        <Button
+          variant="signalOutline"
           type="button"
           onClick={() => onOpen(course)}
-          className="mt-4 inline-flex cursor-pointer items-center gap-1.5 text-body-sm font-medium text-signal transition-[gap] duration-200 ease-[var(--ease-out-soft)] hover:gap-3"
+          className="mt-4 w-full after:absolute after:inset-0 after:content-['']"
         >
           {t.courses.cardCta}
           <ArrowRightIcon size={16} />
           <span className="sr-only">— {course.title}</span>
-        </button>
+        </Button>
       </div>
     </article>
   )

@@ -14,6 +14,10 @@ const VARIANTS = {
   filled: 'bg-signal text-on-signal hover:bg-signal-hover active:bg-signal-active',
   // Nút phụ: nền trắng, viền đen 1px.
   outlined: 'bg-white text-ink border border-ink hover:bg-ink hover:text-white',
+  // Viền xanh signal, rê chuột thì tô kín. Dùng cho nút "Tìm hiểu thêm" trong thẻ khóa
+  // học: nổi hơn nút mờ nhưng không tranh với nút chính nền xanh.
+  // KHÔNG đặt `relative` ở đây: thẻ khóa học dùng lớp `::after` của nút để phủ cả thẻ.
+  signalOutline: 'bg-white text-signal border border-signal hover:bg-signal hover:text-on-signal',
   // Nút mờ: viền xám nhạt, dùng cho hành động thứ yếu.
   ghost: 'bg-white text-ink border border-ash hover:border-ink',
   // Dùng trên bề mặt đảo màu (khối navy ở CTA cuối).
